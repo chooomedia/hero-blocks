@@ -129,11 +129,15 @@ class UpdateDownloadController extends AbstractController
                     'size' => filesize($tempFileName),
                 ]);
 
-                // WICHTIG: Erstelle UploadedFile aus temporärer Datei
+                // WICHTIG: Prüfe und korrigiere ZIP-Struktur
+                // Shopware erwartet: HeroBlocks/composer.json (nicht hero-blocks/ oder root-level)
+                $correctedZipFile = $this->correctZipStructure($tempFileName);
+                
+                // WICHTIG: Erstelle UploadedFile aus korrigierter ZIP-Datei
                 // Shopware PluginManagementService benötigt UploadedFile
                 $originalName = basename($downloadUrl) ?: 'hero-blocks-update.zip';
                 $uploadedFile = new UploadedFile(
-                    $tempFileName,
+                    $correctedZipFile,
                     $originalName,
                     'application/zip',
                     null,
@@ -274,5 +278,110 @@ class UpdateDownloadController extends AbstractController
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * Korrigiert ZIP-Struktur: Erstellt neue ZIP mit HeroBlocks/ als Root-Verzeichnis
+     * 
+     * @param string $zipFilePath Original ZIP-Datei
+     * @return string Pfad zur korrigierten ZIP-Datei
+     */
+    private function correctZipStructure(string $zipFilePath): string
+    {
+        $zip = new \ZipArchive();
+        
+        if ($zip->open($zipFilePath) !== true) {
+            throw new \RuntimeException('Failed to open ZIP file for structure correction');
+        }
+
+        // Prüfe erste Datei im ZIP
+        $firstEntry = $zip->statIndex(0);
+        if ($firstEntry === false) {
+            $zip->close();
+            throw new \RuntimeException('ZIP file is empty');
+        }
+
+        $firstEntryName = $firstEntry['name'];
+        $rootDirectory = explode('/', $firstEntryName)[0];
+
+        $this->logger->info('ZIP structure check', [
+            'firstEntry' => $firstEntryName,
+            'rootDirectory' => $rootDirectory,
+        ]);
+
+        // Wenn bereits HeroBlocks/ als Root → Keine Korrektur nötig
+        if ($rootDirectory === 'HeroBlocks') {
+            $zip->close();
+            $this->logger->info('ZIP structure is correct (HeroBlocks/ as root)');
+            return $zipFilePath;
+        }
+
+        // WICHTIG: Erstelle neue ZIP mit korrigierter Struktur
+        $correctedZipPath = tempnam(sys_get_temp_dir(), 'hero-blocks-corrected-');
+        if (!\is_string($correctedZipPath)) {
+            $zip->close();
+            throw new \RuntimeException('Failed to create temporary file for corrected ZIP');
+        }
+        unlink($correctedZipPath); // tempnam erstellt Datei, wir brauchen sie nicht
+        $correctedZipPath .= '.zip';
+
+        $correctedZip = new \ZipArchive();
+        if ($correctedZip->open($correctedZipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+            $zip->close();
+            throw new \RuntimeException('Failed to create corrected ZIP file');
+        }
+
+        // Kopiere alle Dateien mit HeroBlocks/ Prefix
+        $entryCount = $zip->numFiles;
+        for ($i = 0; $i < $entryCount; $i++) {
+            $entry = $zip->statIndex($i);
+            if ($entry === false) {
+                continue;
+            }
+
+            $entryName = $entry['name'];
+            
+            // Überspringe Root-Verzeichnis-Einträge (z.B. "hero-blocks/")
+            if (rtrim($entryName, '/') === $rootDirectory) {
+                continue;
+            }
+
+            // Entferne Root-Verzeichnis aus Pfad
+            $relativePath = preg_replace('#^' . preg_quote($rootDirectory, '#') . '/#', '', $entryName);
+            
+            // Überspringe leere Pfade
+            if (empty($relativePath)) {
+                continue;
+            }
+
+            // Neue Pfad mit HeroBlocks/ Prefix
+            $newPath = 'HeroBlocks/' . $relativePath;
+
+            // Lese Datei-Inhalt
+            $content = $zip->getFromIndex($i);
+            if ($content === false) {
+                // Verzeichnis-Eintrag
+                if (substr($entryName, -1) === '/') {
+                    $correctedZip->addEmptyDir($newPath);
+                }
+            } else {
+                // Datei-Eintrag
+                $correctedZip->addFromString($newPath, $content);
+            }
+        }
+
+        $correctedZip->close();
+        $zip->close();
+
+        $this->logger->info('ZIP structure corrected', [
+            'originalRoot' => $rootDirectory,
+            'correctedRoot' => 'HeroBlocks',
+            'correctedZip' => $correctedZipPath,
+        ]);
+
+        // Lösche originale ZIP (wird durch korrigierte ersetzt)
+        unlink($zipFilePath);
+
+        return $correctedZipPath;
     }
 }

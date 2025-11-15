@@ -863,13 +863,12 @@ Shopware.Component.override("sw-system-config", {
         try {
           // POST Request zu Backend-Endpunkt
           // WICHTIG: Route ohne /api Prefix (httpClient hat bereits baseURL = /api)
+          // WICHTIG: getBasicHeaders() für Authentifizierung verwenden
           response = await httpClient.post(
             "/_action/hero-blocks/test-download-url",
             {},
             {
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: this.systemConfigApiService.getBasicHeaders(),
             }
           );
 
