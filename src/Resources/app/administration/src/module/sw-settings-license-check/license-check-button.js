@@ -492,6 +492,24 @@ Shopware.Component.override("sw-system-config", {
     },
 
     /**
+     * Prüft ob Feld ein Update-Info-Feld ist (sollte versteckt werden, da in Status-Info angezeigt)
+     * WICHTIG: Verhindert Doppelung - diese Felder werden bereits in Status-Info-Box angezeigt
+     */
+    isUpdateInfoField(fieldName) {
+      if (!this.isHeroBlocksConfig()) return false;
+      // WICHTIG: Diese Felder werden bereits in Status-Info-Box angezeigt
+      const updateInfoFields = [
+        "HeroBlocks.config.updateAvailable",
+        "HeroBlocks.config.latestVersion",
+        "HeroBlocks.config.updateDownloadUrl",
+        "updateAvailable",
+        "latestVersion",
+        "updateDownloadUrl",
+      ];
+      return updateInfoFields.includes(fieldName);
+    },
+
+    /**
      * Prüft ob ein Block aktiv ist (nicht disabled)
      */
     isActiveBlock(blockName) {
