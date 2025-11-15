@@ -201,11 +201,19 @@
             
                         {# Hero Blocks Update Check Button - In Update Information Card #}
                 <div class="sw-system-config__hero-blocks-update-check">
+                    {# WICHTIG: Zeige Warnung wenn License expired #}
+                    <mt-banner 
+                        v-if="isLicenseExpired" 
+                        variant="critical"
+                        class="sw-system-config__license-expired-warning"
+                    >
+                        {{ $tc('sw-settings-license-check.update.licenseExpiredMessage') }}
+                    </mt-banner>
                     <mt-button
                         variant="primary"
                         size="default"
                         :is-loading="isUpdateChecking"
-                        :disabled="isUpdateChecking"
+                        :disabled="isUpdateChecking || isLicenseExpired"
                         @click="checkHeroBlocksUpdates"
                         class="hero-blocks-update-check-button"
                     >

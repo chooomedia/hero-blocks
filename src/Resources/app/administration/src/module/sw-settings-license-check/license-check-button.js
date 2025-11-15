@@ -32,6 +32,33 @@ Shopware.Component.override("sw-system-config", {
         ? "is--license-expired"
         : "";
     },
+
+    /**
+     * WICHTIG: Prüft ob License abgelaufen ist
+     * Wenn expired → Update Check Button deaktivieren
+     */
+    isLicenseExpired() {
+      if (!this.isHeroBlocksConfig()) return false;
+      const status =
+        this.actualConfigData?.[this.currentSalesChannelId]?.[
+          "HeroBlocks.config.licenseStatus"
+        ] ||
+        this.actualConfigData?.[this.currentSalesChannelId]?.["licenseStatus"];
+      return status === "expired";
+    },
+
+    /**
+     * Release Notes aus Update Check Response
+     * Wird angezeigt wenn License expired ist
+     */
+    releaseNotes() {
+      if (!this.isHeroBlocksConfig()) return null;
+      const changelog =
+        this.actualConfigData?.[this.currentSalesChannelId]?.[
+          "HeroBlocks.config.updateChangelog"
+        ];
+      return changelog || null;
+    },
   },
 
   // WICHTIG: Kein Auto-Check mehr hier - wird von sw-extension-config Override übernommen (Silent Check)
@@ -350,7 +377,27 @@ Shopware.Component.override("sw-system-config", {
             latestVersion: result.latestVersion,
             downloadUrl: result.downloadUrl,
             changelog: result.changelog,
+            licenseExpired: result.licenseExpired,
           });
+
+          // WICHTIG: Zeige Warnung wenn License expired
+          if (result.licenseExpired === true) {
+            this.createNotificationError({
+              title: this.$tc("sw-settings-license-check.update.licenseExpired"),
+              message: result.licenseExpiredMessage || this.$tc("sw-settings-license-check.update.licenseExpiredMessage"),
+              autoClose: false,
+            });
+            
+            // Reload Config Data um Status zu aktualisieren
+            if (
+              this.actualConfigData &&
+              this.actualConfigData.hasOwnProperty(this.currentSalesChannelId)
+            ) {
+              delete this.actualConfigData[this.currentSalesChannelId];
+            }
+            await this.loadCurrentSalesChannelConfig();
+            return;
+          }
 
           // Force reload Config Data - lösche Cache für currentSalesChannelId
           if (

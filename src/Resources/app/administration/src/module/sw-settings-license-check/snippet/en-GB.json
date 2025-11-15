@@ -44,7 +44,9 @@
             "noUpdateAvailable": "You are already using the latest version",
             "noUpdateAvailableMessage": "You are already using the latest version ({currentVersion})",
             "checkFailed": "Update check failed",
-            "checking": "Checking for updates..."
+            "checking": "Checking for updates...",
+            "licenseExpired": "License expired",
+            "licenseExpiredMessage": "⚠️ Your license has expired. Updates can no longer be loaded. Please renew your license."
         }
     }
 }

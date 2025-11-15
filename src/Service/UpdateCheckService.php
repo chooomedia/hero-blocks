@@ -38,10 +38,29 @@ class UpdateCheckService
     /**
      * Prüft auf verfügbare Updates via n8n Webhook
      * 
-     * @return array{available: bool, currentVersion: string, latestVersion: string|null, downloadUrl: string|null, changelog: string|null}
+     * WICHTIG: Update Check wird deaktiviert wenn License abgelaufen ist!
+     * 
+     * @return array{available: bool, currentVersion: string, latestVersion: string|null, downloadUrl: string|null, changelog: string|null, licenseExpired: bool}
      */
     public function checkForUpdates(): array
     {
+        // WICHTIG: Prüfe zuerst ob License abgelaufen ist
+        $licenseStatus = $this->systemConfigService->get('HeroBlocks.config.licenseStatus');
+        $isLicenseExpired = ($licenseStatus === 'expired');
+        
+        if ($isLicenseExpired) {
+            $this->logger->warning('Update check: License expired - Update Check deaktiviert', [
+                'licenseStatus' => $licenseStatus,
+            ]);
+            
+            // Gibt Default-Response zurück mit licenseExpired Flag
+            $defaultResponse = $this->getDefaultResponse();
+            $defaultResponse['licenseExpired'] = true;
+            $defaultResponse['licenseExpiredMessage'] = 'License expired - Updates können nicht mehr geladen werden. Bitte verlängern Sie Ihre Lizenz.';
+            
+            return $defaultResponse;
+        }
+        
         $webhookUrl = $this->getWebhookUrl('update');
         
         // WICHTIG: Ohne n8n Webhook URL → Kein Update-Check möglich
@@ -143,6 +162,7 @@ class UpdateCheckService
                 'latestVersion' => $latestVersion,
                 'downloadUrl' => $responseData['downloadUrl'] ?? null,
                 'changelog' => $responseData['changelog'] ?? null,
+                'licenseExpired' => false,
             ];
         } catch (\Exception $e) {
             $this->logger->error('Update check exception', [
@@ -303,6 +323,7 @@ class UpdateCheckService
             'latestVersion' => null,
             'downloadUrl' => null,
             'changelog' => null,
+            'licenseExpired' => false,
         ];
     }
 }

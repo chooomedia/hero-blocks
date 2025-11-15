@@ -41,12 +41,12 @@
         </input-field>
         <input-field type="bool">
             <name>enableMegaMenu</name>
-            <label lang="de-DE">Mega Menu Block aktivieren (Coming Soon)</label>
-            <label>Enable Mega Menu Block (Coming Soon)</label>
+            <label lang="de-DE">Mega Menu Block aktivieren (Beta)</label>
+            <label>Enable Mega Menu Block (Beta)</label>
             <defaultValue>false</defaultValue>
-            <disabled>true</disabled>
-            <helpText lang="de-DE">Erweiterte Navigations-Blöcke mit Produkten, Widgets und Instagram Feed Support. Dieser Block wird in einer zukünftigen Version verfügbar sein.</helpText>
-            <helpText>Advanced navigation block with products, widgets, and Instagram feed support. This block will be available in a future version.</helpText>
+            <disabled>false</disabled>
+            <helpText lang="de-DE">Erweiterte Navigations-Blöcke mit Produkten, Widgets und Instagram Feed Support. Dieses Feature befindet sich in der Beta-Phase.</helpText>
+            <helpText>Advanced navigation block with products, widgets, and Instagram feed support. This feature is in beta phase.</helpText>
         </input-field>
         <input-field type="bool">
             <name>enableShoppingExperience</name>

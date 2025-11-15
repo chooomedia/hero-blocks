@@ -44,7 +44,9 @@
             "noUpdateAvailable": "Sie verwenden bereits die neueste Version",
             "noUpdateAvailableMessage": "Sie verwenden bereits die neueste Version ({currentVersion})",
             "checkFailed": "Update-Prüfung fehlgeschlagen",
-            "checking": "Prüfe auf Updates..."
+            "checking": "Prüfe auf Updates...",
+            "licenseExpired": "Lizenz abgelaufen",
+            "licenseExpiredMessage": "⚠️ Ihre Lizenz ist abgelaufen. Updates können nicht mehr geladen werden. Bitte verlängern Sie Ihre Lizenz."
         }
     }
 }
