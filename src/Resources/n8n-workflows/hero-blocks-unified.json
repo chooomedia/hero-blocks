@@ -50,8 +50,8 @@
                     "conditions": [
                         {
                             "id": "3f048ca4-29b8-4e18-866d-391fd6e15f40",
-                            "leftValue": "={{ $('Webhook').item.json.query.checkType }}",
-                            "rightValue": "update",
+                            "leftValue": "={{ $json.checkType || $('Code (Determine Check Type)').item.json.checkType }}",
+                            "rightValue": "license",
                             "operator": {
                                 "type": "string",
                                 "operation": "equals",
@@ -185,7 +185,7 @@
         },
         {
             "parameters": {
-                "jsCode": "// WICHTIG: Verarbeite GitHub Releases API Response\n// Best Practices: Robust, sauber, eindeutige Logik\n// Gemäß GitHub API Dokumentation: Releases API gibt tag_name, assets, body zurück\n\n// 1. Lese GitHub API Response\nconst githubResponse = $input.item.json;\nconst currentVersion = $input.item.json.query?.currentVersion || '1.0.0';\n\n// 2. Extrahiere Latest Version aus GitHub Tag\n// GitHub Tag Format: \"v1.1.0\" → \"1.1.0\"\nlet latestVersion = null;\nif (githubResponse.tag_name) {\n  latestVersion = githubResponse.tag_name.replace(/^v/, ''); // Remove \"v\" prefix\n}\n\n// 3. Finde .zip Asset für Download URL\nlet downloadUrl = null;\nif (githubResponse.assets && Array.isArray(githubResponse.assets)) {\n  const zipAsset = githubResponse.assets.find(asset => \n    asset.name && asset.name.endsWith('.zip')\n  );\n  if (zipAsset && zipAsset.browser_download_url) {\n    downloadUrl = zipAsset.browser_download_url;\n  }\n}\n\n// 4. Extrahiere Changelog aus Release Body\nconst changelog = githubResponse.body || githubResponse.body_text || 'No changelog available';\n\n// 5. Speichere GitHub Response Daten für Version-Vergleich\nreturn {\n  json: {\n    ...$input.item.json,\n    latestVersion: latestVersion || currentVersion,\n    downloadUrl: downloadUrl || null,\n    changelog: changelog,\n    currentVersion: currentVersion,\n    githubTag: githubResponse.tag_name || null,\n    githubPublishedAt: githubResponse.published_at || null\n  }\n};"
+                "jsCode": "// WICHTIG: Verarbeite GitHub Releases API Response\n// Best Practices: Robust, sauber, eindeutige Logik mit Error-Handling\n// Gemäß GitHub API Dokumentation: Releases API gibt tag_name, assets, body zurück\n\n// 1. Lese GitHub API Response\nconst githubResponse = $input.item.json;\nconst currentVersion = $input.item.json.query?.currentVersion || $input.item.json.currentVersion || '1.0.0';\n\n// 2. Prüfe auf GitHub API Fehler (404, keine Releases, etc.)\nconst hasError = githubResponse.message || githubResponse.error || !githubResponse.tag_name;\n\nif (hasError) {\n  // GitHub API Fehler oder kein Release gefunden\n  // Gibt Default-Response zurück: latestVersion = currentVersion, available = false\n  return {\n    json: {\n      ...$input.item.json,\n      latestVersion: currentVersion,\n      downloadUrl: null,\n      changelog: null,\n      currentVersion: currentVersion,\n      githubTag: null,\n      githubPublishedAt: null,\n      githubError: githubResponse.message || githubResponse.error || 'No release found'\n    }\n  };\n}\n\n// 3. Extrahiere Latest Version aus GitHub Tag\n// GitHub Tag Format: \"v1.1.0\" → \"1.1.0\"\nlet latestVersion = null;\nif (githubResponse.tag_name) {\n  latestVersion = githubResponse.tag_name.replace(/^v/, ''); // Remove \"v\" prefix\n}\n\n// 4. Finde .zip Asset für Download URL\nlet downloadUrl = null;\nif (githubResponse.assets && Array.isArray(githubResponse.assets)) {\n  const zipAsset = githubResponse.assets.find(asset => \n    asset.name && asset.name.endsWith('.zip')\n  );\n  if (zipAsset && zipAsset.browser_download_url) {\n    downloadUrl = zipAsset.browser_download_url;\n  }\n}\n\n// 5. Extrahiere Changelog aus Release Body\nconst changelog = githubResponse.body || githubResponse.body_text || null;\n\n// 6. Speichere GitHub Response Daten für Version-Vergleich\nreturn {\n  json: {\n    ...$input.item.json,\n    latestVersion: latestVersion || currentVersion,\n    downloadUrl: downloadUrl || null,\n    changelog: changelog || null,\n    currentVersion: currentVersion,\n    githubTag: githubResponse.tag_name || null,\n    githubPublishedAt: githubResponse.published_at || null\n  }\n};"
             },
             "id": "94cb1818-d1bd-4e3b-82b5-47907e974054",
             "name": "Code (Process GitHub Response)",
@@ -198,7 +198,7 @@
         },
         {
             "parameters": {
-                "jsCode": "// WICHTIG: Version-Vergleich für Update-Check\n// Best Practices: Semantic Versioning, robust, sauber\n// Harmoniert mit GitHub Releases API Response\n\n// 1. Lese aktuelle Version aus Query-Parametern\nconst currentVersion = $input.item.json.query?.currentVersion || $input.item.json.currentVersion || '1.0.0';\n\n// 2. Lese neueste Version aus GitHub Response (bereits verarbeitet)\nconst latestVersion = $input.item.json.latestVersion || '1.0.0';\n\n// 3. Version-Vergleich (Semantic Versioning)\nfunction compareVersions(v1, v2) {\n  const parts1 = v1.split('.').map(Number);\n  const parts2 = v2.split('.').map(Number);\n  \n  for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {\n    const part1 = parts1[i] || 0;\n    const part2 = parts2[i] || 0;\n    \n    if (part1 < part2) return -1;\n    if (part1 > part2) return 1;\n  }\n  \n  return 0;\n}\n\n// 4. Prüfe ob Update verfügbar ist\nconst updateAvailable = latestVersion && compareVersions(currentVersion, latestVersion) < 0;\n\n// 5. Generiere Update-Informationen\n// WICHTIG: downloadUrl und changelog werden bereits aus GitHub Response extrahiert\nreturn {\n  json: {\n    ...$input.item.json,\n    available: updateAvailable,\n    currentVersion,\n    latestVersion,\n    // downloadUrl und changelog bereits vorhanden (aus GitHub Response)\n    downloadUrl: updateAvailable ? ($input.item.json.downloadUrl || null) : null,\n    changelog: updateAvailable ? ($input.item.json.changelog || null) : null\n  }\n};"
+                "jsCode": "// WICHTIG: Version-Vergleich für Update-Check\n// Best Practices: Semantic Versioning, robust, sauber mit Error-Handling\n// Harmoniert mit GitHub Releases API Response\n\n// 1. Lese aktuelle Version aus Query-Parametern\nconst currentVersion = $input.item.json.query?.currentVersion || $input.item.json.currentVersion || '1.0.0';\n\n// 2. Prüfe auf GitHub API Fehler\nconst hasError = $input.item.json.githubError || !$input.item.json.githubTag;\n\nif (hasError) {\n  // GitHub API Fehler oder kein Release gefunden\n  // Gibt Default-Response zurück: available = false, latestVersion = currentVersion\n  return {\n    json: {\n      ...$input.item.json,\n      available: false,\n      currentVersion: currentVersion,\n      latestVersion: currentVersion,\n      downloadUrl: null,\n      changelog: null\n    }\n  };\n}\n\n// 3. Lese neueste Version aus GitHub Response (bereits verarbeitet)\nconst latestVersion = $input.item.json.latestVersion || currentVersion;\n\n// 4. Version-Vergleich (Semantic Versioning)\nfunction compareVersions(v1, v2) {\n  const parts1 = v1.split('.').map(Number);\n  const parts2 = v2.split('.').map(Number);\n  \n  for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {\n    const part1 = parts1[i] || 0;\n    const part2 = parts2[i] || 0;\n    \n    if (part1 < part2) return -1;\n    if (part1 > part2) return 1;\n  }\n  \n  return 0;\n}\n\n// 5. Prüfe ob Update verfügbar ist\nconst updateAvailable = latestVersion && compareVersions(currentVersion, latestVersion) < 0;\n\n// 6. Generiere Update-Informationen\n// WICHTIG: downloadUrl und changelog werden bereits aus GitHub Response extrahiert\n// WICHTIG: Gibt immer alle Felder zurück (auch wenn available=false), damit Shopware Admin UI korrekt angezeigt wird\nreturn {\n  json: {\n    ...$input.item.json,\n    available: updateAvailable,\n    currentVersion: currentVersion,\n    latestVersion: latestVersion,\n    // downloadUrl und changelog bereits vorhanden (aus GitHub Response)\n    downloadUrl: $input.item.json.downloadUrl || null,\n    changelog: $input.item.json.changelog || null\n  }\n};"
             },
             "id": "8cdbed17-d201-49c5-afa3-a4a443d33185",
             "name": "Code (Compare Versions)",
@@ -238,7 +238,7 @@
         {
             "parameters": {
                 "respondWith": "json",
-                "responseBody": "={{ { available: true, currentVersion: $json.currentVersion, latestVersion: $json.latestVersion, downloadUrl: $json.downloadUrl, changelog: $json.changelog } }}",
+                "responseBody": "={{ { available: true, currentVersion: $json.currentVersion, latestVersion: $json.latestVersion, downloadUrl: $json.downloadUrl || null, changelog: $json.changelog || null } }}",
                 "options": {}
             },
             "id": "d440eb19-b3e2-48b8-8dc0-895e09cf7f9a",
@@ -253,7 +253,7 @@
         {
             "parameters": {
                 "respondWith": "json",
-                "responseBody": "={{ { available: false, currentVersion: $json.currentVersion, latestVersion: $json.latestVersion } }}",
+                "responseBody": "={{ { available: false, currentVersion: $json.currentVersion, latestVersion: $json.latestVersion || $json.currentVersion, downloadUrl: null, changelog: null } }}",
                 "options": {}
             },
             "id": "3641733f-fa9b-4ce2-927a-86d5e77fe48f",
@@ -323,14 +323,14 @@
             "main": [
                 [
                     {
-                        "node": "GitHub (Get Latest Release)",
+                        "node": "Set (Compute License)",
                         "type": "main",
                         "index": 0
                     }
                 ],
                 [
                     {
-                        "node": "Set (Compute License)",
+                        "node": "GitHub (Get Latest Release)",
                         "type": "main",
                         "index": 0
                     }
