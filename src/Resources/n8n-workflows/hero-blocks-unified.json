@@ -2,15 +2,28 @@
     "nodes": [
         {
             "parameters": {
-                "jsCode": "// WICHTIG: Formatiere Slack-Nachricht für Update-Check Fehler\n// Best Practices: Strukturierte, informative Fehlermeldungen mit Links\n\nconst checkType = $input.item.json.checkType || 'update';\nconst currentVersion = $input.item.json.currentVersion || $input.item.json.query?.currentVersion || '1.0.0';\nconst hasError = $input.item.json.hasError === true;\nconst githubError = $input.item.json.githubError || null;\nconst available = $input.item.json.available || false;\nconst latestVersion = $input.item.json.latestVersion || currentVersion;\nconst downloadUrl = $input.item.json.downloadUrl || null;\n\n// Bestimme Nachrichtentyp\nlet title = '';\nlet color = '';\nlet message = '';\n\nif (hasError) {\n    // Fehler: GitHub API Fehler oder kein Release gefunden\n    title = '⚠️ Hero Blocks Update Check - Fehler';\n    color = '#FF6B6B';\n    message = `*GitHub API Fehler:*\n• Fehler: ${githubError || 'Unbekannter Fehler'}\n• Repository: <https://github.com/chooomedia/hero-blocks|chooomedia/hero-blocks>\n• Aktuelle Version: ${currentVersion}\n• Status: Kein Release gefunden\n\n*Mögliche Ursachen:*\n• Repository existiert nicht\n• Keine Releases vorhanden\n• GitHub API Rate Limit erreicht\n\n*Lösung:*\n• Prüfe Repository: <https://github.com/chooomedia/hero-blocks/releases|GitHub Releases>\n• Erstelle erstes Release falls nötig\n• Prüfe n8n Workflow Logs`;\n} else if (available) {\n    // Update verfügbar\n    title = '✅ Hero Blocks Update verfügbar';\n    color = '#4ECDC4';\n    message = `*Neue Version verfügbar:*\n• Aktuelle Version: ${currentVersion}\n• Neue Version: ${latestVersion}\n• Download: ${downloadUrl ? `<${downloadUrl}|Download ZIP>` : 'Nicht verfügbar'}\n• Repository: <https://github.com/chooomedia/hero-blocks/releases/tag/v${latestVersion}|Release v${latestVersion}>`;\n} else {\n    // Kein Update verfügbar\n    title = 'ℹ️ Hero Blocks - Kein Update verfügbar';\n    color = '#95A5A6';\n    message = `*Plugin ist aktuell:*\n• Version: ${currentVersion}\n• Neueste Version: ${latestVersion}\n• Status: Kein Update erforderlich`;\n}\n\nreturn {\n    json: {\n        ...$input.item.json,\n        slackTitle: title,\n        slackColor: color,\n        slackMessage: message\n    }\n};"
+                "jsCode": "// WICHTIG: Formatiere Slack-Nachricht für Update-Check\n// Best Practices: Strukturierte, informative Fehlermeldungen mit Links\n\nconst checkType = $input.item.json.checkType || 'update';\nconst currentVersion = $input.item.json.currentVersion || $input.item.json.query?.currentVersion || '1.0.0';\nconst hasError = $input.item.json.hasError === true;\nconst githubError = $input.item.json.githubError || null;\nconst available = $input.item.json.available || false;\nconst latestVersion = $input.item.json.latestVersion || currentVersion;\nconst downloadUrl = $input.item.json.downloadUrl || null;\n\n// Bestimme Nachrichtentyp\nlet message = '';\n\nif (hasError) {\n    // Fehler: GitHub API Fehler oder kein Release gefunden\n    message = `⚠️ *Hero Blocks Update Check - Fehler*\n\n*GitHub API Fehler:*\n• Fehler: ${githubError || 'Unbekannter Fehler'}\n• Repository: <https://github.com/chooomedia/hero-blocks|chooomedia/hero-blocks>\n• Aktuelle Version: ${currentVersion}\n• Status: Kein Release gefunden\n\n*Mögliche Ursachen:*\n• Repository existiert nicht\n• Keine Releases vorhanden\n• GitHub API Rate Limit erreicht\n\n*Lösung:*\n• Prüfe Repository: <https://github.com/chooomedia/hero-blocks/releases|GitHub Releases>\n• Erstelle erstes Release falls nötig\n• Prüfe n8n Workflow Logs`;\n} else if (available) {\n    // Update verfügbar\n    message = `✅ *Hero Blocks Update verfügbar*\n\n*Neue Version verfügbar:*\n• Aktuelle Version: ${currentVersion}\n• Neue Version: ${latestVersion}\n• Download: ${downloadUrl ? `<${downloadUrl}|Download ZIP>` : 'Nicht verfügbar'}\n• Repository: <https://github.com/chooomedia/hero-blocks/releases/tag/v${latestVersion}|Release v${latestVersion}>`;\n} else {\n    // Kein Update verfügbar\n    message = `ℹ️ *Hero Blocks - Kein Update verfügbar*\n\n*Plugin ist aktuell:*\n• Version: ${currentVersion}\n• Neueste Version: ${latestVersion}\n• Status: Kein Update erforderlich`;\n}\n\nreturn {\n    json: {\n        ...$input.item.json,\n        slackMessage: message\n    }\n};"
             },
-            "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-            "name": "Code (Format Slack Message)",
+            "id": "fd50263d-396e-4057-897e-b7bc6873f470",
+            "name": "Code (Format Slack Message - Update)",
             "type": "n8n-nodes-base.code",
             "typeVersion": 2,
             "position": [
-                672,
-                48
+                -128,
+                -192
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// WICHTIG: Formatiere Slack-Nachricht für License-Check\n// Best Practices: Strukturierte, informative Nachrichten mit Links\n\nconst checkType = $input.item.json.checkType || 'license';\nconst valid = $input.item.json.valid === true;\nconst expiresAt = $input.item.json.expiresAt || null;\nconst daysRemaining = $input.item.json.daysRemaining || 0;\nconst plugin = $input.item.json.plugin || 'hero-blocks';\nconst currentVersion = $input.item.json.currentVersion || $input.item.json.query?.currentVersion || '1.0.0';\n\n// Bestimme Nachrichtentyp\nlet message = '';\n\nif (valid) {\n    // License gültig\n    const expiryDate = expiresAt ? new Date(expiresAt).toLocaleDateString('de-DE') : 'Unbekannt';\n    message = `✅ *Hero Blocks License Check - Gültig*\n\n*Lizenz-Status:*\n• Plugin: ${plugin}\n• Version: ${currentVersion}\n• Status: Gültig\n• Ablaufdatum: ${expiryDate}\n• Tage verbleibend: ${daysRemaining}\n\n*Repository:*\n• <https://github.com/chooomedia/hero-blocks|chooomedia/hero-blocks>`;\n} else {\n    // License ungültig\n    const expiryDate = expiresAt ? new Date(expiresAt).toLocaleDateString('de-DE') : 'Unbekannt';\n    message = `⚠️ *Hero Blocks License Check - Abgelaufen*\n\n*Lizenz-Status:*\n• Plugin: ${plugin}\n• Version: ${currentVersion}\n• Status: Abgelaufen\n• Ablaufdatum: ${expiryDate}\n• Tage verbleibend: ${daysRemaining}\n\n*Aktion erforderlich:*\n• Lizenz erneuern\n• Kontakt: <https://www.matt-interfaces.ch|Matt Interfaces>\n\n*Repository:*\n• <https://github.com/chooomedia/hero-blocks|chooomedia/hero-blocks>`;\n}\n\nreturn {\n    json: {\n        ...$input.item.json,\n        slackMessage: message\n    }\n};"
+            },
+            "id": "1d1f79d8-d2ec-459f-91f6-0cd6f15322e1",
+            "name": "Code (Format Slack Message - License)",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                -128,
+                368
             ]
         },
         {
@@ -23,52 +36,17 @@
                     "mode": "list",
                     "cachedResultName": "horex"
                 },
-                "text": "={{ $json.slackMessage }}",
-                "otherOptions": {
-                    "username": "Hero Blocks Bot",
-                    "iconEmoji": ":rocket:"
-                }
+                "text": "={{ $json.slackMessage || 'Keine Nachricht verfügbar' }}",
+                "otherOptions": {}
             },
             "type": "n8n-nodes-base.slack",
             "typeVersion": 2.3,
             "position": [
-                864,
-                48
+                560,
+                96
             ],
-            "id": "e9351b2c-f44c-43a2-802d-2d68a70d5e72",
+            "id": "be77e7e0-222f-4e2e-8ce8-5f3e616467d6",
             "name": "Send Slack Message (Update)",
-            "webhookId": "40f85c4f-6f84-4aeb-89aa-181e6937b9a8",
-            "credentials": {
-                "slackOAuth2Api": {
-                    "id": "BSSygESdYnPg0W2W",
-                    "name": "Slack account"
-                }
-            }
-        },
-        {
-            "parameters": {
-                "authentication": "oAuth2",
-                "select": "channel",
-                "channelId": {
-                    "__rl": true,
-                    "value": "C04347838EP",
-                    "mode": "list",
-                    "cachedResultName": "horex"
-                },
-                "text": "={{ $json.slackMessage }}",
-                "otherOptions": {
-                    "username": "Hero Blocks Bot",
-                    "iconEmoji": ":warning:"
-                }
-            },
-            "type": "n8n-nodes-base.slack",
-            "typeVersion": 2.3,
-            "position": [
-                864,
-                336
-            ],
-            "id": "f1a2b3c4-d5e6-7890-fghi-j1234567890k",
-            "name": "Send Slack Message (License)",
             "webhookId": "40f85c4f-6f84-4aeb-89aa-181e6937b9a8",
             "credentials": {
                 "slackOAuth2Api": {
@@ -92,13 +70,13 @@
                     }
                 }
             },
-            "id": "427665cb-2fa2-42ad-a5a6-03b48026d586",
+            "id": "4deaeaf1-b1d2-475b-abb3-14ca54116b2a",
             "name": "Webhook",
             "type": "n8n-nodes-base.webhook",
             "typeVersion": 1,
             "position": [
-                -1040,
-                336
+                -1392,
+                112
             ],
             "webhookId": "hero-blocks-unified"
         },
@@ -106,13 +84,13 @@
             "parameters": {
                 "jsCode": "// WICHTIG: Route-Bestimmung basierend auf Query-Parameter (n8n Best Practice!)\n// Best Practices: Robust, sauber, eindeutige Logik gemäß n8n Dokumentation\n// n8n Webhook Path: hero-blocks (relativ zum Webhook-Base /webhook/)\n// Vollständiger Path: /webhook/hero-blocks?checkType=license oder /webhook/hero-blocks?checkType=update\n// Gemäß n8n Docs: Query-Parameter werden in query zurückgegeben\n\nlet checkType = null;\n\n// Step 1: Versuche Query-Parameter checkType (PRIMÄR - n8n Best Practice!)\n// n8n gibt Query-Parameter in $input.item.json.query zurück\nconst queryParams = $input.item.json.query || {};\nif (queryParams.checkType) {\n  checkType = String(queryParams.checkType).toLowerCase().trim();\n}\n\n// Step 2: Extrahiere aus webhookUrl (Fallback - falls Query-Parameter nicht verfügbar)\n// URL-Format: https://n8n.chooomedia.com/webhook/license/hero-blocks\n// oder: https://n8n.chooomedia.com/webhook/update/hero-blocks\n// ODER: https://n8n.chooomedia.com/webhook/hero-blocks?checkType=license\nif (!checkType && $input.item.json.webhookUrl) {\n  const url = String($input.item.json.webhookUrl);\n  // Matche: /webhook/license/hero-blocks oder /webhook/update/hero-blocks (altes Format)\n  const urlMatch = url.match(/\\/webhook\\/(license|update)\\/hero-blocks/i);\n  if (urlMatch && urlMatch[1]) {\n    checkType = urlMatch[1].toLowerCase().trim(); // license oder update\n  } else {\n    // Versuche Query-Parameter aus URL\n    const urlObj = new URL(url);\n    const checkTypeParam = urlObj.searchParams.get('checkType');\n    if (checkTypeParam) {\n      checkType = checkTypeParam.toLowerCase().trim();\n    }\n  }\n}\n\n// Step 3: Fallback: Versuche aus Request-URL zu extrahieren\nif (!checkType && $input.item.json.url) {\n  const url = String($input.item.json.url);\n  // Matche: /webhook/license/hero-blocks oder /webhook/update/hero-blocks\n  const urlMatch = url.match(/\\/(license|update)\\//i);\n  if (urlMatch && urlMatch[1]) {\n    checkType = urlMatch[1].toLowerCase().trim();\n  } else {\n    // Versuche Query-Parameter aus URL\n    try {\n      const urlObj = new URL(url);\n      const checkTypeParam = urlObj.searchParams.get('checkType');\n      if (checkTypeParam) {\n        checkType = checkTypeParam.toLowerCase().trim();\n      }\n    } catch (e) {\n      // URL parsing fehlgeschlagen - ignoriere\n    }\n  }\n}\n\n// Step 4: Default: license (für Backwards Compatibility)\nif (!checkType || (checkType !== 'license' && checkType !== 'update')) {\n  checkType = 'license';\n}\n\n// Return mit checkType und allen Query-Parametern\nreturn {\n  json: {\n    ...$input.item.json,\n    checkType: checkType,\n    // Query-Parameter explizit weitergeben (Best Practice)\n    plugin: queryParams.plugin || $input.item.json.plugin || 'hero-blocks',\n    version: queryParams.version || $input.item.json.version || '1.0.0',\n    shopwareVersion: queryParams.shopwareVersion || $input.item.json.shopwareVersion || '6.7.0',\n    timestamp: queryParams.timestamp || queryParams.checkDate || $input.item.json.timestamp || new Date().toISOString(),\n    currentVersion: queryParams.currentVersion || queryParams.version || \"1.0.0\"\n  }\n};"
             },
-            "id": "bce5611b-1140-4e4d-a37d-5633d7c2ccf2",
+            "id": "d0827403-c088-42a7-8ce3-4e517f2be385",
             "name": "Code (Determine Check Type)",
             "type": "n8n-nodes-base.code",
             "typeVersion": 2,
             "position": [
-                -848,
-                336
+                -1200,
+                112
             ]
         },
         {
@@ -140,13 +118,13 @@
                 },
                 "options": {}
             },
-            "id": "18b34513-5dc0-4c5a-808a-f91cd54e2b9b",
+            "id": "fe0f828b-6b15-4d10-964a-dd16e6875b8a",
             "name": "IF Check Type = License?",
             "type": "n8n-nodes-base.if",
             "typeVersion": 2,
             "position": [
-                -656,
-                336
+                -1008,
+                112
             ]
         },
         {
@@ -173,13 +151,13 @@
                 },
                 "options": {}
             },
-            "id": "ef107c55-b6e2-4b45-b648-7b37deb8ec40",
+            "id": "02f76278-cc3c-438b-b87d-a42cb12899cd",
             "name": "Set (Compute License)",
             "type": "n8n-nodes-base.set",
             "typeVersion": 2,
             "position": [
-                -320,
-                592
+                -672,
+                368
             ]
         },
         {
@@ -207,13 +185,13 @@
                 },
                 "options": {}
             },
-            "id": "16a61c2d-5f29-404d-84ae-aa469e46a7e0",
+            "id": "e4c6373f-cce7-4cf4-8c84-58ab0248d1f1",
             "name": "IF License Valid?",
             "type": "n8n-nodes-base.if",
             "typeVersion": 2,
             "position": [
-                -128,
-                592
+                -480,
+                368
             ]
         },
         {
@@ -222,13 +200,13 @@
                 "responseBody": "={{ { valid: true, expiresAt: $json.expiresAt, daysRemaining: $json.daysRemaining } }}",
                 "options": {}
             },
-            "id": "15280687-75a5-47ac-8631-9a35846e7138",
+            "id": "a0429ccd-e975-46f8-aabd-c3d862cbfdce",
             "name": "Respond (License Valid)",
             "type": "n8n-nodes-base.respondToWebhook",
             "typeVersion": 1,
             "position": [
-                560,
-                496
+                224,
+                272
             ]
         },
         {
@@ -237,75 +215,26 @@
                 "responseBody": "={{ { valid: false, expiresAt: $json.expiresAt, daysRemaining: $json.daysRemaining } }}",
                 "options": {}
             },
-            "id": "382af115-75b3-4d48-982a-97817ebd7a37",
+            "id": "21dc194e-fd70-43ee-a5eb-50b36c3a720d",
             "name": "Respond (License Invalid)",
             "type": "n8n-nodes-base.respondToWebhook",
             "typeVersion": 1,
             "position": [
-                560,
-                656
-            ]
-        },
-        {
-            "parameters": {
-                "method": "GET",
-                "url": "=https://api.github.com/repos/chooomedia/hero-blocks/releases/latest",
-                "authentication": "none",
-                "sendHeaders": true,
-                "headerParameters": {
-                    "parameters": [
-                        {
-                            "name": "Accept",
-                            "value": "application/vnd.github.v3+json"
-                        },
-                        {
-                            "name": "User-Agent",
-                            "value": "Shopware-HeroBlocks-Plugin/1.0.0"
-                        }
-                    ]
-                },
-                "options": {
-                    "response": {
-                        "responseFormat": "json",
-                        "neverError": true
-                    }
-                }
-            },
-            "id": "2dd88284-b08d-4d37-bec0-addaa46d3212",
-            "name": "HTTP Request (Get Latest Release)",
-            "type": "n8n-nodes-base.httpRequest",
-            "typeVersion": 4.2,
-            "position": [
-                -320,
-                48
-            ],
-            "onError": "continueErrorOutput",
-            "continueOnFail": true
-        },
-        {
-            "parameters": {
-                "jsCode": "// WICHTIG: Verarbeite GitHub Releases API Response\n// Best Practices: Robust, sauber, eindeutige Logik mit Error-Handling\n// Gemäß GitHub API Dokumentation: Releases API gibt tag_name, assets, body zurück\n\n// 1. Lese GitHub API Response (HTTP Request Node gibt Daten in $input.item.json zurück)\n// WICHTIG: HTTP Request Node gibt Response in $input.item.json zurück (direkt JSON)\n// WICHTIG: Bei HTTP-Fehlern (404) gibt n8n die Fehler-Response im json-Feld zurück\nlet githubResponse = $input.item.json;\n\n// Prüfe auf HTTP-Fehler (404, etc.) - n8n gibt Fehler-Responses im json-Feld zurück\n// GitHub API gibt bei 404: { \"message\": \"Not Found\", \"documentation_url\": \"...\", \"status\": \"404\" }\nconst isHttpError = githubResponse.message === \"Not Found\" || githubResponse.status === \"404\" || githubResponse.statusCode === 404;\n\n// Fallback: Versuche verschiedene Datenstrukturen (n8n HTTP Request kann unterschiedlich strukturieren)\n// HTTP Request Node gibt Response direkt als JSON zurück, aber prüfe auf Verschachtelung\nif (!githubResponse.tag_name && !isHttpError) {\n  // Möglicherweise ist Response verschachtelt (json, data, body)\n  githubResponse = githubResponse.json || githubResponse.data || githubResponse.body || githubResponse;\n}\n\n// Lese currentVersion aus Query-Parametern (aus Webhook)\nconst currentVersion = $input.item.json.query?.currentVersion || $input.item.json.currentVersion || \"1.0.0\";\n\n// 2. Prüfe auf GitHub API Fehler (404, keine Releases, etc.)\n// WICHTIG: HTTP-Fehler (404) werden jetzt korrekt erkannt\nconst hasError = isHttpError || githubResponse.message || githubResponse.error || !githubResponse.tag_name;\n\nif (hasError) {\n  // GitHub API Fehler oder kein Release gefunden\n  // Gibt Default-Response zurück: latestVersion = currentVersion, available = false\n  return {\n    json: {\n      ...$input.item.json,\n      latestVersion: currentVersion,\n      downloadUrl: null,\n      changelog: null,\n      currentVersion: currentVersion,\n      githubTag: null,\n      githubPublishedAt: null,\n      githubError: githubResponse.message || githubResponse.error || \"No release found\",\n      hasError: true\n    }\n  };\n}\n\n// 3. Extrahiere Latest Version aus GitHub Tag\n// GitHub Tag Format: \"v1.1.0\" → \"1.1.0\"\nlet latestVersion = null;\nif (githubResponse.tag_name) {\n  latestVersion = githubResponse.tag_name.replace(/^v/, \"\"); // Remove \"v\" prefix\n}\n\n// 4. Finde .zip Asset für Download URL\n// WICHTIG: Shopware benötigt direkt zugängliche .zip URL (GitHub Releases)\n// Format: https://github.com/owner/repo/releases/download/tag/plugin-name.zip\nlet downloadUrl = null;\nif (githubResponse.assets && Array.isArray(githubResponse.assets)) {\n  // Suche nach .zip Asset (priorisiere hero-blocks-*.zip)\n  const zipAsset = githubResponse.assets.find(asset => {\n    const name = asset.name || \"\";\n    return name.endsWith('.zip') && (name.includes('hero-blocks') || name.includes('HeroBlocks'));\n  }) || githubResponse.assets.find(asset => \n    asset.name && asset.name.endsWith('.zip')\n  );\n  if (zipAsset && zipAsset.browser_download_url) {\n    downloadUrl = zipAsset.browser_download_url;\n  }\n}\n\n// Fallback: Generiere Download URL aus Release Tag (falls kein Asset vorhanden)\nif (!downloadUrl && githubResponse.tag_name && githubResponse.html_url) {\n  // GitHub Releases: /releases/tag/v1.0.0 → /releases/download/v1.0.0/hero-blocks.zip\n  const tagName = githubResponse.tag_name.replace(/^v/, \"\"); // Remove \"v\" prefix\n  downloadUrl = githubResponse.html_url.replace(/\\/tag\\//, \"/download/\") + \"/hero-blocks-\" + tagName + \".zip\";\n}\n\n// 5. Extrahiere Changelog aus Release Body\nconst changelog = githubResponse.body || githubResponse.body_text || null;\n\n// 6. Speichere GitHub Response Daten für Version-Vergleich\n// WICHTIG: Setze hasError Flag für explizites Error-Tracking\nreturn {\n  json: {\n    ...$input.item.json,\n    latestVersion: latestVersion || currentVersion,\n    downloadUrl: downloadUrl || null,\n    changelog: changelog || null,\n    currentVersion: currentVersion,\n    githubTag: githubResponse.tag_name || null,\n    githubPublishedAt: githubResponse.published_at || null,\n    hasError: false\n  }\n};"
-            },
-            "id": "edb6d0eb-13e6-4c16-a579-32e5c8bbabb3",
-            "name": "Code (Process GitHub Response)",
-            "type": "n8n-nodes-base.code",
-            "typeVersion": 2,
-            "position": [
-                -112,
-                48
+                224,
+                432
             ]
         },
         {
             "parameters": {
                 "jsCode": "// WICHTIG: Version-Vergleich für Update-Check\n// Best Practices: Semantic Versioning, robust, sauber mit Error-Handling\n// Harmoniert mit GitHub Releases API Response\n\n// 1. Lese aktuelle Version aus Query-Parametern\nconst currentVersion = $input.item.json.query?.currentVersion || $input.item.json.currentVersion || \"1.0.0\";\n\n// 2. Prüfe auf GitHub API Fehler\n// WICHTIG: hasError Flag wird bereits im Process GitHub Response Node gesetzt\nconst hasError = $input.item.json.hasError === true || $input.item.json.githubError || !$input.item.json.githubTag;\n\nif (hasError) {\n  // GitHub API Fehler oder kein Release gefunden\n  // Gibt Default-Response zurück: available = false, latestVersion = currentVersion\n  return {\n    json: {\n      ...$input.item.json,\n      available: false,\n      currentVersion: currentVersion,\n      latestVersion: currentVersion,\n      downloadUrl: null,\n      changelog: null\n    }\n  };\n}\n\n// 3. Lese neueste Version aus GitHub Response (bereits verarbeitet)\nconst latestVersion = $input.item.json.latestVersion || currentVersion;\n\n// 4. Version-Vergleich (Semantic Versioning)\nfunction compareVersions(v1, v2) {\n  const parts1 = v1.split('.').map(Number);\n  const parts2 = v2.split('.').map(Number);\n  \n  for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {\n    const part1 = parts1[i] || 0;\n    const part2 = parts2[i] || 0;\n    \n    if (part1 < part2) return -1;\n    if (part1 > part2) return 1;\n  }\n  \n  return 0;\n}\n\n// 5. Prüfe ob Update verfügbar ist\n// WICHTIG: available = true nur wenn latestVersion > currentVersion\n// Wenn latestVersion === currentVersion → available = false\n// Wenn latestVersion < currentVersion → available = false (bereits neueste Version)\nconst versionComparison = compareVersions(currentVersion, latestVersion);\nconst updateAvailable = latestVersion && latestVersion !== currentVersion && versionComparison < 0;\n\n// 6. Generiere Update-Informationen\n// WICHTIG: downloadUrl und changelog werden bereits aus GitHub Response extrahiert\n// WICHTIG: Gibt immer alle Felder zurück (auch wenn available=false), damit Shopware Admin UI korrekt angezeigt wird\nreturn {\n  json: {\n    ...$input.item.json,\n    available: updateAvailable,\n    currentVersion: currentVersion,\n    latestVersion: latestVersion,\n    // downloadUrl und changelog bereits vorhanden (aus GitHub Response)\n    downloadUrl: $input.item.json.downloadUrl || null,\n    changelog: $input.item.json.changelog || null\n  }\n};"
             },
-            "id": "dc6f3745-2bc3-4540-9934-ab5a3e3e2b7e",
+            "id": "4300fbe0-879f-4ca3-acb1-d2b6028ec414",
             "name": "Code (Compare Versions)",
             "type": "n8n-nodes-base.code",
             "typeVersion": 2,
             "position": [
-                96,
-                48
+                -272,
+                -192
             ]
         },
         {
@@ -333,43 +262,43 @@
                 },
                 "options": {}
             },
-            "id": "4db20ead-f7ca-47dc-b380-8ff80e3c3685",
+            "id": "0699a344-2467-4ac2-94a8-f4bb56424191",
             "name": "IF Update Available?",
             "type": "n8n-nodes-base.if",
             "typeVersion": 2,
             "position": [
-                352,
-                48
+                16,
+                -192
             ]
         },
         {
             "parameters": {
                 "respondWith": "json",
-                "responseBody": "={{ { available: true, currentVersion: $json.currentVersion, latestVersion: $json.latestVersion, downloadUrl: $json.downloadUrl || null, changelog: $json.changelog || null } }}",
+                "responseBody": "={{ { available: true, currentVersion: $json.currentVersion, latestVersion: $json.latestVersion, downloadUrl: $json.downloadUrl || null, changelog: $json.changelog || null, releaseId: $json.githubReleaseId || null, releaseUrl: $json.githubReleaseUrl || null } }}",
                 "options": {}
             },
-            "id": "219d7e31-436f-4875-87dc-c5ffcfcf10f4",
+            "id": "be89e58b-bc23-4373-87e0-8e7cfa7a5a55",
             "name": "Respond (Update Available)",
             "type": "n8n-nodes-base.respondToWebhook",
             "typeVersion": 1,
             "position": [
-                560,
-                -48
+                224,
+                -288
             ]
         },
         {
             "parameters": {
                 "respondWith": "json",
-                "responseBody": "={{ { available: false, currentVersion: $json.currentVersion, latestVersion: $json.latestVersion || $json.currentVersion, downloadUrl: null, changelog: null } }}",
+                "responseBody": "={{ { available: false, currentVersion: $json.currentVersion, latestVersion: $json.latestVersion || $json.currentVersion, downloadUrl: null, changelog: null, releaseId: null, releaseUrl: null } }}",
                 "options": {}
             },
-            "id": "314584c2-5661-41c2-abc9-d7b0f1c0b898",
+            "id": "942b83fe-459a-4031-8301-46d9809d02c2",
             "name": "Respond (No Update)",
             "type": "n8n-nodes-base.respondToWebhook",
             "typeVersion": 1,
             "position": [
-                560,
-                128
+                224,
+                -112
             ]
         },
         {
@@ -381,10 +310,10 @@
             "type": "n8n-nodes-base.stickyNote",
             "typeVersion": 1,
             "position": [
-                -368,
-                432
+                -720,
+                208
             ],
-            "id": "3dcc04a8-02ed-410e-936d-2a1b744b749f",
+            "id": "f194d785-3a09-4ef1-9b06-bb7803ad2753",
             "name": "Sticky Note"
         },
         {
@@ -396,14 +325,78 @@
             "type": "n8n-nodes-base.stickyNote",
             "typeVersion": 1,
             "position": [
-                -368,
-                -80
+                -720,
+                -320
             ],
-            "id": "6f737f92-319c-47b3-b1c2-e9441671e99b",
+            "id": "ef2b684c-a8e6-41d7-9d48-11cfb6de3365",
             "name": "Sticky Note1"
+        },
+        {
+            "parameters": {
+                "jsCode": "// WICHTIG: Verarbeite GitHub Node Response (n8n GitHub Node gibt Array zurück!)\n// Best Practices: Robust, sauber, eindeutige Logik mit Error-Handling\n// Gemäß n8n GitHub Node Dokumentation: Release > Get Many gibt Array zurück (auch bei Limit: 1)\n\n// 1. Lese GitHub Node Response\n// WICHTIG: GitHub Node gibt Array zurück (auch wenn nur 1 Release)\n// n8n GitHub Node gibt Releases als Array in $input.item.json zurück\nlet releases = $input.item.json;\n\n// Prüfe ob releases ein Array ist (GitHub Node gibt Array zurück)\nif (!Array.isArray(releases)) {\n  // Fallback: Versuche verschiedene Datenstrukturen\n  releases = releases.json || releases.data || (releases.items ? releases.items : [releases]);\n}\n\n// Lese currentVersion aus Query-Parametern (aus Webhook)\nconst currentVersion = $input.item.json.query?.currentVersion || $input.item.json.currentVersion || \"1.0.0\";\n\n// 2. Prüfe auf GitHub API Fehler (keine Releases, etc.)\n// WICHTIG: GitHub Node gibt leeres Array zurück, wenn keine Releases gefunden\nconst hasError = !Array.isArray(releases) || releases.length === 0 || !releases[0] || !releases[0].tag_name;\n\nif (hasError) {\n  // GitHub API Fehler oder kein Release gefunden\n  // Gibt Default-Response zurück: latestVersion = currentVersion, available = false\n  return {\n    json: {\n      ...$input.item.json,\n      latestVersion: currentVersion,\n      downloadUrl: null,\n      changelog: null,\n      currentVersion: currentVersion,\n      githubTag: null,\n      githubPublishedAt: null,\n      githubError: \"No release found\",\n      hasError: true\n    }\n  };\n}\n\n// 3. Extrahiere Latest Release (erstes Element des Arrays - GitHub sortiert nach published_at DESC)\n// WICHTIG: GitHub Node gibt Releases sortiert zurück (neueste zuerst)\nconst githubResponse = releases[0];\n\n// 4. Extrahiere Latest Version aus GitHub Tag\n// GitHub Tag Format: \"v1.1.0\" → \"1.1.0\"\nlet latestVersion = null;\nif (githubResponse.tag_name) {\n  latestVersion = githubResponse.tag_name.replace(/^v/, \"\"); // Remove \"v\" prefix\n}\n\n// 5. Finde .zip Asset für Download URL\n// WICHTIG: Shopware benötigt direkt zugängliche .zip URL (GitHub Releases)\n// Format: https://github.com/owner/repo/releases/download/tag/plugin-name.zip\nlet downloadUrl = null;\nif (githubResponse.assets && Array.isArray(githubResponse.assets)) {\n  // Suche nach .zip Asset (priorisiere hero-blocks-*.zip)\n  const zipAsset = githubResponse.assets.find(asset => {\n    const name = asset.name || \"\";\n    return name.endsWith('.zip') && (name.includes('hero-blocks') || name.includes('HeroBlocks'));\n  }) || githubResponse.assets.find(asset => \n    asset.name && asset.name.endsWith('.zip')\n  );\n  if (zipAsset && zipAsset.browser_download_url) {\n    downloadUrl = zipAsset.browser_download_url;\n  }\n}\n\n// Fallback: Generiere Download URL aus Release Tag (falls kein Asset vorhanden)\nif (!downloadUrl && githubResponse.tag_name && githubResponse.html_url) {\n  // GitHub Releases: /releases/tag/v1.0.0 → /releases/download/v1.0.0/hero-blocks.zip\n  const tagName = githubResponse.tag_name.replace(/^v/, \"\"); // Remove \"v\" prefix\n  downloadUrl = githubResponse.html_url.replace(/\\/tag\\//, \"/download/\") + \"/hero-blocks-\" + tagName + \".zip\";\n}\n\n// 6. Extrahiere Changelog aus Release Body\nconst changelog = githubResponse.body || githubResponse.body_text || null;\n\n// 7. Extrahiere Release-ID (dynamisch für Shopware Update-Check)\n// WICHTIG: Release-ID wird für Shopware Update-Tracking benötigt\n// GitHub API gibt Release-ID als numerischen Wert zurück (z.B. 12345678)\nconst releaseId = githubResponse.id || null;\nconst releaseUrl = githubResponse.html_url || null;\n\n// 8. Speichere GitHub Response Daten für Version-Vergleich\n// WICHTIG: Setze hasError Flag für explizites Error-Tracking\n// WICHTIG: Release-ID wird dynamisch extrahiert (nicht hardcoded)\nreturn {\n  json: {\n    ...$input.item.json,\n    latestVersion: latestVersion || currentVersion,\n    downloadUrl: downloadUrl || null,\n    changelog: changelog || null,\n    currentVersion: currentVersion,\n    githubTag: githubResponse.tag_name || null,\n    githubReleaseId: releaseId, // ✅ Dynamische Release-ID\n    githubReleaseUrl: releaseUrl,\n    githubPublishedAt: githubResponse.published_at || null,\n    hasError: false\n  }\n};"
+            },
+            "id": "dbb671fb-e4c4-4256-b7d5-76942e2d8818",
+            "name": "Code (Process GitHub Response)",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                -432,
+                -192
+            ]
+        },
+        {
+            "parameters": {
+                "resource": "release",
+                "operation": "getMany",
+                "owner": "chooomedia",
+                "repository": "hero-blocks",
+                "returnAll": false,
+                "limit": 1,
+                "options": {
+                    "perPage": 1
+                }
+            },
+            "type": "n8n-nodes-base.github",
+            "typeVersion": 1.1,
+            "position": [
+                -656,
+                -192
+            ],
+            "id": "04c9d7d7-e4dd-4263-8c74-4a2b5a78ec7a",
+            "name": "GitHub (Get Latest Release)",
+            "continueOnFail": true,
+            "onError": "continueErrorOutput",
+            "credentials": {
+                "githubApi": {
+                    "id": "lrNvOKmSqXVhTpHk",
+                    "name": "GitHub account"
+                }
+            }
         }
     ],
     "connections": {
+        "Code (Format Slack Message - Update)": {
+            "main": [
+                [
+                    {
+                        "node": "IF Update Available?",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Code (Format Slack Message - License)": {
+            "main": [
+                [
+                    {
+                        "node": "IF License Valid?",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
         "Webhook": {
             "main": [
                 [
@@ -437,7 +430,7 @@
                 ],
                 [
                     {
-                        "node": "HTTP Request (Get Latest Release)",
+                        "node": "GitHub (Get Latest Release)",
                         "type": "main",
                         "index": 0
                     }
@@ -448,7 +441,7 @@
             "main": [
                 [
                     {
-                        "node": "IF License Valid?",
+                        "node": "Code (Format Slack Message - License)",
                         "type": "main",
                         "index": 0
                     }
@@ -473,22 +466,22 @@
                 ]
             ]
         },
-        "Respond (License Invalid)": {
+        "Respond (License Valid)": {
             "main": [
                 [
                     {
-                        "node": "Send Slack Message (License)",
+                        "node": "Send Slack Message (Update)",
                         "type": "main",
                         "index": 0
                     }
                 ]
             ]
         },
-        "Code (Process GitHub Response)": {
+        "Respond (License Invalid)": {
             "main": [
                 [
                     {
-                        "node": "Code (Compare Versions)",
+                        "node": "Send Slack Message (Update)",
                         "type": "main",
                         "index": 0
                     }
@@ -499,18 +492,7 @@
             "main": [
                 [
                     {
-                        "node": "Code (Format Slack Message)",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Code (Format Slack Message)": {
-            "main": [
-                [
-                    {
-                        "node": "IF Update Available?",
+                        "node": "Code (Format Slack Message - Update)",
                         "type": "main",
                         "index": 0
                     }
@@ -557,7 +539,18 @@
                 ]
             ]
         },
-        "HTTP Request (Get Latest Release)": {
+        "Code (Process GitHub Response)": {
+            "main": [
+                [
+                    {
+                        "node": "Code (Compare Versions)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "GitHub (Get Latest Release)": {
             "main": [
                 [
                     {
@@ -565,12 +558,10 @@
                         "type": "main",
                         "index": 0
                     }
-                ]
-            ],
-            "error": [
+                ],
                 [
                     {
-                        "node": "Code (Format Slack Message)",
+                        "node": "Code (Process GitHub Response)",
                         "type": "main",
                         "index": 0
                     }
@@ -583,7 +574,7 @@
             {
                 "headers": {
                     "host": "n8n.chooomedia.com",
-                    "user-agent": "Shopware-HeroBlocks-Plugin/1.0.0",
+                    "user-agent": "Shopware-HeroSlider-Plugin/1.0.0",
                     "accept": "application/json",
                     "accept-encoding": "gzip",
                     "x-forwarded-for": "157.143.70.83",
@@ -592,11 +583,12 @@
                 },
                 "params": {},
                 "query": {
-                    "checkType": "update",
+                    "checkType": "license",
                     "plugin": "hero-blocks",
-                    "currentVersion": "1.0.0",
-                    "shopwareVersion": "v6.7.2.2",
-                    "timestamp": "2025-11-15T16:31:32+00:00"
+                    "timestamp": "2025-11-15T16:51:21+00:00",
+                    "version": "1.0.0",
+                    "shopwareVersion": "6.7.0",
+                    "checkDate": "2025-11-15T16:51:21+00:00"
                 },
                 "webhookUrl": "https://n8n.chooomedia.com/webhook/license/hero-blocks",
                 "executionMode": "production"
