@@ -156,7 +156,7 @@
             
             &--new {
                 color: var(--color-success-500);
-                font-weight: $font-weight-semibold;
+                font-weight: $font-weight-semi-bold;
             }
         }
     }
@@ -197,7 +197,7 @@
             
             &-title {
                 font-size: $font-size-s;
-                font-weight: $font-weight-semibold;
+                font-weight: $font-weight-semi-bold;
                 color: var(--color-text-primary-default);
             }
             
@@ -223,7 +223,7 @@
             // Markdown Styling
             h1, h2, h3 {
                 margin: 16px 0 8px 0;
-                font-weight: $font-weight-semibold;
+                font-weight: $font-weight-semi-bold;
                 color: var(--color-text-primary-default);
             }
             
@@ -283,7 +283,7 @@
             }
             
             strong {
-                font-weight: $font-weight-semibold;
+                font-weight: $font-weight-semi-bold;
             }
             
             em {
