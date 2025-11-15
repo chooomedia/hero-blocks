@@ -46,7 +46,12 @@
             "checkFailed": "Update-Prüfung fehlgeschlagen",
             "checking": "Prüfe auf Updates...",
             "licenseExpired": "Lizenz abgelaufen",
-            "licenseExpiredMessage": "⚠️ Ihre Lizenz ist abgelaufen. Updates können nicht mehr geladen werden. Bitte verlängern Sie Ihre Lizenz."
+            "licenseExpiredMessage": "⚠️ Ihre Lizenz ist abgelaufen. Updates können nicht mehr geladen werden. Bitte verlängern Sie Ihre Lizenz.",
+            "downloadUpdate": "Update herunterladen & installieren",
+            "downloading": "Lade Update herunter und installiere...",
+            "downloadSuccess": "Update erfolgreich installiert",
+            "downloadSuccessMessage": "Das Plugin-Update wurde erfolgreich heruntergeladen und installiert. Bitte aktualisieren Sie die Seite, um die Änderungen zu sehen.",
+            "downloadFailed": "Update-Download fehlgeschlagen"
         }
     }
 }

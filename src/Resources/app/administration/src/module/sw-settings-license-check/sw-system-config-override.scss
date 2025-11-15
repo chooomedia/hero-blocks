@@ -125,14 +125,22 @@
         margin-bottom: 0;
     }
 
-    .hero-blocks-license-check-button {
+    .sw-system-config__hero-blocks-update-buttons {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .hero-blocks-license-check-button,
+    .hero-blocks-update-check-button,
+    .hero-blocks-update-download-button {
         // Styling wie Save-Button (sw-extension-config__save-action)
         // mt-button--default ist bereits gesetzt, Button hat richtige Höhe
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
-        align-self: flex-end;
         margin-top: 8px; // Zusätzlicher Abstand für bessere Positionierung
         
         .mt-icon,

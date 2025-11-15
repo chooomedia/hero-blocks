@@ -46,7 +46,12 @@
             "checkFailed": "Update check failed",
             "checking": "Checking for updates...",
             "licenseExpired": "License expired",
-            "licenseExpiredMessage": "⚠️ Your license has expired. Updates can no longer be loaded. Please renew your license."
+            "licenseExpiredMessage": "⚠️ Your license has expired. Updates can no longer be loaded. Please renew your license.",
+            "downloadUpdate": "Download & Install Update",
+            "downloading": "Downloading and installing...",
+            "downloadSuccess": "Update installed successfully",
+            "downloadSuccessMessage": "The plugin update has been downloaded and installed successfully. Please refresh the page to see the changes.",
+            "downloadFailed": "Update download failed"
         }
     }
 }

@@ -2,7 +2,7 @@
     "name": "horex/hero-blocks",
     "description": "Hero Blocks CMS Blocks – konfigurierbare Hero-Blöcke für Shopware Erlebniswelten",
     "type": "shopware-platform-plugin",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "license": "proprietary",
     "authors": [
         {

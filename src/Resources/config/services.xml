@@ -42,6 +42,22 @@
                 <argument type="service" id="service_container"/>
             </call>
         </service>
+
+        <service id="HeroBlocks\Controller\Admin\UpdateDownloadController" public="true">
+            <argument type="service" id="HeroBlocks\Service\UpdateCheckService"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Shopware\Core\Framework\Plugin\PluginManagementService"/>
+            <argument type="service" id="Shopware\Core\Framework\Plugin\PluginService"/>
+            <argument type="service" id="Shopware\Core\Framework\Plugin\PluginLifecycleService"/>
+            <argument type="service" id="plugin.repository"/>
+            <argument type="service" id="http_client"/>
+            <argument type="service" id="logger"/>
+            <tag name="controller.service_arguments"/>
+            <tag name="container.service_subscriber"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
         
         <service id="HeroBlocks\Content\Cms\TypeDataResolver\HeroSliderTypeDataResolver">
             <argument type="service" id="Shopware\Storefront\Page\Cms\DefaultMediaResolver"/>

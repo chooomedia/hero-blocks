@@ -335,23 +335,45 @@
                     >
                         {{ $tc('sw-settings-license-check.update.licenseExpiredMessage') }}
                     </mt-banner>
-                    <mt-button
-                        variant="primary"
-                        size="default"
-                        :is-loading="isUpdateChecking"
-                        :disabled="isUpdateChecking || isLicenseExpired"
-                        @click="checkHeroBlocksUpdates"
-                        class="hero-blocks-update-check-button"
-                    >
-                        <template v-if="!isUpdateChecking">
-                            <mt-icon name="regular-sync" size="16"></mt-icon>
-                            <span>{{ $tc('sw-settings-license-check.update.checkForUpdates') }}</span>
-                        </template>
-                        <template v-else>
-                            <sw-loader size="16px"></sw-loader>
-                            <span>{{ $tc('sw-settings-license-check.update.checking') }}</span>
-                        </template>
-                    </mt-button>
+                    <div class="sw-system-config__hero-blocks-update-buttons">
+                        <mt-button
+                            variant="primary"
+                            size="default"
+                            :is-loading="isUpdateChecking"
+                            :disabled="isUpdateChecking || isLicenseExpired"
+                            @click="checkHeroBlocksUpdates"
+                            class="hero-blocks-update-check-button"
+                        >
+                            <template v-if="!isUpdateChecking">
+                                <mt-icon name="regular-sync" size="16"></mt-icon>
+                                <span>{{ $tc('sw-settings-license-check.update.checkForUpdates') }}</span>
+                            </template>
+                            <template v-else>
+                                <sw-loader size="16px"></sw-loader>
+                                <span>{{ $tc('sw-settings-license-check.update.checking') }}</span>
+                            </template>
+                        </mt-button>
+                        
+                        {# WICHTIG: Download-Button nur wenn Update verfügbar und downloadUrl vorhanden #}
+                        <mt-button
+                            v-if="updateAvailable && updateDownloadUrl && !isLicenseExpired"
+                            variant="primary"
+                            size="default"
+                            :is-loading="isUpdateDownloading"
+                            :disabled="isUpdateDownloading || isUpdateChecking"
+                            @click="downloadHeroBlocksUpdate"
+                            class="hero-blocks-update-download-button"
+                        >
+                            <template v-if="!isUpdateDownloading">
+                                <mt-icon name="regular-download" size="16"></mt-icon>
+                                <span>{{ $tc('sw-settings-license-check.update.downloadUpdate') }}</span>
+                            </template>
+                            <template v-else>
+                                <sw-loader size="16px"></sw-loader>
+                                <span>{{ $tc('sw-settings-license-check.update.downloading') }}</span>
+                            </template>
+                        </mt-button>
+                    </div>
                 </div>
             
             <slot name="card-element-last"></slot>

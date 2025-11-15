@@ -15,6 +15,7 @@ Shopware.Component.override("sw-system-config", {
     return {
       isLicenseChecking: false,
       isUpdateChecking: false,
+      isUpdateDownloading: false,
     };
   },
 
@@ -93,6 +94,33 @@ Shopware.Component.override("sw-system-config", {
       return (
         config["HeroBlocks.config.enableMegaMenu"] === true ||
         config["enableMegaMenu"] === true
+      );
+    },
+
+    /**
+     * Prüft ob Update verfügbar ist
+     */
+    updateAvailable() {
+      if (!this.isHeroBlocksConfig()) return false;
+      const config =
+        this.actualConfigData?.[this.currentSalesChannelId] || {};
+      return (
+        config["HeroBlocks.config.updateAvailable"] === true ||
+        config["updateAvailable"] === true
+      );
+    },
+
+    /**
+     * Gibt downloadUrl zurück (falls vorhanden)
+     */
+    updateDownloadUrl() {
+      if (!this.isHeroBlocksConfig()) return null;
+      const config =
+        this.actualConfigData?.[this.currentSalesChannelId] || {};
+      return (
+        config["HeroBlocks.config.updateDownloadUrl"] ||
+        config["updateDownloadUrl"] ||
+        null
       );
     },
   },
@@ -549,6 +577,134 @@ Shopware.Component.override("sw-system-config", {
         });
       } finally {
         this.isUpdateChecking = false;
+      }
+    },
+
+    // Download Update - analog zu Update Check
+    async downloadHeroBlocksUpdate() {
+      this.isUpdateDownloading = true;
+
+      try {
+        const httpClient = this.systemConfigApiService.httpClient;
+        if (!httpClient) {
+          throw new Error("HTTP Client nicht verfügbar");
+        }
+
+        console.log("🚀 Starting update download...");
+        const startTime = Date.now();
+
+        // Rufe Update Download API auf
+        let response;
+        try {
+          console.log("📡 Calling update download API...");
+          response = await httpClient.post(
+            "/_action/hero-blocks/update-download",
+            {},
+            {
+              headers: this.systemConfigApiService.getBasicHeaders(),
+            }
+          );
+
+          const duration = Date.now() - startTime;
+          console.log(`✅ API call completed in ${duration}ms`, response.data);
+        } catch (httpError) {
+          const duration = Date.now() - startTime;
+          console.error("❌ Update download HTTP error:", {
+            error: httpError,
+            message: httpError.message,
+            response: httpError.response?.data,
+            status: httpError.response?.status,
+            durationMs: duration,
+          });
+
+          throw new Error(
+            httpError.response?.data?.errors?.[0]?.detail ||
+              httpError.response?.data?.error ||
+              httpError.message ||
+              "Network error during update download"
+          );
+        }
+
+        if (!response || !response.data) {
+          console.error("❌ Empty response from update download API", response);
+          throw new Error("Empty response from update download API");
+        }
+
+        console.log("📦 Response data:", response.data);
+
+        // Prüfe ob Response-Format korrekt ist
+        if (response.data.success === true) {
+          console.log("✅ Update download successful");
+
+          // Zeige Success Notification
+          this.createNotificationSuccess({
+            title: this.$tc("sw-settings-license-check.update.downloadSuccess"),
+            message: this.$tc(
+              "sw-settings-license-check.update.downloadSuccessMessage"
+            ),
+            autoClose: false,
+          });
+
+          // WICHTIG: Reload Config Data um Status zu aktualisieren
+          if (
+            this.actualConfigData &&
+            this.actualConfigData.hasOwnProperty(this.currentSalesChannelId)
+          ) {
+            delete this.actualConfigData[this.currentSalesChannelId];
+          }
+
+          // Laden Daten neu
+          await this.loadCurrentSalesChannelConfig();
+          await this.$nextTick();
+
+          // Nach 1 Sekunde nochmal laden um sicherzustellen
+          setTimeout(async () => {
+            if (
+              this.actualConfigData &&
+              this.actualConfigData.hasOwnProperty(this.currentSalesChannelId)
+            ) {
+              delete this.actualConfigData[this.currentSalesChannelId];
+            }
+            await this.loadCurrentSalesChannelConfig();
+          }, 1000);
+        } else {
+          console.error(
+            "❌ Update download failed - invalid response format:",
+            response.data
+          );
+          const errorMessage =
+            response.data.errors?.[0]?.detail ||
+            response.data.error ||
+            "Unknown error";
+
+          throw new Error(errorMessage);
+        }
+      } catch (error) {
+        console.error("❌ Update download error (final catch):", {
+          error: error,
+          message: error.message,
+          stack: error.stack,
+          response: error.response?.data,
+        });
+
+        // Zeige User-freundliche Fehlermeldung
+        let errorMessage = this.$tc(
+          "sw-settings-license-check.update.downloadFailed"
+        );
+        if (error.response?.data?.errors?.[0]?.detail) {
+          errorMessage = error.response.data.errors[0].detail;
+        } else if (error.response?.data?.error) {
+          errorMessage = error.response.data.error;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+
+        this.createNotificationError({
+          title: this.$tc("sw-settings-license-check.update.downloadFailed"),
+          message: errorMessage,
+        });
+      } finally {
+        this.isUpdateDownloading = false;
       }
     },
   },
