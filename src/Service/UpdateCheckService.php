@@ -154,7 +154,13 @@ class UpdateCheckService
             $this->systemConfigService->set('HeroBlocks.config.currentVersion', $currentVersion); // WICHTIG: Für UI-Anzeige
             $this->systemConfigService->set('HeroBlocks.config.latestVersion', $latestVersion ?? $currentVersion);
             $this->systemConfigService->set('HeroBlocks.config.updateDownloadUrl', $responseData['downloadUrl'] ?? null);
-            $this->systemConfigService->set('HeroBlocks.config.updateChangelog', $responseData['changelog'] ?? null);
+            
+            // WICHTIG: Changelog URL-decodieren (GitHub sendet URL-encoded: %0A = Newline)
+            $changelog = $responseData['changelog'] ?? null;
+            if ($changelog) {
+                $changelog = urldecode($changelog);
+            }
+            $this->systemConfigService->set('HeroBlocks.config.updateChangelog', $changelog);
             $this->systemConfigService->set('HeroBlocks.config.updateCheckedAt', (new \DateTime())->format('c'));
 
             return [
