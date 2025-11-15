@@ -335,12 +335,58 @@
                     >
                         {{ $tc('sw-settings-license-check.update.licenseExpiredMessage') }}
                     </mt-banner>
+                    
+                    {# Status-Informationen (Version, letzter Check) - Best Practice UX #}
+                    <div v-if="currentVersion || latestVersion || lastCheckedAt" class="sw-system-config__update-status-info">
+                        <div v-if="currentVersion" class="sw-system-config__update-status-item">
+                            <span class="sw-system-config__update-status-label">{{ $tc('sw-settings-license-check.update.currentVersion') }}:</span>
+                            <span class="sw-system-config__update-status-value">{{ currentVersion }}</span>
+                        </div>
+                        <div v-if="latestVersion && latestVersion !== currentVersion" class="sw-system-config__update-status-item">
+                            <span class="sw-system-config__update-status-label">{{ $tc('sw-settings-license-check.update.latestVersion') }}:</span>
+                            <span class="sw-system-config__update-status-value sw-system-config__update-status-value--new">{{ latestVersion }}</span>
+                        </div>
+                        <div v-if="lastCheckedAt" class="sw-system-config__update-status-item">
+                            <span class="sw-system-config__update-status-label">{{ $tc('sw-settings-license-check.update.lastChecked') }}:</span>
+                            <span class="sw-system-config__update-status-value">{{ lastCheckedAt }}</span>
+                        </div>
+                    </div>
+                    
+                    {# Changelog - Collapsible (nur wenn vorhanden) - Modern UX #}
+                    <div v-if="changelog" class="sw-system-config__update-changelog">
+                        <sw-collapse :expand-on-loading="false">
+                            <template #header="{ expanded }">
+                                <div class="sw-system-config__update-changelog-header">
+                                    <div class="sw-system-config__update-changelog-header-left">
+                                        <mt-icon name="regular-document-text" size="20"></mt-icon>
+                                        <span class="sw-system-config__update-changelog-title">{{ $tc('sw-settings-license-check.update.changelog') }}</span>
+                                    </div>
+                                    <mt-icon 
+                                        :name="expanded ? 'regular-chevron-up-xs' : 'regular-chevron-down-xs'" 
+                                        size="16"
+                                        class="sw-system-config__update-changelog-chevron"
+                                    />
+                                </div>
+                            </template>
+                            <template #content="{ expanded }">
+                                <div v-if="expanded" class="sw-system-config__update-changelog-content">
+                                    <div 
+                                        class="sw-system-config__update-changelog-text"
+                                        v-html="$sanitize(changelogHtml || changelog)"
+                                    ></div>
+                                </div>
+                            </template>
+                        </sw-collapse>
+                    </div>
+                    
+                    {# Button-Gruppe: Check, Test, Test Full, Download - Best Practice UX #}
                     <div class="sw-system-config__hero-blocks-update-buttons">
+                        {# Update Check Button #}
                         <mt-button
                             variant="primary"
                             size="default"
                             :is-loading="isUpdateChecking"
-                            :disabled="isUpdateChecking || isLicenseExpired"
+                            :disabled="isUpdateChecking || isLicenseExpired || isUpdateDownloading || isUpdateTesting || isUpdateTestingFull"
                             @click="checkHeroBlocksUpdates"
                             class="hero-blocks-update-check-button"
                         >
@@ -354,13 +400,55 @@
                             </template>
                         </mt-button>
                         
-                        {# WICHTIG: Download-Button nur wenn Update verfügbar und downloadUrl vorhanden #}
+                        {# Test Download Button - Nur wenn Update verfügbar und downloadUrl vorhanden #}
+                        <mt-button
+                            v-if="updateAvailable && updateDownloadUrl && !isLicenseExpired"
+                            variant="ghost"
+                            size="default"
+                            :is-loading="isUpdateTesting"
+                            :disabled="isUpdateTesting || isUpdateChecking || isUpdateDownloading || isUpdateTestingFull"
+                            @click="testUpdateDownload"
+                            class="hero-blocks-update-test-button"
+                            :title="$tc('sw-settings-license-check.update.testDownloadTooltip')"
+                        >
+                            <template v-if="!isUpdateTesting">
+                                <mt-icon name="regular-check-circle" size="16"></mt-icon>
+                                <span>{{ $tc('sw-settings-license-check.update.testDownload') }}</span>
+                            </template>
+                            <template v-else>
+                                <sw-loader size="16px"></sw-loader>
+                                <span>{{ $tc('sw-settings-license-check.update.testing') }}</span>
+                            </template>
+                        </mt-button>
+                        
+                        {# Test Full Process Button - Nur wenn Update verfügbar und downloadUrl vorhanden #}
+                        <mt-button
+                            v-if="updateAvailable && updateDownloadUrl && !isLicenseExpired"
+                            variant="ghost"
+                            size="default"
+                            :is-loading="isUpdateTestingFull"
+                            :disabled="isUpdateTestingFull || isUpdateChecking || isUpdateDownloading || isUpdateTesting"
+                            @click="testFullUpdateProcess"
+                            class="hero-blocks-update-test-full-button"
+                            :title="$tc('sw-settings-license-check.update.testFullProcessTooltip')"
+                        >
+                            <template v-if="!isUpdateTestingFull">
+                                <mt-icon name="regular-play-circle" size="16"></mt-icon>
+                                <span>{{ $tc('sw-settings-license-check.update.testFullProcess') }}</span>
+                            </template>
+                            <template v-else>
+                                <sw-loader size="16px"></sw-loader>
+                                <span>{{ $tc('sw-settings-license-check.update.testingFullProcess') }}</span>
+                            </template>
+                        </mt-button>
+                        
+                        {# Download & Install Button - Nur wenn Update verfügbar und downloadUrl vorhanden #}
                         <mt-button
                             v-if="updateAvailable && updateDownloadUrl && !isLicenseExpired"
                             variant="primary"
                             size="default"
                             :is-loading="isUpdateDownloading"
-                            :disabled="isUpdateDownloading || isUpdateChecking"
+                            :disabled="isUpdateDownloading || isUpdateChecking || isUpdateTesting || isUpdateTestingFull"
                             @click="downloadHeroBlocksUpdate"
                             class="hero-blocks-update-download-button"
                         >

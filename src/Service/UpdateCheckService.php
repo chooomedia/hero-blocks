@@ -151,6 +151,7 @@ class UpdateCheckService
             // Speichere Update-Info in System Config
             // WICHTIG: Alle Felder immer speichern (auch wenn available=false), damit Admin UI korrekt angezeigt wird
             $this->systemConfigService->set('HeroBlocks.config.updateAvailable', $available);
+            $this->systemConfigService->set('HeroBlocks.config.currentVersion', $currentVersion); // WICHTIG: Für UI-Anzeige
             $this->systemConfigService->set('HeroBlocks.config.latestVersion', $latestVersion ?? $currentVersion);
             $this->systemConfigService->set('HeroBlocks.config.updateDownloadUrl', $responseData['downloadUrl'] ?? null);
             $this->systemConfigService->set('HeroBlocks.config.updateChangelog', $responseData['changelog'] ?? null);

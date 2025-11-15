@@ -16,6 +16,9 @@ Shopware.Component.override("sw-system-config", {
       isLicenseChecking: false,
       isUpdateChecking: false,
       isUpdateDownloading: false,
+      isUpdateTesting: false, // WICHTIG: Test-Modus für Download (ohne Installation)
+      isUpdateTestingFull: false, // WICHTIG: Test-Modus für kompletten Update-Prozess (Check → Download → Install)
+      showChangelog: false, // WICHTIG: Changelog Collapsible State
     };
   },
 
@@ -122,6 +125,114 @@ Shopware.Component.override("sw-system-config", {
         config["updateDownloadUrl"] ||
         null
       );
+    },
+
+    /**
+     * Gibt aktuelle Plugin-Version zurück
+     */
+    currentVersion() {
+      if (!this.isHeroBlocksConfig()) return null;
+      const config =
+        this.actualConfigData?.[this.currentSalesChannelId] || {};
+      return (
+        config["HeroBlocks.config.currentVersion"] ||
+        config["currentVersion"] ||
+        "1.0.0"
+      );
+    },
+
+    /**
+     * Gibt neueste verfügbare Version zurück
+     */
+    latestVersion() {
+      if (!this.isHeroBlocksConfig()) return null;
+      const config =
+        this.actualConfigData?.[this.currentSalesChannelId] || {};
+      return (
+        config["HeroBlocks.config.latestVersion"] ||
+        config["latestVersion"] ||
+        this.currentVersion
+      );
+    },
+
+    /**
+     * Gibt letztes Check-Datum zurück
+     */
+    lastCheckedAt() {
+      if (!this.isHeroBlocksConfig()) return null;
+      const config =
+        this.actualConfigData?.[this.currentSalesChannelId] || {};
+      const checkedAt =
+        config["HeroBlocks.config.updateCheckedAt"] ||
+        config["updateCheckedAt"] ||
+        null;
+      if (!checkedAt) return null;
+      try {
+        return new Date(checkedAt).toLocaleString("de-DE", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      } catch (e) {
+        return null;
+      }
+    },
+
+    /**
+     * Gibt Changelog zurück (falls vorhanden)
+     */
+    changelog() {
+      if (!this.isHeroBlocksConfig()) return null;
+      const config =
+        this.actualConfigData?.[this.currentSalesChannelId] || {};
+      return (
+        config["HeroBlocks.config.updateChangelog"] ||
+        config["updateChangelog"] ||
+        null
+      );
+    },
+
+    /**
+     * Konvertiert Markdown zu HTML (einfache Konvertierung)
+     * WICHTIG: Nur für Changelog-Anzeige, nicht für User-Input
+     */
+    changelogHtml() {
+      if (!this.changelog) return null;
+      let html = String(this.changelog);
+
+      // Markdown zu HTML (einfache Konvertierung)
+      // Headers
+      html = html.replace(/^### (.*$)/gim, "<h3>$1</h3>");
+      html = html.replace(/^## (.*$)/gim, "<h2>$1</h2>");
+      html = html.replace(/^# (.*$)/gim, "<h1>$1</h1>");
+
+      // Bold
+      html = html.replace(/\*\*(.*?)\*\*/gim, "<strong>$1</strong>");
+
+      // Italic
+      html = html.replace(/\*(.*?)\*/gim, "<em>$1</em>");
+
+      // Links
+      html = html.replace(
+        /\[([^\]]+)\]\(([^)]+)\)/gim,
+        '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
+      );
+
+      // Code blocks
+      html = html.replace(/```([^`]+)```/gim, '<pre><code>$1</code></pre>');
+      html = html.replace(/`([^`]+)`/gim, "<code>$1</code>");
+
+      // Lists
+      html = html.replace(/^\* (.*$)/gim, "<li>$1</li>");
+      html = html.replace(/^- (.*$)/gim, "<li>$1</li>");
+      html = html.replace(/(<li>.*<\/li>)/s, "<ul>$1</ul>");
+
+      // Line breaks
+      html = html.replace(/\n/gim, "<br>");
+
+      return html;
     },
   },
 
@@ -705,6 +816,165 @@ Shopware.Component.override("sw-system-config", {
         });
       } finally {
         this.isUpdateDownloading = false;
+      }
+    },
+
+    /**
+     * Test Download - Prüft ob Download-URL erreichbar ist (ohne Installation)
+     * WICHTIG: Best Practice für Shopware Plugins - Test-Modus für Entwickler
+     */
+    async testUpdateDownload() {
+      this.isUpdateTesting = true;
+
+      try {
+        const httpClient = this.systemConfigApiService.httpClient;
+        if (!httpClient) {
+          throw new Error("HTTP Client nicht verfügbar");
+        }
+
+        const downloadUrl = this.updateDownloadUrl;
+        if (!downloadUrl) {
+          throw new Error("Keine Download-URL verfügbar. Bitte zuerst auf Updates prüfen.");
+        }
+
+        console.log("🧪 Testing update download URL...", downloadUrl);
+
+        // WICHTIG: Teste nur URL-Erreichbarkeit (HEAD Request)
+        // Keine Installation, nur Connectivity-Test
+        const startTime = Date.now();
+        let response;
+        try {
+          // HEAD Request für schnellen Test (ohne Download)
+          response = await httpClient.head(downloadUrl, {
+            headers: {
+              "User-Agent": "Shopware-HeroBlocks-Plugin/1.0.0",
+              "Accept": "application/zip, application/octet-stream",
+            },
+            timeout: 10000, // 10 Sekunden Timeout
+          });
+
+          const duration = Date.now() - startTime;
+          console.log(`✅ Download URL test completed in ${duration}ms`, {
+            status: response.status,
+            headers: response.headers,
+          });
+
+          // Prüfe HTTP Status
+          if (response.status === 200 || response.status === 302) {
+            const contentLength = response.headers?.["content-length"] || "unbekannt";
+            const contentType = response.headers?.["content-type"] || "unbekannt";
+
+            this.createNotificationSuccess({
+              title: this.$tc("sw-settings-license-check.update.testSuccess"),
+              message: this.$tc(
+                "sw-settings-license-check.update.testSuccessMessage",
+                {
+                  url: downloadUrl,
+                  status: response.status,
+                  size: contentLength,
+                  type: contentType,
+                }
+              ),
+              autoClose: false,
+            });
+          } else {
+            throw new Error(
+              `Unerwarteter HTTP Status: ${response.status}`
+            );
+          }
+        } catch (httpError) {
+          const duration = Date.now() - startTime;
+          console.error("❌ Download URL test failed:", {
+            error: httpError,
+            message: httpError.message,
+            response: httpError.response?.data,
+            status: httpError.response?.status,
+            durationMs: duration,
+          });
+
+          throw new Error(
+            httpError.response?.status
+              ? `Download-URL nicht erreichbar (HTTP ${httpError.response.status})`
+              : httpError.message || "Download-URL Test fehlgeschlagen"
+          );
+        }
+      } catch (error) {
+        console.error("❌ Update download test error:", {
+          error: error,
+          message: error.message,
+        });
+
+        this.createNotificationError({
+          title: this.$tc("sw-settings-license-check.update.testFailed"),
+          message: error.message || this.$tc("sw-settings-license-check.update.testFailedMessage"),
+        });
+      } finally {
+        this.isUpdateTesting = false;
+      }
+    },
+
+    /**
+     * Test Full Update Process - Kompletter Update-Prozess (Check → Download → Install)
+     * WICHTIG: Best Practice für Shopware Plugins - Test-Modus für Entwickler
+     */
+    async testFullUpdateProcess() {
+      this.isUpdateTestingFull = true;
+
+      try {
+        console.log("🧪 Testing full update process...");
+
+        // Step 1: Update Check
+        console.log("📡 Step 1: Update Check...");
+        await this.checkHeroBlocksUpdates();
+        await this.$nextTick();
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // Warte 1 Sekunde
+
+        // Prüfe ob Update verfügbar ist
+        if (!this.updateAvailable || !this.updateDownloadUrl) {
+          this.createNotificationWarning({
+            title: this.$tc("sw-settings-license-check.update.testFullProcessNoUpdate"),
+            message: this.$tc(
+              "sw-settings-license-check.update.testFullProcessNoUpdateMessage"
+            ),
+            autoClose: false,
+          });
+          return;
+        }
+
+        // Step 2: Test Download URL
+        console.log("📡 Step 2: Test Download URL...");
+        await this.testUpdateDownload();
+        await this.$nextTick();
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // Warte 1 Sekunde
+
+        // Step 3: Download & Install
+        console.log("📡 Step 3: Download & Install...");
+        await this.downloadHeroBlocksUpdate();
+
+        // Success Notification
+        this.createNotificationSuccess({
+          title: this.$tc("sw-settings-license-check.update.testFullProcessSuccess"),
+          message: this.$tc(
+            "sw-settings-license-check.update.testFullProcessSuccessMessage"
+          ),
+          autoClose: false,
+        });
+      } catch (error) {
+        console.error("❌ Full update process test error:", {
+          error: error,
+          message: error.message,
+        });
+
+        this.createNotificationError({
+          title: this.$tc("sw-settings-license-check.update.testFullProcessFailed"),
+          message:
+            error.message ||
+            this.$tc(
+              "sw-settings-license-check.update.testFullProcessFailedMessage"
+            ),
+        });
+      } finally {
+        this.isUpdateTestingFull = false;
       }
     },
   },

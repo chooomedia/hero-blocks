@@ -35,6 +35,7 @@
             "notAvailable": "No update available",
             "latestVersion": "Latest version",
             "currentVersion": "Current version",
+            "lastChecked": "Last checked",
             "downloadUrl": "Download URL",
             "changelog": "Changelog",
             "webhookUrl": "Update webhook URL (n8n)",
@@ -51,7 +52,23 @@
             "downloading": "Downloading and installing...",
             "downloadSuccess": "Update installed successfully",
             "downloadSuccessMessage": "The plugin update has been downloaded and installed successfully. Please refresh the page to see the changes.",
-            "downloadFailed": "Update download failed"
+            "downloadFailed": "Update download failed",
+            "testDownload": "Test Download",
+            "testDownloadTooltip": "Checks if download URL is reachable (without installation)",
+            "testing": "Testing download URL...",
+            "testSuccess": "Download URL test successful",
+            "testSuccessMessage": "Download URL is reachable. Status: {status}, Size: {size}, Type: {type}",
+            "testFailed": "Download URL test failed",
+            "testFailedMessage": "Download URL could not be reached. Please check the URL or try again later.",
+            "testFullProcess": "Test Full Process",
+            "testFullProcessTooltip": "Tests complete update process: Check → Download Test → Install",
+            "testingFullProcess": "Testing full process...",
+            "testFullProcessSuccess": "Full update process successful",
+            "testFullProcessSuccessMessage": "All steps of the update process were successfully tested: Check → Download Test → Install",
+            "testFullProcessFailed": "Update process test failed",
+            "testFullProcessFailedMessage": "The update process could not be fully tested. Please check the logs.",
+            "testFullProcessNoUpdate": "No update available",
+            "testFullProcessNoUpdateMessage": "No update is available. The full update process cannot be tested."
         }
     }
 }
