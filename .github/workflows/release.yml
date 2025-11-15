@@ -99,24 +99,18 @@ jobs:
             NOTES=$(cat RELEASE_NOTES.md)
           else
             echo "⚠️ RELEASE_NOTES.md nicht gefunden, erstelle Standard-Notes"
-            NOTES=$(cat <<EOF
-## Hero Blocks v${VERSION}
-
-### 🎉 Release v${VERSION}
-
-### Installation
-1. Download hero-blocks-${VERSION}.zip
-2. Shopware Admin → Settings → Extensions → Upload Plugin
-3. Install and activate plugin
-
-### Requirements
-- Shopware 6.7+
-- PHP 8.1+
-
-### Documentation
-- See README.md for detailed documentation
-EOF
-)
+            # Erstelle Notes ohne heredoc (vermeidet YAML-Syntax-Probleme)
+            NOTES="## Hero Blocks v${VERSION}"$'\n'$'\n'
+            NOTES="${NOTES}### 🎉 Release v${VERSION}"$'\n'$'\n'
+            NOTES="${NOTES}### Installation"$'\n'
+            NOTES="${NOTES}1. Download hero-blocks-${VERSION}.zip"$'\n'
+            NOTES="${NOTES}2. Shopware Admin → Settings → Extensions → Upload Plugin"$'\n'
+            NOTES="${NOTES}3. Install and activate plugin"$'\n'$'\n'
+            NOTES="${NOTES}### Requirements"$'\n'
+            NOTES="${NOTES}- Shopware 6.7+"$'\n'
+            NOTES="${NOTES}- PHP 8.1+"$'\n'$'\n'
+            NOTES="${NOTES}### Documentation"$'\n'
+            NOTES="${NOTES}- See README.md for detailed documentation"
           fi
           
           # Escape für GitHub Actions
