@@ -8,7 +8,7 @@ CMS Blocks Plugin für Shopware 6.7+ mit Hero Slider, Two Columns, Mega Menu und
 - ✅ **Hero Two Columns** - Image & Text Layout mit Parallax
 - ✅ **Hero Mega Menu** - Mega Menu Navigation Block
 - ✅ **License Check System** - n8n-basierte Lizenzprüfung
-- ✅ **Update Check System** - Automatische Updates via GitHub Releases
+- ✅ **Update Check System** - Automatische Updates via GitHub Releases mit dynamischer Release-ID
 - ✅ **Admin UI** - Vollständige Block-Konfiguration im Shopware Admin
 
 ## 🚀 Installation
@@ -36,6 +36,7 @@ docker exec horex-shopware php bin/console cache:clear
 - Plugin prüft automatisch auf neue Versionen via n8n Workflow
 - Updates werden im Shopware Admin angezeigt
 - Download und Installation direkt aus dem Admin möglich
+- **Dynamische Release-ID**: Release-ID wird automatisch aus GitHub extrahiert (nicht hardcoded)
 
 **Manueller Update-Check**:
 - Settings → Extensions → Hero Blocks → Config
@@ -62,6 +63,110 @@ cd /Users/chooom/dev/horex/HorexShopTheme/dockware/shopware/custom/plugins/HeroB
 
 **Tag-Format**: `v1.0.0` ✅ (muss mit `v` beginnen!)
 **Asset-Name**: `hero-blocks-1.0.0.zip` ✅ (ohne `v` im Dateinamen!)
+
+### GitHub Actions Workflow
+
+Der Workflow wird automatisch bei Tag-Push ausgelöst:
+- Erstellt automatisch GitHub Release
+- Generiert Release Notes
+- Lädt ZIP-Asset hoch
+- Markiert Release als "Latest"
+
+## 🧪 Testing
+
+### Automatisiertes Test-Skript
+
+```bash
+./test-webhook.sh
+```
+
+### Manuelle Tests
+
+**License Check:**
+```bash
+curl -X POST "https://n8n.chooomedia.com/webhook/license/hero-blocks?checkType=license&plugin=hero-blocks&version=1.0.0&shopwareVersion=6.7.0&timestamp=$(date -u +%Y-%m-%dT%H:%M:%S+00:00)" \
+  -H "Content-Type: application/json" \
+  -H "User-Agent: Shopware-HeroBlocks-Plugin/1.0.0" | jq '.'
+```
+
+**Update Check:**
+```bash
+curl -X POST "https://n8n.chooomedia.com/webhook/license/hero-blocks?checkType=update&plugin=hero-blocks&currentVersion=1.0.0&shopwareVersion=6.7.0&timestamp=$(date -u +%Y-%m-%dT%H:%M:%S+00:00)" \
+  -H "Content-Type: application/json" \
+  -H "User-Agent: Shopware-HeroBlocks-Plugin/1.0.0" | jq '.'
+```
+
+**Erwartete Response (Update verfügbar):**
+```json
+{
+  "available": true,
+  "currentVersion": "1.0.0",
+  "latestVersion": "1.0.1",
+  "downloadUrl": "https://github.com/chooomedia/hero-blocks/releases/download/v1.0.1/hero-blocks-1.0.1.zip",
+  "changelog": "...",
+  "releaseId": 12345678,
+  "releaseUrl": "https://github.com/chooomedia/hero-blocks/releases/tag/v1.0.1"
+}
+```
+
+## 🔧 n8n Workflow Setup
+
+### Workflow importieren
+
+1. Öffne n8n: https://n8n.chooomedia.com
+2. Gehe zu **Workflows** → **Import from File**
+3. Wähle: `src/Resources/n8n-workflows/hero-blocks-unified.json`
+4. Klicke auf **Import**
+
+### GitHub Credentials konfigurieren
+
+1. Öffne den **GitHub (Get Latest Release)** Node
+2. Klicke auf **Credential** → **Create New**
+3. Wähle **GitHub API** als Credential Type
+4. Füge deinen **Personal Access Token** hinzu
+5. Klicke auf **Save**
+
+**Wichtig:** GitHub Credentials sind erforderlich für:
+- ✅ Höhere Rate Limits (5000 statt 60 Requests/Stunde)
+- ✅ Besseres Error-Handling
+- ✅ Zugriff auf private Repositories (falls nötig)
+
+### Slack Credentials prüfen
+
+1. Öffne den **Send Slack Message (Update)** Node
+2. Prüfe ob Slack Credentials konfiguriert sind
+3. Falls nicht: Füge Slack OAuth2 Credentials hinzu
+
+### Workflow aktivieren
+
+1. Klicke auf **Active** Toggle (oben rechts)
+2. Workflow ist jetzt aktiv und empfängt Webhook-Requests
+
+## 🔄 Dynamische Release-ID
+
+Der n8n Workflow extrahiert **dynamisch** die Release-ID aus GitHub Releases:
+
+- ✅ **Keine Hardcoding**: Release-ID wird automatisch aus GitHub API extrahiert
+- ✅ **Automatische Aktualisierung**: Neues Release wird automatisch erkannt
+- ✅ **Shopware Integration**: Release-ID für Update-Tracking
+
+**GitHub Node Konfiguration:**
+```json
+{
+  "resource": "release",
+  "operation": "getMany",
+  "owner": "chooomedia",
+  "repository": "hero-blocks",
+  "returnAll": false,
+  "limit": 1
+}
+```
+
+**Response enthält:**
+- `releaseId`: Numerische GitHub Release-ID (z.B. `12345678`)
+- `releaseUrl`: Link zur GitHub Release-Seite
+- `latestVersion`: Version ohne `v` Prefix
+- `downloadUrl`: Download-URL für ZIP-Asset
 
 ## 📁 Struktur
 
@@ -96,17 +201,44 @@ docker exec horex-shopware php bin/console assets:install
 docker exec horex-shopware php bin/console cache:clear
 ```
 
-### Testing
+### JSON Validierung
 
 ```bash
-# Update-Check testen
-curl "https://n8n.chooomedia.com/webhook/hero-blocks?checkType=update&currentVersion=0.9.0&plugin=hero-blocks&shopwareVersion=6.7.0&timestamp=$(date -u +%Y-%m-%dT%H:%M:%S+00:00)"
+python3 -m json.tool src/Resources/n8n-workflows/hero-blocks-unified.json > /dev/null && echo "✅ JSON ist valide" || echo "❌ JSON-Fehler"
 ```
+
+## 🚨 Troubleshooting
+
+### Problem: Release-ID ist `null`
+
+**Ursachen:**
+- Kein Release im GitHub Repository
+- GitHub API Rate Limit erreicht
+- GitHub Credentials fehlen oder sind falsch
+
+**Lösung:**
+1. Prüfe GitHub Releases: https://github.com/chooomedia/hero-blocks/releases
+2. Erstelle Release falls nötig
+3. Prüfe GitHub Credentials in n8n
+4. Prüfe n8n Execution Logs
+
+### Problem: HTTP Status 500
+
+**Ursachen:**
+- Workflow-Fehler
+- GitHub API Fehler
+- n8n Credentials fehlen
+
+**Lösung:**
+1. Prüfe n8n Execution Logs
+2. Prüfe GitHub Credentials
+3. Prüfe GitHub Repository existiert
 
 ## 📚 Dokumentation
 
 - **Best Practices**: Siehe `.cursor/rules/n8n-github-releases.mdc`
 - **Release Script**: `create-release-zip.sh`
+- **Test Script**: `test-webhook.sh`
 - **n8n Workflow**: `src/Resources/n8n-workflows/hero-blocks-unified.json`
 
 ## 🔗 Links
@@ -114,6 +246,7 @@ curl "https://n8n.chooomedia.com/webhook/hero-blocks?checkType=update&currentVer
 - **Repository**: https://github.com/chooomedia/hero-blocks
 - **Releases**: https://github.com/chooomedia/hero-blocks/releases
 - **n8n Workflow**: https://n8n.chooomedia.com
+- **GitHub Actions**: https://github.com/chooomedia/hero-blocks/actions
 
 ## 📝 License
 

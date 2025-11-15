@@ -105,7 +105,7 @@ jobs:
 ### 🎉 Release v${VERSION}
 
 ### Installation
-1. Download \`hero-blocks-${VERSION}.zip\`
+1. Download hero-blocks-${VERSION}.zip
 2. Shopware Admin → Settings → Extensions → Upload Plugin
 3. Install and activate plugin
 
