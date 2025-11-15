@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shopware xmlns="http://www.shopware.com/2019/Plugin"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.shopware.com/2019/Plugin https://raw.githubusercontent.com/shopware/platform/trunk/src/Core/Framework/Plugin/Ressource.xml">
+
+    <name>HeroSlider</name>
+    <label lang="de-DE">Hero Slider</label>
+    <label lang="en-GB">Hero Slider</label>
+
+    <version>1.0.0</version>
+    <copyright>© 2024 Matt Interfaces</copyright>
+    <license>proprietary</license>
+    <link>https://www.matt-interfaces.ch</link>
+    <author>Matt Interfaces</author>
+    <email>info@matt-interfaces.ch</email>
+
+</shopware>
+

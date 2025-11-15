@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/trunk/src/Core/System/SystemConfig/Schema/config.xsd">
+
+    <card>
+        <title lang="de-DE">Block-Einstellungen</title>
+        <title>Block Settings</title>
+        <input-field type="bool">
+                        <name>enableHeroBlockSlider</name>
+                        <label lang="de-DE">Hero Block Slider aktivieren</label>
+                        <label>Enable Hero Block Slider</label>
+            <defaultValue>true</defaultValue>
+                        <helpText lang="de-DE">Aktiviert den Hero Block Slider in Erlebniswelten. Wenn deaktiviert, wird der Block nicht in der Block-Auswahl angezeigt.</helpText>
+                        <helpText>Enables the Hero Block Slider in Shopping Experiences. If disabled, the block will not appear in the block selection.</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>enableHeroTwoColumns</name>
+            <label lang="de-DE">Hero Two Columns Image &amp; Text Block aktivieren</label>
+            <label>Enable Hero Two Columns Image &amp; Text Block</label>
+            <defaultValue>true</defaultValue>
+            <helpText lang="de-DE">Aktiviert den Hero Two Columns Image &amp; Text Block mit Parallax-Scroll in Erlebniswelten. Wenn deaktiviert, wird der Block nicht in der Block-Auswahl angezeigt.</helpText>
+            <helpText>Enables the Hero Two Columns Image &amp; Text block with parallax scroll in Shopping Experiences. If disabled, the block will not appear in the block selection.</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>enableHeroVideoExtended</name>
+            <label lang="de-DE">Hero Video Extended aktivieren (Coming Soon)</label>
+            <label>Enable Hero Video Extended (Coming Soon)</label>
+            <defaultValue>false</defaultValue>
+            <disabled>true</disabled>
+            <helpText lang="de-DE">Hero Video Extended Block mit Headlines, Text und Buttons. Dieser Block wird in einer zukünftigen Version verfügbar sein.</helpText>
+            <helpText>Hero Video Extended block with headlines, text, and buttons. This block will be available in a future version.</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>enableHeroInstagramFeed</name>
+            <label lang="de-DE">Hero Instagram Feed Widget aktivieren (Coming Soon)</label>
+            <label>Enable Hero Instagram Feed Widget (Coming Soon)</label>
+            <defaultValue>false</defaultValue>
+            <disabled>true</disabled>
+            <helpText lang="de-DE">Instagram Feed Integration für Mega-Menü und Custom-Blöcke. Dieser Block wird in einer zukünftigen Version verfügbar sein.</helpText>
+            <helpText>Instagram feed integration for mega menu and custom blocks. This block will be available in a future version.</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>enableMegaMenu</name>
+            <label lang="de-DE">Mega Menu Block aktivieren (Coming Soon)</label>
+            <label>Enable Mega Menu Block (Coming Soon)</label>
+            <defaultValue>false</defaultValue>
+            <disabled>true</disabled>
+            <helpText lang="de-DE">Erweiterte Navigations-Blöcke mit Produkten, Widgets und Instagram Feed Support. Dieser Block wird in einer zukünftigen Version verfügbar sein.</helpText>
+            <helpText>Advanced navigation block with products, widgets, and Instagram feed support. This block will be available in a future version.</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>enableShoppingExperience</name>
+            <label lang="de-DE">Shopping Experience Blocks aktivieren (In Entwicklung)</label>
+            <label>Enable Shopping Experience Blocks (In Development)</label>
+            <defaultValue>false</defaultValue>
+            <disabled>true</disabled>
+            <helpText lang="de-DE">Zusätzliche Custom-Blöcke für verbesserte Shopping-Erlebnisse. Diese Blöcke werden in einer zukünftigen Version verfügbar sein.</helpText>
+            <helpText>Additional custom blocks for enhanced shopping experiences. These blocks will be available in a future version.</helpText>
+        </input-field>
+    </card>
+    
+    <card>
+        <title lang="de-DE">Update-Informationen</title>
+        <title>Update Information</title>
+        <input-field type="bool">
+            <name>updateAvailable</name>
+            <label lang="de-DE">Update verfügbar</label>
+            <label>Update available</label>
+            <defaultValue>false</defaultValue>
+            <disabled>true</disabled>
+            <helpText lang="de-DE">Status ob ein Plugin-Update verfügbar ist (wird automatisch aktualisiert)</helpText>
+            <helpText>Status whether a plugin update is available (automatically updated)</helpText>
+        </input-field>
+        
+        <input-field type="text">
+            <name>latestVersion</name>
+            <label lang="de-DE">Neueste Version</label>
+            <label>Latest version</label>
+            <disabled>true</disabled>
+            <helpText lang="de-DE">Neueste verfügbare Plugin-Version (wird automatisch aktualisiert)</helpText>
+            <helpText>Latest available plugin version (automatically updated)</helpText>
+        </input-field>
+        
+        <input-field type="text">
+            <name>updateDownloadUrl</name>
+            <label lang="de-DE">Update-Download-URL</label>
+            <label>Update download URL</label>
+            <disabled>true</disabled>
+            <helpText lang="de-DE">URL zum Download der neuesten Plugin-Version (wird automatisch aktualisiert via GitHub Releases)</helpText>
+            <helpText>URL to download the latest plugin version (automatically updated via GitHub Releases)</helpText>
+        </input-field>
+    </card>
+    
+    <card>
+        <title lang="de-DE">Lizenz-Informationen</title>
+        <title>License Information</title>
+        <input-field type="single-select">
+            <name>licenseStatus</name>
+            <label lang="de-DE">Lizenz-Status</label>
+            <label>License Status</label>
+            <options>
+                <option>
+                    <id>active</id>
+                    <name lang="de-DE">Aktiv</name>
+                    <name>Active</name>
+                </option>
+                <option>
+                    <id>expired</id>
+                    <name lang="de-DE">Abgelaufen</name>
+                    <name>Expired</name>
+                </option>
+            </options>
+            <defaultValue>active</defaultValue>
+            <disabled>true</disabled>
+            <helpText lang="de-DE">Status der Hero Blocks Lizenz (wird automatisch aktualisiert)</helpText>
+            <helpText>Hero Blocks license status (automatically updated)</helpText>
+        </input-field>
+        
+        <input-field type="datetime">
+            <name>licenseExpiresAt</name>
+            <label lang="de-DE">Lizenz läuft ab am</label>
+            <label>License expires at</label>
+            <disabled>true</disabled>
+            <helpText lang="de-DE">Datum des Lizenzablaufs (wird automatisch aktualisiert)</helpText>
+            <helpText>License expiration date (automatically updated)</helpText>
+        </input-field>
+        
+        <input-field type="int">
+            <name>licenseValidYears</name>
+            <label lang="de-DE">Lizenz-Gültigkeit (Jahre)</label>
+            <label>License validity (years)</label>
+            <defaultValue>2</defaultValue>
+            <disabled>true</disabled>
+            <helpText lang="de-DE">Dieses Hero Blocks Produkt ist ein Lizenz-Produkt mit 2 Jahren Gültigkeit.</helpText>
+            <helpText>This Hero Blocks product is a licensed product with 2 years validity.</helpText>
+        </input-field>
+    </card>
+
+</config>

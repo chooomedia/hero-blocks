@@ -1,0 +1,295 @@
+{% block element_hero_slider %}
+    {# WICHTIG: Config-Zugriff - element.fieldConfig.elements ist die korrekte Quelle für gespeicherte Werte #}
+    {# Shopware speichert Config-Werte in element.fieldConfig.elements nach dem Speichern #}
+    {% set sliderConfig = element.fieldConfig.elements %}
+    {% set visibleNavValues = ['inside', 'outside'] %}
+    {% set visibleDotsValues = ['bottom'] %}
+    {% set blockId = block.id %}
+    {% set displayMode = sliderConfig.displayMode.value ?: 'cover' %}
+    {% set minHeight = sliderConfig.minHeight is defined and sliderConfig.minHeight.value is defined and sliderConfig.minHeight.value is not null and sliderConfig.minHeight.value is not empty and sliderConfig.minHeight.value|trim|length > 0 ? sliderConfig.minHeight.value|trim : null %}
+    {% set maxHeight = sliderConfig.maxHeight is defined and sliderConfig.maxHeight.value is defined and sliderConfig.maxHeight.value is not null and sliderConfig.maxHeight.value is not empty and sliderConfig.maxHeight.value|trim|length > 0 ? sliderConfig.maxHeight.value|trim : null %}
+    {% set fullHeight = sliderConfig.fullHeight is defined and (sliderConfig.fullHeight.value == true or sliderConfig.fullHeight.value == 1 or sliderConfig.fullHeight.value == '1' or sliderConfig.fullHeight.value == 'true') ? true : false %}
+    {% set verticalAlign = sliderConfig.verticalAlign.value %}
+    {% set isDecorative = sliderConfig.isDecorative.value ?: false %}
+
+    <div class="cms-element-{{ element.type }}{% if displayMode == "standard" and verticalAlign %} has-vertical-alignment{% endif %}">
+        {% set baseSliderOptions = {
+            slider: {
+                controls: sliderConfig.navigationArrows.value in visibleNavValues,
+                nav: sliderConfig.navigationDots.value in visibleDotsValues,
+                navPosition: 'bottom',
+                mouseDrag: true,
+                autoplay: sliderConfig.autoSlide.value,
+                autoplayButtonOutput: false,
+                autoplayTimeout: sliderConfig.autoplayTimeout.value ?: 5000,
+                autoplayHoverPause: true,
+                speed: sliderConfig.speed.value ?: 300,
+                ariaLive: sliderConfig.autoSlide.value ? false : true,
+                autoHeight: (displayMode == "standard") ? true : false,
+                loop: false,
+                rewind: true
+            }
+        } %}
+        
+        {# Slider-Konfiguration gemäß Shopware Best Practices (wie Product Slider) #}
+        {# loop: false, rewind: true verhindert Loop-Bugs und doppelte Animationen #}
+
+        {% block element_hero_slider_alignment %}
+            {% if verticalAlign %}
+                <div class="cms-element-alignment{% if verticalAlign == "center" %} align-self-center{% elseif verticalAlign == "flex-end" %} align-self-end{% else %} align-self-start{% endif %}">
+            {% endif %}
+                <div
+                    class="hero-slider base-slider{% if sliderConfig.navigationArrows.value == "outside" %} has-nav-outside{% endif %}{% if sliderConfig.navigationDots.value == "bottom" %} has-dots-bottom{% endif %}{% if displayMode in ["cover", "contain"] %} has-height-control{% endif %}"
+                    data-base-slider="true"
+                    data-base-slider-options='{{ baseSliderOptions|json_encode }}'
+                    role="region"
+                    aria-label="{{ ('component.cms.heroSlider.ariaLabel')|trans({ '%total%': element.data.sliderItems|length })|sw_sanitize ?: ('component.cms.imageGallery.ariaLabel'|trans({ '%total%': element.data.sliderItems|length })|sw_sanitize) }}"
+                    tabindex="0"
+                    itemscope
+                    itemtype="https://schema.org/ImageGallery"
+                    {% if displayMode in ["cover", "contain"] %}
+                        style="
+                            {% if fullHeight %}
+                                --hero-slider-min-height: calc(100vh - var(--header-height, 80px));
+                                --hero-slider-max-height: calc(100vh - var(--header-height, 80px));
+                            {% else %}
+                                {% if minHeight is defined and minHeight is not null and minHeight is not empty and minHeight|trim|length > 0 %}
+                                    --hero-slider-min-height: {{ minHeight|trim|replace({' ':''}) }};
+                                {% else %}
+                                    --hero-slider-min-height: 80vh;
+                                {% endif %}
+                                {% if maxHeight is defined and maxHeight is not null and maxHeight is not empty and maxHeight|trim|length > 0 %}
+                                    --hero-slider-max-height: {{ maxHeight|trim|replace({' ':''}) }};
+                                {% else %}
+                                    --hero-slider-max-height: none;
+                                {% endif %}
+                            {% endif %}
+                        "
+                    {% endif %}
+                >
+                {% block element_hero_slider_skip_slider %}
+                    {% sw_include '@Storefront/storefront/component/skip-target.html.twig' with {
+                        targetId: blockId,
+                        snippet: ('component.cms.heroSlider.skipHeroSlider')|trans ?: 'component.cms.imageGallery.skipImageGallery',
+                    } %}
+                {% endblock %}
+
+                <div class="hero-slider-container" data-base-slider-container="true">
+                    {# Normale Slides aus Konfiguration #}
+                    {% if element.data.sliderItems is defined and element.data.sliderItems|length > 0 %}
+                    {% for slide in element.data.sliderItems %}
+                        {% block element_hero_slider_slide %}
+                            {# Slide Item Container - WIE STANDARD IMAGE SLIDER #}
+                            <div class="hero-slider-item-container">
+                                <div class="hero-slider-item{% if loop.first != true %} is-not-first{% endif %} is-{{ displayMode }}"{% if minHeight and displayMode == "cover" %} style="min-height: {{ minHeight|trim|replace({' ':''}) }}"{% endif %}>
+                                    {% if slide.media %}
+                                        {# Per-Slide Logo Image (aus Extension - bereits von DataResolver aufgelöst) #}
+                                        {% set logoMediaExt = slide.extensions.logoImage %}
+                                        {% set logoMedia = (logoMediaExt and logoMediaExt.value) ? logoMediaExt.value : null %}
+                                        
+                                        {% set slideUrl = slide.url %}
+                                        {% set slideNewTab = slide.newTab ?: false %}
+                                        
+                                        {# Background Image - WIE STANDARD SLIDER STRUCTURE #}
+                                        {% set imageElement %}
+                                            <div class="hero-slide-background is-{{ displayMode }}">
+                                                {% set imageAttributes = {
+                                                    'class': 'hero-slide-img img-fluid',
+                                                    'loading': 'lazy',
+                                                    'alt': isDecorative ? ' ' : (slide.media.translated.alt ?: (slide.headline ?: (sliderConfig.headline.value ?: 'Hero Slide'))),
+                                                    'title': isDecorative ? '' : (slide.media.translated.title ?: ''),
+                                                    'tabindex': slideUrl ? '-1' : '0'
+                                                } %}
+                                                
+                                                {% if displayMode == 'cover' or displayMode == 'contain' %}
+                                                    {% set imageAttributes = imageAttributes|merge({ 'data-object-fit': displayMode }) %}
+                                                {% endif %}
+                                                
+                                                {% sw_thumbnails 'hero-slide-thumbnails' with {
+                                                    media: slide.media,
+                                                    sizes: {
+                                                        default: '1920px'
+                                                    },
+                                                    attributes: imageAttributes
+                                                } %}
+                                                
+                                                {# Gradient Overlay für bessere Lesbarkeit #}
+                                                <div class="hero-slide-overlay"></div>
+                                            </div>
+                                        {% endset %}
+                                        
+                                        {# Optional: Slide-spezifischer Link - WIE STANDARD SLIDER #}
+                                        {% if slideUrl %}
+                                            <a href="{{ slideUrl }}"
+                                               class="hero-slide-link"
+                                               {% if slideNewTab %}target="_blank" rel="noopener"{% endif %}
+                                            >
+                                                {{ imageElement }}
+                                            </a>
+                                        {% else %}
+                                            {{ imageElement }}
+                                        {% endif %}
+                                        
+                                        {# Content Overlay - WICHTIG: Innerhalb hero-slider-item, aber über Background #}
+                                        {# WICHTIG: Alignment aus Admin Settings, Fallback zu 'center' wenn nicht gesetzt #}
+                                        {% set contentVerticalAlign = sliderConfig.contentVerticalAlign.value ?: 'center' %}
+                                        {% set contentHorizontalAlign = sliderConfig.contentHorizontalAlign.value ?: 'center' %}
+                                        <div class="hero-slide-content hero-slide-content--vertical-{{ contentVerticalAlign }} hero-slide-content--horizontal-{{ contentHorizontalAlign }}">
+                                            <div class="hero-slide-content-inner">
+                                                {# Logo/Image VOR Headline (pro Slide) #}
+                                                {% if logoMedia %}
+                                                    <div class="hero-slide-logo">
+                                                        {% sw_thumbnails 'hero-slide-logo-thumbnails' with {
+                                                            loadOriginalImage: false,
+                                                            autoColumnSizes: false,
+                                                            media: logoMedia,
+                                                            sizes: {
+                                                                default: '300px'
+                                                            },
+                                                            attributes: {
+                                                                'class': 'hero-slide-logo-img',
+                                                                'loading': 'lazy',
+                                                                'alt': logoMedia.translated.alt ?: ''
+                                                            }
+                                                        } %}
+                                                    </div>
+                                                {% endif %}
+                                                
+                                                {# Styling-Werte aus Config #}
+                                                {% set headlineColor = sliderConfig.headlineColor.value %}
+                                                {% set headlineFontSize = sliderConfig.headlineFontSize.value %}
+                                                {% set textColor = sliderConfig.textColor.value %}
+                                                {% set textFontSize = sliderConfig.textFontSize.value %}
+                                                {% set button1BgColor = sliderConfig.button1BackgroundColor.value %}
+                                                {% set button1TextColor = sliderConfig.button1TextColor.value %}
+                                                {% set button2BgColor = sliderConfig.button2BackgroundColor.value %}
+                                                {% set button2TextColor = sliderConfig.button2TextColor.value %}
+                                                
+                                                {# Per-Slide oder Global Headline (aus Extension oder Config) #}
+                                                {% set slideHeadlineExt = slide.extensions.headline %}
+                                                {% set slideHeadline = (slideHeadlineExt and slideHeadlineExt.value) ? slideHeadlineExt.value : (slide.headline|default(sliderConfig.headline.value)) %}
+                                                {% if slideHeadline %}
+                                                    {% if loop.first %}
+                                                        <h1 class="hero-slide-headline" itemprop="headline"{% if headlineColor or headlineFontSize %} style="{% if headlineColor %}--hero-headline-color: {{ headlineColor }};{% endif %}{% if headlineFontSize %} --hero-headline-font-size: {{ headlineFontSize }};{% endif %}"{% endif %}>{{ slideHeadline }}</h1>
+                                                    {% else %}
+                                                        <h2 class="hero-slide-headline"{% if headlineColor or headlineFontSize %} style="{% if headlineColor %}--hero-headline-color: {{ headlineColor }};{% endif %}{% if headlineFontSize %} --hero-headline-font-size: {{ headlineFontSize }};{% endif %}"{% endif %}>{{ slideHeadline }}</h2>
+                                                    {% endif %}
+                                                {% endif %}
+                                            
+                                                {# Per-Slide oder Global Text #}
+                                                {% set slideTextExt = slide.extensions.text %}
+                                                {% set slideText = (slideTextExt and slideTextExt.value) ? slideTextExt.value : (slide.text|default(sliderConfig.text.value)) %}
+                                                {% if slideText %}
+                                                    <p class="hero-slide-text" itemprop="description"{% if textColor or textFontSize %} style="{% if textColor %}--hero-text-color: {{ textColor }};{% endif %}{% if textFontSize %} --hero-text-font-size: {{ textFontSize }};{% endif %}"{% endif %}>{{ slideText }}</p>
+                                                {% endif %}
+                                                
+                                                {# Per-Slide oder Global Buttons #}
+                                                {% set slideButton1TextExt = slide.extensions.button1Text %}
+                                                {% set slideButton1Text = (slideButton1TextExt and slideButton1TextExt.value) ? slideButton1TextExt.value : (slide.button1Text|default(sliderConfig.button1Text.value)) %}
+                                                {% set slideButton1UrlExt = slide.extensions.button1Url %}
+                                                {% set slideButton1Url = (slideButton1UrlExt and slideButton1UrlExt.value) ? slideButton1UrlExt.value : (slide.button1Url|default(sliderConfig.button1Url.value)) %}
+                                                {% set slideButton1NewTabExt = slide.extensions.button1NewTab %}
+                                                {% set slideButton1NewTab = (slideButton1NewTabExt and slideButton1NewTabExt.value) ? slideButton1NewTabExt.value : (slide.button1NewTab ?? sliderConfig.button1NewTab.value) %}
+                                                {% set slideButton2TextExt = slide.extensions.button2Text %}
+                                                {% set slideButton2Text = (slideButton2TextExt and slideButton2TextExt.value) ? slideButton2TextExt.value : (slide.button2Text|default(sliderConfig.button2Text.value)) %}
+                                                {% set slideButton2UrlExt = slide.extensions.button2Url %}
+                                                {% set slideButton2Url = (slideButton2UrlExt and slideButton2UrlExt.value) ? slideButton2UrlExt.value : (slide.button2Url|default(sliderConfig.button2Url.value)) %}
+                                                {% set slideButton2NewTabExt = slide.extensions.button2NewTab %}
+                                                {% set slideButton2NewTab = (slideButton2NewTabExt and slideButton2NewTabExt.value) ? slideButton2NewTabExt.value : (slide.button2NewTab ?? sliderConfig.button2NewTab.value) %}
+                                                
+                                                {% if (slideButton1Text and slideButton1Url) or (slideButton2Text and slideButton2Url) %}
+                                                    <div class="hero-slide-buttons">
+                                                        {% if slideButton1Text and slideButton1Url %}
+                                                            <a 
+                                                                href="{{ slideButton1Url }}" 
+                                                                class="btn btn-hero-primary"
+                                                                {% if slideButton1NewTab %}target="_blank" rel="noopener noreferrer"{% endif %}
+                                                                aria-label="{{ slideButton1Text }}"
+                                                                {% if button1BgColor or button1TextColor %} style="{% if button1BgColor %}--hero-button1-bg-color: {{ button1BgColor }};{% endif %}{% if button1TextColor %} --hero-button1-text-color: {{ button1TextColor }};{% endif %}"{% endif %}
+                                                            >
+                                                                {{ slideButton1Text }}
+                                                            </a>
+                                                        {% endif %}
+                                                        
+                                                        {% if slideButton2Text and slideButton2Url %}
+                                                            <a 
+                                                                href="{{ slideButton2Url }}" 
+                                                                class="btn btn-hero-secondary"
+                                                                {% if slideButton2NewTab %}target="_blank" rel="noopener noreferrer"{% endif %}
+                                                                aria-label="{{ slideButton2Text }}"
+                                                                {% if button2BgColor or button2TextColor %} style="{% if button2BgColor %}--hero-button2-bg-color: {{ button2BgColor }};{% endif %}{% if button2TextColor %} --hero-button2-text-color: {{ button2TextColor }};{% endif %}"{% endif %}
+                                                            >
+                                                                {{ slideButton2Text }}
+                                                            </a>
+                                                        {% endif %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endblock %}
+                    {% endfor %}
+                    {% else %}
+                        {# Empty State - Fallback wenn keine Slides #}
+                        <div class="hero-slider-item-container">
+                            <div class="hero-slider-item is-{{ displayMode }}">
+                                <div class="hero-slide-background is-{{ displayMode }}">
+                                    <div class="hero-slide-overlay"></div>
+                                </div>
+                                <div class="hero-slide-content hero-slide-content--vertical-center hero-slide-content--horizontal-center">
+                                    <div class="hero-slide-content-inner">
+                                        {% if sliderConfig.headline.value %}
+                                            <h1 class="hero-slide-headline">{{ sliderConfig.headline.value }}</h1>
+                                        {% endif %}
+                                        {% if sliderConfig.text.value %}
+                                            <p class="hero-slide-text">{{ sliderConfig.text.value }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# Navigation Controls - ÜBER Slider-Bildern (links/rechts) - NUR wenn Slides vorhanden #}
+                {% block element_hero_slider_controls %}
+                    {% if element.data.sliderItems is defined and element.data.sliderItems|length > 1 and sliderConfig.navigationArrows.value in visibleNavValues %}
+                        <div class="hero-slider-controls-container">
+                            <div class="base-slider-controls" data-base-slider-controls="true">
+                                {% block element_hero_slider_controls_items %}
+                                    {% block element_hero_slider_controls_items_arrows %}
+                                        <button
+                                            class="base-slider-controls-prev hero-slider-controls-prev{% if sliderConfig.navigationArrows.value == "outside" %} is-nav-prev-outside{% elseif sliderConfig.navigationArrows.value == "inside" %} is-nav-prev-inside{% endif %}"
+                                            aria-label="{{ 'general.previous'|trans|striptags }}"
+                                        >
+                                            {% sw_icon 'arrow-head-left' %}
+                                        </button>
+                                        <button
+                                            class="base-slider-controls-next hero-slider-controls-next{% if sliderConfig.navigationArrows.value == "outside" %} is-nav-next-outside{% elseif sliderConfig.navigationArrows.value == "inside" %} is-nav-next-inside{% endif %}"
+                                            aria-label="{{ 'general.next'|trans|striptags }}"
+                                        >
+                                            {% sw_icon 'arrow-head-right' %}
+                                        </button>
+                                    {% endblock %}
+                                {% endblock %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endblock %}
+                    </div>
+            {% if verticalAlign %}
+                </div>
+            {% endif %}
+        {% endblock %}
+    </div>
+
+    {% block element_hero_slider_target_after_slider %}
+        <div id="content-after-target-{{ blockId }}"></div>
+    {% endblock %}
+
+    {% block element_hero_slider_script %}
+        {# Kein JavaScript nötig - Animation wird über CSS gehandhabt #}
+    {% endblock %}
+{% endblock %}

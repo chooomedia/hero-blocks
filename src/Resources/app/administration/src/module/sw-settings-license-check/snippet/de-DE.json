@@ -1,0 +1,50 @@
+{
+    "sw-settings-license-check": {
+        "description": "Der flexible Hero-Slider: starke Visuals, klare Botschaften, smarte CTAs. Perfekt für Markenstories und Kampagnen.",
+        "features": {
+            "heroSlider": "Hero Slider - Mehrere Hero-Blöcke mit Headlines, Texten, Buttons und Bildern",
+            "heroTwoColumns": "Hero Two Columns Image & Text - Zwei-Spalten-Layout mit flexiblen Hintergrundoptionen (Parallax-Scroll: demnächst)",
+            "heroVideoExtended": "Hero Video Extended - Video-Hero-Blöcke mit Headlines, Texten und Buttons (Demnächst)",
+            "heroInstagramFeed": "Hero Instagram Feed Widget - Instagram-Feed-Integration für Mega-Menü und benutzerdefinierte Blöcke (Demnächst)",
+            "megaMenu": "Mega Menu Block - Erweiterter Navigationsblock mit Produkten, Widgets und Instagram-Feed-Unterstützung (Demnächst)",
+            "shoppingExperience": "Shopping Experience Blocks - Zusätzliche benutzerdefinierte Blöcke für erweiterte Shopping-Erlebnisse (In Entwicklung)"
+        },
+        "button": {
+            "checkLicense": "Lizenz prüfen",
+            "checking": "Prüfe..."
+        },
+        "status": {
+            "active": "Lizenz aktiv",
+            "expired": "Lizenz abgelaufen"
+        },
+        "success": {
+            "title": "Lizenzprüfung erfolgreich",
+            "validMessage": "Lizenz ist gültig.",
+            "invalidMessage": "Lizenz ist abgelaufen. Bitte kontaktieren Sie den Support."
+        },
+        "error": {
+            "checkTitle": "Lizenzprüfung fehlgeschlagen",
+            "checkMessage": "Die Lizenzprüfung konnte nicht durchgeführt werden. Bitte versuchen Sie es später erneut."
+        },
+        "warning": {
+            "expiryTitle": "Lizenz läuft bald ab",
+            "expiryMessage": "Ihre Lizenz läuft in {days} Tagen ab. Bitte erneuern Sie Ihre Lizenz, um Hero Blocks weiterhin nutzen zu können."
+        },
+        "update": {
+            "available": "Update verfügbar",
+            "notAvailable": "Kein Update verfügbar",
+            "latestVersion": "Neueste Version",
+            "currentVersion": "Aktuelle Version",
+            "downloadUrl": "Download-URL",
+            "changelog": "Changelog",
+            "webhookUrl": "Update-Webhook-URL (n8n)",
+            "checkForUpdates": "Auf Updates prüfen",
+            "updateAvailable": "Ein Plugin-Update ist verfügbar",
+            "updateAvailableMessage": "Eine neue Version ({latestVersion}) ist verfügbar. Aktuelle Version: {currentVersion}",
+            "noUpdateAvailable": "Sie verwenden bereits die neueste Version",
+            "noUpdateAvailableMessage": "Sie verwenden bereits die neueste Version ({currentVersion})",
+            "checkFailed": "Update-Prüfung fehlgeschlagen",
+            "checking": "Prüfe auf Updates..."
+        }
+    }
+}

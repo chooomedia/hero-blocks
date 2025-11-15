@@ -1,0 +1,61 @@
+{
+    "sw-cms": {
+        "blocks": {
+            "heroBlocks": {
+                "heroTwoColumns": {
+                    "label": "Hero Two Columns",
+                    "config": {
+                        "layout": {
+                            "label": "Layout (Mobile)",
+                            "helpText": "Wählen Sie Bild oder Text links für mobile Geräte",
+                            "options": {
+                                "imageLeft": "Bild links",
+                                "textLeft": "Text links"
+                            }
+                        },
+                        "layoutDesktop": {
+                            "label": "Layout (Desktop)",
+                            "helpText": "Wählen Sie Bild oder Text links für Desktop-Geräte",
+                            "options": {
+                                "imageLeft": "Bild links",
+                                "textLeft": "Text links"
+                            }
+                        },
+                        "layoutTablet": {
+                            "label": "Layout (Tablet)",
+                            "helpText": "Wählen Sie Bild oder Text links für Tablet-Geräte",
+                            "options": {
+                                "imageLeft": "Bild links",
+                                "textLeft": "Text links"
+                            }
+                        },
+                        "backgroundMode": {
+                            "label": "Hintergrund-Modus",
+                            "helpText": "Wählen Sie den Hintergrundbild-Modus",
+                            "options": {
+                                "none": "Keiner",
+                                "single": "Einzelbild",
+                                "twoImages": "Zwei Bilder (Parallax)"
+                            }
+                        },
+                        "backgroundImage": {
+                            "label": "Hintergrundbild (Einzel)"
+                        },
+                        "backgroundImageLeft": {
+                            "label": "Hintergrundbild (Links)"
+                        },
+                        "backgroundImageRight": {
+                            "label": "Hintergrundbild (Rechts)"
+                        },
+                        "minHeight": {
+                            "label": "Mindesthöhe",
+                            "placeholder": "z.B. 500px, 80vh",
+                            "helpText": "Mindesthöhe für den Block festlegen (z.B. 500px oder 80vh)"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

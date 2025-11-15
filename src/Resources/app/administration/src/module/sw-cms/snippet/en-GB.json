@@ -1,0 +1,61 @@
+{
+    "sw-cms": {
+        "blocks": {
+            "heroBlocks": {
+                "heroTwoColumns": {
+                    "label": "Hero Two Columns",
+                    "config": {
+                        "layout": {
+                            "label": "Layout (Mobile)",
+                            "helpText": "Select image or text on the left for mobile devices",
+                            "options": {
+                                "imageLeft": "Image left",
+                                "textLeft": "Text left"
+                            }
+                        },
+                        "layoutDesktop": {
+                            "label": "Layout (Desktop)",
+                            "helpText": "Select image or text on the left for desktop devices",
+                            "options": {
+                                "imageLeft": "Image left",
+                                "textLeft": "Text left"
+                            }
+                        },
+                        "layoutTablet": {
+                            "label": "Layout (Tablet)",
+                            "helpText": "Select image or text on the left for tablet devices",
+                            "options": {
+                                "imageLeft": "Image left",
+                                "textLeft": "Text left"
+                            }
+                        },
+                        "backgroundMode": {
+                            "label": "Background Mode",
+                            "helpText": "Select background image mode",
+                            "options": {
+                                "none": "None",
+                                "single": "Single Image",
+                                "twoImages": "Two Images (Parallax)"
+                            }
+                        },
+                        "backgroundImage": {
+                            "label": "Background Image (Single)"
+                        },
+                        "backgroundImageLeft": {
+                            "label": "Background Image (Left)"
+                        },
+                        "backgroundImageRight": {
+                            "label": "Background Image (Right)"
+                        },
+                        "minHeight": {
+                            "label": "Min Height",
+                            "placeholder": "e.g., 500px, 80vh",
+                            "helpText": "Set minimum height for the block (e.g., 500px or 80vh)"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

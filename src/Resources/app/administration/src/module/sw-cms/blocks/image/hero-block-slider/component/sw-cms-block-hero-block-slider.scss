@@ -1,0 +1,40 @@
+@import "~scss/variables";
+
+.sw-cms-block-hero-block-slider {
+    height: 100%;
+    display: flex;
+    align-items: stretch;
+    padding: 0;
+    position: relative;
+    
+    // Full-Width Mode: Block bricht aus Container raus (wie Frontend)
+    // ABER: In Admin-Vorschau NICHT aus Container raus (verrutscht sonst)
+    &.is--full-width {
+        width: 100%;
+        max-width: 100%;
+        position: relative;
+        left: 0;
+        margin-left: 0;
+        margin-right: 0;
+        
+        .sw-cms-block-hero-block-slider__slot {
+            width: 100%;
+            max-width: 100%;
+        }
+    }
+    
+    // Boxed Mode: Normale Container-Breite (Shopware Standard)
+    &.is--boxed {
+        max-width: 1080px;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+    }
+    
+    &__slot {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+}

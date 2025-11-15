@@ -1,0 +1,10 @@
+{
+    "component": {
+        "cms": {
+            "heroSlider": {
+                "ariaLabel": "Hero slider containing %total% items",
+                "skipHeroSlider": "Skip hero slider"
+            }
+        }
+    }
+}

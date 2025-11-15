@@ -1,0 +1,263 @@
+@import "~scss/variables";
+@import "~scss/mixins";
+
+// Hero Blocks Description - Gestylt wie mt-card__wrapper (Shopware Best Practices)
+.sw-system-config__hero-blocks-description {
+    margin-bottom: 40px;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 960px; // Wie sw-meteor-card
+    padding: 24px 32px;
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-300);
+    border-radius: $border-radius-lg; // Shopware Standard
+    box-sizing: border-box;
+    
+    // Box Shadow wie mt-card (sw-meteor-card)
+    @include drop-shadow-default;
+    
+    @media screen and (max-width: $content-width) {
+        padding: 15px;
+    }
+    
+    // Moderne Typography (wie Shopware Cards)
+    font-size: $font-size-s;
+    line-height: 1.5;
+    color: var(--color-text-primary-default);
+
+    &-text {
+        font-size: $font-size-m;
+        line-height: 1.6;
+        color: var(--color-text-primary-default);
+        margin: 0 0 20px 0;
+        font-weight: $font-weight-medium;
+    }
+
+    // WICHTIG: Modern Grid Layout - Responsive von Desktop bis Mobile
+    &-features {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        // WICHTIG: Fancy Grid - 3 Spalten auf Desktop, 2 auf Tablet, 1 auf Mobile
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        
+        // Tablet (max-width: 1200px) - 2 Spalten
+        @media (max-width: 1200px) {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+        
+        // Mobile (max-width: 768px) - 1 Spalte
+        @media (max-width: 768px) {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        
+        // WICHTIG: Feature Item ohne Icon - Modern minimalistisch
+        &-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: var(--color-white);
+            border: 1px solid var(--color-gray-300);
+            border-radius: $border-radius-default;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+            
+            // Hover Effect (subtle, modern)
+            &:hover {
+                background: var(--color-gray-50);
+                border-color: var(--color-gray-400);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+                transform: translateY(-1px);
+            }
+        }
+        
+        // WICHTIG: Feature Content - Flex Layout (ohne Icon)
+        &-content {
+            flex: 1;
+            min-width: 0; // WICHTIG: Verhindert Overflow
+        }
+        
+        // WICHTIG: Feature Title - Sauber typographiert
+        &-title {
+            font-size: $font-size-xs;
+            line-height: 1.5;
+            color: var(--color-text-primary-default);
+            font-weight: $font-weight-medium;
+            margin: 0;
+            word-wrap: break-word;
+        }
+    }
+}
+
+.sw-system-config__hero-blocks-license-check,
+.sw-system-config__hero-blocks-update-check {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--color-gray-300);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    .sw-field {
+        margin-bottom: 0;
+    }
+
+    .hero-blocks-license-check-button {
+        // Styling wie Save-Button (sw-extension-config__save-action)
+        // mt-button--default ist bereits gesetzt, Button hat richtige Höhe
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        align-self: flex-end;
+        margin-top: 8px; // Zusätzlicher Abstand für bessere Positionierung
+        
+        .mt-icon,
+        .sw-loader {
+            flex-shrink: 0;
+        }
+        
+        span {
+            white-space: nowrap;
+        }
+    }
+}
+
+// License Card Header (Collapsible) - Design wie Standard mt-card, gleiche Breite
+.sw-system-config {
+    // WICHTIG: sw-collapse innerhalb von sw-system-config - gleiche Breite wie mt-card__wrapper
+    .sw-collapse {
+        // WICHTIG: Gleiche Breite wie mt-card__wrapper (960px wie sw-meteor-card)
+        max-width: 960px;
+        margin: 0 auto 32px; // Wie mt-card spacing (40px -> 32px für bessere Balance)
+        width: 100%;
+        box-sizing: border-box;
+        
+        // Collapse Header - Design wie Standard mt-card Header, gleiche Breite
+        .sw-collapse__header {
+            width: 100%;
+        }
+        
+        .sw-system-config__license-card-header,
+        .sw-system-config__update-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            cursor: pointer;
+            user-select: none;
+            background: var(--color-white);
+            border: 1px solid var(--color-gray-300);
+            border-radius: $border-radius-lg;
+            transition: all 0.2s ease;
+            width: 100%;
+            box-sizing: border-box;
+            
+            @media screen and (max-width: 960px) {
+                padding: 15px;
+            }
+            
+            &:hover {
+                background: var(--color-gray-50);
+                border-color: var(--color-gray-400);
+            }
+            
+            h3 {
+                margin: 0;
+                flex: 1;
+            }
+            
+            &-right {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            
+            .sw-system-config__license-card-chevron,
+            .sw-system-config__update-card-chevron {
+                flex-shrink: 0;
+                transition: transform 0.2s ease;
+            }
+        }
+        
+        // Collapse Content - mt-card innerhalb sollte gleiche Breite haben
+        .sw-collapse__content {
+            width: 100%;
+            
+            // mt-card__wrapper innerhalb hat bereits korrekte Breite durch Shopware
+            .mt-card__wrapper {
+                // Wird automatisch durch Shopware gestylt
+                // Keine zusätzlichen Styles nötig
+            }
+        }
+        
+        // mt-card innerhalb des Collapse - Gleiche Breite wie andere Cards
+        .sw-system-config__card {
+            // Wird automatisch durch Shopware gestylt
+            // Keine zusätzlichen Styles nötig - nutzt Shopware's Standard-Card-Styling
+        }
+    }
+}
+
+// License Status Farben für Input Fields - Smooth Signalfarben
+.sw-system-config--field-hero-blocks-config-license-status {
+    &.is--license-active {
+        // Label Background
+        .sw-inherit-wrapper__toggle-wrapper {
+            padding-bottom: 0.5rem;
+        }
+        
+        // Input Field Background
+        .sw-field .sw-block-field__block,
+        .sw-field .sw-select__selection {
+            background-color: rgba(16, 185, 129, 0.1) !important;
+            border-color: rgba(16, 185, 129, 0.3) !important;
+            transition: all 0.2s ease;
+        }
+        
+        .sw-field .sw-select__selection:hover {
+            background-color: rgba(16, 185, 129, 0.15) !important;
+            border-color: rgba(16, 185, 129, 0.4) !important;
+        }
+    }
+    
+    &.is--license-expired {
+        // Label Background
+        .sw-inherit-wrapper__toggle-wrapper {
+            background-color: rgba(239, 68, 68, 0.1) !important;
+            border-color: rgba(239, 68, 68, 0.3) !important;
+            border-radius: $border-radius-default;
+            padding: 4px 8px;
+            transition: all 0.2s ease;
+        }
+        
+        // Input Field Background
+        .sw-field .sw-block-field__block,
+        .sw-field .sw-select__selection {
+            background-color: rgba(239, 68, 68, 0.1) !important;
+            border-color: rgba(239, 68, 68, 0.3) !important;
+            transition: all 0.2s ease;
+        }
+        
+        .sw-field .sw-select__selection:hover {
+            background-color: rgba(239, 68, 68, 0.15) !important;
+            border-color: rgba(239, 68, 68, 0.4) !important;
+        }
+    }
+}
+
+// License Expires At - Lokalisierung wird automatisch von Shopware gehandhabt
+// Datum wird basierend auf User-Locale formatiert:
+// DE: dd.mm.yyyy, HH:mm (z.B. 22.01.2025, 10:30)
+// EN: mm/dd/yyyy, hh:mm AM/PM (z.B. 01/22/2025, 10:30 AM)
+.sw-system-config--field-hero-blocks-config-license-expires-at {
+    // UTC-Hint wird automatisch von Shopware angezeigt, kein doppelter Text nötig
+    .sw-field__hint {
+        // Shopware zeigt bereits UTC-Hint automatisch
+    }
+}
+

@@ -1,0 +1,161 @@
+{% block sw_cms_block_config_hero_two_columns %}
+<div class="sw-cms-block-config-hero-two-columns" v-if="block && block.customFields">
+    {# WICHTIG: Block-Config wird in block.customFields gespeichert (NICHT block.config!) #}
+    {# Layout Selection (Mobile - Fallback) #}
+    {% block sw_cms_block_config_hero_two_columns_layout %}
+    <mt-select
+        :model-value="block.customFields?.layout || 'image-left'"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.layout.label')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.layout.helpText')"
+        :options="layoutOptions"
+        @update:model-value="onLayoutChange"
+    />
+    {% endblock %}
+
+    {# Layout Desktop Selection #}
+    {% block sw_cms_block_config_hero_two_columns_layout_desktop %}
+    <mt-select
+        :model-value="block.customFields?.layoutDesktop || block.customFields?.layout || 'image-left'"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.layoutDesktop.label')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.layoutDesktop.helpText')"
+        :options="layoutOptions"
+        @update:model-value="onLayoutDesktopChange"
+    />
+    {% endblock %}
+
+    {# Layout Tablet Selection #}
+    {% block sw_cms_block_config_hero_two_columns_layout_tablet %}
+    <mt-select
+        :model-value="block.customFields?.layoutTablet || block.customFields?.layout || 'image-left'"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.layoutTablet.label')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.layoutTablet.helpText')"
+        :options="layoutOptions"
+        @update:model-value="onLayoutTabletChange"
+    />
+    {% endblock %}
+    
+    {# Background Mode Selection #}
+    {% block sw_cms_block_config_hero_two_columns_background_mode %}
+    <mt-select
+        :model-value="block.customFields?.backgroundMode || 'none'"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.backgroundMode.label')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.backgroundMode.helpText')"
+        :options="backgroundModeOptions"
+        @update:model-value="onBackgroundModeChange"
+    />
+    {% endblock %}
+    
+    {# Background Image (Single) #}
+    {% block sw_cms_block_config_hero_two_columns_background_image %}
+    <sw-media-compact-upload-v2
+        v-if="(block.customFields?.backgroundMode || 'none') === 'single'"
+        :source="block.customFields?.backgroundImage ? { id: block.customFields.backgroundImage } : null"
+        :upload-tag="uploadTagBackground"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.backgroundImage.label')"
+        :default-folder="cmsPageState?.pageEntityName || 'cms_page'"
+        :allow-multi-select="false"
+        @media-upload-remove-image="onRemoveBackgroundImage"
+        @selection-change="onSetBackgroundImage"
+    />
+    <sw-upload-listener
+        v-if="(block.customFields?.backgroundMode || 'none') === 'single'"
+        :upload-tag="uploadTagBackground"
+        auto-upload
+        @media-upload-finish="onBackgroundImageUpload"
+    />
+    {% endblock %}
+    
+    {# Background Image Left (Two Images) #}
+    {% block sw_cms_block_config_hero_two_columns_background_image_left %}
+    <sw-media-compact-upload-v2
+        v-if="(block.customFields?.backgroundMode || 'none') === 'two-images'"
+        :source="block.customFields?.backgroundImageLeft ? { id: block.customFields.backgroundImageLeft } : null"
+        :upload-tag="uploadTagBackgroundLeft"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.backgroundImageLeft.label')"
+        :default-folder="cmsPageState?.pageEntityName || 'cms_page'"
+        :allow-multi-select="false"
+        @media-upload-remove-image="onRemoveBackgroundImageLeft"
+        @selection-change="onSetBackgroundImageLeft"
+    />
+    <sw-upload-listener
+        v-if="(block.customFields?.backgroundMode || 'none') === 'two-images'"
+        :upload-tag="uploadTagBackgroundLeft"
+        auto-upload
+        @media-upload-finish="onBackgroundImageLeftUpload"
+    />
+    {% endblock %}
+    
+    {# Background Image Right (Two Images) #}
+    {% block sw_cms_block_config_hero_two_columns_background_image_right %}
+    <sw-media-compact-upload-v2
+        v-if="(block.customFields?.backgroundMode || 'none') === 'two-images'"
+        :source="block.customFields?.backgroundImageRight ? { id: block.customFields.backgroundImageRight } : null"
+        :upload-tag="uploadTagBackgroundRight"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.backgroundImageRight.label')"
+        :default-folder="cmsPageState?.pageEntityName || 'cms_page'"
+        :allow-multi-select="false"
+        @media-upload-remove-image="onRemoveBackgroundImageRight"
+        @selection-change="onSetBackgroundImageRight"
+    />
+    <sw-upload-listener
+        v-if="(block.customFields?.backgroundMode || 'none') === 'two-images'"
+        :upload-tag="uploadTagBackgroundRight"
+        auto-upload
+        @media-upload-finish="onBackgroundImageRightUpload"
+    />
+    {% endblock %}
+    
+    {# Min Height #}
+    {% block sw_cms_block_config_hero_two_columns_min_height %}
+    <mt-text-field
+        :model-value="block.customFields?.minHeight || ''"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.minHeight.label')"
+        :placeholder="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.minHeight.placeholder')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.minHeight.helpText')"
+        @update:model-value="onMinHeightChange"
+    />
+    {% endblock %}
+    
+    {# CSS Classes - Bootstrap Spacing Classes #}
+    {% block sw_cms_block_config_hero_two_columns_css_class %}
+    <mt-text-field
+        :model-value="block.cssClass"
+        :label="$tc('sw-cms.detail.label.cssClassField')"
+        :help-text="$tc('sw-cms.detail.helpText.cssClassField') + ' (z.B. p-3, m-4, mb-5)'"
+        @update:model-value="onCssClassChange"
+    />
+    {% endblock %}
+    
+    {# Margin/Padding Fields #}
+    {% block sw_cms_block_config_hero_two_columns_spacing %}
+    <mt-text-field
+        :model-value="block.marginTop"
+        :label="$tc('sw-cms.detail.label.blockTopMarginField')"
+        placeholder="z.B. 20px, 2rem, 0"
+        @update:model-value="(value) => onMarginChange(value, 'marginTop')"
+    />
+    
+    <mt-text-field
+        :model-value="block.marginBottom"
+        :label="$tc('sw-cms.detail.label.blockBottomMarginField')"
+        placeholder="z.B. 20px, 2rem, 0"
+        @update:model-value="(value) => onMarginChange(value, 'marginBottom')"
+    />
+    
+    <mt-text-field
+        :model-value="block.marginLeft"
+        :label="$tc('sw-cms.detail.label.blockLeftMarginField')"
+        placeholder="z.B. 20px, 2rem, 0"
+        @update:model-value="(value) => onMarginChange(value, 'marginLeft')"
+    />
+    
+    <mt-text-field
+        :model-value="block.marginRight"
+        :label="$tc('sw-cms.detail.label.blockRightMarginField')"
+        placeholder="z.B. 20px, 2rem, 0"
+        @update:model-value="(value) => onMarginChange(value, 'marginRight')"
+    />
+    {% endblock %}
+</div>
+{% endblock %}
+

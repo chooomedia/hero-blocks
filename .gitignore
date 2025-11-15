@@ -1,0 +1,32 @@
+# Shopware Plugin .gitignore
+
+# Dependencies
+vendor/
+node_modules/
+
+# Build artifacts
+var/
+public/
+*.zip
+
+# IDE
+.idea/
+.vscode/
+*.code-workspace
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.local
+
+# Cache
+.cache/
+
+# OS
+.DS_Store
+Thumbs.db
+

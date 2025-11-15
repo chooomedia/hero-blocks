@@ -1,0 +1,80 @@
+{% block block_hero_two_columns %}
+    {# WICHTIG: Config-Werte aus block.customFields lesen (NICHT block.config!) #}
+    {# CmsBlockEntity nutzt EntityCustomFieldsTrait - Config wird in customFields gespeichert #}
+    {% set layout = (block.customFields.layout is defined and block.customFields.layout is not empty) ? block.customFields.layout : 'image-left' %}
+    {% set layoutDesktop = (block.customFields.layoutDesktop is defined and block.customFields.layoutDesktop is not empty) ? block.customFields.layoutDesktop : layout %}
+    {% set layoutTablet = (block.customFields.layoutTablet is defined and block.customFields.layoutTablet is not empty) ? block.customFields.layoutTablet : layout %}
+    {% set backgroundMode = (block.customFields.backgroundMode is defined) ? block.customFields.backgroundMode : 'none' %}
+    {% set minHeight = (block.customFields.minHeight is defined and block.customFields.minHeight is not empty) ? block.customFields.minHeight : null %}
+    
+    {# Background Images #}
+    {% set backgroundImage = (block.customFields.backgroundImage is defined) ? block.customFields.backgroundImage : null %}
+    {% set backgroundImageLeft = (block.customFields.backgroundImageLeft is defined) ? block.customFields.backgroundImageLeft : null %}
+    {% set backgroundImageRight = (block.customFields.backgroundImageRight is defined) ? block.customFields.backgroundImageRight : null %}
+    {% set backgroundZIndex = (block.customFields.backgroundZIndex is defined) ? block.customFields.backgroundZIndex : '0' %}
+
+    {# WICHTIG: Background-Bilder werden auf .cms-block Level gerendert (wie Standard-Block) #}
+    {# Background Mode: Single Image #}
+    {% if backgroundMode == 'single' and backgroundImage %}
+            <div class="hero-two-columns-background hero-two-columns-background--single" 
+             style="background-image: url('/media/{{ backgroundImage }}'); z-index: {{ backgroundZIndex }};">
+            </div>
+    {% endif %}
+
+    {# Background Mode: Two Images (Parallax) #}
+    {% if backgroundMode == 'two-images' %}
+            {% if backgroundImageLeft %}
+                <div class="hero-two-columns-background hero-two-columns-background--left" 
+                     data-parallax-background="left"
+                 style="background-image: url('/media/{{ backgroundImageLeft }}'); z-index: {{ backgroundZIndex }};">
+                </div>
+            {% endif %}
+            {% if backgroundImageRight %}
+                <div class="hero-two-columns-background hero-two-columns-background--right" 
+                     data-parallax-background="right"
+                 style="background-image: url('/media/{{ backgroundImageRight }}'); z-index: {{ backgroundZIndex }};">
+                </div>
+            {% endif %}
+    {% endif %}
+
+    {# WICHTIG: Cols müssen direkte Kinder der .row sein (wie Standard image-text Block) #}
+    {# Desktop/Tablet: 2 Spalten (50/50), Mobile: Stacked (100%) #}
+    {% block block_hero_two_columns_content %}
+        {# Left Slot (Bild) - Direktes Kind der .row für Bootstrap Grid #}
+        {% block block_hero_two_columns_left %}
+            {% set element = block.slots.getSlot('left') %}
+            {% if element and element.type %}
+                {# WICHTIG: Bootstrap Order-Klassen für Responsive Layout #}
+                {# layout: Mobile, layoutTablet: Tablet, layoutDesktop: Desktop #}
+                {% set mobileOrder = layout == 'text-left' ? '2' : '1' %}
+                {% set tabletOrder = layoutTablet == 'text-left' ? '2' : '1' %}
+                {% set desktopOrder = layoutDesktop == 'text-left' ? '2' : '1' %}
+                {% set orderClasses = 'order-' ~ mobileOrder ~ ' order-md-' ~ tabletOrder ~ ' order-lg-' ~ desktopOrder %}
+                
+                <div class="col-md-6 {{ orderClasses }}" data-cms-element-id="{{ element.id }}">
+                    {% block block_hero_two_columns_left_inner %}
+                        {% sw_include '@Storefront/storefront/element/cms-element-' ~ element.type ~ '.html.twig' ignore missing %}
+                    {% endblock %}
+                    </div>
+            {% endif %}
+        {% endblock %}
+
+        {# Right Slot (Text) - Direktes Kind der .row für Bootstrap Grid #}
+        {% block block_hero_two_columns_right %}
+            {% set element = block.slots.getSlot('right') %}
+            {% if element and element.type %}
+                {# WICHTIG: Bootstrap Order-Klassen für Responsive Layout (invers zu left) #}
+                {% set mobileOrder = layout == 'text-left' ? '1' : '2' %}
+                {% set tabletOrder = layoutTablet == 'text-left' ? '1' : '2' %}
+                {% set desktopOrder = layoutDesktop == 'text-left' ? '1' : '2' %}
+                {% set orderClasses = 'order-' ~ mobileOrder ~ ' order-md-' ~ tabletOrder ~ ' order-lg-' ~ desktopOrder %}
+                
+                <div class="col-md-6 {{ orderClasses }}" data-cms-element-id="{{ element.id }}">
+                    {% block block_hero_two_columns_right_inner %}
+                        {% sw_include '@Storefront/storefront/element/cms-element-' ~ element.type ~ '.html.twig' ignore missing %}
+                    {% endblock %}
+                    </div>
+            {% endif %}
+        {% endblock %}
+    {% endblock %}
+{% endblock %}

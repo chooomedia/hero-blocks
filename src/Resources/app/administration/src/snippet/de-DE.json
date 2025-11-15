@@ -1,0 +1,275 @@
+{
+    "sw-cms": {
+        "blocks": {
+                    "heroBlocks": {
+                        "heroBlockSlider": {
+                            "label": "Hero Block Slider",
+                "description": "Der flexible Hero-Slider: starke Visuals, klare Botschaften, smarte CTAs. Perfekt für Markenstories und Kampagnen."
+                        },
+                        "heroTwoColumns": {
+                            "label": "Hero Two Columns Image & Text",
+                            "description": "Zwei-Spalten Layout mit Bild und Text, Parallax-Scroll-Effekten und flexiblen Hintergrundoptionen.",
+                            "config": {
+                                "layout": {
+                                    "label": "Layout (Mobile)",
+                                    "helpText": "Wählen Sie die Spaltenanordnung für mobile Geräte: Bild links oder Text links.",
+                                    "options": {
+                                        "imageLeft": "Bild links, Text rechts",
+                                        "textLeft": "Text links, Bild rechts"
+                                    }
+                                },
+                                "layoutDesktop": {
+                                    "label": "Layout (Desktop)",
+                                    "helpText": "Wählen Sie die Spaltenanordnung für Desktop-Geräte: Bild links oder Text links.",
+                                    "options": {
+                                        "imageLeft": "Bild links, Text rechts",
+                                        "textLeft": "Text links, Bild rechts"
+                                    }
+                                },
+                                "layoutTablet": {
+                                    "label": "Layout (Tablet)",
+                                    "helpText": "Wählen Sie die Spaltenanordnung für Tablet-Geräte: Bild links oder Text links.",
+                                    "options": {
+                                        "imageLeft": "Bild links, Text rechts",
+                                        "textLeft": "Text links, Bild rechts"
+                                    }
+                                },
+                                "backgroundMode": {
+                                    "label": "Hintergrundmodus",
+                                    "helpText": "Wählen Sie den Hintergrundmodus: Kein Hintergrund, Einzelbild oder Zwei Bilder.",
+                                    "options": {
+                                        "none": "Kein Hintergrund",
+                                        "single": "Einzelbild",
+                                        "twoImages": "Zwei Bilder"
+                                    }
+                                },
+                                "backgroundImage": {
+                                    "label": "Hintergrundbild"
+                                },
+                                "backgroundImageLeft": {
+                                    "label": "Hintergrundbild links"
+                                },
+                                "backgroundImageRight": {
+                                    "label": "Hintergrundbild rechts"
+                                },
+                                "minHeight": {
+                                    "label": "Mindesthöhe",
+                                    "placeholder": "z.B. 500px oder 80vh",
+                                    "helpText": "Mindesthöhe für den Block (z.B. 500px oder 80vh)"
+                                }
+                            }
+                        }
+            }
+        },
+        "elements": {
+            "general": {
+                "config": {
+                    "tab": {
+                        "content": "Inhalt",
+                        "settings": "Einstellungen"
+                    },
+                    "label": {
+                        "displayMode": "Anzeigemodus",
+                        "displayModeStandard": "Standard",
+                        "displayModeCover": "Cover",
+                        "displayModeContain": "Contain",
+                        "verticalAlign": "Vertikale Ausrichtung",
+                        "verticalAlignNone": "Keine",
+                        "verticalAlignCenter": "Zentriert",
+                        "verticalAlignTop": "Oben",
+                        "verticalAlignBottom": "Unten",
+                        "autoplayTimeout": "Verzögerung",
+                        "speed": "Animationsdauer",
+                        "autoSlide": "Automatische Übergänge"
+                    },
+                    "helpText": {
+                        "displayMode": "Wie soll das Bild dargestellt werden?",
+                        "autoplayTimeout": "Zeit in Millisekunden bis zum nächsten Slide",
+                        "speed": "Geschwindigkeit der Animation in Millisekunden"
+                    },
+                    "infoText": {
+                        "autoSlideTitle": "Barrierefreiheitsbedenken",
+                        "autoSlideMessage": "Das Aktivieren dieser Funktion kann Teile Ihres Storefronts für Benutzer mit Behinderungen unzugänglich machen. Dies kann zu einer Nichteinhaltung der in Ihrer Rechtsordnung geltenden Barrierefreiheitsgesetze führen (z.B. European Accessibility Act). Durch das Fortfahren erkennen Sie dieses Risiko an und übernehmen die volle Verantwortung."
+                    },
+                    "caption": {
+                        "mediaUpload": "Bilder auswählen"
+                    }
+                }
+            },
+            "heroSlider": {
+                "label": "Hero Slider",
+                "empty": "Bitte fügen Sie Bilder hinzu",
+                "description": "Hero-Slider Element mit Bild, Headline, Text und zwei CTAs",
+                "config": {
+                    "minHeight": "Mindesthöhe",
+                    "minHeightPlaceholder": "Mindesthöhe für das Bild (z.B. 400px oder 50vh)",
+                    "minHeightHelpText": "Mindesthöhe für das Bild (z.B. 400px oder 50vh). Wird ignoriert wenn 'Vollhöhe' aktiviert ist.",
+                    "maxHeight": "Maximalhöhe",
+                    "maxHeightPlaceholder": "Maximalhöhe für das Bild (z.B. 800px oder 100vh)",
+                    "maxHeightHelpText": "Maximalhöhe für das Bild (z.B. 800px oder 100vh). Wird ignoriert wenn 'Vollhöhe' aktiviert ist.",
+                    "fullHeight": "Vollhöhe",
+                    "fullHeightHelpText": "Aktiviert automatisch 100vh minus Header-Höhe für Desktop und Mobile. Deaktiviert Min/Max-Höhe Einstellungen.",
+                    "maxHeightHelp": "Beispiele: 100vh, calc(100vh - var(--header-height, 80px))",
+                    "logoImage": "Logo/Bild vor Überschrift",
+                    "logoImageCaption": "Logo/Bild vor Überschrift (wird über dem Titel angezeigt)",
+                    "logoImageHelpText": "Optional: Logo oder Bild, das vor der Headline angezeigt wird. Wird nur auf diesem Slide verwendet.",
+                    "mediaUploadHelpText": "Wählen Sie Bilder für den Hero-Slider aus (max. 200 KB empfohlen). Moderne Bildformate (WebP, AVIF) werden automatisch komprimiert.",
+                    "uploadSizeWarning": {
+                        "title": "Große Datei erkannt",
+                        "message": "Die Datei \"{fileName}\" ist {size} KB groß (empfohlen: max. {maxSize} KB). Große Dateien können die Ladezeit beeinträchtigen."
+                    },
+                    "headline": "Überschrift",
+                    "headlinePlaceholder": "Ihre Headline hier",
+                    "text": "Text",
+                    "textPlaceholder": "Ihre Botschaft hier",
+                    "button1Text": "Button 1",
+                    "button1Url": "Button 1 URL",
+                    "button2Text": "Button 2",
+                    "button2Url": "Button 2 URL",
+                    "buttonTextLabel": "Button-Text",
+                    "buttonTextPlaceholder": "Text für Button eingeben",
+                    "clearUrl": "Leeren",
+                    "linkTypeHelp": "Externe URL oder interne Verknüpfung auf Produkte/Kategorien/Seiten über den Link-Picker.",
+                    "contentVerticalAlign": "Vertikale Inhaltsausrichtung",
+                    "contentVerticalAlignTop": "Oben",
+                    "contentVerticalAlignCenter": "Zentriert",
+                    "contentVerticalAlignBottom": "Unten",
+                    "contentHorizontalAlign": "Horizontale Inhaltsausrichtung",
+                    "contentHorizontalAlignLeft": "Links",
+                    "contentHorizontalAlignCenter": "Zentriert",
+                    "contentHorizontalAlignRight": "Rechts",
+                    "displayMode": {
+                        "label": "Anzeigemodus",
+                        "displayModeStandard": "Standard",
+                        "displayModeCover": "Cover",
+                        "displayModeContain": "Contain"
+                    },
+                    "slideLabel": "Slide {index}",
+                    "slidesTitle": "Slide-Inhalte konfigurieren",
+                    "styling": {
+                        "title": "Content-Styling",
+                        "headline": {
+                            "title": "Überschrift",
+                            "color": "Textfarbe",
+                            "fontSize": "Schriftgröße"
+                        },
+                        "text": {
+                            "title": "Text",
+                            "color": "Textfarbe",
+                            "fontSize": "Schriftgröße"
+                        },
+                        "button1": {
+                            "title": "Button 1",
+                            "backgroundColor": "Hintergrundfarbe",
+                            "textColor": "Textfarbe"
+                        },
+                        "button2": {
+                            "title": "Button 2",
+                            "backgroundColor": "Hintergrundfarbe",
+                            "textColor": "Textfarbe"
+                        },
+                        "fontSize": {
+                            "inherit": "Standard (Theme)",
+                            "xsmall": "Sehr klein",
+                            "small": "Klein",
+                            "medium": "Mittel",
+                            "large": "Groß",
+                            "xlarge": "Sehr groß",
+                            "xxlarge": "Extra groß"
+                        }
+                    }
+                }
+            },
+            "image": {
+                "config": {
+                    "label": {
+                        "minHeight": "Mindesthöhe",
+                        "minHeightHelpText": "Mindesthöhe für das Bild (z.B. 400px oder 50vh)",
+                        "linkTo": "Linkziel",
+                        "linkNewTab": "Link in neuem Tab öffnen",
+                        "isDecorative": "Bilder als dekorativ markieren",
+                        "isDecorativeHelpText": "Markiert Bilder als dekorativ für Screen Reader",
+                        "displayModeCover": "Cover"
+                    },
+                    "placeholder": {
+                        "enterUrl": "URL eingeben",
+                        "enterMinHeight": "Mindesthöhe eingeben (z.B. 400px oder 50vh)"
+                    }
+                }
+            },
+            "imageSlider": {
+                "config": {
+                    "label": {
+                        "navigationArrows": "Pfeilnavigation",
+                        "navigationPositionNone": "Keine",
+                        "navigationPositionInside": "Innen",
+                        "navigationPositionOutside": "Außen",
+                        "navigationDots": "Punktenavigation",
+                        "navigationPositionBottom": "Unten"
+                    },
+                    "helpText": {
+                        "displayMode": "Wie sollen die Bilder dargestellt werden?"
+                    }
+                }
+            }
+        },
+        "detail": {
+            "label": {
+                "elementSettings": "Element-Einstellungen",
+                "blockSizingField": "Größenmodus",
+                "sizingOptionBoxed": "Zentrierter Inhalt",
+                "sizingOptionFull": "Volle Breite"
+            },
+            "title": {
+                "elementSettingsModal": "Element-Einstellungen"
+            }
+        },
+        "sidebar": {
+            "contentMenu": {
+                "generalSettings": "Allgemeine Einstellungen",
+                "layoutSettings": "Layout-Einstellungen"
+            }
+        }
+    },
+    "sw-settings": {
+        "system-config": {
+            "labelSalesChannelSelect": "Verkaufskanal",
+            "compileNotice": "Hinweis: Nach Änderung der CSS-Konfiguration muss das Theme neu kompiliert werden."
+        }
+    },
+    "sw-settings-license-check": {
+        "description": "Professionelle CMS-Blöcke für Shopware Erlebniswelten. Hero Slider, Two Columns Layouts und weitere Custom Blocks nach Shopware Best Practices.",
+        "features": {
+            "heroSlider": "Hero Slider - Multi-Slide Hero-Blöcke mit Headlines, Text, Buttons und Bildern",
+            "heroTwoColumns": "Hero Two Columns Image & Text - Zwei-Spalten Layout mit flexiblen Hintergrundoptionen (Parallax-Scroll: demnächst)",
+            "heroVideoExtended": "Hero Video Extended - Video Hero-Blöcke mit Headlines, Text und Buttons (Demnächst)",
+            "heroInstagramFeed": "Hero Instagram Feed Widget - Instagram Feed Integration für Mega-Menü und Custom-Blöcke (Demnächst)",
+            "megaMenu": "Mega Menu Block - Erweiterte Navigations-Blöcke mit Produkten, Widgets und Instagram Feed Support (Demnächst)",
+            "shoppingExperience": "Shopping Experience Blöcke - Zusätzliche Custom-Blöcke für verbesserte Shopping-Erlebnisse (In Entwicklung)"
+        },
+        "general": {
+            "mainMenuItemGeneral": "Hero Slider - Lizenzprüfung"
+        },
+        "card": {
+            "licenseInformation": "Lizenz-Informationen",
+            "title": "Hero Slider - Lizenzprüfung",
+            "settings": "Einstellungen"
+        },
+        "button": {
+            "checkLicense": "Lizenz prüfen",
+            "checking": "Prüfe..."
+        },
+        "success": {
+            "title": "Lizenzprüfung erfolgreich",
+            "validMessage": "Lizenz ist gültig.",
+            "invalidMessage": "Lizenz ist abgelaufen. Bitte kontaktieren Sie den Support."
+        },
+        "error": {
+            "checkTitle": "Lizenzprüfung fehlgeschlagen",
+            "checkMessage": "Die Lizenzprüfung konnte nicht durchgeführt werden. Bitte versuchen Sie es später erneut."
+        },
+        "status": {
+            "active": "Aktiv"
+        }
+    }
+}

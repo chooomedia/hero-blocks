@@ -1,0 +1,43 @@
+{% block sw_cms_element_hero_slider %}
+<div class="sw-cms-el-hero-slider">
+    {# Content Preview - zeigt definierte Slides mit Navigation und Content #}
+    <template v-if="displaySlide">
+        <div class="sw-cms-el-hero-slider__placeholder">
+            {# Preview Bild (aus erster Slide) #}
+            <img :src="previewImageUrl" alt="Hero Preview">
+            
+            {# Gradient Overlay #}
+            <div class="sw-cms-el-hero-slider__overlay"></div>
+            
+            {# Navigation Arrows (wenn mehrere Slides) #}
+            <div v-if="showNavigation" class="sw-cms-el-hero-slider__navigation">
+                <div class="sw-cms-el-hero-slider__nav-box sw-cms-el-hero-slider__nav-box--left">
+                    <mt-icon name="regular-chevron-left" size="16"></mt-icon>
+                </div>
+                <div class="sw-cms-el-hero-slider__nav-box sw-cms-el-hero-slider__nav-box--right">
+                    <mt-icon name="regular-chevron-right" size="16"></mt-icon>
+                </div>
+            </div>
+            
+            {# Content Overlay (zentriert) - Headline, Text, Buttons #}
+            <div class="sw-cms-el-hero-slider__content">
+                <h3 v-if="headline">{{ headline }}</h3>
+                <p v-if="text">{{ text }}</p>
+                <div v-if="button1Text || button2Text" class="sw-cms-el-hero-slider__buttons">
+                    <button v-if="button1Text" class="sw-cms-el-hero-slider__button sw-cms-el-hero-slider__button--primary">{{ button1Text }}</button>
+                    <button v-if="button2Text" class="sw-cms-el-hero-slider__button sw-cms-el-hero-slider__button--secondary">{{ button2Text }}</button>
+                </div>
+            </div>
+        </div>
+    </template>
+    
+    {# Empty State - wird angezeigt wenn keine Slides vorhanden #}
+    <template v-else>
+        <div class="sw-cms-el-hero-slider__empty">
+            <mt-icon name="regular-image" size="40"></mt-icon>
+            <p>{{ $t('sw-cms.elements.heroSlider.empty') || 'Please add images' }}</p>
+        </div>
+    </template>
+</div>
+{% endblock %}
+

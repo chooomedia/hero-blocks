@@ -1,0 +1,35 @@
+{% block sw_cms_preview_hero_block_slider %}
+{# Mini-Vorschau für Sidebar - Background Image mit Overlay Content (wie vorher, nur höher) #}
+<div class="sw-cms-preview-hero-block-slider">
+    {# Background Image #}
+    <div class="sw-cms-preview-hero-block-slider__background">
+        <img
+            :src="assetFilter('/administration/administration/static/img/cms/preview_mountain_small.jpg')"
+            alt="Hero Background"
+            class="sw-cms-preview-hero-block-slider__bg-image"
+        >
+        {# Gradient Overlay #}
+        <div class="sw-cms-preview-hero-block-slider__overlay"></div>
+    </div>
+    
+    {# Navigation Boxen (links/rechts) #}
+    <div class="sw-cms-preview-hero-block-slider__navigation">
+        <div class="sw-cms-preview-hero-block-slider__nav-box sw-cms-preview-hero-block-slider__nav-box--left">
+            <mt-icon name="regular-chevron-left" size="10"></mt-icon>
+        </div>
+        <div class="sw-cms-preview-hero-block-slider__nav-box sw-cms-preview-hero-block-slider__nav-box--right">
+            <mt-icon name="regular-chevron-right" size="10"></mt-icon>
+        </div>
+    </div>
+    
+    {# Content Overlay (zentriert) - Logo/Title, Headline, Text, Buttons #}
+    <div class="sw-cms-preview-hero-block-slider__content">
+        <div class="sw-cms-preview-hero-block-slider__headline">Hero Headline</div>
+        <div class="sw-cms-preview-hero-block-slider__text">Hero description text</div>
+        <div class="sw-cms-preview-hero-block-slider__buttons">
+            <span class="sw-cms-preview-hero-block-slider__button">CTA 1</span>
+            <span class="sw-cms-preview-hero-block-slider__button">CTA 2</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

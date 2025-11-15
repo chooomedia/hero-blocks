@@ -1,0 +1,32 @@
+{% block sw_cms_preview_hero_two_columns %}
+<div class="sw-cms-preview-hero-two-columns" :class="previewClasses">
+    {# WICHTIG: Reihenfolge basierend auf layoutDesktop #}
+    <template v-if="layoutDesktop === 'text-left'">
+        {# Text zuerst, dann Bild #}
+        <div class="sw-cms-preview-hero-two-columns__right">
+            <h2>Lorem Ipsum</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </div>
+        <div class="sw-cms-preview-hero-two-columns__left">
+            <img
+                :src="assetFilter('/administration/administration/static/img/cms/preview_mountain_small.jpg')"
+                alt="Preview"
+            >
+        </div>
+    </template>
+    <template v-else>
+        {# Bild zuerst, dann Text (Standard) #}
+    <div class="sw-cms-preview-hero-two-columns__left">
+        <img
+                :src="assetFilter('/administration/administration/static/img/cms/preview_mountain_small.jpg')"
+            alt="Preview"
+        >
+    </div>
+    <div class="sw-cms-preview-hero-two-columns__right">
+        <h2>Lorem Ipsum</h2>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    </div>
+    </template>
+</div>
+{% endblock %}
+

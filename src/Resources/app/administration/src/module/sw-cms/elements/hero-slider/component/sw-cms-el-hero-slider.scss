@@ -1,0 +1,187 @@
+@import "~scss/variables";
+
+.sw-cms-el-hero-slider {
+    height: 100%;
+    min-height: 400px;
+    position: relative;
+    
+    // Empty State - wird ÜBER Block Preview angezeigt
+    &__empty {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 10; // ÜBER Block Preview
+        background: rgba(255, 255, 255, 0.95);
+        color: var(--color-text-secondary-default);
+        
+        .mt-icon {
+            color: var(--color-gray-400);
+            margin-bottom: 12px;
+        }
+        
+        p {
+            margin-top: 12px;
+            font-size: 14px;
+            color: var(--color-text-secondary-default);
+        }
+    }
+    
+    // Content Preview - wird angezeigt wenn Slides vorhanden
+    &__placeholder {
+        position: relative;
+        height: 100%;
+        min-height: 400px;
+        background: var(--color-gray-50);
+        border: 1px solid var(--color-gray-300);
+        overflow: hidden;
+        
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+    }
+    
+    // Navigation Arrows (wie im Mockup - kleine Boxen links/rechts)
+    &__navigation {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        transform: translateY(-50%);
+        display: flex;
+        justify-content: space-between;
+        padding: 0 8px;
+        z-index: 4;
+        pointer-events: none;
+    }
+    
+    &__nav-box {
+        width: 24px;
+        height: 24px;
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: auto;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        transition: all 0.15s ease;
+        
+        .mt-icon {
+            color: var(--color-text-primary-default);
+        }
+        
+        &:hover {
+            background: rgba(255, 255, 255, 1);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+            transform: scale(1.05);
+        }
+        
+        &--left {
+            margin-left: 4px;
+        }
+        
+        &--right {
+            margin-right: 4px;
+        }
+    }
+    
+    &__overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.1) 0%,
+            rgba(0, 0, 0, 0.4) 100%
+        );
+        z-index: 1;
+    }
+    
+    &__content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: var(--color-white);
+        z-index: 2;
+        width: 90%;
+        max-width: 600px;
+        
+        h3 {
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0 0 16px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+            line-height: 1.2;
+        }
+        
+        p {
+            font-size: 16px;
+            margin: 0 0 24px;
+            opacity: 0.95;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+            line-height: 1.5;
+        }
+    }
+    
+    &__buttons {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    &__button {
+        padding: 12px 24px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+        white-space: nowrap;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        transition: all 0.15s ease;
+        border: none;
+        cursor: pointer;
+        
+        &--primary {
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--color-shopware-brand-500, var(--color-brand-primary, #189eff));
+            border: 1px solid rgba(24, 158, 255, 0.2);
+            
+            &:hover {
+                background: rgba(255, 255, 255, 1);
+                color: var(--color-shopware-brand-600, var(--color-brand-primary, #1596ff));
+                border-color: var(--color-shopware-brand-500, var(--color-brand-primary, #189eff));
+                box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+                transform: translateY(-1px);
+            }
+        }
+        
+        &--secondary {
+            background: rgba(255, 255, 255, 0.85);
+            color: var(--color-darkgray-200, var(--color-text-secondary-default, #52667a));
+            border: 1px solid rgba(82, 102, 122, 0.2);
+            
+            &:hover {
+                background: rgba(255, 255, 255, 0.95);
+                color: var(--color-darkgray-300, var(--color-text-secondary-default, #47596b));
+                border-color: var(--color-darkgray-300, var(--color-text-secondary-default, #47596b));
+                box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+                transform: translateY(-1px);
+            }
+        }
+    }
+}
+

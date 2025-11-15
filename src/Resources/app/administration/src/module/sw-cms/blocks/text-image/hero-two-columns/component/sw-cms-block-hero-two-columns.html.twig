@@ -1,0 +1,12 @@
+{% block sw_cms_block_hero_two_columns %}
+{# WICHTIG: Matt Interfaces Branding - Logo wird via CSS (::after) hinzugefügt #}
+<div class="sw-cms-block-hero-two-columns" :class="blockClass">
+    {# WICHTIG: Slots für Bild (left) und Text (right) #}
+    <slot name="left">
+        {% block sw_cms_block_hero_two_columns_slot_left %}{% endblock %}
+    </slot>
+    <slot name="right">
+        {% block sw_cms_block_hero_two_columns_slot_right %}{% endblock %}
+    </slot>
+</div>
+{% endblock %}

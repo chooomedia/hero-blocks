@@ -1,0 +1,10 @@
+{
+    "component": {
+        "cms": {
+            "heroSlider": {
+                "ariaLabel": "Hero-Slider mit %total% Elementen",
+                "skipHeroSlider": "Hero-Slider überspringen"
+            }
+        }
+    }
+}

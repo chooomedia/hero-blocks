@@ -1,0 +1,141 @@
+@import "~scss/variables";
+
+// Mini-Vorschau für Sidebar - Background Image mit Overlay Content (ca. 30px höher)
+.sw-cms-preview-hero-block-slider {
+    width: 100%;
+    height: 100%;
+    min-height: 150px; // +30px höher als Standard (120px → 150px)
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--color-gray-100);
+
+    &__background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1;
+    }
+
+    &__bg-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    &__overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.1) 0%,
+            rgba(0, 0, 0, 0.4) 100%
+        );
+        z-index: 2;
+    }
+
+    // Navigation Boxen (links/rechts zentriert)
+    &__navigation {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        transform: translateY(-50%);
+        display: flex;
+        justify-content: space-between;
+        padding: 0 4px;
+        z-index: 4;
+        pointer-events: none;
+    }
+
+    &__nav-box {
+        width: 16px;
+        height: 16px;
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: auto;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+
+        .mt-icon {
+            color: var(--color-text-primary);
+        }
+
+        &--left {
+            margin-left: 2px;
+        }
+
+        &--right {
+            margin-right: 2px;
+        }
+    }
+
+    // Content zentriert ÜBER Background
+    &__content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 3;
+        text-align: center;
+        width: 90%;
+        color: var(--color-white);
+        pointer-events: none;
+    }
+
+    &__headline {
+        font-weight: 600;
+        font-size: 11px;
+        margin-bottom: 4px;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__text {
+        font-size: 9px;
+        line-height: 1.3;
+        margin-bottom: 6px;
+        opacity: 0.95;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__buttons {
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    &__button {
+        padding: 3px 6px;
+        background: rgba(255, 255, 255, 0.95);
+        color: var(--color-shopware-brand-500, var(--color-brand-primary, #189eff));
+        border: 1px solid rgba(24, 158, 255, 0.2);
+        border-radius: 2px;
+        font-size: 8px;
+        font-weight: 500;
+        white-space: nowrap;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        transition: all 0.15s ease;
+
+        &:nth-child(2) {
+            background: rgba(255, 255, 255, 0.85);
+            color: var(--color-darkgray-200, var(--color-text-secondary, #52667a));
+            border-color: rgba(82, 102, 122, 0.2);
+        }
+    }
+}

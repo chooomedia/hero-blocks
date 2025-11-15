@@ -1,0 +1,163 @@
+import template from "./sw-cms-el-hero-slider.html.twig";
+import "./sw-cms-el-hero-slider.scss";
+
+export default {
+  template,
+
+  props: {
+    element: {
+      type: Object,
+      required: true,
+      default() {
+        return {};
+      },
+    },
+  },
+
+  computed: {
+    assetFilter() {
+      return Shopware.Filter.getByName("asset");
+    },
+    displaySlide() {
+      // Safety check: element und config müssen existieren
+      if (!this.element || !this.element.config) {
+        return false;
+      }
+
+      // Prüfe sowohl data als auch config (wie Image Gallery)
+      const dataItems = this.element?.data?.sliderItems;
+      const configItems = this.element?.config?.sliderItems?.value;
+
+      // Wenn data Items vorhanden sind (nach enrich), zeige Content
+      if (Array.isArray(dataItems) && dataItems.length > 0) {
+        return true;
+      }
+
+      // Wenn config Items vorhanden sind (auch Placeholder!), zeige Content
+      // Placeholder haben fileName/mediaUrl, echte Items haben mediaId/media
+      if (Array.isArray(configItems) && configItems.length > 0) {
+        // Akzeptiere sowohl Placeholder (fileName/mediaUrl) als auch echte Items (mediaId/media)
+        const hasContent = configItems.some(
+          (item) => item.mediaId || item.media || item.fileName || item.mediaUrl
+        );
+        return hasContent;
+      }
+
+      return false;
+    },
+    // Erstes Slide-Item (für Preview)
+    firstSlide() {
+      const dataItems = this.element?.data?.sliderItems;
+      const configItems = this.element?.config?.sliderItems?.value;
+
+      // Priorität: data (nach enrich) > config
+      if (Array.isArray(dataItems) && dataItems.length > 0) {
+        return dataItems[0];
+      }
+      if (Array.isArray(configItems) && configItems.length > 0) {
+        return configItems[0];
+      }
+      return null;
+    },
+    // Preview-Bild URL (aus erster Slide)
+    previewImageUrl() {
+      if (!this.firstSlide) {
+        return this.assetFilter(
+          "/administration/administration/static/img/cms/preview_mountain_large.jpg"
+        );
+      }
+
+      // Wenn media Entity vorhanden ist (data)
+      if (this.firstSlide.media && this.firstSlide.media.url) {
+        return this.firstSlide.media.url;
+      }
+
+      // Wenn mediaUrl in config vorhanden ist
+      if (this.firstSlide.mediaUrl) {
+        return this.firstSlide.mediaUrl;
+      }
+
+      // Fallback
+      return this.assetFilter(
+        "/administration/administration/static/img/cms/preview_mountain_large.jpg"
+      );
+    },
+    // Headline (aus erster Slide oder global)
+    headline() {
+      if (this.firstSlide) {
+        // Per-Slide Headline (aus Extension oder direkt)
+        const slideHeadlineExt = this.firstSlide.extensions?.headline;
+        if (slideHeadlineExt?.value) {
+          return slideHeadlineExt.value;
+        }
+        if (this.firstSlide.headline) {
+          return this.firstSlide.headline;
+        }
+      }
+      // Global Headline
+      return this.element?.config?.headline?.value || "";
+    },
+    // Text (aus erster Slide oder global)
+    text() {
+      if (this.firstSlide) {
+        // Per-Slide Text (aus Extension oder direkt)
+        const slideTextExt = this.firstSlide.extensions?.text;
+        if (slideTextExt?.value) {
+          return slideTextExt.value;
+        }
+        if (this.firstSlide.text) {
+          return this.firstSlide.text;
+        }
+      }
+      // Global Text
+      return this.element?.config?.text?.value || "";
+    },
+    // Button 1 Text (aus erster Slide oder global)
+    button1Text() {
+      if (this.firstSlide) {
+        // Per-Slide Button (aus Extension oder direkt)
+        const slideButton1TextExt = this.firstSlide.extensions?.button1Text;
+        if (slideButton1TextExt?.value) {
+          return slideButton1TextExt.value;
+        }
+        if (this.firstSlide.button1Text) {
+          return this.firstSlide.button1Text;
+        }
+      }
+      // Global Button
+      return this.element?.config?.button1Text?.value || "";
+    },
+    // Button 2 Text (aus erster Slide oder global)
+    button2Text() {
+      if (this.firstSlide) {
+        // Per-Slide Button (aus Extension oder direkt)
+        const slideButton2TextExt = this.firstSlide.extensions?.button2Text;
+        if (slideButton2TextExt?.value) {
+          return slideButton2TextExt.value;
+        }
+        if (this.firstSlide.button2Text) {
+          return this.firstSlide.button2Text;
+        }
+      }
+      // Global Button
+      return this.element?.config?.button2Text?.value || "";
+    },
+    // Anzahl Slides (für Navigation-Anzeige)
+    slidesCount() {
+      const dataItems = this.element?.data?.sliderItems;
+      const configItems = this.element?.config?.sliderItems?.value;
+
+      if (Array.isArray(dataItems) && dataItems.length > 0) {
+        return dataItems.length;
+      }
+      if (Array.isArray(configItems) && configItems.length > 0) {
+        return configItems.length;
+      }
+      return 0;
+    },
+    // Navigation anzeigen?
+    showNavigation() {
+      return this.slidesCount > 1;
+    },
+  },
+};

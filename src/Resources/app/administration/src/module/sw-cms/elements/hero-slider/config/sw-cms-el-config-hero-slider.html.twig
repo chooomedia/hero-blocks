@@ -1,0 +1,602 @@
+{% block sw_cms_el_config_hero_slider %}
+<div class="sw-cms-el-config-hero-slider">
+    {% block sw_cms_el_config_hero_slider_tabs %}
+    <sw-tabs 
+        position-identifier="sw-cms-element-config-hero-slider"
+        default-item="content"
+    >
+        <template #default="{ active }">
+            {% block sw_cms_el_config_hero_slider_tab_content %}
+            <sw-tabs-item 
+                :title="$tc('sw-cms.elements.general.config.tab.content')" 
+                name="content" 
+                :active-tab="active"
+            >
+                {{ $tc('sw-cms.elements.general.config.tab.content') }}
+            </sw-tabs-item>
+            {% endblock %}
+            
+            {% block sw_cms_el_config_hero_slider_tab_settings %}
+            <sw-tabs-item 
+                :title="$tc('sw-cms.elements.general.config.tab.settings')" 
+                name="settings" 
+                :active-tab="active"
+            >
+                {{ $tc('sw-cms.elements.general.config.tab.settings') }}
+            </sw-tabs-item>
+            {% endblock %}
+        </template>
+
+        <template #content="{ active }">
+            {% block sw_cms_el_config_hero_slider_content %}
+            <template v-if="active === 'content'">
+            <sw-container class="sw-cms-el-config-hero-slider__tab-content">
+                
+                {# Media Upload - ZUERST (wie Image Slider) #}
+                {% block sw_cms_el_config_hero_slider_media %}
+                <sw-media-list-selection-v2
+                    :entity-media-items="mediaItems"
+                    :entity="entity"
+                    :upload-tag="uploadTag"
+                    :default-folder-name="defaultFolderName"
+                    @upload-finish="onImageUpload"
+                    @item-remove="onItemRemove"
+                    @open-sidebar="onOpenMediaModal"
+                    @item-sort="onItemSort"
+                />
+                {% endblock %}
+                
+                {# Media Modal #}
+                {% block sw_cms_el_config_hero_slider_media_modal %}
+                <sw-media-modal-v2
+                    v-if="mediaModalIsOpen"
+                    variant="full"
+                    :caption="$tc('sw-cms.elements.general.config.caption.mediaUpload')"
+                    :entity-context="cmsPageState?.entityName || 'cms_page'"
+                    :allow-multi-select="true"
+                    :initial-folder-id="cmsPageState?.defaultMediaFolderId || null"
+                    @media-upload-remove-image="onItemRemove"
+                    @media-modal-selection-change="onMediaSelectionChange"
+                    @modal-close="onCloseMediaModal"
+                />
+                {% endblock %}
+                
+                {# Per-Slide Content Configuration mit Toggle-Navigation (Bootstrap 5 Style) #}
+                {% block sw_cms_el_config_hero_slider_slides_content %}
+                <div v-if="items.length > 0" class="sw-cms-el-config-hero-slider__slides-config">
+                    <h4 class="sw-cms-el-config-hero-slider__slides-title">{{ $tc('sw-cms.elements.heroSlider.config.slidesTitle') }}</h4>
+                    
+                    {# Toggle Navigation (Bootstrap 5 Nav-Pills Style) #}
+                    {% block sw_cms_el_config_hero_slider_slides_nav %}
+                    <ul class="nav nav-pills sw-cms-el-config-hero-slider__slides-nav" role="tablist">
+                        <li 
+                            v-for="(sliderItem, index) in items"
+                            :key="index"
+                            class="nav-item"
+                        >
+                            <button
+                                type="button"
+                                class="nav-link"
+                                :class="{ 'active': activeSlideIndex === index }"
+                                @click="setActiveSlide(index)"
+                                role="tab"
+                                :aria-selected="activeSlideIndex === index"
+                            >
+                                <img 
+                                    v-if="sliderItem.mediaUrl" 
+                                    :src="sliderItem.mediaUrl" 
+                                    class="sw-cms-el-config-hero-slider__slide-nav-thumb"
+                                    alt=""
+                                >
+                                <span v-else class="sw-cms-el-config-hero-slider__slide-nav-placeholder">
+                                    {{ index + 1 }}
+                                </span>
+                                <span class="sw-cms-el-config-hero-slider__slide-nav-description">
+                                    {{ sliderItem.headline || sliderItem.text || ($tc('sw-cms.elements.heroSlider.config.slideLabel', 0, { index: index + 1 })) }}
+                                </span>
+                            </button>
+                        </li>
+                    </ul>
+                    {% endblock %}
+                    
+                    {# Tab Content - Per Slide #}
+                    {% block sw_cms_el_config_hero_slider_slides_content_panels %}
+                    <div class="tab-content sw-cms-el-config-hero-slider__slides-content">
+                        <div
+                            v-for="(sliderItem, index) in items"
+                            :key="index"
+                            class="tab-pane fade"
+                            :class="{ 'show active': activeSlideIndex === index }"
+                            role="tabpanel"
+                        >
+                            <div class="sw-cms-el-config-hero-slider__slide-settings">
+                                {# Logo/Image VOR Headline (wie Banner Block) #}
+                                {% block sw_cms_el_config_hero_slider_slide_logo %}
+                                <div class="sw-cms-el-config-hero-slider__slide-logo">
+                                    <sw-media-upload-v2
+                                        variant="regular"
+                                        :upload-tag="`${uploadTag}-slide-${index}-logo`"
+                                        :source="getSlideLogoImage(sliderItem, index)"
+                                        :allow-multi-select="false"
+                                        :default-folder="defaultFolderName"
+                                        :label="$tc('sw-cms.elements.heroSlider.config.logoImageCaption')"
+                                        :help-text="$tc('sw-cms.elements.heroSlider.config.logoImageHelpText')"
+                                        @media-upload-sidebar-open="onOpenSlideLogoModal(index)"
+                                        @media-upload-remove-image="onSlideLogoRemove(index)"
+                                    />
+                                    
+                                    <sw-media-modal-v2
+                                        v-if="slideLogoModals[index]"
+                                        variant="regular"
+                                        :allow-multi-select="false"
+                                        :entity-context="cmsPageState?.entityName || 'cms_page'"
+                                        :initial-folder-id="cmsPageState?.defaultMediaFolderId || null"
+                                        @media-modal-selection-change="onSlideLogoSelectionChange(index, $event)"
+                                        @modal-close="onCloseSlideLogoModal(index)"
+                                    />
+                                    
+                                    <sw-upload-listener
+                                        :upload-tag="`${uploadTag}-slide-${index}-logo`"
+                                        auto-upload
+                                        @media-upload-finish="onSlideLogoUpload(index, $event)"
+                                    />
+                                </div>
+                                {% endblock %}
+                                
+                                {% block sw_cms_el_config_hero_slider_slide_headline %}
+                                <mt-text-field
+                                    v-model="sliderItem.headline"
+                                    :label="$tc('sw-cms.elements.heroSlider.config.headline')"
+                                    :placeholder="$tc('sw-cms.elements.heroSlider.config.headlinePlaceholder')"
+                                    @update:model-value="emitUpdateEl"
+                                />
+                                {% endblock %}
+                                
+                                {% block sw_cms_el_config_hero_slider_slide_text %}
+                                <mt-textarea
+                                    v-model="sliderItem.text"
+                                    :label="$tc('sw-cms.elements.heroSlider.config.text')"
+                                    :placeholder="$tc('sw-cms.elements.heroSlider.config.textPlaceholder')"
+                                    @update:model-value="emitUpdateEl"
+                                />
+                                {% endblock %}
+                                
+                                {% block sw_cms_el_config_hero_slider_slide_button1 %}
+                                <div class="sw-cms-el-config-hero-slider__buttons-row">
+                                <div class="sw-cms-el-config-hero-slider__button-group">
+                                    <h5 class="sw-cms-el-config-hero-slider__button-group-title">
+                                        {{ $tc('sw-cms.elements.heroSlider.config.button1Text') }}
+                                    </h5>
+                                    <div class="sw-cms-el-config-hero-slider__button-fields">
+                                        <div class="sw-cms-el-config-hero-slider__button-field">
+                                            <mt-text-field
+                                                v-model="sliderItem.button1Text"
+                                                :label="$tc('sw-cms.elements.heroSlider.config.buttonTextLabel')"
+                                                :placeholder="$tc('sw-cms.elements.heroSlider.config.buttonTextPlaceholder')"
+                                                @update:model-value="emitUpdateEl"
+                                                class="sw-cms-el-config-hero-slider__button-text-field"
+                                            />
+                                        </div>
+                                        <div class="sw-cms-el-config-hero-slider__button-field">
+                                            <sw-dynamic-url-field
+                                                v-model:value="sliderItem.button1Url"
+                                                :label="$tc('sw-cms.elements.image.config.label.linkTo')"
+                                                :placeholder="$tc('sw-cms.elements.image.config.placeholder.enterUrl')"
+                                                @update:value="emitUpdateEl"
+                                                class="sw-cms-el-config-hero-slider__button-url-field"
+                                            />
+                                        </div>
+                                        <div class="sw-cms-el-config-hero-slider__button-field">
+                                            <sw-switch-field
+                                                v-model="sliderItem.button1NewTab"
+                                                :label="$tc('sw-cms.elements.image.config.label.linkNewTab')"
+                                                @update:model-value="emitUpdateEl"
+                                                class="sw-cms-el-config-hero-slider__button-newtab-field"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endblock %}
+                                
+                                {% block sw_cms_el_config_hero_slider_slide_button2 %}
+                                <div class="sw-cms-el-config-hero-slider__button-group">
+                                    <h5 class="sw-cms-el-config-hero-slider__button-group-title">
+                                        {{ $tc('sw-cms.elements.heroSlider.config.button2Text') }}
+                                    </h5>
+                                    <div class="sw-cms-el-config-hero-slider__button-fields">
+                                        <div class="sw-cms-el-config-hero-slider__button-field">
+                                            <mt-text-field
+                                                v-model="sliderItem.button2Text"
+                                                :label="$tc('sw-cms.elements.heroSlider.config.buttonTextLabel')"
+                                                :placeholder="$tc('sw-cms.elements.heroSlider.config.buttonTextPlaceholder')"
+                                                @update:model-value="emitUpdateEl"
+                                                class="sw-cms-el-config-hero-slider__button-text-field"
+                                            />
+                                        </div>
+                                        <div class="sw-cms-el-config-hero-slider__button-field">
+                                            <sw-dynamic-url-field
+                                                v-model:value="sliderItem.button2Url"
+                                                :label="$tc('sw-cms.elements.image.config.label.linkTo')"
+                                                :placeholder="$tc('sw-cms.elements.image.config.placeholder.enterUrl')"
+                                                @update:value="emitUpdateEl"
+                                                class="sw-cms-el-config-hero-slider__button-url-field"
+                                            />
+                                        </div>
+                                        <div class="sw-cms-el-config-hero-slider__button-field">
+                                            <sw-switch-field
+                                                v-model="sliderItem.button2NewTab"
+                                                :label="$tc('sw-cms.elements.image.config.label.linkNewTab')"
+                                                @update:model-value="emitUpdateEl"
+                                                class="sw-cms-el-config-hero-slider__button-newtab-field"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+                                {% endblock %}
+                                
+                                {% block sw_cms_el_config_hero_slider_slide_link %}
+                                <div class="sw-cms-el-config-hero-slider__link-group">
+                                    <h5 class="sw-cms-el-config-hero-slider__link-group-title d-flex align-items-center gap-2">
+                                        <span>{{ $tc('sw-cms.elements.image.config.label.linkTo') }}</span>
+                                        <mt-help-text class="sw-cms-el-config-hero-slider__link-help" :text="$tc('sw-cms.elements.heroSlider.config.linkTypeHelp')" />
+                                    </h5>
+                                    <sw-dynamic-url-field
+                                        v-model:value="sliderItem.url"
+                                        :label="$tc('sw-cms.elements.image.config.label.linkTo')"
+                                        :placeholder="$tc('sw-cms.elements.image.config.placeholder.enterUrl')"
+                                        @update:value="emitUpdateEl"
+                                        class="sw-cms-el-config-hero-slider__link-url-field"
+                                    />
+                                    <sw-switch-field
+                                        v-model="sliderItem.newTab"
+                                        :label="$tc('sw-cms.elements.image.config.label.linkNewTab')"
+                                        @update:model-value="emitUpdateEl"
+                                        class="sw-cms-el-config-hero-slider__link-newtab-field"
+                                    />
+                                </div>
+                                {% endblock %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endblock %}
+                </div>
+                {% endblock %}
+                
+            </sw-container>
+            </template>
+            {% endblock %}
+            
+            {% block sw_cms_el_config_hero_slider_settings %}
+            <template v-if="active === 'settings'">
+            <sw-container class="sw-cms-el-config-hero-slider__tab-settings">
+                
+                {# Automatic Transition - Collapsible (wie License Information) #}
+                {% block sw_cms_el_config_hero_slider_auto_slide %}
+                <sw-collapse :expand-on-loading="false" class="sw-cms-el-config-hero-slider__collapse">
+                    <template #header="{ expanded }">
+                        <div class="sw-cms-el-config-hero-slider__collapse-header">
+                            <h3 class="mt-text--size-m mt-text--weight-semibold">
+                                {{ $tc('sw-cms.elements.general.config.label.autoSlide') }}
+                            </h3>
+                            <mt-icon 
+                                :name="expanded ? 'regular-chevron-up-xs' : 'regular-chevron-down-xs'" 
+                                size="16"
+                                class="sw-cms-el-config-hero-slider__collapse-chevron"
+                            />
+                        </div>
+                    </template>
+                    <template #content="{ expanded }">
+                        <mt-banner
+                            class="sw-cms-el-config-hero-slider__setting-auto-slide"
+                            variant="attention"
+                            :title="$tc('sw-cms.elements.general.config.infoText.autoSlideTitle')"
+                        >
+                            <p class="sw-cms-el-config-hero-slider__setting-auto-slide-attention">
+                                {{ $tc('sw-cms.elements.general.config.infoText.autoSlideMessage') }}
+                            </p>
+                            
+                            <div class="sw-cms-el-config-hero-slider__setting-auto-slide-container sw-cms-el-config-hero-slider__setting-option">
+                                <div class="sw-cms-el-config-hero-slider__setting-auto-slide-switch">
+                                    <mt-switch
+                                        v-model="element.config.autoSlide.value"
+                                        class="sw-cms-el-config-hero-slider__setting-auto-slide"
+                                        :label="$t('sw-cms.elements.general.config.label.autoSlide')"
+                                        bordered
+                                        @update:model-value="onChangeAutoSlide"
+                                    />
+                                </div>
+                                
+                                <div class="sw-cms-el-config-hero-slider__setting-auto-slide-delay">
+                                    {% block sw_cms_el_config_hero_slider_autoplay_timeout %}
+                                    <mt-number-field
+                                        v-model="element.config.autoplayTimeout.value"
+                                        class="sw-cms-el-config-hero-slider__setting-delay-slide"
+                                        number-type="int"
+                                        :min="0"
+                                        :max="3600000"
+                                        :label="$t('sw-cms.elements.general.config.label.autoplayTimeout')"
+                                        :placeholder="$t('sw-cms.elements.general.config.label.autoplayTimeout')"
+                                        :help-text="$t('sw-cms.elements.general.config.helpText.autoplayTimeout')"
+                                        :disabled="!element.config.autoSlide.value"
+                                    />
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </mt-banner>
+                        
+                        {# Speed #}
+                        {% block sw_cms_el_config_hero_slider_speed %}
+                        <mt-number-field
+                            v-model="element.config.speed.value"
+                            number-type="int"
+                            :min="0"
+                            :max="3600000"
+                            :label="$t('sw-cms.elements.general.config.label.speed')"
+                            :placeholder="$t('sw-cms.elements.general.config.label.speed')"
+                            :help-text="$t('sw-cms.elements.general.config.helpText.speed')"
+                        />
+                        {% endblock %}
+                    </template>
+                </sw-collapse>
+                {% endblock %}
+                
+                {# Navigation Settings - Collapsible #}
+                {% block sw_cms_el_config_hero_slider_navigation %}
+                <sw-collapse :expand-on-loading="false" class="sw-cms-el-config-hero-slider__collapse">
+                    <template #header="{ expanded }">
+                        <div class="sw-cms-el-config-hero-slider__collapse-header">
+                            <h3 class="mt-text--size-m mt-text--weight-semibold">
+                                {{ $tc('sw-cms.elements.imageSlider.config.label.navigationArrows') }} & {{ $tc('sw-cms.elements.imageSlider.config.label.navigationDots') }}
+                            </h3>
+                            <mt-icon 
+                                :name="expanded ? 'regular-chevron-up-xs' : 'regular-chevron-down-xs'" 
+                                size="16"
+                                class="sw-cms-el-config-hero-slider__collapse-chevron"
+                            />
+                        </div>
+                    </template>
+                    <template #content="{ expanded }">
+                        <div class="sw-cms-el-config-hero-slider__setting-navigations sw-cms-el-config-hero-slider__setting-option">
+                            <div class="sw-cms-el-config-hero-slider__settings-navigation">
+                                {% block sw_cms_el_config_hero_slider_navigation_arrows %}
+                                <mt-select
+                                    v-model="element.config.navigationArrows.value"
+                                    :label="$t('sw-cms.elements.imageSlider.config.label.navigationArrows')"
+                                    :options="navigationArrowsValueOptions"
+                                    @update:model-value="emitUpdateEl"
+                                />
+                                {% endblock %}
+                            </div>
+                            
+                            <div class="sw-cms-el-config-hero-slider__settings-navigation">
+                                {% block sw_cms_el_config_hero_slider_navigation_dots %}
+                                <mt-select
+                                    v-model="element.config.navigationDots.value"
+                                    :label="$t('sw-cms.elements.imageSlider.config.label.navigationDots')"
+                                    :options="navigationDotsValueOptions"
+                                    @update:model-value="emitUpdateEl"
+                                />
+                                {% endblock %}
+                            </div>
+                        </div>
+                    </template>
+                </sw-collapse>
+                {% endblock %}
+                
+
+                {# Display Mode & Layout Settings - Collapsible #}
+                {% block sw_cms_el_config_hero_slider_settings_display %}
+                <sw-collapse :expand-on-loading="false" class="sw-cms-el-config-hero-slider__collapse">
+                    <template #header="{ expanded }">
+                        <div class="sw-cms-el-config-hero-slider__collapse-header">
+                            <h3 class="mt-text--size-m mt-text--weight-semibold">
+                                {{ $tc('sw-cms.elements.general.config.label.displayMode') }} & {{ $tc('sw-cms.elements.general.config.label.verticalAlign') }}
+                            </h3>
+                            <mt-icon 
+                                :name="expanded ? 'regular-chevron-up-xs' : 'regular-chevron-down-xs'" 
+                                size="16"
+                                class="sw-cms-el-config-hero-slider__collapse-chevron"
+                            />
+                        </div>
+                    </template>
+                    <template #content="{ expanded }">
+                        <div class="sw-cms-el-config-hero-slider__setting-option">
+                            {% block sw_cms_el_config_hero_slider_settings_display_mode %}
+                            <mt-select
+                                v-model="element.config.displayMode.value"
+                                class="sw-cms-el-config-hero-slider__setting-display-mode"
+                                :label="$t('sw-cms.elements.general.config.label.displayMode')"
+                                :help-text="$t('sw-cms.elements.imageSlider.config.helpText.displayMode')"
+                                :options="displayModeValueOptions"
+                                @update:model-value="onChangeDisplayMode"
+                            />
+                            {% endblock %}
+
+                            {% block sw_cms_el_config_hero_slider_settings_full_height %}
+                            <sw-switch-field
+                                v-model="element.config.fullHeight.value"
+                                :label="$tc('sw-cms.elements.heroSlider.config.fullHeight')"
+                                :help-text="$tc('sw-cms.elements.heroSlider.config.fullHeightHelpText')"
+                                :disabled="element.config.displayMode.value !== 'cover'"
+                                @update:model-value="onChangeFullHeight"
+                            />
+                            {% endblock %}
+
+                            {% block sw_cms_el_config_hero_slider_settings_min_height %}
+                            <mt-text-field
+                                v-model="element.config.minHeight.value"
+                                :label="$tc('sw-cms.elements.heroSlider.config.minHeight')"
+                                :placeholder="$tc('sw-cms.elements.heroSlider.config.minHeightPlaceholder')"
+                                :help-text="$tc('sw-cms.elements.heroSlider.config.minHeightHelpText')"
+                                :disabled="element.config.displayMode.value !== 'cover'"
+                                @update:model-value="onChangeMinHeight"
+                            />
+                            {% endblock %}
+
+                            {% block sw_cms_el_config_hero_slider_settings_max_height %}
+                            <mt-text-field
+                                v-model="element.config.maxHeight.value"
+                                :label="$tc('sw-cms.elements.heroSlider.config.maxHeight')"
+                                :placeholder="$tc('sw-cms.elements.heroSlider.config.maxHeightPlaceholder')"
+                                :help-text="$tc('sw-cms.elements.heroSlider.config.maxHeightHelpText')"
+                                :disabled="element.config.displayMode.value !== 'cover'"
+                                @update:model-value="onChangeMaxHeight"
+                            />
+                            {% endblock %}
+
+                            {% block sw_cms_el_config_hero_slider_settings_vertical_align %}
+                            <mt-select
+                                v-model="element.config.verticalAlign.value"
+                                :label="$t('sw-cms.elements.general.config.label.verticalAlign')"
+                                :placeholder="$t('sw-cms.elements.general.config.label.verticalAlign')"
+                                :disabled="element.config.displayMode.value !== 'cover'"
+                                :options="verticalAlignValueOptions"
+                                @update:model-value="emitUpdateEl"
+                            />
+                            {% endblock %}
+
+                            {# Content Alignment Settings #}
+                            {% block sw_cms_el_config_hero_slider_settings_content_vertical_align %}
+                            <mt-select
+                                v-model="element.config.contentVerticalAlign.value"
+                                :label="$tc('sw-cms.elements.heroSlider.config.contentVerticalAlign')"
+                                :options="contentVerticalAlignValueOptions"
+                                @update:model-value="emitUpdateEl"
+                            />
+                            {% endblock %}
+
+                            {% block sw_cms_el_config_hero_slider_settings_content_horizontal_align %}
+                            <mt-select
+                                v-model="element.config.contentHorizontalAlign.value"
+                                :label="$tc('sw-cms.elements.heroSlider.config.contentHorizontalAlign')"
+                                :options="contentHorizontalAlignValueOptions"
+                                @update:model-value="emitUpdateEl"
+                            />
+                            {% endblock %}
+                        </div>
+                        
+                        {# Is Decorative (Accessibility) #}
+                        {% block sw_cms_el_config_hero_slider_settings_decorative %}
+                        <mt-switch
+                            class="sw-cms-el-config-hero-slider__settings-is-decorative"
+                            :model-value="element.config.isDecorative.value"
+                            :label="$t('sw-cms.elements.image.config.label.isDecorative')"
+                            :help-text="$t('sw-cms.elements.image.config.label.isDecorativeHelpText')"
+                            bordered
+                            @update:model-value="onChangeIsDecorative"
+                        />
+                        {% endblock %}
+                    </template>
+                </sw-collapse>
+                {% endblock %}
+
+                {# Content Styling Options - Collapsible #}
+                {% block sw_cms_el_config_hero_slider_settings_styling %}
+                <sw-collapse :expand-on-loading="false" class="sw-cms-el-config-hero-slider__collapse">
+                    <template #header="{ expanded }">
+                        <div class="sw-cms-el-config-hero-slider__collapse-header">
+                            <h3 class="mt-text--size-m mt-text--weight-semibold">
+                                {{ $tc('sw-cms.elements.heroSlider.config.styling.title') }}
+                            </h3>
+                            <mt-icon 
+                                :name="expanded ? 'regular-chevron-up-xs' : 'regular-chevron-down-xs'" 
+                                size="16"
+                                class="sw-cms-el-config-hero-slider__collapse-chevron"
+                            />
+                        </div>
+                    </template>
+                    <template #content="{ expanded }">
+                        <div class="sw-cms-el-config-hero-slider__setting-styling">
+                    
+                    {# Headline Styling #}
+                    {% block sw_cms_el_config_hero_slider_settings_headline_styling %}
+                    <div class="sw-cms-el-config-hero-slider__styling-group">
+                        <h5 class="sw-cms-el-config-hero-slider__styling-group-title">{{ $tc('sw-cms.elements.heroSlider.config.styling.headline.title') }}</h5>
+                        
+                        <mt-colorpicker
+                            :label="$tc('sw-cms.elements.heroSlider.config.styling.headline.color')"
+                            :model-value="element.config.headlineColor?.value || ''"
+                            @update:model-value="onChangeColor('headlineColor', $event)"
+                        />
+                        
+                        <mt-select
+                            v-model="element.config.headlineFontSize.value"
+                            :label="$tc('sw-cms.elements.heroSlider.config.styling.headline.fontSize')"
+                            :options="headlineFontSizeOptions"
+                            @update:model-value="emitUpdateEl"
+                        />
+                    </div>
+                    {% endblock %}
+                    
+                    {# Text Styling #}
+                    {% block sw_cms_el_config_hero_slider_settings_text_styling %}
+                    <div class="sw-cms-el-config-hero-slider__styling-group">
+                        <h5 class="sw-cms-el-config-hero-slider__styling-group-title">{{ $tc('sw-cms.elements.heroSlider.config.styling.text.title') }}</h5>
+                        
+                        <mt-colorpicker
+                            :label="$tc('sw-cms.elements.heroSlider.config.styling.text.color')"
+                            :model-value="element.config.textColor?.value || ''"
+                            @update:model-value="onChangeColor('textColor', $event)"
+                        />
+                        
+                        <mt-select
+                            v-model="element.config.textFontSize.value"
+                            :label="$tc('sw-cms.elements.heroSlider.config.styling.text.fontSize')"
+                            :options="textFontSizeOptions"
+                            @update:model-value="emitUpdateEl"
+                        />
+                    </div>
+                    {% endblock %}
+                    
+                    {# Button 1 Styling #}
+                    {% block sw_cms_el_config_hero_slider_settings_button1_styling %}
+                    <div class="sw-cms-el-config-hero-slider__styling-group">
+                        <h5 class="sw-cms-el-config-hero-slider__styling-group-title">{{ $tc('sw-cms.elements.heroSlider.config.styling.button1.title') }}</h5>
+                        
+                        <mt-colorpicker
+                            :label="$tc('sw-cms.elements.heroSlider.config.styling.button1.backgroundColor')"
+                            :model-value="element.config.button1BackgroundColor?.value || ''"
+                            @update:model-value="onChangeColor('button1BackgroundColor', $event)"
+                        />
+                        
+                        <mt-colorpicker
+                            :label="$tc('sw-cms.elements.heroSlider.config.styling.button1.textColor')"
+                            :model-value="element.config.button1TextColor?.value || ''"
+                            @update:model-value="onChangeColor('button1TextColor', $event)"
+                        />
+                    </div>
+                    {% endblock %}
+                    
+                    {# Button 2 Styling #}
+                    {% block sw_cms_el_config_hero_slider_settings_button2_styling %}
+                    <div class="sw-cms-el-config-hero-slider__styling-group">
+                        <h5 class="sw-cms-el-config-hero-slider__styling-group-title">{{ $tc('sw-cms.elements.heroSlider.config.styling.button2.title') }}</h5>
+                        
+                        <mt-colorpicker
+                            :label="$tc('sw-cms.elements.heroSlider.config.styling.button2.backgroundColor')"
+                            :model-value="element.config.button2BackgroundColor?.value || ''"
+                            @update:model-value="onChangeColor('button2BackgroundColor', $event)"
+                        />
+                        
+                        <mt-colorpicker
+                            :label="$tc('sw-cms.elements.heroSlider.config.styling.button2.textColor')"
+                            :model-value="element.config.button2TextColor?.value || ''"
+                            @update:model-value="onChangeColor('button2TextColor', $event)"
+                        />
+                    </div>
+                    {% endblock %}
+                    
+                        </div>
+                    </template>
+                </sw-collapse>
+                {% endblock %}
+            </sw-container>
+            </template>
+            {% endblock %}
+        </template>
+    </sw-tabs>
+    {% endblock %}
+</div>
+{% endblock %}
+

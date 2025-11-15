@@ -1,0 +1,37 @@
+{
+    "name": "horex/hero-blocks",
+    "description": "Hero Blocks CMS Blocks – konfigurierbare Hero-Blöcke für Shopware Erlebniswelten",
+    "type": "shopware-platform-plugin",
+    "version": "1.0.0",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Matt Interfaces",
+            "homepage": "https://www.matt-interfaces.ch"
+        }
+    ],
+    "require": {
+        "shopware/core": "~6.7.0"
+    },
+    "extra": {
+        "shopware-plugin-class": "HeroBlocks\\HeroBlocks",
+        "label": {
+            "de-DE": "Hero Blocks",
+            "en-GB": "Hero Blocks"
+        },
+        "description": {
+            "de-DE": "Professionelle CMS-Blöcke für Shopware Erlebniswelten. Hero Slider, Two Columns Layouts und weitere Custom Blocks nach Shopware Best Practices.",
+            "en-GB": "Professional CMS blocks for Shopware Shopping Experiences. Hero Slider, Two Columns layouts, and custom blocks built according to Shopware best practices."
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "HeroBlocks\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "HeroBlocks\\Tests\\": "tests/"
+        }
+    }
+}

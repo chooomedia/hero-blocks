@@ -1,0 +1,48 @@
+// Hero Blocks Extension Config Override - License Chip Styling
+@import "~scss/variables";
+@import "~scss/mixins";
+
+.sw-extension-config {
+  &__license-chip-wrapper {
+    display: flex;
+    align-items: center;
+    margin-right: 12px;
+  }
+
+  &__license-chip {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    user-select: none;
+
+    &:hover {
+      opacity: 0.8;
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    &.is-loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    &-loader {
+      flex-shrink: 0;
+    }
+
+    span {
+      white-space: nowrap;
+    }
+  }
+
+  &__save-action {
+    // Normal Save Button Styling
+  }
+}
+

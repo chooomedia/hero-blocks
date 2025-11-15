@@ -1,0 +1,9 @@
+{% sw_extends '@Storefront/storefront/section/cms-section-default.html.twig' %}
+
+{% block page_content_section_default %}
+    {# Zurück zum Standard: Kein zusätzlicher Container-Wrapper #}
+    {# Die Section verwendet bereits section.sizingMode für Container/Full-Width #}
+    {# CSS wird Sections nach Hero automatisch auf "container" setzen #}
+    {{ parent() }}
+{% endblock %}
+

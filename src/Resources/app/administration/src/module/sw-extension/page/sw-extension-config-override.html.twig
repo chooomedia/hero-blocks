@@ -1,0 +1,25 @@
+{% block sw_extension_config_smart_bar_actions %}
+    {# Active License Chip im Header - nur für HeroBlocks #}
+    <template v-if="isHeroBlocksConfig && showLicenseChip" #smart-bar-actions>
+        {# License Chip mit Animation #}
+        <div class="sw-extension-config__license-chip-wrapper">
+            <sw-status
+                :color="licenseChipColor"
+                :class="['sw-extension-config__license-chip', { 'is-loading': isSilentLicenseChecking }]"
+                @click="onLicenseChipClick"
+                role="button"
+                tabindex="0"
+                @keydown.enter="onLicenseChipClick"
+            >
+                <sw-loader
+                    v-if="isSilentLicenseChecking"
+                    size="12px"
+                    class="sw-extension-config__license-chip-loader"
+                />
+                <span v-else>{{ licenseChipText }}</span>
+            </sw-status>
+        </div>
+    </template>
+    {% parent %}
+{% endblock %}
+

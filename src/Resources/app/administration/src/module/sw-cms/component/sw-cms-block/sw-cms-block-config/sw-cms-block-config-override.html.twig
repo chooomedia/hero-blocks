@@ -1,0 +1,14 @@
+{% block sw_cms_block_config__settings %}
+    {% parent %}
+    
+    {# WICHTIG: Block-spezifische Config-Komponente dynamisch laden #}
+    {# WICHTIG: Keine Events nötig - Shopware erkennt Änderungen über Vue's Reactivity #}
+    {% block sw_cms_block_config_custom %}
+    <component
+        v-if="blockConfig && blockConfig.configComponent"
+        :is="blockConfig.configComponent"
+        :block="block"
+    />
+    {% endblock %}
+{% endblock %}
+
