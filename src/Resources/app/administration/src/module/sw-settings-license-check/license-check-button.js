@@ -862,8 +862,9 @@ Shopware.Component.override("sw-system-config", {
         let response;
         try {
           // POST Request zu Backend-Endpunkt
+          // WICHTIG: Route ohne /api Prefix (httpClient hat bereits baseURL = /api)
           response = await httpClient.post(
-            "/api/_action/hero-blocks/test-download-url",
+            "/_action/hero-blocks/test-download-url",
             {},
             {
               headers: {
@@ -970,16 +971,21 @@ Shopware.Component.override("sw-system-config", {
 
         // Step 3: Download & Install
         console.log("📡 Step 3: Download & Install...");
-        await this.downloadHeroBlocksUpdate();
-
-        // Success Notification
-        this.createNotificationSuccess({
-          title: this.$tc("sw-settings-license-check.update.testFullProcessSuccess"),
-          message: this.$tc(
-            "sw-settings-license-check.update.testFullProcessSuccessMessage"
-          ),
-          autoClose: false,
-        });
+        try {
+          await this.downloadHeroBlocksUpdate();
+          
+          // Success Notification nur wenn wirklich erfolgreich
+          this.createNotificationSuccess({
+            title: this.$tc("sw-settings-license-check.update.testFullProcessSuccess"),
+            message: this.$tc(
+              "sw-settings-license-check.update.testFullProcessSuccessMessage"
+            ),
+            autoClose: false,
+          });
+        } catch (downloadError) {
+          // Error wird bereits von downloadHeroBlocksUpdate angezeigt
+          throw downloadError; // Re-throw damit finally-Block korrekt ausgeführt wird
+        }
       } catch (error) {
         console.error("❌ Full update process test error:", {
           error: error,
