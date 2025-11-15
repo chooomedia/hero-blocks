@@ -297,32 +297,37 @@
             {% endblock %}
         </template>
         <template v-if="!isLoading">
+            {# WICHTIG: Verstecke disabled System Config Felder (updateAvailable, latestVersion, updateDownloadUrl) #}
+            {# Diese werden bereits in der Status-Info-Box angezeigt - keine Doppelung! #}
             <template v-for="element in card.elements">
-                <slot
-                    name="card-element"
-                    v-bind="{ element: getElementBind(element), config: actualConfigData[currentSalesChannelId], card }"
-                >
-                    {% block sw_system_config_content_card_field_update %}
-                    <sw-inherit-wrapper
-                        v-model:value="actualConfigData[currentSalesChannelId][element.name]"
-                        v-bind="getInheritWrapperBind(element)"
-                        :has-parent="isNotDefaultSalesChannel"
-                        :inherited-value="getInheritedValue(element)"
-                        :class="'sw-system-config--field-' + kebabCase(getElementBind(element).name)"
+                {# WICHTIG: Nur rendern wenn nicht disabled oder wenn es andere Felder sind #}
+                <template v-if="!isUpdateInfoField(element.name)">
+                    <slot
+                        name="card-element"
+                        v-bind="{ element: getElementBind(element), config: actualConfigData[currentSalesChannelId], card }"
                     >
-                        <template #content="props">
-                            <sw-form-field-renderer
-                                v-bind="getElementBind(element, props)"
-                                :key="props.isInheritField + props.isInherited"
-                                :disabled="props.isInherited"
-                                :value="props.currentValue"
-                                :error="getFieldError(element.name)"
-                                @update:value="props.updateCurrentValue"
-                            />
-                        </template>
-                    </sw-inherit-wrapper>
-                    {% endblock %}
-                </slot>
+                        {% block sw_system_config_content_card_field_update %}
+                        <sw-inherit-wrapper
+                            v-model:value="actualConfigData[currentSalesChannelId][element.name]"
+                            v-bind="getInheritWrapperBind(element)"
+                            :has-parent="isNotDefaultSalesChannel"
+                            :inherited-value="getInheritedValue(element)"
+                            :class="'sw-system-config--field-' + kebabCase(getElementBind(element).name)"
+                        >
+                            <template #content="props">
+                                <sw-form-field-renderer
+                                    v-bind="getElementBind(element, props)"
+                                    :key="props.isInheritField + props.isInherited"
+                                    :disabled="props.isInherited"
+                                    :value="props.currentValue"
+                                    :error="getFieldError(element.name)"
+                                    @update:value="props.updateCurrentValue"
+                                />
+                            </template>
+                        </sw-inherit-wrapper>
+                        {% endblock %}
+                    </slot>
+                </template>
             </template>
             
                         {# Hero Blocks Update Check Button - In Update Information Card #}
@@ -336,19 +341,39 @@
                         {{ $tc('sw-settings-license-check.update.licenseExpiredMessage') }}
                     </mt-banner>
                     
-                    {# Status-Informationen (Version, letzter Check) - Best Practice UX #}
-                    <div v-if="currentVersion || latestVersion || lastCheckedAt" class="sw-system-config__update-status-info">
-                        <div v-if="currentVersion" class="sw-system-config__update-status-item">
-                            <span class="sw-system-config__update-status-label">{{ $tc('sw-settings-license-check.update.currentVersion') }}:</span>
-                            <span class="sw-system-config__update-status-value">{{ currentVersion }}</span>
+                    {# Status-Informationen (Version, letzter Check) - Modern UX, keine Doppelung #}
+                    {# WICHTIG: Diese Info-Box ersetzt die disabled System Config Felder #}
+                    <div v-if="currentVersion || latestVersion || lastCheckedAt || updateAvailable" class="sw-system-config__update-status-info">
+                        {# Update Status Badge - Modern Design #}
+                        <div v-if="updateAvailable" class="sw-system-config__update-status-badge">
+                            <sw-status color="blue" class="sw-system-config__update-status-badge-chip">
+                                {{ $tc('sw-settings-license-check.update.available') }}
+                            </sw-status>
                         </div>
-                        <div v-if="latestVersion && latestVersion !== currentVersion" class="sw-system-config__update-status-item">
-                            <span class="sw-system-config__update-status-label">{{ $tc('sw-settings-license-check.update.latestVersion') }}:</span>
-                            <span class="sw-system-config__update-status-value sw-system-config__update-status-value--new">{{ latestVersion }}</span>
-                        </div>
-                        <div v-if="lastCheckedAt" class="sw-system-config__update-status-item">
-                            <span class="sw-system-config__update-status-label">{{ $tc('sw-settings-license-check.update.lastChecked') }}:</span>
-                            <span class="sw-system-config__update-status-value">{{ lastCheckedAt }}</span>
+                        
+                        {# Version Info Grid - Modern Layout #}
+                        <div class="sw-system-config__update-status-grid">
+                            <div v-if="currentVersion" class="sw-system-config__update-status-item">
+                                <span class="sw-system-config__update-status-label">
+                                    <mt-icon name="regular-tag" size="14"></mt-icon>
+                                    {{ $tc('sw-settings-license-check.update.currentVersion') }}
+                                </span>
+                                <span class="sw-system-config__update-status-value">{{ currentVersion }}</span>
+                            </div>
+                            <div v-if="latestVersion && latestVersion !== currentVersion" class="sw-system-config__update-status-item">
+                                <span class="sw-system-config__update-status-label">
+                                    <mt-icon name="regular-arrow-up-circle" size="14"></mt-icon>
+                                    {{ $tc('sw-settings-license-check.update.latestVersion') }}
+                                </span>
+                                <span class="sw-system-config__update-status-value sw-system-config__update-status-value--new">{{ latestVersion }}</span>
+                            </div>
+                            <div v-if="lastCheckedAt" class="sw-system-config__update-status-item">
+                                <span class="sw-system-config__update-status-label">
+                                    <mt-icon name="regular-clock" size="14"></mt-icon>
+                                    {{ $tc('sw-settings-license-check.update.lastChecked') }}
+                                </span>
+                                <span class="sw-system-config__update-status-value">{{ lastCheckedAt }}</span>
+                            </div>
                         </div>
                     </div>
                     
@@ -527,54 +552,58 @@
             {% endblock %}
         </template>
         <template v-if="!isLoading">
-            <template v-for="element in card.elements">
-                <slot
-                    name="card-element"
-                    v-bind="{ element: getElementBind(element), config: actualConfigData[currentSalesChannelId], card }"
-                >
-                    {% block sw_system_config_content_card_field %}
-                    <sw-inherit-wrapper
-                        v-model:value="actualConfigData[currentSalesChannelId][element.name]"
-                        v-bind="getInheritWrapperBind(element)"
-                        :has-parent="isNotDefaultSalesChannel"
-                        :inherited-value="getInheritedValue(element)"
-                        :class="'sw-system-config--field-' + kebabCase(getElementBind(element).name) + (element.name === 'HeroBlocks.config.licenseStatus' ? ' ' + licenseStatusClass : '')"
+            {# WICHTIG: License Info Felder - Gruppiert und modern gestylt #}
+            {# Diese Felder sind disabled (nur Info), aber werden angezeigt für Transparenz #}
+            <div class="sw-system-config__license-info-fields">
+                <template v-for="element in card.elements">
+                    <slot
+                        name="card-element"
+                        v-bind="{ element: getElementBind(element), config: actualConfigData[currentSalesChannelId], card }"
                     >
-                        <template #content="props">
-                            <sw-form-field-renderer
-                                v-bind="getElementBind(element, props)"
-                                :key="props.isInheritField + props.isInherited"
-                                :disabled="props.isInherited"
-                                :value="props.currentValue"
-                                :error="getFieldError(element.name)"
-                                @update:value="props.updateCurrentValue"
-                            />
-                        </template>
-                    </sw-inherit-wrapper>
-                    {% endblock %}
-                </slot>
-            </template>
+                        {% block sw_system_config_content_card_field %}
+                        <sw-inherit-wrapper
+                            v-model:value="actualConfigData[currentSalesChannelId][element.name]"
+                            v-bind="getInheritWrapperBind(element)"
+                            :has-parent="isNotDefaultSalesChannel"
+                            :inherited-value="getInheritedValue(element)"
+                            :class="'sw-system-config--field-' + kebabCase(getElementBind(element).name) + (element.name === 'HeroBlocks.config.licenseStatus' ? ' ' + licenseStatusClass : '') + ' sw-system-config--license-info-field'"
+                        >
+                            <template #content="props">
+                                <sw-form-field-renderer
+                                    v-bind="getElementBind(element, props)"
+                                    :key="props.isInheritField + props.isInherited"
+                                    :disabled="props.isInherited"
+                                    :value="props.currentValue"
+                                    :error="getFieldError(element.name)"
+                                    @update:value="props.updateCurrentValue"
+                                />
+                            </template>
+                        </sw-inherit-wrapper>
+                        {% endblock %}
+                    </slot>
+                </template>
+            </div>
             
-                        {# Hero Blocks License Check Button - In License Information Card #}
-                <div class="sw-system-config__hero-blocks-license-check">
-                    <mt-button
-                        variant="primary"
-                        size="default"
-                        :is-loading="isLicenseChecking"
-                        :disabled="isLicenseChecking"
-                        @click="checkHeroBlocksLicense"
-                        class="hero-blocks-license-check-button"
-                    >
-                        <template v-if="!isLicenseChecking">
-                            <mt-icon name="regular-check-circle" size="16"></mt-icon>
-                            <span>{{ $tc('sw-settings-license-check.button.checkLicense') }}</span>
-                        </template>
-                        <template v-else>
-                            <sw-loader size="16px"></sw-loader>
-                            <span>{{ $tc('sw-settings-license-check.button.checking') }}</span>
-                        </template>
-                    </mt-button>
-                </div>
+            {# Hero Blocks License Check Button - In License Information Card #}
+            <div class="sw-system-config__hero-blocks-license-check">
+                <mt-button
+                    variant="primary"
+                    size="default"
+                    :is-loading="isLicenseChecking"
+                    :disabled="isLicenseChecking"
+                    @click="checkHeroBlocksLicense"
+                    class="hero-blocks-license-check-button"
+                >
+                    <template v-if="!isLicenseChecking">
+                        <mt-icon name="regular-check-circle" size="16"></mt-icon>
+                        <span>{{ $tc('sw-settings-license-check.button.checkLicense') }}</span>
+                    </template>
+                    <template v-else>
+                        <sw-loader size="16px"></sw-loader>
+                        <span>{{ $tc('sw-settings-license-check.button.checking') }}</span>
+                    </template>
+                </mt-button>
+            </div>
             
             <slot name="card-element-last"></slot>
         </template>
