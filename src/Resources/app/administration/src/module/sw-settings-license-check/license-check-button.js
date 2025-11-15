@@ -821,17 +821,12 @@ Shopware.Component.override("sw-system-config", {
 
     /**
      * Test Download - Prüft ob Download-URL erreichbar ist (ohne Installation)
-     * WICHTIG: Best Practice für Shopware Plugins - Test-Modus für Entwickler
+     * WICHTIG: Best Practice für Shopware Plugins - Test-Modus über Backend-Endpunkt
      */
     async testUpdateDownload() {
       this.isUpdateTesting = true;
 
       try {
-        const httpClient = this.systemConfigApiService.httpClient;
-        if (!httpClient) {
-          throw new Error("HTTP Client nicht verfügbar");
-        }
-
         const downloadUrl = this.updateDownloadUrl;
         if (!downloadUrl) {
           throw new Error("Keine Download-URL verfügbar. Bitte zuerst auf Updates prüfen.");
@@ -839,30 +834,35 @@ Shopware.Component.override("sw-system-config", {
 
         console.log("🧪 Testing update download URL...", downloadUrl);
 
-        // WICHTIG: Teste nur URL-Erreichbarkeit (HEAD Request)
-        // Keine Installation, nur Connectivity-Test
+        // WICHTIG: Verwende Backend-Endpunkt für Test (vermeidet CORS-Probleme)
+        const httpClient = this.systemConfigApiService.httpClient;
+        if (!httpClient) {
+          throw new Error("HTTP Client nicht verfügbar");
+        }
+
         const startTime = Date.now();
         let response;
         try {
-          // HEAD Request für schnellen Test (ohne Download)
-          response = await httpClient.head(downloadUrl, {
-            headers: {
-              "User-Agent": "Shopware-HeroBlocks-Plugin/1.0.0",
-              "Accept": "application/zip, application/octet-stream",
-            },
-            timeout: 10000, // 10 Sekunden Timeout
-          });
+          // POST Request zu Backend-Endpunkt
+          response = await httpClient.post(
+            "/api/_action/hero-blocks/test-download-url",
+            {},
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
 
           const duration = Date.now() - startTime;
           console.log(`✅ Download URL test completed in ${duration}ms`, {
             status: response.status,
-            headers: response.headers,
+            data: response.data,
           });
 
-          // Prüfe HTTP Status
-          if (response.status === 200 || response.status === 302) {
-            const contentLength = response.headers?.["content-length"] || "unbekannt";
-            const contentType = response.headers?.["content-type"] || "unbekannt";
+          // Prüfe Response
+          if (response.data && response.data.success === true) {
+            const { status, contentLength, contentType } = response.data;
 
             this.createNotificationSuccess({
               title: this.$tc("sw-settings-license-check.update.testSuccess"),
@@ -870,7 +870,7 @@ Shopware.Component.override("sw-system-config", {
                 "sw-settings-license-check.update.testSuccessMessage",
                 {
                   url: downloadUrl,
-                  status: response.status,
+                  status: status,
                   size: contentLength,
                   type: contentType,
                 }
@@ -879,7 +879,7 @@ Shopware.Component.override("sw-system-config", {
             });
           } else {
             throw new Error(
-              `Unerwarteter HTTP Status: ${response.status}`
+              response.data?.error || "Download-URL Test fehlgeschlagen"
             );
           }
         } catch (httpError) {
@@ -892,11 +892,14 @@ Shopware.Component.override("sw-system-config", {
             durationMs: duration,
           });
 
-          throw new Error(
-            httpError.response?.status
+          const errorMessage =
+            httpError.response?.data?.error ||
+            httpError.response?.data?.errors?.[0]?.detail ||
+            (httpError.response?.status
               ? `Download-URL nicht erreichbar (HTTP ${httpError.response.status})`
-              : httpError.message || "Download-URL Test fehlgeschlagen"
-          );
+              : httpError.message || "Download-URL Test fehlgeschlagen");
+
+          throw new Error(errorMessage);
         }
       } catch (error) {
         console.error("❌ Update download test error:", {

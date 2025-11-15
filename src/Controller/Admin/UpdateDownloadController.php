@@ -198,4 +198,81 @@ class UpdateDownloadController extends AbstractController
             ], 500);
         }
     }
+
+    /**
+     * Testet ob Download-URL erreichbar ist (ohne Download)
+     * 
+     * POST /api/_action/hero-blocks/test-download-url
+     */
+    #[Route(
+        path: '/api/_action/hero-blocks/test-download-url',
+        name: 'api.action.hero-blocks.test-download-url',
+        methods: ['POST']
+    )]
+    public function testDownloadUrl(Request $request, Context $context): JsonResponse
+    {
+        try {
+            // Hole downloadUrl aus System Config
+            $downloadUrl = $this->systemConfigService->get('HeroBlocks.config.updateDownloadUrl');
+            
+            if (empty($downloadUrl)) {
+                return new JsonResponse([
+                    'success' => false,
+                    'error' => 'No download URL available. Please check for updates first.',
+                ], 400);
+            }
+
+            $this->logger->info('Test download URL: Testing URL reachability', [
+                'url' => $downloadUrl,
+            ]);
+
+            // WICHTIG: HEAD Request für schnellen Test (ohne Download)
+            $response = $this->httpClient->request('HEAD', $downloadUrl, [
+                'timeout' => 10, // 10 Sekunden Timeout
+                'headers' => [
+                    'User-Agent' => 'Shopware-HeroBlocks-Plugin/1.0.0',
+                    'Accept' => 'application/zip, application/octet-stream',
+                ],
+            ]);
+
+            $statusCode = $response->getStatusCode();
+            $headers = $response->getHeaders();
+            
+            $this->logger->info('Test download URL: Response received', [
+                'status' => $statusCode,
+                'headers' => $headers,
+            ]);
+
+            // Prüfe HTTP Status
+            if ($statusCode === 200 || $statusCode === 302 || $statusCode === 301) {
+                $contentLength = $headers['content-length'][0] ?? 'unknown';
+                $contentType = $headers['content-type'][0] ?? 'unknown';
+
+                return new JsonResponse([
+                    'success' => true,
+                    'status' => $statusCode,
+                    'contentLength' => $contentLength,
+                    'contentType' => $contentType,
+                    'message' => 'Download URL is reachable',
+                ]);
+            } else {
+                return new JsonResponse([
+                    'success' => false,
+                    'status' => $statusCode,
+                    'error' => 'Download URL returned unexpected status code: ' . $statusCode,
+                ], 400);
+            }
+
+        } catch (\Exception $e) {
+            $this->logger->error('Test download URL failed', [
+                'error' => $e->getMessage(),
+                'errorType' => get_class($e),
+            ]);
+
+            return new JsonResponse([
+                'success' => false,
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
