@@ -163,13 +163,27 @@
 
     .sw-system-config__hero-blocks-update-buttons {
         display: flex;
-        flex-direction: column;
+        flex-direction: column; // Mobile: untereinander
         gap: 0.75rem;
         width: 100%;
         
-        // WICHTIG: Buttons auf voller Breite (Best Practice UX)
+        // WICHTIG: Mobile (< 768px) - Buttons untereinander, volle Breite
         > * {
             width: 100%;
+        }
+        
+        // WICHTIG: Desktop (>= 768px) - Buttons nebeneinander, innere Breite
+        @media (min-width: 768px) {
+            flex-direction: row; // Desktop: nebeneinander
+            flex-wrap: wrap; // Wrap wenn nötig
+            align-items: center;
+            
+            // WICHTIG: Buttons nicht volle Breite auf Desktop, nur innere Breite
+            > * {
+                width: auto;
+                flex: 0 1 auto; // Nicht wachsen, nur schrumpfen wenn nötig
+                min-width: 0; // Verhindert Overflow
+            }
         }
     }
 
@@ -302,13 +316,19 @@
     .hero-blocks-update-test-button,
     .hero-blocks-update-test-full-button,
     .hero-blocks-update-download-button {
-        // WICHTIG: Button auf voller Breite (Best Practice UX)
+        // WICHTIG: Mobile - Button auf voller Breite
         width: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
         margin-top: 0; // Kein zusätzlicher Abstand, wird durch Button-Gruppe gesteuert
+        
+        // WICHTIG: Desktop (>= 768px) - Button nur innere Breite
+        @media (min-width: 768px) {
+            width: auto;
+            min-width: 140px; // Mindestbreite für bessere UX
+        }
         
         // WICHTIG: Loading State - Button wird muted/disabled während Loading
         &.mt-button--disabled,
@@ -330,6 +350,11 @@
             white-space: nowrap;
             flex: 1;
             text-align: center;
+            
+            // WICHTIG: Desktop - Text nicht flex: 1 (nur innere Breite)
+            @media (min-width: 768px) {
+                flex: 0 1 auto;
+            }
         }
         
         // WICHTIG: Loading State - Spinner statt Icon
