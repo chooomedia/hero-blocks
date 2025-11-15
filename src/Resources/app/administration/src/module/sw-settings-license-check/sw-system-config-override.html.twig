@@ -82,19 +82,22 @@
                 </mt-banner>
                 {% endblock %}
             </template>
-            <template v-if="!isLoading">
-                <template v-for="element in card.elements">
+        <template v-if="!isLoading">
+            {# WICHTIG: Aktive Blocks zuerst anzeigen, dann inaktive (Coming Soon) #}
+            {# Aktive Blocks (enableHeroBlockSlider, enableHeroTwoColumns, enableMegaMenu) #}
+            <template v-for="element in card.elements" :key="element.name">
+                <template v-if="isActiveBlock(element.name)">
                     <slot
                         name="card-element"
                         v-bind="{ element: getElementBind(element), config: actualConfigData[currentSalesChannelId], card }"
                     >
-                        {% block sw_system_config_content_card_field_block_settings %}
+                        {% block sw_system_config_content_card_field_block_settings_active %}
                         <sw-inherit-wrapper
                             v-model:value="actualConfigData[currentSalesChannelId][element.name]"
                             v-bind="getInheritWrapperBind(element)"
                             :has-parent="isNotDefaultSalesChannel"
                             :inherited-value="getInheritedValue(element)"
-                            :class="'sw-system-config--field-' + kebabCase(getElementBind(element).name)"
+                            :class="'sw-system-config--field-' + kebabCase(getElementBind(element).name) + ' sw-system-config--field-active'"
                         >
                             <template #content="props">
                                 <sw-form-field-renderer
@@ -110,6 +113,41 @@
                         {% endblock %}
                     </slot>
                 </template>
+            </template>
+            
+            {# Separator zwischen aktiven und inaktiven Blocks #}
+            <div v-if="hasActiveBlocks && hasInactiveBlocks" class="sw-system-config__block-separator"></div>
+            
+            {# Inaktive Blocks (Coming Soon - disabled) #}
+            <template v-for="element in card.elements" :key="element.name">
+                <template v-if="!isActiveBlock(element.name)">
+                    <slot
+                        name="card-element"
+                        v-bind="{ element: getElementBind(element), config: actualConfigData[currentSalesChannelId], card }"
+                    >
+                        {% block sw_system_config_content_card_field_block_settings_inactive %}
+                        <sw-inherit-wrapper
+                            v-model:value="actualConfigData[currentSalesChannelId][element.name]"
+                            v-bind="getInheritWrapperBind(element)"
+                            :has-parent="isNotDefaultSalesChannel"
+                            :inherited-value="getInheritedValue(element)"
+                            :class="'sw-system-config--field-' + kebabCase(getElementBind(element).name) + ' sw-system-config--field-inactive'"
+                        >
+                            <template #content="props">
+                                <sw-form-field-renderer
+                                    v-bind="getElementBind(element, props)"
+                                    :key="props.isInheritField + props.isInherited"
+                                    :disabled="props.isInherited"
+                                    :value="props.currentValue"
+                                    :error="getFieldError(element.name)"
+                                    @update:value="props.updateCurrentValue"
+                                />
+                            </template>
+                        </sw-inherit-wrapper>
+                        {% endblock %}
+                    </slot>
+                </template>
+            </template>
                 <slot name="card-element-last"></slot>
             </template>
             <slot
@@ -119,8 +157,96 @@
             </slot>
         </mt-card>
         
-        {# Update Information Card (index 1): Collapsible (initial closed) - Design wie Standard Cards #}
-        <sw-collapse v-if="isHeroBlocksConfig() && index === 1" :expand-on-loading="false" ref="updateCardCollapse">
+        {# Header Mega Menu Settings Card (index 1): Collapsible (nur wenn enableMegaMenu aktiv) - Design wie Standard Cards #}
+        {# WICHTIG: Erscheint direkt nach "Block Settings" (index 0), nur wenn Enable Mega Menu Block aktiviert ist #}
+        <sw-collapse 
+            v-if="isHeroBlocksConfig() && index === 1 && isMegaMenuEnabled" 
+            :expand-on-loading="false" 
+            ref="megaMenuCardCollapse"
+        >
+            <template #header="{ expanded }">
+                {# Header wie mt-card Header - Design identisch zu Standard Cards, gleiche Breite #}
+                <div class="sw-system-config__mega-menu-card-header">
+                    <h3 class="mt-text--size-m mt-text--weight-semibold">
+                        {{ getInlineSnippet(card.title) }}
+                    </h3>
+                    <div class="sw-system-config__mega-menu-card-header-right">
+                        <mt-icon 
+                            :name="expanded ? 'regular-chevron-up-xs' : 'regular-chevron-down-xs'" 
+                            size="16"
+                            class="sw-system-config__mega-menu-card-chevron"
+                        />
+                    </div>
+                </div>
+            </template>
+            <template #content="{ expanded }">
+                {# mt-card ohne v-show - sw-collapse handhabt expanded bereits #}
+                <mt-card
+                    position-identifier="sw-system-config-content"
+                    :class="`sw-system-config__card--${index}`"
+                    :is-loading="isLoading"
+                >
+                    <slot
+                        name="beforeElements"
+                        v-bind="{ card, config: actualConfigData[currentSalesChannelId] }"
+                    ></slot>
+                    <template
+                        v-if="salesChannelSwitchable && config.length === 1"
+                        #toolbar
+                    >
+                        <sw-sales-channel-switch
+                            :label="$tc('sw-settings.system-config.labelSalesChannelSelect')"
+                            @change-sales-channel-id="onSalesChannelChanged"
+                        />
+                    </template>
+                    <template v-if="hasCssFields">
+                        {% block sw_system_config_content_compile_notice_mega_menu %}
+                        <mt-banner variant="attention">
+                            {{ $tc('sw-settings.system-config.compileNotice') }}
+                        </mt-banner>
+                        {% endblock %}
+                    </template>
+                    <template v-if="!isLoading">
+                        <template v-for="element in card.elements">
+                            <slot
+                                name="card-element"
+                                v-bind="{ element: getElementBind(element), config: actualConfigData[currentSalesChannelId], card }"
+                            >
+                                {% block sw_system_config_content_card_field_mega_menu %}
+                                <sw-inherit-wrapper
+                                    v-model:value="actualConfigData[currentSalesChannelId][element.name]"
+                                    v-bind="getInheritWrapperBind(element)"
+                                    :has-parent="isNotDefaultSalesChannel"
+                                    :inherited-value="getInheritedValue(element)"
+                                    :class="'sw-system-config--field-' + kebabCase(getElementBind(element).name)"
+                                >
+                                    <template #content="props">
+                                        <sw-form-field-renderer
+                                            v-bind="getElementBind(element, props)"
+                                            :key="props.isInheritField + props.isInherited"
+                                            :disabled="props.isInherited"
+                                            :value="props.currentValue"
+                                            :error="getFieldError(element.name)"
+                                            @update:value="props.updateCurrentValue"
+                                        />
+                                    </template>
+                                </sw-inherit-wrapper>
+                                {% endblock %}
+                            </slot>
+                        </template>
+                        <slot name="card-element-last"></slot>
+                    </template>
+                    <slot
+                        name="afterElements"
+                        v-bind="{ card, config: actualConfigData[currentSalesChannelId], index, isNotDefaultSalesChannel, inheritance: actualConfigData.null }"
+                    >
+                    </slot>
+                </mt-card>
+            </template>
+        </sw-collapse>
+        
+        {# Update Information Card (index 2): Collapsible (initial closed) - Design wie Standard Cards #}
+        <sw-collapse v-if="isHeroBlocksConfig() && index === 2" :expand-on-loading="false" ref="updateCardCollapse">
             <template #header="{ expanded }">
                 {# Header wie mt-card Header - Design identisch zu Standard Cards, gleiche Breite #}
                 <div class="sw-system-config__update-card-header">
@@ -239,8 +365,8 @@
             </template>
         </sw-collapse>
         
-        {# License Information Card (index 2): Collapsible (initial closed - ALWAYS) - Design wie Standard Cards #}
-        <sw-collapse v-if="isHeroBlocksConfig() && index === 2" :expand-on-loading="false" ref="licenseCardCollapse">
+        {# License Information Card (index 3): Collapsible (initial closed - ALWAYS) - Design wie Standard Cards #}
+        <sw-collapse v-if="isHeroBlocksConfig() && index === 3" :expand-on-loading="false" ref="licenseCardCollapse">
             <template #header="{ expanded }">
                 {# Header wie mt-card Header - Design identisch zu Standard Cards, gleiche Breite #}
                 <div class="sw-system-config__license-card-header">

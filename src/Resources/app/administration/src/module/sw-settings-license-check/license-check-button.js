@@ -59,6 +59,42 @@ Shopware.Component.override("sw-system-config", {
         ];
       return changelog || null;
     },
+
+    /**
+     * Prüft ob Block aktiv ist (nicht disabled)
+     */
+    hasActiveBlocks() {
+      if (!this.isHeroBlocksConfig()) return false;
+      const config = this.actualConfigData?.[this.currentSalesChannelId] || {};
+      return (
+        config["HeroBlocks.config.enableHeroBlockSlider"] === true ||
+        config["HeroBlocks.config.enableHeroTwoColumns"] === true ||
+        config["HeroBlocks.config.enableMegaMenu"] === true
+      );
+    },
+
+    /**
+     * Prüft ob inaktive Blocks vorhanden sind (Coming Soon - disabled)
+     */
+    hasInactiveBlocks() {
+      if (!this.isHeroBlocksConfig()) return false;
+      // HeroVideoExtended, HeroInstagramFeed, ShoppingExperience sind immer disabled
+      return true;
+    },
+
+    /**
+     * Prüft ob Mega Menu aktiviert ist
+     * WICHTIG: Für Collapsible Card "Header Mega Menu Settings" (nur wenn aktiv)
+     */
+    isMegaMenuEnabled() {
+      if (!this.isHeroBlocksConfig()) return false;
+      const config =
+        this.actualConfigData?.[this.currentSalesChannelId] || {};
+      return (
+        config["HeroBlocks.config.enableMegaMenu"] === true ||
+        config["enableMegaMenu"] === true
+      );
+    },
   },
 
   // WICHTIG: Kein Auto-Check mehr hier - wird von sw-extension-config Override übernommen (Silent Check)
@@ -314,6 +350,20 @@ Shopware.Component.override("sw-system-config", {
       } finally {
         this.isLicenseChecking = false;
       }
+    },
+
+    /**
+     * Prüft ob ein Block aktiv ist (nicht disabled)
+     */
+    isActiveBlock(blockName) {
+      if (!this.isHeroBlocksConfig()) return false;
+      // Aktive Blocks: enableHeroBlockSlider, enableHeroTwoColumns, enableMegaMenu
+      const activeBlocks = [
+        "HeroBlocks.config.enableHeroBlockSlider",
+        "HeroBlocks.config.enableHeroTwoColumns",
+        "HeroBlocks.config.enableMegaMenu",
+      ];
+      return activeBlocks.includes(blockName);
     },
 
     // Update Check - analog zu License Check

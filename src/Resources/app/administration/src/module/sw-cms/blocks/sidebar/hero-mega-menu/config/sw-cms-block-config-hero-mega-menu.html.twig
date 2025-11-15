@@ -1,0 +1,82 @@
+{% block sw_cms_block_config_hero_mega_menu %}
+<div class="sw-cms-block-config-hero-mega-menu" v-if="block && block.customFields">
+    {# Layout-Optionen #}
+    <mt-select
+        :model-value="block.customFields.layout || 'full-width'"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroMegaMenu.config.layout.label')"
+        :options="[
+            { value: 'full-width', label: $tc('sw-cms.blocks.heroBlocks.heroMegaMenu.config.layout.options.fullWidth') },
+            { value: 'boxed', label: $tc('sw-cms.blocks.heroBlocks.heroMegaMenu.config.layout.options.boxed') },
+            { value: 'container', label: $tc('sw-cms.blocks.heroBlocks.heroMegaMenu.config.layout.options.container') }
+        ]"
+        @update:model-value="(value) => onConfigChange(value, 'layout')"
+    />
+
+    {# Widget-Einstellungen: Produkt-Anzeige #}
+    <mt-switch
+        :model-value="block.customFields.showProducts || false"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroMegaMenu.config.showProducts.label')"
+        @update:model-value="(value) => onConfigChange(value, 'showProducts')"
+    />
+
+    {# Widget-Einstellungen: Produkt-Anzahl (nur wenn showProducts aktiviert) #}
+    <mt-number-field
+        v-if="block.customFields.showProducts === true"
+        :model-value="block.customFields.productsCount || 4"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroMegaMenu.config.productsCount.label')"
+        :placeholder="$tc('sw-cms.blocks.heroBlocks.heroMegaMenu.config.productsCount.placeholder')"
+        :min="1"
+        :max="12"
+        @update:model-value="(value) => onConfigChange(value, 'productsCount')"
+    />
+
+    {# Widget-Einstellungen: Instagram Feed #}
+    <mt-switch
+        :model-value="block.customFields.showInstagramFeed || false"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroMegaMenu.config.showInstagramFeed.label')"
+        @update:model-value="(value) => onConfigChange(value, 'showInstagramFeed')"
+    />
+
+    {# Widget-Einstellungen: Instagram Username (nur wenn showInstagramFeed aktiviert) #}
+    <mt-text-field
+        v-if="block.customFields.showInstagramFeed === true"
+        :model-value="block.customFields.instagramUsername || ''"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroMegaMenu.config.instagramUsername.label')"
+        :placeholder="$tc('sw-cms.blocks.heroBlocks.heroMegaMenu.config.instagramUsername.placeholder')"
+        @update:model-value="(value) => onConfigChange(value, 'instagramUsername')"
+    />
+
+    {# Styling-Einstellungen: Link-Farbe #}
+    <mt-text-field
+        :model-value="block.customFields.linkColor || ''"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroMegaMenu.config.linkColor.label')"
+        :placeholder="$tc('sw-cms.blocks.heroBlocks.heroMegaMenu.config.linkColor.placeholder')"
+        @update:model-value="(value) => onConfigChange(value, 'linkColor')"
+    />
+
+    {# Styling-Einstellungen: Link-Hover-Farbe #}
+    <mt-text-field
+        :model-value="block.customFields.linkHoverColor || ''"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroMegaMenu.config.linkHoverColor.label')"
+        :placeholder="$tc('sw-cms.blocks.heroBlocks.heroMegaMenu.config.linkHoverColor.placeholder')"
+        @update:model-value="(value) => onConfigChange(value, 'linkHoverColor')"
+    />
+
+    {# Styling-Einstellungen: Dropdown-Hintergrund #}
+    <mt-text-field
+        :model-value="block.customFields.dropdownBackground || ''"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroMegaMenu.config.dropdownBackground.label')"
+        :placeholder="$tc('sw-cms.blocks.heroBlocks.heroMegaMenu.config.dropdownBackground.placeholder')"
+        @update:model-value="(value) => onConfigChange(value, 'dropdownBackground')"
+    />
+
+    {# Styling-Einstellungen: Dropdown-Padding #}
+    <mt-text-field
+        :model-value="block.customFields.dropdownPadding || '2rem'"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroMegaMenu.config.dropdownPadding.label')"
+        :placeholder="$tc('sw-cms.blocks.heroBlocks.heroMegaMenu.config.dropdownPadding.placeholder')"
+        @update:model-value="(value) => onConfigChange(value, 'dropdownPadding')"
+    />
+</div>
+{% endblock %}
+

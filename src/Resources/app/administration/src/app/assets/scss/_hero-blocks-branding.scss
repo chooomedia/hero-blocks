@@ -35,33 +35,10 @@ $hero-blocks-brand-color-border-active: rgba(74, 144, 164, 0.6); // Leicht stär
             border-color: $hero-blocks-brand-color-border !important;
         }
         
-        // WICHTIG: Matt Interfaces Logo unten links auf der Border-Linie
-        // Wird auf Block-Ebene positioniert (nicht auf Overlay)
+        // WICHTIG: Logo-Referenz entfernt (Logo wurde gelöscht)
+        // Branding erfolgt nur noch über Border und Akzent-Farbe
         .sw-cms-block__content {
-            position: relative; // Für absolute Positionierung des Logos
-            
-            &::after {
-                content: '';
-                position: absolute;
-                bottom: -10px; // Unterhalb des Content-Bereichs, auf Border-Höhe
-                left: 8px;
-                width: 60px;
-                height: 12px;
-                background-image: url('/bundles/heroblocks/administration/assets/img/matt-interfaces-logo.svg');
-                background-repeat: no-repeat;
-                background-position: center left;
-                background-size: contain;
-                opacity: 0;
-                transition: opacity 0.2s ease;
-                z-index: 100; // Über Border/Overlay
-                pointer-events: none;
-            }
-        }
-        
-        // Logo nur anzeigen wenn Block aktiv oder gehovered
-        &:hover .sw-cms-block__content::after,
-        .sw-cms-block__config-overlay.is--active ~ .sw-cms-block__content::after {
-            opacity: 0.7; // Dezente Sichtbarkeit
+            position: relative;
         }
     }
 }
@@ -85,28 +62,8 @@ $hero-blocks-brand-color-border-active: rgba(74, 144, 164, 0.6); // Leicht stär
                 box-shadow: 0 0 0 1px $hero-blocks-brand-color-light;
             }
             
-            // WICHTIG: Matt Interfaces Logo unten links (kleiner in Preview)
-            &::after {
-                content: '';
-                position: absolute;
-                bottom: 2px;
-                left: 4px;
-                width: 40px;
-                height: 8px;
-                background-image: url('/bundles/heroblocks/administration/assets/img/matt-interfaces-logo.svg');
-                background-repeat: no-repeat;
-                background-position: center left;
-                background-size: contain;
-                opacity: 0;
-                transition: opacity 0.2s ease;
-                z-index: 10;
-                pointer-events: none;
-            }
-            
-            // Logo bei Hover anzeigen
-            &:hover::after {
-                opacity: 0.6; // Noch dezenter in Preview
-            }
+            // WICHTIG: Logo-Referenz entfernt (Logo wurde gelöscht)
+            // Branding erfolgt nur noch über Border und Akzent-Farbe
         }
     }
 }

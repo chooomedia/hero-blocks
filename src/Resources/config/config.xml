@@ -41,12 +41,12 @@
         </input-field>
         <input-field type="bool">
             <name>enableMegaMenu</name>
-            <label lang="de-DE">Mega Menu Block aktivieren (Beta)</label>
-            <label>Enable Mega Menu Block (Beta)</label>
+            <label lang="de-DE">Mega Menu Block aktivieren</label>
+            <label>Enable Mega Menu Block</label>
             <defaultValue>false</defaultValue>
             <disabled>false</disabled>
-            <helpText lang="de-DE">Erweiterte Navigations-Blöcke mit Produkten, Widgets und Instagram Feed Support. Dieses Feature befindet sich in der Beta-Phase.</helpText>
-            <helpText>Advanced navigation block with products, widgets, and Instagram feed support. This feature is in beta phase.</helpText>
+            <helpText lang="de-DE">Erweiterte Navigations-Blöcke mit Produkten, Widgets und Instagram Feed Support.</helpText>
+            <helpText>Advanced navigation block with products, widgets, and Instagram feed support.</helpText>
         </input-field>
         <input-field type="bool">
             <name>enableShoppingExperience</name>
@@ -56,6 +56,51 @@
             <disabled>true</disabled>
             <helpText lang="de-DE">Zusätzliche Custom-Blöcke für verbesserte Shopping-Erlebnisse. Diese Blöcke werden in einer zukünftigen Version verfügbar sein.</helpText>
             <helpText>Additional custom blocks for enhanced shopping experiences. These blocks will be available in a future version.</helpText>
+        </input-field>
+    </card>
+    
+    <card>
+        <title lang="de-DE">Header Mega Menu Einstellungen</title>
+        <title>Header Mega Menu Settings</title>
+        <input-field type="text">
+            <name>megaMenuLinkColor</name>
+            <label lang="de-DE">Link-Farbe</label>
+            <label>Link Color</label>
+            <placeholder lang="de-DE">#000000 (leer = Theme Default)</placeholder>
+            <placeholder>#000000 (empty = Theme Default)</placeholder>
+            <helpText lang="de-DE">Farbe für Navigation-Links im Header Mega Menu. Leer lassen für Theme-Standard.</helpText>
+            <helpText>Color for navigation links in Header Mega Menu. Leave empty for theme default.</helpText>
+        </input-field>
+        
+        <input-field type="text">
+            <name>megaMenuLinkHoverColor</name>
+            <label lang="de-DE">Link-Hover-Farbe</label>
+            <label>Link Hover Color</label>
+            <placeholder lang="de-DE">#d01720 (leer = Theme Default)</placeholder>
+            <placeholder>#d01720 (empty = Theme Default)</placeholder>
+            <helpText lang="de-DE">Farbe für Navigation-Links beim Hover im Header Mega Menu. Leer lassen für Theme-Standard.</helpText>
+            <helpText>Color for navigation links on hover in Header Mega Menu. Leave empty for theme default.</helpText>
+        </input-field>
+        
+        <input-field type="text">
+            <name>megaMenuDropdownBackground</name>
+            <label lang="de-DE">Dropdown-Hintergrund</label>
+            <label>Dropdown Background</label>
+            <placeholder lang="de-DE">#ffffff (leer = Theme Default)</placeholder>
+            <placeholder>#ffffff (empty = Theme Default)</placeholder>
+            <helpText lang="de-DE">Hintergrundfarbe für Mega Menu Dropdowns. Leer lassen für Theme-Standard.</helpText>
+            <helpText>Background color for Mega Menu dropdowns. Leave empty for theme default.</helpText>
+        </input-field>
+        
+        <input-field type="text">
+            <name>megaMenuDropdownPadding</name>
+            <label lang="de-DE">Dropdown-Padding</label>
+            <label>Dropdown Padding</label>
+            <defaultValue>2rem</defaultValue>
+            <placeholder lang="de-DE">2rem (Standard)</placeholder>
+            <placeholder>2rem (default)</placeholder>
+            <helpText lang="de-DE">Vertikales Padding für Mega Menu Dropdowns (top/bottom). Standard: 2rem</helpText>
+            <helpText>Vertical padding for Mega Menu dropdowns (top/bottom). Default: 2rem</helpText>
         </input-field>
     </card>
     

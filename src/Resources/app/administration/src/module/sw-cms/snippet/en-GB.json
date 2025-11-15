@@ -53,6 +53,59 @@
                             "helpText": "Set minimum height for the block (e.g., 500px or 80vh)"
                         }
                     }
+                },
+                "heroMegaMenu": {
+                    "label": "Hero Mega Menu",
+                    "placeholder": "Advanced navigation blocks with products, widgets, and Instagram feed support",
+                    "config": {
+                        "layout": {
+                            "label": "Layout",
+                            "helpText": "Select the layout for the mega menu block",
+                            "options": {
+                                "fullWidth": "Full Width",
+                                "boxed": "Boxed",
+                                "container": "Container"
+                            }
+                        },
+                        "showProducts": {
+                            "label": "Show Products",
+                            "helpText": "Enable product display in the mega menu"
+                        },
+                        "productsCount": {
+                            "label": "Product Count",
+                            "placeholder": "e.g., 4",
+                            "helpText": "Number of products to display (1-12)"
+                        },
+                        "showInstagramFeed": {
+                            "label": "Show Instagram Feed",
+                            "helpText": "Enable Instagram feed in the mega menu"
+                        },
+                        "instagramUsername": {
+                            "label": "Instagram Username",
+                            "placeholder": "e.g., horex_official",
+                            "helpText": "Instagram username for the feed"
+                        },
+                        "linkColor": {
+                            "label": "Link Color",
+                            "placeholder": "e.g., #333333",
+                            "helpText": "Color of navigation links (empty = Theme Default)"
+                        },
+                        "linkHoverColor": {
+                            "label": "Link Hover Color",
+                            "placeholder": "e.g., #007bff",
+                            "helpText": "Color of navigation links on hover (empty = Theme Default)"
+                        },
+                        "dropdownBackground": {
+                            "label": "Dropdown Background",
+                            "placeholder": "e.g., #ffffff",
+                            "helpText": "Background color of dropdown menu (empty = Theme Default)"
+                        },
+                        "dropdownPadding": {
+                            "label": "Dropdown Padding",
+                            "placeholder": "e.g., 2rem",
+                            "helpText": "Padding of dropdown menu (Top/Bottom, e.g., 2rem)"
+                        }
+                    }
                 }
             }
         }

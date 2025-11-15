@@ -1,0 +1,17 @@
+/**
+ * Hero Mega Menu Block Config - Admin Component Styles
+ */
+
+.sw-cms-block-config-hero-mega-menu {
+    padding: 1rem 0;
+
+    .mt-select,
+    .mt-switch {
+        margin-bottom: 1rem;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}
+

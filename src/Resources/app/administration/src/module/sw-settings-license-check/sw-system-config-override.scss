@@ -90,6 +90,25 @@
             margin: 0;
             word-wrap: break-word;
         }
+
+        // WICHTIG: Aktive/Inaktive Blocks
+        &-item {
+            &--active {
+                opacity: 1;
+            }
+
+            &--inactive {
+                opacity: 0.6;
+            }
+        }
+    }
+
+    // Separator zwischen aktiven und inaktiven Blocks
+    &-separator {
+        height: 1px;
+        background-color: var(--color-border-200, #e5e8ec);
+        margin: 1rem 0;
+        width: 100%;
     }
 }
 
@@ -143,7 +162,8 @@
         }
         
         .sw-system-config__license-card-header,
-        .sw-system-config__update-card-header {
+        .sw-system-config__update-card-header,
+        .sw-system-config__mega-menu-card-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -178,7 +198,8 @@
             }
             
             .sw-system-config__license-card-chevron,
-            .sw-system-config__update-card-chevron {
+            .sw-system-config__update-card-chevron,
+            .sw-system-config__mega-menu-card-chevron {
                 flex-shrink: 0;
                 transition: transform 0.2s ease;
             }

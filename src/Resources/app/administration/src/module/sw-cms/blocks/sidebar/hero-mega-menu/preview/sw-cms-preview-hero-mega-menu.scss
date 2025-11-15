@@ -1,0 +1,32 @@
+/**
+ * Hero Mega Menu Block Preview - Admin Component Styles
+ */
+
+.sw-cms-preview-hero-mega-menu {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border: 1px solid var(--color-border-200, #e5e8ec);
+    border-radius: 4px;
+    background: var(--color-background-default, #fff);
+
+    &__content {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    &__icon {
+        color: var(--color-text-400, #94a6b8);
+    }
+
+    &__label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--color-text-700, #52667a);
+    }
+}
+

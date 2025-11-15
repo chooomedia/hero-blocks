@@ -28,3 +28,5 @@ import "./app/assets/scss/_hero-blocks-branding.scss";
 // CRITICAL: Must use explicit index.js path for ES modules
 import "./module/sw-cms/blocks/image/hero-block-slider/index.js";
 import "./module/sw-cms/blocks/text-image/hero-two-columns/index.js";
+// WICHTIG: Mega Menu Block - wird nur angezeigt wenn enableMegaMenu aktiviert ist
+import "./module/sw-cms/blocks/sidebar/hero-mega-menu/index.js";
