@@ -163,9 +163,14 @@
 
     .sw-system-config__hero-blocks-update-buttons {
         display: flex;
+        flex-direction: column;
         gap: 0.75rem;
-        flex-wrap: wrap;
-        align-items: center;
+        width: 100%;
+        
+        // WICHTIG: Buttons auf voller Breite (Best Practice UX)
+        > * {
+            width: 100%;
+        }
     }
 
     // Changelog - Modern Collapsible Design
@@ -297,25 +302,49 @@
     .hero-blocks-update-test-button,
     .hero-blocks-update-test-full-button,
     .hero-blocks-update-download-button {
-        // Styling wie Save-Button (sw-extension-config__save-action)
-        // mt-button--default ist bereits gesetzt, Button hat richtige Höhe
+        // WICHTIG: Button auf voller Breite (Best Practice UX)
+        width: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
-        margin-top: 8px; // Zusätzlicher Abstand für bessere Positionierung
+        margin-top: 0; // Kein zusätzlicher Abstand, wird durch Button-Gruppe gesteuert
         
+        // WICHTIG: Loading State - Button wird muted/disabled während Loading
+        &.mt-button--disabled,
+        &[aria-disabled="true"] {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        // WICHTIG: Icon und Loader - Saubere Ausrichtung
         .mt-icon,
         .sw-loader {
             flex-shrink: 0;
+            width: 16px;
+            height: 16px;
         }
         
+        // WICHTIG: Text - Zentriert, kein Wrap
         span {
             white-space: nowrap;
+            flex: 1;
+            text-align: center;
+        }
+        
+        // WICHTIG: Loading State - Spinner statt Icon
+        &.mt-button--is-loading {
+            .mt-icon {
+                display: none; // Icon verstecken während Loading
+            }
+            
+            .sw-loader {
+                display: block; // Loader anzeigen
+            }
         }
     }
     
-    // Test Buttons - Ghost Variant (subtiler)
+    // Test Buttons - Ghost Variant (subtiler, aber auch voller Breite)
     .hero-blocks-update-test-button,
     .hero-blocks-update-test-full-button {
         // Ghost Button ist bereits gestylt durch mt-button--ghost

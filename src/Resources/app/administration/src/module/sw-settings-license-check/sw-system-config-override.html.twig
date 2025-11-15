@@ -358,7 +358,7 @@
                             <template #header="{ expanded }">
                                 <div class="sw-system-config__update-changelog-header">
                                     <div class="sw-system-config__update-changelog-header-left">
-                                        <mt-icon name="regular-document-text" size="20"></mt-icon>
+                                        <mt-icon name="regular-file-text" size="20"></mt-icon>
                                         <span class="sw-system-config__update-changelog-title">{{ $tc('sw-settings-license-check.update.changelog') }}</span>
                                     </div>
                                     <mt-icon 
@@ -433,7 +433,7 @@
                             :title="$tc('sw-settings-license-check.update.testFullProcessTooltip')"
                         >
                             <template v-if="!isUpdateTestingFull">
-                                <mt-icon name="regular-play-circle" size="16"></mt-icon>
+                                <mt-icon name="regular-play" size="16"></mt-icon>
                                 <span>{{ $tc('sw-settings-license-check.update.testFullProcess') }}</span>
                             </template>
                             <template v-else>
