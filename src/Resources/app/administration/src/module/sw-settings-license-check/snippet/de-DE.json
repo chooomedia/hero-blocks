@@ -35,7 +35,6 @@
             "notAvailable": "Kein Update verfügbar",
             "latestVersion": "Neueste Version",
             "currentVersion": "Aktuelle Version",
-            "lastChecked": "Letzter Check",
             "downloadUrl": "Download-URL",
             "changelog": "Changelog",
             "webhookUrl": "Update-Webhook-URL (n8n)",
@@ -52,23 +51,7 @@
             "downloading": "Lade Update herunter und installiere...",
             "downloadSuccess": "Update erfolgreich installiert",
             "downloadSuccessMessage": "Das Plugin-Update wurde erfolgreich heruntergeladen und installiert. Bitte aktualisieren Sie die Seite, um die Änderungen zu sehen.",
-            "downloadFailed": "Update-Download fehlgeschlagen",
-            "testDownload": "Download testen",
-            "testDownloadTooltip": "Prüft ob Download-URL erreichbar ist (ohne Installation)",
-            "testing": "Teste Download-URL...",
-            "testSuccess": "Download-URL Test erfolgreich",
-            "testSuccessMessage": "Download-URL ist erreichbar. Status: {status}, Größe: {size}, Typ: {type}",
-            "testFailed": "Download-URL Test fehlgeschlagen",
-            "testFailedMessage": "Download-URL konnte nicht erreicht werden. Bitte prüfen Sie die URL oder versuchen Sie es später erneut.",
-            "testFullProcess": "Kompletter Prozess testen",
-            "testFullProcessTooltip": "Testet kompletten Update-Prozess: Check → Download-Test → Install",
-            "testingFullProcess": "Teste kompletten Prozess...",
-            "testFullProcessSuccess": "Kompletter Update-Prozess erfolgreich",
-            "testFullProcessSuccessMessage": "Alle Schritte des Update-Prozesses wurden erfolgreich getestet: Check → Download-Test → Install",
-            "testFullProcessFailed": "Update-Prozess Test fehlgeschlagen",
-            "testFullProcessFailedMessage": "Der Update-Prozess konnte nicht vollständig getestet werden. Bitte prüfen Sie die Logs.",
-            "testFullProcessNoUpdate": "Kein Update verfügbar",
-            "testFullProcessNoUpdateMessage": "Es ist kein Update verfügbar. Der komplette Update-Prozess kann nicht getestet werden."
+            "downloadFailed": "Update-Download fehlgeschlagen"
         }
     }
 }

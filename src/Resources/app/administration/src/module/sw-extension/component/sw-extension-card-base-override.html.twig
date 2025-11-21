@@ -1,31 +1,11 @@
 {% block sw_extension_card_base_activation_switch %}
     {% parent %}
     
-    {# HeroBlocks: Modern UI mit Description, Update Status Chip, kompaktem Layout #}
-    <template v-if="extension.name === 'HeroBlocks'">
-        {# Description - Kompakt unter dem Namen #}
-        <div v-if="extension.description || extension.translated?.description" class="sw-extension-card-base__description">
-            <p class="sw-extension-card-base__description-text">
-                {{ extension.description || extension.translated?.description || '' }}
-            </p>
-        </div>
-    </template>
-{% endblock %}
-
-{% block sw_extension_card_base_info_content %}
-    {% parent %}
-    
-    {# HeroBlocks: Update Status Chip - Modern, kompakt #}
-    <template v-if="extension.name === 'HeroBlocks'">
-        {# Update Status Chip - Nur wenn Update verfügbar #}
-        <sw-status 
-            v-if="isUpdateable && extension.latestVersion && extension.latestVersion !== extension.version"
-            color="blue"
-            class="sw-extension-card-base__update-status-chip"
-        >
-            <mt-icon name="regular-chevron-up-xs" size="12"></mt-icon>
-            {{ $tc('sw-extension.my-extensions.listing.update') }} {{ extension.latestVersion }}
-        </sw-status>
-    </template>
+    {# Description unter dem Namen (nur für HeroBlocks) - Prüfe verschiedene Quellen #}
+    <div v-if="extension.name === 'HeroBlocks' && (extension.description || extension.translated?.description)" class="sw-extension-card-base__description">
+        <p class="sw-extension-card-base__description-text">
+            {{ extension.description || extension.translated?.description || '' }}
+        </p>
+    </div>
 {% endblock %}
 

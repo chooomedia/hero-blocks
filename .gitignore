@@ -4,16 +4,20 @@
 vendor/
 node_modules/
 
-# Build artifacts
+# Build artifacts & compiled assets
 var/
 public/
+src/Resources/app/*/dist/
+src/Resources/public/
 *.zip
 
 # IDE
 .idea/
 .vscode/
 *.code-workspace
-.DS_Store
+*.swp
+*.swo
+*~
 
 # Logs
 *.log
@@ -22,11 +26,15 @@ logs/
 # Environment
 .env
 .env.local
+.env.*.local
 
 # Cache
 .cache/
+.phpunit.result.cache
 
 # OS
 .DS_Store
 Thumbs.db
 
+src/Resources/app/administration/.tmp/
+src/Resources/app/*/dist/

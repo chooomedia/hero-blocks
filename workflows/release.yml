@@ -1,0 +1,141 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger bei Tag-Push (z.B. v1.0.0, v1.1.0)
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Erforderlich für Release-Erstellung
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Vollständige Git-Historie für Versions-Info
+      
+      - name: Extract version from tag
+        id: version
+        run: |
+          # Entferne 'v' Präfix vom Tag (v1.0.0 → 1.0.0)
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=$GITHUB_REF_NAME" >> $GITHUB_OUTPUT
+          echo "✅ Version: $VERSION"
+          echo "✅ Tag: $GITHUB_REF_NAME"
+      
+      - name: Read version from composer.json
+        id: composer-version
+        run: |
+          if [ -f composer.json ]; then
+            COMPOSER_VERSION=$(grep -o '"version": "[^"]*"' composer.json | cut -d'"' -f4)
+            echo "composer-version=$COMPOSER_VERSION" >> $GITHUB_OUTPUT
+            echo "✅ Composer Version: $COMPOSER_VERSION"
+          else
+            echo "⚠️ composer.json nicht gefunden"
+          fi
+      
+      - name: Validate version match
+        run: |
+          TAG_VERSION="${{ steps.version.outputs.version }}"
+          COMPOSER_VERSION="${{ steps.composer-version.outputs.composer-version }}"
+          
+          if [ "$TAG_VERSION" != "$COMPOSER_VERSION" ]; then
+            echo "⚠️ WARNUNG: Tag-Version ($TAG_VERSION) stimmt nicht mit composer.json Version ($COMPOSER_VERSION) überein"
+            echo "ℹ️ Verwende Tag-Version: $TAG_VERSION"
+          else
+            echo "✅ Versionen stimmen überein: $TAG_VERSION"
+          fi
+      
+      - name: Create ZIP file
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          ZIP_NAME="hero-blocks-${VERSION}.zip"
+          
+          echo "📦 Erstelle ZIP-Datei: ${ZIP_NAME}"
+          
+          # Erstelle ZIP mit git archive (nur versionierte Dateien)
+          git archive --format=zip --output="${ZIP_NAME}" HEAD
+          
+          # Prüfe ZIP-Datei
+          if [ ! -f "${ZIP_NAME}" ]; then
+            echo "❌ Fehler: ZIP-Datei wurde nicht erstellt"
+            exit 1
+          fi
+          
+          ZIP_SIZE=$(du -h "${ZIP_NAME}" | cut -f1)
+          echo "✅ ZIP-Datei erstellt: ${ZIP_NAME} (${ZIP_SIZE})"
+          
+          # Prüfe ZIP-Inhalt
+          echo "📋 Prüfe ZIP-Inhalt..."
+          if unzip -l "${ZIP_NAME}" | grep -q "composer.json"; then
+            echo "✅ composer.json gefunden"
+          else
+            echo "❌ WARNUNG: composer.json nicht in ZIP gefunden!"
+            exit 1
+          fi
+          
+          if unzip -l "${ZIP_NAME}" | grep -q "src/HeroBlocks.php"; then
+            echo "✅ src/HeroBlocks.php gefunden"
+          else
+            echo "❌ WARNUNG: src/HeroBlocks.php nicht in ZIP gefunden!"
+            exit 1
+          fi
+          
+          echo "ZIP_NAME=${ZIP_NAME}" >> $GITHUB_ENV
+      
+      - name: Generate release notes
+        id: release-notes
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          VERSION="${{ steps.version.outputs.version }}"
+          
+          # Versuche RELEASE_NOTES.md zu lesen
+          if [ -f RELEASE_NOTES.md ]; then
+            echo "✅ Verwende RELEASE_NOTES.md"
+            NOTES=$(cat RELEASE_NOTES.md)
+          else
+            echo "⚠️ RELEASE_NOTES.md nicht gefunden, erstelle Standard-Notes"
+            # Erstelle Notes ohne heredoc (vermeidet YAML-Syntax-Probleme)
+            NOTES="## Hero Blocks v${VERSION}"$'\n'$'\n'
+            NOTES="${NOTES}### 🎉 Release v${VERSION}"$'\n'$'\n'
+            NOTES="${NOTES}### Installation"$'\n'
+            NOTES="${NOTES}1. Download hero-blocks-${VERSION}.zip"$'\n'
+            NOTES="${NOTES}2. Shopware Admin → Settings → Extensions → Upload Plugin"$'\n'
+            NOTES="${NOTES}3. Install and activate plugin"$'\n'$'\n'
+            NOTES="${NOTES}### Requirements"$'\n'
+            NOTES="${NOTES}- Shopware 6.7+"$'\n'
+            NOTES="${NOTES}- PHP 8.1+"$'\n'$'\n'
+            NOTES="${NOTES}### Documentation"$'\n'
+            NOTES="${NOTES}- See README.md for detailed documentation"
+          fi
+          
+          # Escape für GitHub Actions
+          NOTES="${NOTES//$'\n'/'%0A'}"
+          echo "notes<<EOF" >> $GITHUB_OUTPUT
+          echo "$NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ env.ZIP_NAME }}
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: Release ${{ steps.version.outputs.tag }}
+          body: ${{ steps.release-notes.outputs.notes }}
+          draft: false
+          prerelease: false
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Release created
+        run: |
+          echo "🎉 Release erfolgreich erstellt!"
+          echo "📦 ZIP: hero-blocks-${{ steps.version.outputs.version }}.zip"
+          echo "🏷️  Tag: ${{ steps.version.outputs.tag }}"
+          echo "🔗 URL: https://github.com/${{ github.repository }}/releases/tag/${{ steps.version.outputs.tag }}"
+

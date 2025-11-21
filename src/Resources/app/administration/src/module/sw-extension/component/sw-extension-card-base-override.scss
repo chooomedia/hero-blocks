@@ -1,33 +1,57 @@
-// Hero Blocks Extension Card - Modern UI, kompakt, weniger Whitespace
+// Hero Blocks Extension Card Description Override - Responsive Layout
 @import "~scss/variables";
 @import "~scss/mixins";
 
 .sw-extension-card-base {
-    // WICHTIG: Kompaktes Grid Layout - Alle Elemente auf einer Linie, weniger Whitespace
+    // WICHTIG: Grid Layout für Desktop - Alle Elemente in einer sauberen Linie
+    // Grid unterstützt automatische Zeilen (grid-auto-flow: row default)
     .sw-meteor-card__content .sw-meteor-card__content-wrapper {
         // Optimiertes Grid: Switch | Icon | Info+Description | Meta-Info | Action | Context
+        // Info-Bereich erhält mehr Platz für Name + Description
         grid-template-columns: 24px 56px 4fr 2fr minmax(min-content, 1fr) auto;
-        grid-column-gap: 12px; // Reduzierter Gap (statt Standard 16px)
-        grid-row-gap: 8px; // Kompakter Row-Gap
-        align-items: start;
+        grid-auto-flow: row; // Automatische Zeilen bei Bedarf
+        align-items: start; // Oben ausgerichtet für Description-Unterstützung
         
-        // Desktop: Alle Elemente in erster Zeile
-        .sw-extension-card-base__switch,
-        .sw-extension-icon,
-        .sw-extension-card-base__info,
-        .sw-extension-card-base__meta-info,
-        .sw-extension-card-base__main-action,
+        // Desktop: Switch, Icon, Meta-Info, Action, Context in erster Zeile
+        .sw-extension-card-base__switch {
+            grid-row: 1;
+            align-self: center; // Vertikal zentriert
+        }
+        
+        .sw-extension-icon {
+            grid-row: 1;
+            align-self: center;
+        }
+        
+        .sw-extension-card-base__info {
+            grid-row: 1;
+            grid-column: 3;
+            align-self: start;
+        }
+        
+        .sw-extension-card-base__meta-info {
+            grid-row: 1;
+            align-self: center;
+        }
+        
+        .sw-extension-card-base__main-action {
+            grid-row: 1;
+            align-self: center;
+        }
+        
         .sw-extension-card-base__context-menu {
             grid-row: 1;
             align-self: center;
         }
         
-        // Mobile: Responsive Layout
+        // Mobile: Ab 960px - Responsive Layout mit umgebrochener Struktur
         @media screen and (max-width: 960px) {
-            grid-template-columns: 1fr;
-            grid-column-gap: 0;
-            grid-row-gap: 8px;
+            grid-template-columns: 1fr; // Eine Spalte auf Mobile
+            gap: 12px;
+            align-items: flex-start;
+            grid-auto-flow: row;
             
+            // Mobile: Alle Elemente in separaten Zeilen
             .sw-extension-card-base__switch,
             .sw-extension-icon,
             .sw-extension-card-base__info,
@@ -37,75 +61,121 @@
             .sw-extension-card-base__context-menu {
                 grid-column: 1;
                 grid-row: auto;
+                align-self: stretch;
+            }
+            
+            // Mobile: Switch und Context Menu in Top-Row nebeneinander
+            .sw-extension-card-base__switch {
+                display: inline-block;
+                margin-right: auto;
             }
             
             .sw-extension-card-base__context-menu {
                 position: absolute;
-                top: 12px;
-                right: 12px;
+                top: 16px;
+                right: 16px;
+                display: inline-block;
             }
+            
+            // Mobile: Icon und Info nebeneinander
+            .sw-extension-icon {
+                display: inline-block;
+                margin-right: 12px;
+                vertical-align: top;
+            }
+            
+            .sw-extension-card-base__info {
+                display: inline-block;
+                vertical-align: top;
+                margin-left: 0;
+                width: calc(100% - 68px); // Minus Icon-Breite + Margin
+            }
+        }
+        
+        // Tablet: Zwischen 961px und 1200px - Optimiertes Layout
+        @media screen and (min-width: 961px) and (max-width: 1200px) {
+            grid-template-columns: 24px 56px 3fr 2fr minmax(min-content, 1fr) auto;
+            grid-column-gap: 16px; // Reduzierter Gap
         }
     }
     
-    // Description - Kompakt, direkt unter Name
+    // Description Styling - Sauber unter dem Title ausgerichtet
     &__description {
-        grid-column: 3;
-        grid-row: 2;
-        margin-top: 2px; // Minimaler Abstand
-        margin-bottom: 0;
-        padding: 0;
+        margin-top: 4px;
+        margin-left: 0;
+        padding-left: 0; // WICHTIG: Kein zusätzliches Padding - direkt unter Title ausgerichtet
+        grid-column: 3; // Gleiche Spalte wie Info (Name)
+        grid-row: 2; // Zweite Zeile, direkt unter dem Info-Bereich
+        align-self: start;
+        width: 100%; // Volle Breite der Info-Spalte
         
         @media screen and (max-width: 960px) {
-            grid-column: 1;
-            grid-row: auto;
-            margin-top: 4px;
+            margin-left: 0;
+            margin-top: 6px;
+            padding-left: 0;
+            grid-row: auto; // Automatische Zeile auf Mobile
+            grid-column: 1; // Volle Breite auf Mobile
         }
         
         &-text {
             font-size: $font-size-xxs;
-            line-height: 1.4;
+            line-height: 1.5;
             color: var(--color-text-secondary-default);
             margin: 0;
-            padding: 0;
+            padding: 0; // WICHTIG: Kein Padding - sauber ausgerichtet
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
             text-overflow: ellipsis;
+            
+            @media screen and (max-width: 960px) {
+                -webkit-line-clamp: 3; // Mehr Zeilen auf Mobile
+            }
         }
     }
     
-    // Update Status Chip - Modern, kompakt
-    &__update-status-chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        margin-left: 8px;
-        font-size: $font-size-xxs;
-        font-weight: $font-weight-medium;
+    // Info-Bereich: Name und Description zusammen
+    &__info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start; // WICHTIG: Links ausgerichtet für saubere Title-Description-Ausrichtung
         
-        .mt-icon {
-            flex-shrink: 0;
+        section {
+            width: 100%; // Volle Breite für Title
         }
         
         @media screen and (max-width: 960px) {
             margin-left: 0;
-            margin-top: 4px;
         }
     }
     
-    // Meta-Info: Kompakter
+    // Meta-Info: Rechts ausgerichtet
     &__meta-info {
-        section {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
+        @media screen and (max-width: 960px) {
+            text-align: left;
+            margin-top: 8px;
         }
-        
-        span {
-            font-size: $font-size-xxs;
-            line-height: 1.4;
+    }
+    
+    // Main Action: Configure Button
+    &__main-action {
+        @media screen and (max-width: 960px) {
+            margin-top: 8px;
+            text-align: left;
+            
+            a {
+                display: inline-block;
+            }
+        }
+    }
+    
+    // Context Menu: Immer oben rechts
+    &__context-menu {
+        @media screen and (max-width: 960px) {
+            position: absolute;
+            top: 16px;
+            right: 16px;
         }
     }
 }
