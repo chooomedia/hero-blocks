@@ -2,6 +2,7 @@
 
 namespace HeroBlocks\Controller\Admin;
 
+use HeroBlocks\Service\InstagramTokenCheckService;
 use HeroBlocks\Service\LicenseCheckService;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\Context;
@@ -17,15 +18,18 @@ use Symfony\Component\Routing\Attribute\Route;
 class LicenseCheckController extends AbstractController
 {
     private LicenseCheckService $licenseCheckService;
+    private InstagramTokenCheckService $instagramTokenCheckService;
     private LoggerInterface $logger;
     private SystemConfigService $systemConfigService;
 
     public function __construct(
         LicenseCheckService $licenseCheckService,
+        InstagramTokenCheckService $instagramTokenCheckService,
         LoggerInterface $logger,
         SystemConfigService $systemConfigService
     ) {
         $this->licenseCheckService = $licenseCheckService;
+        $this->instagramTokenCheckService = $instagramTokenCheckService;
         $this->logger = $logger;
         $this->systemConfigService = $systemConfigService;
     }
@@ -172,6 +176,103 @@ class LicenseCheckController extends AbstractController
             'success' => true,
             'debug' => $debug,
         ]);
+    }
+
+    /**
+     * Validiert Instagram API Credentials
+     * 
+     * Response:
+     * {
+     *   "success": true,
+     *   "data": {
+     *     "valid": true,
+     *     "message": "Instagram API Credentials sind gültig. Verbunden mit Account: @username",
+     *     "details": {
+     *       "appId": true,
+     *       "appSecret": true,
+     *       "accessToken": true,
+     *       "redirectUri": true,
+     *       "tokenValid": true,
+     *       "userId": "123456789",
+     *       "username": "username",
+     *       "tokenExpiresAt": "2024-12-29T12:00:00.000Z"
+     *     }
+     *   }
+     * }
+     */
+    #[Route(path: '/api/_action/hero-blocks/check-instagram-token', name: 'api.action.hero-blocks.check-instagram-token', defaults: ['_routeScope' => ['api']], methods: ['POST'])]
+    public function checkInstagramToken(Request $request, Context $context): JsonResponse
+    {
+        $startTime = microtime(true);
+        
+        try {
+            // WICHTIG: Prüfe ob Lizenz abgelaufen ist
+            $licenseStatus = $this->systemConfigService->get('HeroBlocks.config.licenseStatus');
+            if ($licenseStatus === 'expired') {
+                return new JsonResponse([
+                    'success' => false,
+                    'errors' => [
+                        [
+                            'code' => 'LICENSE_EXPIRED',
+                            'detail' => 'Ihre Lizenz ist abgelaufen. Instagram Feed API-Anfragen sind nicht mehr möglich. Bitte verlängern Sie Ihre Lizenz.',
+                            'status' => '403',
+                        ]
+                    ],
+                ], 403);
+            }
+
+            $this->logger->info('InstagramTokenCheckController: Starting Instagram token validation', [
+                'requestUri' => $request->getUri(),
+                'method' => $request->getMethod(),
+                'timestamp' => (new \DateTime())->format('c'),
+            ]);
+            
+            $result = $this->instagramTokenCheckService->validateInstagramCredentials();
+            
+            $duration = round((microtime(true) - $startTime) * 1000, 2);
+            
+            $this->logger->info('InstagramTokenCheckController: Instagram token validation completed', [
+                'result' => $result,
+                'durationMs' => $duration,
+            ]);
+            
+            return new JsonResponse([
+                'success' => true,
+                'data' => $result,
+                'debug' => [
+                    'durationMs' => $duration,
+                    'timestamp' => (new \DateTime())->format('c'),
+                ],
+            ]);
+        } catch (\Exception $e) {
+            $duration = round((microtime(true) - $startTime) * 1000, 2);
+            
+            $this->logger->error('InstagramTokenCheckController: Exception during Instagram token validation', [
+                'error' => $e->getMessage(),
+                'errorType' => get_class($e),
+                'code' => $e->getCode(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'durationMs' => $duration,
+                'trace' => $e->getTraceAsString(),
+            ]);
+            
+            return new JsonResponse([
+                'success' => false,
+                'errors' => [
+                    [
+                        'code' => 'VALIDATION_FAILED',
+                        'detail' => $e->getMessage(),
+                        'status' => '500',
+                        'errorType' => get_class($e),
+                    ]
+                ],
+                'debug' => [
+                    'durationMs' => $duration,
+                    'timestamp' => (new \DateTime())->format('c'),
+                ],
+            ], 500);
+        }
     }
 }
 

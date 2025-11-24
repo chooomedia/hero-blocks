@@ -50,7 +50,10 @@
                     
                     <li class="hero-mega-menu-nav__item {% if hasChildren %}hero-mega-menu-nav__item--has-children{% endif %}"
                         role="none">
-                        <a href="{{ category_url(category) }}"
+                        {# WICHTIG: category_url(category) gibt null zurück für Folder-Kategorien #}
+                        {# WICHTIG: Bei null oder leerem String setze href="" (leeres Attribut) #}
+                        {% set categoryUrl = category_url(category) %}
+                        <a {% if categoryUrl %}href="{{ categoryUrl }}"{% else %}href=""{% endif %}
                            class="hero-mega-menu-nav__link"
                            role="menuitem"
                            itemprop="url"

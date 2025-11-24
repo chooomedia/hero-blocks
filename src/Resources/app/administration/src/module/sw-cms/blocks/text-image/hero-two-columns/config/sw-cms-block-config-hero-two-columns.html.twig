@@ -65,10 +65,21 @@
     />
     {% endblock %}
     
+    {# Background Left - Toggle: Image oder CSS Code #}
+    {% block sw_cms_block_config_hero_two_columns_background_left_toggle %}
+    <sw-switch-field
+        v-if="(block.customFields?.backgroundMode || 'none') === 'two-images'"
+        :model-value="block.customFields?.backgroundLeftUseCss || false"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.backgroundLeftUseCss.label')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.backgroundLeftUseCss.helpText')"
+        @update:model-value="onBackgroundLeftUseCssChange"
+    />
+    {% endblock %}
+    
     {# Background Image Left (Two Images) #}
     {% block sw_cms_block_config_hero_two_columns_background_image_left %}
     <sw-media-compact-upload-v2
-        v-if="(block.customFields?.backgroundMode || 'none') === 'two-images'"
+        v-if="(block.customFields?.backgroundMode || 'none') === 'two-images' && !block.customFields?.backgroundLeftUseCss"
         :source="block.customFields?.backgroundImageLeft ? { id: block.customFields.backgroundImageLeft } : null"
         :upload-tag="uploadTagBackgroundLeft"
         :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.backgroundImageLeft.label')"
@@ -78,17 +89,40 @@
         @selection-change="onSetBackgroundImageLeft"
     />
     <sw-upload-listener
-        v-if="(block.customFields?.backgroundMode || 'none') === 'two-images'"
+        v-if="(block.customFields?.backgroundMode || 'none') === 'two-images' && !block.customFields?.backgroundLeftUseCss"
         :upload-tag="uploadTagBackgroundLeft"
         auto-upload
         @media-upload-finish="onBackgroundImageLeftUpload"
     />
     {% endblock %}
     
+    {# Background CSS Code Left (Two Images) #}
+    {% block sw_cms_block_config_hero_two_columns_background_css_left %}
+    <sw-code-editor
+        v-if="(block.customFields?.backgroundMode || 'none') === 'two-images' && block.customFields?.backgroundLeftUseCss"
+        :value="block.customFields?.backgroundLeftCss || defaultBackgroundCss"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.backgroundLeftCss.label')"
+        :editor-config="{ mode: 'css' }"
+        @update:value="onBackgroundLeftCssChange"
+        @blur="onBackgroundLeftCssChange"
+    />
+    {% endblock %}
+    
+    {# Background Right - Toggle: Image oder CSS Code #}
+    {% block sw_cms_block_config_hero_two_columns_background_right_toggle %}
+    <sw-switch-field
+        v-if="(block.customFields?.backgroundMode || 'none') === 'two-images'"
+        :model-value="block.customFields?.backgroundRightUseCss || false"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.backgroundRightUseCss.label')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.backgroundRightUseCss.helpText')"
+        @update:model-value="onBackgroundRightUseCssChange"
+    />
+    {% endblock %}
+    
     {# Background Image Right (Two Images) #}
     {% block sw_cms_block_config_hero_two_columns_background_image_right %}
     <sw-media-compact-upload-v2
-        v-if="(block.customFields?.backgroundMode || 'none') === 'two-images'"
+        v-if="(block.customFields?.backgroundMode || 'none') === 'two-images' && !block.customFields?.backgroundRightUseCss"
         :source="block.customFields?.backgroundImageRight ? { id: block.customFields.backgroundImageRight } : null"
         :upload-tag="uploadTagBackgroundRight"
         :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.backgroundImageRight.label')"
@@ -98,10 +132,46 @@
         @selection-change="onSetBackgroundImageRight"
     />
     <sw-upload-listener
-        v-if="(block.customFields?.backgroundMode || 'none') === 'two-images'"
+        v-if="(block.customFields?.backgroundMode || 'none') === 'two-images' && !block.customFields?.backgroundRightUseCss"
         :upload-tag="uploadTagBackgroundRight"
         auto-upload
         @media-upload-finish="onBackgroundImageRightUpload"
+    />
+    {% endblock %}
+    
+    {# Background CSS Code Right (Two Images) #}
+    {% block sw_cms_block_config_hero_two_columns_background_css_right %}
+    <sw-code-editor
+        v-if="(block.customFields?.backgroundMode || 'none') === 'two-images' && block.customFields?.backgroundRightUseCss"
+        :value="block.customFields?.backgroundRightCss || defaultBackgroundCss"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.backgroundRightCss.label')"
+        :editor-config="{ mode: 'css' }"
+        @update:value="onBackgroundRightCssChange"
+        @blur="onBackgroundRightCssChange"
+    />
+    {% endblock %}
+    
+    {# Scroll Animation Angle #}
+    {% block sw_cms_block_config_hero_two_columns_scroll_angle %}
+    <mt-text-field
+        v-if="(block.customFields?.backgroundMode || 'none') === 'two-images'"
+        :model-value="block.customFields?.scrollAnimationAngle || '33'"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.scrollAnimationAngle.label')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.scrollAnimationAngle.helpText')"
+        placeholder="33"
+        type="number"
+        @update:model-value="onScrollAnimationAngleChange"
+    />
+    {% endblock %}
+    
+    {# Scroll Animation Enabled #}
+    {% block sw_cms_block_config_hero_two_columns_scroll_animation_enabled %}
+    <sw-switch-field
+        v-if="(block.customFields?.backgroundMode || 'none') === 'two-images'"
+        :model-value="block.customFields?.scrollAnimationEnabled !== false"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.scrollAnimationEnabled.label')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.scrollAnimationEnabled.helpText')"
+        @update:model-value="onScrollAnimationEnabledChange"
     />
     {% endblock %}
     
@@ -123,6 +193,82 @@
         :label="$tc('sw-cms.detail.label.cssClassField')"
         :help-text="$tc('sw-cms.detail.helpText.cssClassField') + ' (z.B. p-3, m-4, mb-5)'"
         @update:model-value="onCssClassChange"
+    />
+    {% endblock %}
+    
+    {# Audio File #}
+    {% block sw_cms_block_config_hero_two_columns_audio %}
+    <sw-media-compact-upload-v2
+        :source="block.customFields?.audioFile ? { id: block.customFields.audioFile } : null"
+        :upload-tag="uploadTagAudio"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.audioFile.label')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.audioFile.helpText')"
+        :default-folder="cmsPageState?.pageEntityName || 'cms_page'"
+        :allow-multi-select="false"
+        :file-accept="'audio/*'"
+        @media-upload-remove-image="onRemoveAudioFile"
+        @selection-change="onSetAudioFile"
+    />
+    <sw-upload-listener
+        :upload-tag="uploadTagAudio"
+        auto-upload
+        @media-upload-finish="onAudioFileUpload"
+    />
+    {% endblock %}
+    
+    {# Element Positionierung - Left Slot #}
+    {% block sw_cms_block_config_hero_two_columns_element_left %}
+    <sw-container columns="repeat(auto-fit, minmax(250px, 1fr))" gap="0 30px">
+        <mt-text-field
+            :model-value="block.customFields?.elementLeftTranslateX || '0'"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.elementLeftTranslateX.label')"
+            :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.elementLeftTranslateX.helpText')"
+            placeholder="0"
+            type="number"
+            @update:model-value="onElementLeftTranslateXChange"
+        />
+        <mt-text-field
+            :model-value="block.customFields?.elementLeftTranslateY || '0'"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.elementLeftTranslateY.label')"
+            :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.elementLeftTranslateY.helpText')"
+            placeholder="0"
+            type="number"
+            @update:model-value="onElementLeftTranslateYChange"
+        />
+    </sw-container>
+    <sw-switch-field
+        :model-value="block.customFields?.elementLeftAnimate || false"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.elementLeftAnimate.label')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.elementLeftAnimate.helpText')"
+        @update:model-value="onElementLeftAnimateChange"
+    />
+    {% endblock %}
+    
+    {# Element Positionierung - Right Slot #}
+    {% block sw_cms_block_config_hero_two_columns_element_right %}
+    <sw-container columns="repeat(auto-fit, minmax(250px, 1fr))" gap="0 30px">
+        <mt-text-field
+            :model-value="block.customFields?.elementRightTranslateX || '0'"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.elementRightTranslateX.label')"
+            :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.elementRightTranslateX.helpText')"
+            placeholder="0"
+            type="number"
+            @update:model-value="onElementRightTranslateXChange"
+        />
+        <mt-text-field
+            :model-value="block.customFields?.elementRightTranslateY || '0'"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.elementRightTranslateY.label')"
+            :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.elementRightTranslateY.helpText')"
+            placeholder="0"
+            type="number"
+            @update:model-value="onElementRightTranslateYChange"
+        />
+    </sw-container>
+    <sw-switch-field
+        :model-value="block.customFields?.elementRightAnimate || false"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.elementRightAnimate.label')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.elementRightAnimate.helpText')"
+        @update:model-value="onElementRightAnimateChange"
     />
     {% endblock %}
     

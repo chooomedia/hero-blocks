@@ -1,11 +1,10 @@
-{% block sw_extension_card_base_activation_switch %}
+{% block sw_extension_card_base_info %}
     {% parent %}
     
-    {# Description unter dem Namen (nur für HeroBlocks) - Prüfe verschiedene Quellen #}
-    <div v-if="extension.name === 'HeroBlocks' && (extension.description || extension.translated?.description)" class="sw-extension-card-base__description">
-        <p class="sw-extension-card-base__description-text">
-            {{ extension.description || extension.translated?.description || '' }}
-        </p>
-    </div>
+    {# Description im Info-Bereich (nur für HeroBlocks) - Direkt unter dem Namen #}
+    {# WICHTIG: Prüfe verschiedene Extension-Identifikatoren (name, composerName, label) #}
+    <p v-if="(extension.name === 'HeroBlocks' || extension.composerName === 'horex/hero-blocks' || extension.label === 'Hero Blocks') && getExtensionDescription(extension)" class="sw-extension-card-base__description-text">
+        {{ getExtensionDescription(extension) }}
+    </p>
 {% endblock %}
 

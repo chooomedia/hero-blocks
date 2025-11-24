@@ -1,9 +1,28 @@
 {% sw_extends '@Storefront/storefront/section/cms-section-default.html.twig' %}
 
 {% block page_content_section_default %}
-    {# Zurück zum Standard: Kein zusätzlicher Container-Wrapper #}
-    {# Die Section verwendet bereits section.sizingMode für Container/Full-Width #}
-    {# CSS wird Sections nach Hero automatisch auf "container" setzen #}
-    {{ parent() }}
+    {# ludtwig-ignore twig-hash-key-no-quotes #}
+    {% set layout = section.sizingMode ? section.sizingMode|replace({'_': '-'}) : 'container' %}
+    {# WICHTIG: CSS-Klasse für hero-two-columns Block hinzufügen wenn full-width #}
+    {% set sectionClasses = ['cms-section-default', layout] %}
+    {% if layout == 'full-width' %}
+        {# Prüfe ob hero-two-columns Block vorhanden ist #}
+        {% set hasHeroTwoColumns = false %}
+        {% for block in section.blocks %}
+            {% if block.type == 'hero-two-columns' %}
+                {% set hasHeroTwoColumns = true %}
+                {% break %}
+            {% endif %}
+        {% endfor %}
+        {% if hasHeroTwoColumns %}
+            {% set sectionClasses = sectionClasses|merge(['cms-block-hero-two-columns']) %}
+        {% endif %}
+    {% endif %}
+    <section class="{{ sectionClasses|join(' ') }}">
+        {% for block in section.blocks %}
+            {% block section_default_content_block %}
+                {% sw_include '@Storefront/storefront/section/cms-section-block-container.html.twig' %}
+            {% endblock %}
+        {% endfor %}
+    </section>
 {% endblock %}
-

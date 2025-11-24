@@ -1,0 +1,166 @@
+{% block element_category_slider %}
+    {# WICHTIG: Config-Zugriff - element.fieldConfig.elements ist die korrekte Quelle für gespeicherte Werte #}
+    {# WICHTIG: Block-Config hat Priorität über Element-Config (falls vorhanden) #}
+    {% set elementConfig = element.fieldConfig.elements %}
+    {% set blockConfig = block.customFields %}
+    {% set sliderConfig = {
+        navigationArrows: { value: blockConfig.navigationArrows|default(elementConfig.navigationArrows.value|default('outside')) },
+        navigationDots: { value: blockConfig.navigationDots|default(elementConfig.navigationDots.value|default(true)) },
+        autoSlide: { value: blockConfig.autoSlide|default(elementConfig.autoSlide.value|default(false)) },
+        autoplayTimeout: { value: blockConfig.autoplayTimeout|default(elementConfig.autoplayTimeout.value|default(5000)) },
+        speed: { value: blockConfig.speed|default(elementConfig.speed.value|default(300)) },
+        displayMode: { value: elementConfig.displayMode.value|default('cover') },
+        minHeight: { value: elementConfig.minHeight.value|default(null) },
+        verticalAlign: { value: elementConfig.verticalAlign.value|default(null) }
+    } %}
+    {% set visibleNavValues = ['inside', 'outside'] %}
+    {% set visibleDotsValues = ['bottom'] %}
+    {% set blockId = block.id %}
+    {% set displayMode = sliderConfig.displayMode.value ?: 'cover' %}
+    
+    {# WICHTIG: minHeight nur setzen wenn vorhanden #}
+    {% set minHeight = null %}
+    {% if sliderConfig.minHeight is defined and sliderConfig.minHeight.value is defined and sliderConfig.minHeight.value is not null and sliderConfig.minHeight.value is not empty %}
+        {% set minHeightValue = sliderConfig.minHeight.value|trim %}
+        {% if minHeightValue|length > 0 %}
+            {% set minHeight = minHeightValue %}
+        {% endif %}
+    {% endif %}
+
+    <div class="cms-element-{{ element.type }}{% if displayMode == "standard" and sliderConfig.verticalAlign.value %} has-vertical-alignment{% endif %}">
+        {% set baseSliderOptions = {
+            slider: {
+                controls: sliderConfig.navigationArrows.value in visibleNavValues,
+                nav: sliderConfig.navigationDots.value in visibleDotsValues,
+                navPosition: 'bottom',
+                mouseDrag: true,
+                autoplay: sliderConfig.autoSlide.value,
+                autoplayButtonOutput: false,
+                autoplayTimeout: sliderConfig.autoplayTimeout.value ?: 5000,
+                autoplayHoverPause: true,
+                speed: sliderConfig.speed.value ?: 300,
+                ariaLive: sliderConfig.autoSlide.value ? false : true,
+                autoHeight: (displayMode == "standard") ? true : false,
+                loop: false,
+                rewind: true
+            }
+        } %}
+
+        {% block element_category_slider_alignment %}
+            {% if sliderConfig.verticalAlign.value %}
+                <div class="cms-element-alignment{% if sliderConfig.verticalAlign.value == "center" %} align-self-center{% elseif sliderConfig.verticalAlign.value == "flex-end" %} align-self-end{% else %} align-self-start{% endif %}">
+            {% endif %}
+                <div
+                    class="category-slider base-slider{% if sliderConfig.navigationArrows.value == "outside" %} has-nav-outside{% endif %}{% if sliderConfig.navigationDots.value == "bottom" %} has-dots-bottom{% endif %}{% if displayMode in ["cover", "contain"] %} has-height-control{% endif %}"
+                    data-base-slider="true"
+                    data-base-slider-options='{{ baseSliderOptions|json_encode }}'
+                    role="region"
+                    aria-label="{{ 'component.cms.imageGallery.ariaLabel'|trans({ '%total%': element.data.sliderItems|length })|sw_sanitize }}"
+                    tabindex="0"
+                    itemscope
+                    itemtype="https://schema.org/ImageGallery"
+                    {% if displayMode in ["cover", "contain"] and minHeight %}
+                        style="--category-slider-min-height: {{ minHeight|trim|replace({' ':''}) }};"
+                    {% endif %}
+                >
+                    {% block element_category_slider_skip_slider %}
+                        {% sw_include '@Storefront/storefront/component/skip-target.html.twig' with {
+                            targetId: blockId,
+                            snippet: 'component.cms.imageGallery.skipImageGallery',
+                        } %}
+                    {% endblock %}
+
+                    <div class="category-slider-container" data-base-slider-container="true">
+                        {% if element.data.sliderItems is defined and element.data.sliderItems|length > 0 %}
+                            {% for image in element.data.sliderItems %}
+                                {% block element_category_slider_item %}
+                                    <div class="category-slider-item-container">
+                                        <div class="category-slider-item{% if loop.first != true %} is-not-first{% endif %} is-{{ displayMode }}"{% if minHeight and displayMode == "cover" %} style="min-height: {{ minHeight|trim|replace({' ':''}) }}"{% endif %}>
+                                            {% set imageElement %}
+                                                <div class="category-slide-background is-{{ displayMode }}">
+                                                    {% set imageAttributes = {
+                                                        'class': 'category-slide-img img-fluid',
+                                                        'loading': 'lazy',
+                                                        'alt': image.media.translated.alt ?: '',
+                                                        'title': image.media.translated.title ?: '',
+                                                        'tabindex': image.url ? '-1' : '0'
+                                                    } %}
+                                                    
+                                                    {% if displayMode == 'cover' or displayMode == 'contain' %}
+                                                        {% set imageAttributes = imageAttributes|merge({ 'data-object-fit': displayMode }) %}
+                                                    {% endif %}
+                                                    
+                                                    {% sw_thumbnails 'category-slide-thumbnails' with {
+                                                        media: image.media,
+                                                        sizes: {
+                                                            default: '1920px'
+                                                        },
+                                                        attributes: imageAttributes
+                                                    } %}
+                                                </div>
+                                            {% endset %}
+
+                                            {% if image.url %}
+                                                <a href="{{ image.url }}"
+                                                   class="category-slide-link"
+                                                   {% if image.newTab %}target="_blank" rel="noopener"{% endif %}
+                                                >
+                                                    {{ imageElement }}
+                                                </a>
+                                            {% else %}
+                                                {{ imageElement }}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endblock %}
+                            {% endfor %}
+                        {% else %}
+                            {# Empty State #}
+                            <div class="category-slider-item-container">
+                                <div class="category-slider-item is-{{ displayMode }}">
+                                    <div class="category-slide-background is-{{ displayMode }}">
+                                        <div class="category-slide-placeholder">
+                                            <p>{{ 'component.cms.categorySlider.noImages'|trans|sw_sanitize }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {% block element_category_slider_controls %}
+                        {% if element.data.sliderItems is defined and element.data.sliderItems|length > 1 and sliderConfig.navigationArrows.value in visibleNavValues %}
+                            <div class="category-slider-controls-container">
+                                <div class="base-slider-controls" data-base-slider-controls="true">
+                                    {% block element_category_slider_controls_items %}
+                                        {% block element_category_slider_controls_items_arrows %}
+                                            <button
+                                                class="base-slider-controls-prev category-slider-controls-prev{% if sliderConfig.navigationArrows.value == "outside" %} is-nav-prev-outside{% elseif sliderConfig.navigationArrows.value == "inside" %} is-nav-prev-inside{% endif %}"
+                                                aria-label="{{ 'general.previous'|trans|striptags }}"
+                                            >
+                                                {% sw_icon 'arrow-head-left' %}
+                                            </button>
+                                            <button
+                                                class="base-slider-controls-next category-slider-controls-next{% if sliderConfig.navigationArrows.value == "outside" %} is-nav-next-outside{% elseif sliderConfig.navigationArrows.value == "inside" %} is-nav-next-inside{% endif %}"
+                                                aria-label="{{ 'general.next'|trans|striptags }}"
+                                            >
+                                                {% sw_icon 'arrow-head-right' %}
+                                            </button>
+                                        {% endblock %}
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endblock %}
+                </div>
+            {% if sliderConfig.verticalAlign.value %}
+                </div>
+            {% endif %}
+        {% endblock %}
+    </div>
+
+    {% block element_category_slider_target_after_slider %}
+        <div id="content-after-target-{{ blockId }}"></div>
+    {% endblock %}
+{% endblock %}
+

@@ -47,6 +47,58 @@
                         "backgroundImageRight": {
                             "label": "Hintergrundbild (Rechts)"
                         },
+                        "backgroundLeftUseCss": {
+                            "label": "Hintergrund Links - CSS Code verwenden",
+                            "helpText": "Aktivieren Sie diese Option, um CSS Code statt eines Bildes für den linken Hintergrund zu verwenden"
+                        },
+                        "backgroundLeftCss": {
+                            "label": "Hintergrund Links - CSS Code",
+                            "helpText": "CSS Code für den linken Hintergrund (z.B. repeating-linear-gradient)"
+                        },
+                        "backgroundRightUseCss": {
+                            "label": "Hintergrund Rechts - CSS Code verwenden",
+                            "helpText": "Aktivieren Sie diese Option, um CSS Code statt eines Bildes für den rechten Hintergrund zu verwenden"
+                        },
+                        "backgroundRightCss": {
+                            "label": "Hintergrund Rechts - CSS Code",
+                            "helpText": "CSS Code für den rechten Hintergrund (z.B. repeating-linear-gradient)"
+                        },
+                        "scrollAnimationAngle": {
+                            "label": "Scroll-Animation Winkel (Grad)",
+                            "helpText": "Winkel für die Scroll-Animation in Grad (Standard: 33°). Links: von unten nach oben, Rechts: von oben nach unten"
+                        },
+                        "scrollAnimationEnabled": {
+                            "label": "Scroll-Animation aktivieren",
+                            "helpText": "Aktiviert die Scroll-Animation für die Background Images (von außen nach innen mit konfigurierbarem Winkel)"
+                        },
+                        "audioFile": {
+                            "label": "Audio-Datei",
+                            "helpText": "Wählen Sie eine Audio-Datei aus oder laden Sie eine neue hoch. Die Audio-Datei wird beim Klick auf das Icon abgespielt."
+                        },
+                        "elementLeftTranslateX": {
+                            "label": "Element Links - Verschiebung X (px)",
+                            "helpText": "Horizontale Verschiebung des linken Elements in Pixeln (negativ = links, positiv = rechts)"
+                        },
+                        "elementLeftTranslateY": {
+                            "label": "Element Links - Verschiebung Y (px)",
+                            "helpText": "Vertikale Verschiebung des linken Elements in Pixeln (negativ = oben, positiv = unten)"
+                        },
+                        "elementLeftAnimate": {
+                            "label": "Element Links - Animation aktivieren",
+                            "helpText": "Aktiviert die Scroll-Animation für das linke Element (von außen nach innen)"
+                        },
+                        "elementRightTranslateX": {
+                            "label": "Element Rechts - Verschiebung X (px)",
+                            "helpText": "Horizontale Verschiebung des rechten Elements in Pixeln (negativ = links, positiv = rechts)"
+                        },
+                        "elementRightTranslateY": {
+                            "label": "Element Rechts - Verschiebung Y (px)",
+                            "helpText": "Vertikale Verschiebung des rechten Elements in Pixeln (negativ = oben, positiv = unten)"
+                        },
+                        "elementRightAnimate": {
+                            "label": "Element Rechts - Animation aktivieren",
+                            "helpText": "Aktiviert die Scroll-Animation für das rechte Element (von außen nach innen)"
+                        },
                         "minHeight": {
                             "label": "Mindesthöhe",
                             "placeholder": "z.B. 500px, 80vh",
@@ -104,6 +156,201 @@
                             "label": "Dropdown-Padding",
                             "placeholder": "z.B. 2rem",
                             "helpText": "Padding des Dropdown-Menüs (Top/Bottom, z.B. 2rem)"
+                        }
+                    }
+                },
+                "categorySlider": {
+                    "label": "Hero Block Kategorie-Slider",
+                    "config": {
+                        "info": "Alle Einstellungen (Kategorie, Bild-Anzahl, Navigation, etc.) werden im Element-Modal konfiguriert. Hier können Sie nur die Standard-Block-Einstellungen (Abstände, Größe) anpassen.",
+                        "category": {
+                            "label": "Kategorie",
+                            "placeholder": "Kategorie auswählen...",
+                            "helpText": "Wählen Sie eine Kategorie aus, deren Bilder im Slider angezeigt werden sollen"
+                        },
+                        "imageCount": {
+                            "label": "Anzahl der Bilder",
+                            "helpText": "Wählen Sie, ob 1 oder 2 Bilder-Kategorie-Elemente angezeigt werden sollen",
+                            "options": {
+                                "one": "1 Bild",
+                                "two": "2 Bilder"
+                            }
+                        },
+                        "imageWidth": {
+                            "label": "Bildbreite",
+                            "helpText": "Wählen Sie, ob die Bilder inner-full-width oder full-width angezeigt werden sollen",
+                            "options": {
+                                "innerFullWidth": "Innere Full-Width",
+                                "fullWidth": "Full-Width"
+                            }
+                        },
+                        "navigationDots": {
+                            "label": "Navigationspunkte anzeigen",
+                            "helpText": "Aktivieren Sie die Anzeige der Navigationspunkte unterhalb des Sliders"
+                        },
+                        "navigationArrows": {
+                            "label": "Navigationspfeile",
+                            "helpText": "Wählen Sie die Position der Navigationspfeile (none, inside, outside)",
+                            "options": {
+                                "none": "Keine",
+                                "inside": "Innen",
+                                "outside": "Außen"
+                            }
+                        },
+                        "autoSlide": {
+                            "label": "Automatisches Sliden",
+                            "helpText": "Aktivieren Sie das automatische Sliden des Sliders"
+                        },
+                        "autoplayTimeout": {
+                            "label": "Autoplay-Timeout (ms)",
+                            "helpText": "Zeit in Millisekunden zwischen den Slides (1000-30000)"
+                        },
+                        "speed": {
+                            "label": "Slide-Geschwindigkeit (ms)",
+                            "helpText": "Geschwindigkeit der Slide-Animation in Millisekunden (100-1000)"
+                        }
+                    }
+                },
+                "heroInstagramFeed": {
+                    "label": "Hero Instagram Feed",
+                    "placeholder": {
+                        "title": "Instagram Feed Block",
+                        "hint": "Konfigurieren Sie den Instagram Feed in den Block-Einstellungen"
+                    },
+                    "config": {
+                        "info": {
+                            "apiCredentials": "API-Credentials (App ID, App Secret, Access Token) werden aus den Plugin-Einstellungen (Hero Blocks Extension Config) geladen."
+                        },
+                        "postLimit": {
+                            "label": "Anzahl der Posts",
+                            "helpText": "Anzahl der Instagram-Posts, die angezeigt werden sollen (1-50). Standard aus Plugin-Einstellungen: 12"
+                        },
+                        "displayMode": {
+                            "label": "Anzeige-Modus",
+                            "helpText": "Wählen Sie zwischen Grid (Raster) oder Slider (Karussell)",
+                            "options": {
+                                "grid": "Grid (Raster)",
+                                "slider": "Slider (Karussell)"
+                            }
+                        },
+                        "columns": {
+                            "label": "Anzahl Spalten (Grid)",
+                            "helpText": "Anzahl der Spalten im Grid-Modus (1-6)"
+                        },
+                        "showCaptions": {
+                            "label": "Captions anzeigen",
+                            "helpText": "Zeigt die Instagram-Post-Beschreibungen an"
+                        },
+                        "showLikes": {
+                            "label": "Likes anzeigen",
+                            "helpText": "Zeigt die Anzahl der Likes für jeden Post an"
+                        },
+                        "showComments": {
+                            "label": "Kommentare anzeigen",
+                            "helpText": "Zeigt die Anzahl der Kommentare für jeden Post an"
+                        },
+                        "navigationArrows": {
+                            "label": "Navigationspfeile (Slider)",
+                            "helpText": "Wählen Sie die Position der Navigationspfeile (none, inside, outside)",
+                            "options": {
+                                "none": "Keine",
+                                "inside": "Innen",
+                                "outside": "Außen"
+                            }
+                        },
+                        "navigationDots": {
+                            "label": "Navigationspunkte (Slider)",
+                            "helpText": "Aktivieren Sie die Anzeige der Navigationspunkte unterhalb des Sliders"
+                        },
+                        "autoSlide": {
+                            "label": "Automatisches Sliden",
+                            "helpText": "Aktivieren Sie das automatische Sliden des Sliders"
+                        },
+                        "autoplayTimeout": {
+                            "label": "Autoplay-Timeout (ms)",
+                            "helpText": "Zeit in Millisekunden zwischen den Slides (1000-30000)"
+                        },
+                        "speed": {
+                            "label": "Slide-Geschwindigkeit (ms)",
+                            "helpText": "Geschwindigkeit der Slide-Animation in Millisekunden (100-1000)"
+                        }
+                    }
+                }
+            },
+            "elements": {
+                "categorySlider": {
+                    "label": "Hero Block Category Slider",
+                    "preview": {
+                        "images": "Bilder",
+                        "noCategory": "Keine Kategorie ausgewählt"
+                    },
+                    "config": {
+                        "category": {
+                            "label": "Kategorie",
+                            "placeholder": "Kategorie auswählen...",
+                            "helpText": "Wählen Sie eine Kategorie aus, deren Bilder im Slider angezeigt werden sollen"
+                        },
+                        "info": "Slider-Einstellungen (Navigation, Auto-Slide, etc.) können auch in den Block-Einstellungen konfiguriert werden.",
+                        "settings": {
+                            "title": "Slider-Einstellungen"
+                        },
+                        "navigationArrows": {
+                            "label": "Navigationspfeile",
+                            "helpText": "Wählen Sie die Position der Navigationspfeile (none, inside, outside)",
+                            "options": {
+                                "none": "Keine",
+                                "inside": "Innen",
+                                "outside": "Außen"
+                            }
+                        },
+                        "navigationDots": {
+                            "label": "Navigationspunkte",
+                            "helpText": "Aktivieren Sie die Anzeige der Navigationspunkte unterhalb des Sliders"
+                        },
+                        "autoSlide": {
+                            "label": "Automatisches Sliden",
+                            "helpText": "Aktivieren Sie das automatische Sliden des Sliders"
+                        },
+                        "autoplayTimeout": {
+                            "label": "Autoplay-Timeout (ms)",
+                            "helpText": "Zeit in Millisekunden zwischen den Slides (1000-30000)"
+                        },
+                        "speed": {
+                            "label": "Slide-Geschwindigkeit (ms)",
+                            "helpText": "Geschwindigkeit der Slide-Animation in Millisekunden (100-1000)"
+                        },
+                        "displayMode": {
+                            "label": "Anzeigemodus",
+                            "helpText": "Wählen Sie den Anzeigemodus für die Bilder (standard, cover, contain)",
+                            "options": {
+                                "standard": "Standard",
+                                "cover": "Cover",
+                                "contain": "Contain"
+                            }
+                        },
+                        "minHeight": {
+                            "label": "Mindesthöhe",
+                            "helpText": "Mindesthöhe für den Slider (z.B. 340px, 80vh)"
+                        },
+                        "subcategoryLevels": {
+                            "label": "Unterkategorie-Ebenen",
+                            "helpText": "Anzahl der Unterkategorie-Ebenen, die einbezogen werden sollen (0 = keine, 1-5 = Anzahl der Ebenen)"
+                        },
+                        "imageCount": {
+                            "label": "Anzahl der Bilder pro Slide",
+                            "helpText": "Wählen Sie, ob 1 oder 2 Bilder pro Slide angezeigt werden sollen",
+                            "options": {
+                                "one": "1 Bild",
+                                "two": "2 Bilder"
+                            }
+                        },
+                        "imageWidth": {
+                            "label": "Bildbreite",
+                            "helpText": "Wählen Sie die Bildbreite (inner-full-width = innerhalb des Containers, full-width = volle Breite)",
+                            "options": {
+                                "innerFullWidth": "Innerhalb des Containers",
+                                "fullWidth": "Volle Breite"
+                            }
                         }
                     }
                 }

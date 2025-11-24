@@ -1,0 +1,142 @@
+{% block sw_cms_block_config_hero_instagram_feed %}
+<div class="sw-cms-block-config-hero-instagram-feed" v-if="block && block.customFields">
+    {# WICHTIG: Block-Config wird in block.customFields gespeichert (NICHT block.config!) #}
+    
+    {# WICHTIG: Info-Banner - API Credentials aus System-Config #}
+    {% block sw_cms_block_config_hero_instagram_feed_info %}
+    <mt-banner variant="info">
+        {{ $tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.info.apiCredentials') }}
+    </mt-banner>
+    {% endblock %}
+
+    {# Post Limit #}
+    {% block sw_cms_block_config_hero_instagram_feed_post_limit %}
+    <mt-number-field
+        :model-value="block.customFields?.postLimit || systemConfigPostLimit || 12"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.postLimit.label')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.postLimit.helpText')"
+        :min="1"
+        :max="50"
+        :step="1"
+        @update:model-value="onPostLimitChange"
+    />
+    {% endblock %}
+
+    {# Display Mode (Grid oder Slider) #}
+    {% block sw_cms_block_config_hero_instagram_feed_display_mode %}
+    <mt-select
+        :model-value="block.customFields?.displayMode || 'grid'"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.displayMode.label')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.displayMode.helpText')"
+        :options="displayModeOptions"
+        @update:model-value="onDisplayModeChange"
+    />
+    {% endblock %}
+
+    {# Columns (nur wenn Display Mode = Grid) #}
+    {% block sw_cms_block_config_hero_instagram_feed_columns %}
+    <mt-select
+        v-if="block.customFields?.displayMode !== 'slider'"
+        :model-value="block.customFields?.columns || 4"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.columns.label')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.columns.helpText')"
+        :options="columnsOptions"
+        @update:model-value="onColumnsChange"
+    />
+    {% endblock %}
+
+    {# Show Captions #}
+    {% block sw_cms_block_config_hero_instagram_feed_show_captions %}
+    <mt-switch
+        :model-value="block.customFields?.showCaptions !== false"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.showCaptions.label')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.showCaptions.helpText')"
+        @update:model-value="onShowCaptionsChange"
+    />
+    {% endblock %}
+
+    {# Show Likes #}
+    {% block sw_cms_block_config_hero_instagram_feed_show_likes %}
+    <mt-switch
+        :model-value="block.customFields?.showLikes === true"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.showLikes.label')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.showLikes.helpText')"
+        @update:model-value="onShowLikesChange"
+    />
+    {% endblock %}
+
+    {# Show Comments #}
+    {% block sw_cms_block_config_hero_instagram_feed_show_comments %}
+    <mt-switch
+        :model-value="block.customFields?.showComments === true"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.showComments.label')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.showComments.helpText')"
+        @update:model-value="onShowCommentsChange"
+    />
+    {% endblock %}
+
+    {# Slider-spezifische Settings (nur wenn Display Mode = Slider) #}
+    {% block sw_cms_block_config_hero_instagram_feed_slider_settings %}
+    <template v-if="showSliderSettings">
+        {# Navigation Arrows #}
+        {% block sw_cms_block_config_hero_instagram_feed_navigation_arrows %}
+        <mt-select
+            :model-value="block.customFields?.navigationArrows || 'outside'"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.navigationArrows.label')"
+            :help-text="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.navigationArrows.helpText')"
+            :options="navigationArrowsOptions"
+            @update:model-value="onNavigationArrowsChange"
+        />
+        {% endblock %}
+
+        {# Navigation Dots #}
+        {% block sw_cms_block_config_hero_instagram_feed_navigation_dots %}
+        <mt-switch
+            :model-value="block.customFields?.navigationDots !== false"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.navigationDots.label')"
+            :help-text="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.navigationDots.helpText')"
+            @update:model-value="onNavigationDotsChange"
+        />
+        {% endblock %}
+
+        {# Auto Slide #}
+        {% block sw_cms_block_config_hero_instagram_feed_auto_slide %}
+        <mt-switch
+            :model-value="block.customFields?.autoSlide === true"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.autoSlide.label')"
+            :help-text="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.autoSlide.helpText')"
+            @update:model-value="onAutoSlideChange"
+        />
+        {% endblock %}
+
+        {# Autoplay Timeout (nur wenn Auto Slide aktiviert) #}
+        {% block sw_cms_block_config_hero_instagram_feed_autoplay_timeout %}
+        <mt-number-field
+            v-if="block.customFields?.autoSlide === true"
+            :model-value="block.customFields?.autoplayTimeout || 5000"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.autoplayTimeout.label')"
+            :help-text="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.autoplayTimeout.helpText')"
+            :min="1000"
+            :max="30000"
+            :step="500"
+            @update:model-value="onAutoplayTimeoutChange"
+        />
+        {% endblock %}
+
+        {# Speed #}
+        {% block sw_cms_block_config_hero_instagram_feed_speed %}
+        <mt-number-field
+            :model-value="block.customFields?.speed || 300"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.speed.label')"
+            :help-text="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.speed.helpText')"
+            :min="100"
+            :max="1000"
+            :step="50"
+            @update:model-value="onSpeedChange"
+        />
+        {% endblock %}
+    </template>
+    {% endblock %}
+</div>
+{% endblock %}
+

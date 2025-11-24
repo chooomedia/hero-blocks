@@ -1,5 +1,19 @@
 {% block sw_cms_preview_hero_two_columns %}
 <div class="sw-cms-preview-hero-two-columns" :class="previewClasses">
+    {# WICHTIG: Background Images für Preview (nur bei two-images Mode) #}
+    <template v-if="block.customFields && block.customFields.backgroundMode === 'two-images'">
+        <div 
+            v-if="backgroundImageLeftUrl" 
+            class="sw-cms-preview-hero-two-columns__background sw-cms-preview-hero-two-columns__background--left"
+            :style="{ backgroundImage: 'url(' + backgroundImageLeftUrl + ')' }">
+        </div>
+        <div 
+            v-if="backgroundImageRightUrl" 
+            class="sw-cms-preview-hero-two-columns__background sw-cms-preview-hero-two-columns__background--right"
+            :style="{ backgroundImage: 'url(' + backgroundImageRightUrl + ')' }">
+        </div>
+    </template>
+    
     {# WICHTIG: Reihenfolge basierend auf layoutDesktop #}
     <template v-if="layoutDesktop === 'text-left'">
         {# Text zuerst, dann Bild #}

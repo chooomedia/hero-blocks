@@ -11,7 +11,9 @@
         },
         "button": {
             "checkLicense": "Check License",
-            "checking": "Checking..."
+            "checking": "Checking...",
+            "licenseExpiredTitle": "License Expired",
+            "licenseExpiredMessage": "⚠️ Your license has expired. Please renew your license to continue using Hero Blocks."
         },
         "status": {
             "active": "License Active",
@@ -52,6 +54,56 @@
             "downloadSuccess": "Update installed successfully",
             "downloadSuccessMessage": "The plugin update has been downloaded and installed successfully. Please refresh the page to see the changes.",
             "downloadFailed": "Update download failed"
+        },
+        "instagram": {
+            "licenseExpiredMessage": "⚠️ Your license has expired. Instagram Feed API requests are no longer possible. Please renew your license.",
+            "checkToken": "Check Instagram Token",
+            "checking": "Checking token...",
+            "validationSuccess": "Instagram Token Validation Successful",
+            "validationSuccessMessage": "Your Instagram API credentials are valid and working correctly.",
+            "validationFailed": "Instagram Token Validation Failed",
+            "validationFailedMessage": "The Instagram token validation could not be performed. Please check your API credentials.",
+            "setupGuide": {
+                "title": "Instagram Basic Display API - Setup Guide",
+                "description": "Follow these steps to set up your Instagram app and obtain the required API credentials:",
+                "step1": {
+                    "title": "Step 1: Create Instagram App",
+                    "description": "Create a new app in the Facebook Developer Console. Select 'Instagram Basic Display' as the product type.",
+                    "link": "Open Facebook Developer Console →"
+                },
+                "step2": {
+                    "title": "Step 2: Configure App",
+                    "description": "Configure your app: Add the Redirect URI, enable Instagram Basic Display API, and create test users (for development).",
+                    "link": "Open Getting Started Guide →"
+                },
+                "step3": {
+                    "title": "Step 3: Generate Access Token",
+                    "description": "Generate a Long-Lived Access Token via the Instagram Basic Display API. This token is valid for 60 days and can be automatically renewed with a Refresh Token.",
+                    "link": "Open API Documentation →"
+                }
+            }
+        },
+        "instagramFeed": {
+            "licenseExpiredMessage": "⚠️ Your license has expired. Instagram Feed API requests are no longer possible. Please renew your license.",
+            "bestPractices": {
+                "title": "Instagram Basic Display API - Best Practices",
+                "appId": "Create an Instagram App in Facebook Developer Console (developers.facebook.com)",
+                "appSecret": "Store App ID and App Secret securely (do not commit to Git)",
+                "redirectUri": "Register the Redirect URI in Facebook Developer Console (must match exactly)",
+                "accessToken": "Use Long-Lived Access Tokens (valid for 60 days) with automatic renewal via Refresh Token"
+            }
+        },
+        "featureValidation": {
+            "running": "Validation running for {feature}...",
+            "success": "✅ {feature} successfully activated",
+            "warning": "⚠️ {feature} - Validation with warnings",
+            "error": "❌ {feature} - Validation error"
+        },
+        "languageSwitcher": {
+            "loading": "Loading available languages...",
+            "availableLanguages": "Available Languages",
+            "hint": "These languages will be displayed in the Language Switcher in the header (desktop).",
+            "noLanguages": "No languages found. Please check your language configuration."
         }
     }
 }

@@ -50,6 +50,10 @@ export default {
             return `cms-block-hero-two-columns-background-right-${this.block.id}`;
         },
 
+        uploadTagAudio() {
+            return `cms-block-hero-two-columns-audio-${this.block.id}`;
+        },
+
         // WICHTIG: cmsPageState kommt aus cms-state Mixin (nicht manuell definieren)
         // Entfernt: cmsPageState() { return Shopware.Store.get('cmsPage'); },
 
@@ -90,6 +94,11 @@ export default {
                     label: this.$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.backgroundMode.options.twoImages'),
                 },
             ];
+        },
+
+        // WICHTIG: Default CSS Code für Background Images
+        defaultBackgroundCss() {
+            return 'background: repeating-linear-gradient(123deg, #46494A 0px, #46494A 6px, transparent 6px, transparent 12px);';
         },
     },
 
@@ -141,6 +150,50 @@ export default {
                     }
                 }
             });
+            
+            // WICHTIG: Initialisiere Scroll-Animation Settings (wenn two-images Mode)
+            if (this.block.customFields.backgroundMode === 'two-images') {
+                // Scroll Animation Enabled: default true
+                if (this.block.customFields.scrollAnimationEnabled === undefined) {
+                    if (this.$set) {
+                        this.$set(this.block.customFields, 'scrollAnimationEnabled', true);
+                    } else {
+                        this.block.customFields.scrollAnimationEnabled = true;
+                    }
+                }
+                
+                // Scroll Animation Angle: default 33
+                if (!this.block.customFields.scrollAnimationAngle) {
+                    if (this.$set) {
+                        this.$set(this.block.customFields, 'scrollAnimationAngle', '33');
+                    } else {
+                        this.block.customFields.scrollAnimationAngle = '33';
+                    }
+                }
+                
+                // WICHTIG: Initialisiere CSS Code Defaults (wenn CSS Code verwendet wird)
+                // Background Left CSS Code
+                if (this.block.customFields.backgroundLeftUseCss === true) {
+                    if (!this.block.customFields.backgroundLeftCss || this.block.customFields.backgroundLeftCss === '') {
+                        if (this.$set) {
+                            this.$set(this.block.customFields, 'backgroundLeftCss', this.defaultBackgroundCss);
+                        } else {
+                            this.block.customFields.backgroundLeftCss = this.defaultBackgroundCss;
+                        }
+                    }
+                }
+                
+                // Background Right CSS Code
+                if (this.block.customFields.backgroundRightUseCss === true) {
+                    if (!this.block.customFields.backgroundRightCss || this.block.customFields.backgroundRightCss === '') {
+                        if (this.$set) {
+                            this.$set(this.block.customFields, 'backgroundRightCss', this.defaultBackgroundCss);
+                        } else {
+                            this.block.customFields.backgroundRightCss = this.defaultBackgroundCss;
+                        }
+                    }
+                }
+            }
         },
 
         onLayoutChange(value) {
@@ -286,6 +339,166 @@ export default {
                 return;
             }
             this.block.customFields.backgroundImageRight = null;
+        },
+
+        onBackgroundLeftUseCssChange(value) {
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            this.block.customFields.backgroundLeftUseCss = value === true;
+            
+            // WICHTIG: Initialisiere CSS Code wenn aktiviert
+            if (value === true && !this.block.customFields.backgroundLeftCss) {
+                this.block.customFields.backgroundLeftCss = this.defaultBackgroundCss;
+            }
+        },
+
+        onBackgroundLeftCssChange(value) {
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            this.block.customFields.backgroundLeftCss = value || this.defaultBackgroundCss;
+        },
+
+        onBackgroundRightUseCssChange(value) {
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            this.block.customFields.backgroundRightUseCss = value === true;
+            
+            // WICHTIG: Initialisiere CSS Code wenn aktiviert
+            if (value === true && !this.block.customFields.backgroundRightCss) {
+                this.block.customFields.backgroundRightCss = this.defaultBackgroundCss;
+            }
+        },
+
+        onBackgroundRightCssChange(value) {
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            this.block.customFields.backgroundRightCss = value || this.defaultBackgroundCss;
+        },
+
+        onScrollAnimationAngleChange(value) {
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            this.block.customFields.scrollAnimationAngle = value || '33';
+        },
+
+        onScrollAnimationEnabledChange(value) {
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            this.block.customFields.scrollAnimationEnabled = value === true;
+        },
+
+        onSetAudioFile([mediaItem]) {
+            // WICHTIG: Block-Config in block.customFields speichern
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            this.block.customFields.audioFile = (mediaItem && mediaItem.id) ? mediaItem.id : null;
+        },
+
+        async onAudioFileUpload(uploadedMedia) {
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            if (uploadedMedia && uploadedMedia.targetId) {
+                this.block.customFields.audioFile = uploadedMedia.targetId;
+            }
+        },
+
+        onRemoveAudioFile() {
+            if (!this.block || !this.block.customFields) {
+                return;
+            }
+            this.block.customFields.audioFile = null;
+        },
+
+        onElementLeftTranslateXChange(value) {
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            this.block.customFields.elementLeftTranslateX = value || '0';
+        },
+
+        onElementLeftTranslateYChange(value) {
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            this.block.customFields.elementLeftTranslateY = value || '0';
+        },
+
+        onElementLeftAnimateChange(value) {
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            this.block.customFields.elementLeftAnimate = value === true;
+        },
+
+        onElementRightTranslateXChange(value) {
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            this.block.customFields.elementRightTranslateX = value || '0';
+        },
+
+        onElementRightTranslateYChange(value) {
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            this.block.customFields.elementRightTranslateY = value || '0';
+        },
+
+        onElementRightAnimateChange(value) {
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            this.block.customFields.elementRightAnimate = value === true;
         },
 
         onMinHeightChange(value) {

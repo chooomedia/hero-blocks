@@ -23,8 +23,15 @@
             <argument type="service" id="http_client"/>
         </service>
         
+        <service id="HeroBlocks\Service\InstagramTokenCheckService">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="logger"/>
+            <argument type="service" id="http_client"/>
+        </service>
+        
         <service id="HeroBlocks\Controller\Admin\LicenseCheckController" public="true">
             <argument type="service" id="HeroBlocks\Service\LicenseCheckService"/>
+            <argument type="service" id="HeroBlocks\Service\InstagramTokenCheckService"/>
             <argument type="service" id="logger"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <tag name="controller.service_arguments"/>
@@ -64,8 +71,17 @@
             <tag name="shopware.cms.data_resolver"/>
         </service>
         
+        <service id="HeroBlocks\Content\Cms\TypeDataResolver\CategorySliderTypeDataResolver">
+            <tag name="shopware.cms.data_resolver"/>
+        </service>
+        
         <service id="HeroBlocks\Storefront\Twig\NavigationExtension">
             <argument type="service" id="Shopware\Core\Content\Category\Service\NavigationLoader"/>
+            <tag name="twig.extension"/>
+        </service>
+        
+        <service id="HeroBlocks\Storefront\Twig\MediaUrlExtension">
+            <argument type="service" id="media.repository"/>
             <tag name="twig.extension"/>
         </service>
     </services>

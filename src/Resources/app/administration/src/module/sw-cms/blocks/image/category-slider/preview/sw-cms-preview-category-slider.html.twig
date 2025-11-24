@@ -1,0 +1,34 @@
+{% block sw_cms_preview_category_slider %}
+<div class="sw-cms-preview-category-slider">
+    {# Category Title (oben links) #}
+    <div class="sw-cms-preview-category-slider__title">Hero Block Category Title</div>
+    
+    {# Slider Preview - Zwei Elemente nebeneinander (wie Hero Block Slider) #}
+    <div class="sw-cms-preview-category-slider__slider">
+        {# Slide 1 #}
+        <div class="sw-cms-preview-category-slider__slide">
+            <img
+                :src="assetFilter('/administration/administration/static/img/cms/preview_mountain_small.jpg')"
+                alt="Category Image 1"
+                class="sw-cms-preview-category-slider__image"
+            >
+        </div>
+        {# Slide 2 #}
+        <div class="sw-cms-preview-category-slider__slide">
+            <img
+                :src="assetFilter('/administration/administration/static/img/cms/preview_mountain_small.jpg')"
+                alt="Category Image 2"
+                class="sw-cms-preview-category-slider__image"
+            >
+        </div>
+    </div>
+    
+    {# Navigation Dots (außerhalb unterhalb) #}
+    <div class="sw-cms-preview-category-slider__dots">
+        <span class="sw-cms-preview-category-slider__dot sw-cms-preview-category-slider__dot--active"></span>
+        <span class="sw-cms-preview-category-slider__dot"></span>
+        <span class="sw-cms-preview-category-slider__dot"></span>
+    </div>
+</div>
+{% endblock %}
+

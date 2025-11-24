@@ -113,7 +113,8 @@
 }
 
 .sw-system-config__hero-blocks-license-check,
-.sw-system-config__hero-blocks-update-check {
+.sw-system-config__hero-blocks-update-check,
+.sw-system-config__hero-blocks-instagram-token-check {
     margin-top: 24px;
     padding-top: 20px;
     border-top: 1px solid var(--color-gray-300);
@@ -134,7 +135,8 @@
 
     .hero-blocks-license-check-button,
     .hero-blocks-update-check-button,
-    .hero-blocks-update-download-button {
+    .hero-blocks-update-download-button,
+    .hero-blocks-instagram-token-check-button {
         // Styling wie Save-Button (sw-extension-config__save-action)
         // mt-button--default ist bereits gesetzt, Button hat richtige Höhe
         display: flex;
@@ -383,6 +385,188 @@
     // UTC-Hint wird automatisch von Shopware angezeigt, kein doppelter Text nötig
     .sw-field__hint {
         // Shopware zeigt bereits UTC-Hint automatisch
+    }
+}
+
+// Instagram Feed Setup Guide Styles
+.sw-system-config__instagram-feed-setup-guide {
+    margin-bottom: 24px;
+    
+    &-content {
+        padding: 0;
+    }
+    
+    &-title {
+        font-size: $font-size-m;
+        font-weight: $font-weight-bold;
+        margin: 0 0 12px 0;
+        color: var(--color-text-primary-default);
+    }
+    
+    &-text {
+        font-size: $font-size-s;
+        line-height: 1.6;
+        color: var(--color-text-primary-default);
+        margin: 0 0 16px 0;
+    }
+    
+    &-steps {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        
+        li {
+            padding: 16px;
+            background: var(--color-gray-50);
+            border: 1px solid var(--color-gray-300);
+            border-radius: $border-radius-default;
+            
+            strong {
+                display: block;
+                font-size: $font-size-s;
+                font-weight: $font-weight-bold;
+                color: var(--color-text-primary-default);
+                margin-bottom: 8px;
+            }
+            
+            p {
+                font-size: $font-size-xs;
+                line-height: 1.5;
+                color: var(--color-text-primary-default);
+                margin: 0 0 8px 0;
+            }
+        }
+    }
+    
+    &-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: $font-size-xs;
+        color: var(--color-brand-primary);
+        text-decoration: none;
+        font-weight: $font-weight-medium;
+        transition: color 0.2s ease;
+        
+        &:hover {
+            color: var(--color-brand-primary-dark);
+            text-decoration: underline;
+        }
+        
+        &::after {
+            content: '→';
+            margin-left: 4px;
+        }
+    }
+}
+
+// Instagram Token Check Button Wrapper
+.sw-system-config__hero-blocks-instagram-token-check-buttons {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+// Feature-Validierungsstatus (Schritt-für-Schritt-Validierung)
+.sw-system-config__feature-validation-status {
+    margin-bottom: 20px;
+    
+    &-banner {
+        padding: 16px 20px;
+    }
+    
+    &-content {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    &-loader {
+        flex-shrink: 0;
+    }
+    
+    &-text {
+        font-size: $font-size-s;
+        font-weight: $font-weight-medium;
+        color: var(--color-text-primary-default);
+    }
+    
+    &-step {
+        font-size: $font-size-xs;
+        color: var(--color-text-secondary-default);
+        font-style: italic;
+        margin-left: auto;
+    }
+}
+
+// Language Switcher Info (unter Toggle)
+.sw-system-config__language-switcher-info {
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: var(--color-gray-50);
+    border: 1px solid var(--color-gray-300);
+    border-radius: $border-radius-default;
+    
+    &-loading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        
+        &-text {
+            font-size: $font-size-xs;
+            color: var(--color-text-secondary-default);
+        }
+    }
+    
+    &-languages {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    &-label {
+        font-size: $font-size-xs;
+        font-weight: $font-weight-semi-bold;
+        color: var(--color-text-primary-default);
+        margin-bottom: 4px;
+    }
+    
+    &-list {
+        font-size: $font-size-xs;
+        color: var(--color-text-primary-default);
+        line-height: 1.5;
+    }
+    
+    &-item {
+        display: inline;
+        
+        &.is-active {
+            font-weight: $font-weight-semi-bold;
+            color: var(--color-emerald-600);
+        }
+    }
+    
+    &-hint {
+        font-size: $font-size-xxs;
+        color: var(--color-text-secondary-default);
+        font-style: italic;
+        margin-top: 4px;
+    }
+    
+    &-empty {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: $font-size-xs;
+        color: var(--color-text-secondary-default);
+        
+        .sw-icon {
+            color: var(--color-warning-500);
+        }
     }
 }
 

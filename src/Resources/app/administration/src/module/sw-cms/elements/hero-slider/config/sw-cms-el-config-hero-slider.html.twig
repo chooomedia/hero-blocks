@@ -66,22 +66,36 @@
                 <div v-if="items.length > 0" class="sw-cms-el-config-hero-slider__slides-config">
                     <h4 class="sw-cms-el-config-hero-slider__slides-title">{{ $tc('sw-cms.elements.heroSlider.config.slidesTitle') }}</h4>
                     
-                    {# Toggle Navigation (Bootstrap 5 Nav-Pills Style) #}
+                    {# Toggle Navigation (Bootstrap 5 Nav-Pills Style) mit Drag & Drop und Delete #}
                     {% block sw_cms_el_config_hero_slider_slides_nav %}
                     <ul class="nav nav-pills sw-cms-el-config-hero-slider__slides-nav" role="tablist">
                         <li 
                             v-for="(sliderItem, index) in items"
                             :key="index"
-                            class="nav-item"
+                            class="nav-item sw-cms-el-config-hero-slider__slide-nav-item"
+                            v-draggable="{ 
+                                dragGroup: 'hero-slider-slides',
+                                data: { position: index },
+                                disabled: false,
+                                onDragEnter: onSlideDragSort
+                            }"
+                            v-droppable="{ 
+                                dragGroup: 'hero-slider-slides',
+                                data: { position: index },
+                                validDragCls: 'is--valid-drag'
+                            }"
                         >
                             <button
                                 type="button"
-                                class="nav-link"
+                                class="nav-link sw-cms-el-config-hero-slider__slide-nav-link"
                                 :class="{ 'active': activeSlideIndex === index }"
                                 @click="setActiveSlide(index)"
                                 role="tab"
                                 :aria-selected="activeSlideIndex === index"
                             >
+                                <span class="sw-cms-el-config-hero-slider__slide-nav-drag-handle">
+                                    <mt-icon name="regular-grip-vertical-s" size="16" />
+                                </span>
                                 <img 
                                     v-if="sliderItem.mediaUrl" 
                                     :src="sliderItem.mediaUrl" 
@@ -94,6 +108,14 @@
                                 <span class="sw-cms-el-config-hero-slider__slide-nav-description">
                                     {{ sliderItem.headline || sliderItem.text || ($tc('sw-cms.elements.heroSlider.config.slideLabel', 0, { index: index + 1 })) }}
                                 </span>
+                            </button>
+                            <button
+                                type="button"
+                                class="sw-cms-el-config-hero-slider__slide-nav-delete"
+                                :title="$tc('sw-cms.elements.heroSlider.config.deleteSlide')"
+                                @click.stop="onDeleteSlide(index)"
+                            >
+                                <mt-icon name="regular-times-s" size="16" />
                             </button>
                         </li>
                     </ul>

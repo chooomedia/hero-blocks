@@ -4,6 +4,8 @@ import './sw-cms-preview-hero-two-columns.scss';
 export default {
     template,
 
+    inject: ['repositoryFactory'],
+
     props: {
         block: {
             type: Object,
@@ -14,9 +16,20 @@ export default {
         },
     },
 
+    data() {
+        return {
+            backgroundImageLeftUrl: null,
+            backgroundImageRightUrl: null,
+        };
+    },
+
     computed: {
         assetFilter() {
             return Shopware.Filter.getByName('asset');
+        },
+
+        mediaRepository() {
+            return this.repositoryFactory.create('media');
         },
 
         // WICHTIG: Layout-Einstellungen aus block.customFields lesen (NICHT block.config!)
@@ -77,10 +90,70 @@ export default {
         // Deep watch für alle customFields Änderungen
         'block.customFields': {
             handler() {
+                this.loadBackgroundImages();
                 this.$forceUpdate();
             },
             deep: true,
             immediate: false,
+        },
+    },
+
+    created() {
+        this.loadBackgroundImages();
+    },
+
+    methods: {
+        /**
+         * Lädt Background Images für Preview
+         */
+        async loadBackgroundImages() {
+            if (!this.block || !this.block.customFields) {
+                return;
+            }
+
+            const backgroundMode = this.block.customFields.backgroundMode || 'none';
+            
+            if (backgroundMode === 'two-images') {
+                // Background Image Left
+                if (this.block.customFields.backgroundImageLeft) {
+                    await this.loadMediaUrl(this.block.customFields.backgroundImageLeft, 'left');
+                } else {
+                    this.backgroundImageLeftUrl = null;
+                }
+
+                // Background Image Right
+                if (this.block.customFields.backgroundImageRight) {
+                    await this.loadMediaUrl(this.block.customFields.backgroundImageRight, 'right');
+                } else {
+                    this.backgroundImageRightUrl = null;
+                }
+            } else {
+                this.backgroundImageLeftUrl = null;
+                this.backgroundImageRightUrl = null;
+            }
+        },
+
+        /**
+         * Lädt Media-URL aus Media-ID
+         */
+        async loadMediaUrl(mediaId, side) {
+            try {
+                const media = await this.mediaRepository.get(mediaId, Shopware.Context.api);
+                if (media && media.url) {
+                    if (side === 'left') {
+                        this.backgroundImageLeftUrl = media.url;
+                    } else if (side === 'right') {
+                        this.backgroundImageRightUrl = media.url;
+                    }
+                }
+            } catch (error) {
+                // Media nicht gefunden - ignoriere Fehler
+                if (side === 'left') {
+                    this.backgroundImageLeftUrl = null;
+                } else if (side === 'right') {
+                    this.backgroundImageRightUrl = null;
+                }
+            }
         },
     },
 };

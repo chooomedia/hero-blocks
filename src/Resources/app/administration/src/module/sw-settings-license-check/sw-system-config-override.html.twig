@@ -83,6 +83,21 @@
                 {% endblock %}
             </template>
         <template v-if="!isLoading">
+            {# Feature-Validierungsstatus (nur wenn Validierung läuft) #}
+            <div v-if="featureValidation.isRunning" class="sw-system-config__feature-validation-status">
+                <mt-banner variant="info" class="sw-system-config__feature-validation-banner">
+                    <div class="sw-system-config__feature-validation-content">
+                        <sw-loader size="16px" class="sw-system-config__feature-validation-loader"></sw-loader>
+                        <span class="sw-system-config__feature-validation-text">
+                            {{ $tc('sw-settings-license-check.featureValidation.running', { feature: featureValidation.currentFeature }) }}
+                        </span>
+                        <span v-if="featureValidation.currentStep" class="sw-system-config__feature-validation-step">
+                            → {{ featureValidation.currentStep }}
+                        </span>
+                    </div>
+                </mt-banner>
+            </div>
+            
             {# WICHTIG: Aktive Blocks zuerst anzeigen, dann inaktive (Coming Soon) #}
             {# Aktive Blocks (enableHeroBlockSlider, enableHeroTwoColumns, enableMegaMenu) #}
             <template v-for="element in card.elements" :key="element.name">
@@ -108,6 +123,38 @@
                                     :error="getFieldError(element.name)"
                                     @update:value="props.updateCurrentValue"
                                 />
+                                
+                                {# Language Switcher: Verfügbare Sprachen anzeigen #}
+                                <div v-if="element.name === 'HeroBlocks.config.enableLanguageSwitcher' || element.name === 'enableLanguageSwitcher'" class="sw-system-config__language-switcher-info">
+                                    <div v-if="isLoadingLanguages" class="sw-system-config__language-switcher-loading">
+                                        <sw-loader size="14px"></sw-loader>
+                                        <span class="sw-system-config__language-switcher-loading-text">
+                                            {{ $tc('sw-settings-license-check.languageSwitcher.loading') }}
+                                        </span>
+                                    </div>
+                                    <div v-else-if="availableLanguages.length > 0" class="sw-system-config__language-switcher-languages">
+                                        <div class="sw-system-config__language-switcher-label">
+                                            {{ $tc('sw-settings-license-check.languageSwitcher.availableLanguages') }}:
+                                        </div>
+                                        <div class="sw-system-config__language-switcher-list">
+                                            <span
+                                                v-for="(language, index) in availableLanguages"
+                                                :key="language.id"
+                                                class="sw-system-config__language-switcher-item"
+                                                :class="{ 'is-active': language.isActive }"
+                                            >
+                                                {{ language.displayName }}<span v-if="index < availableLanguages.length - 1">, </span>
+                                            </span>
+                                        </div>
+                                        <div class="sw-system-config__language-switcher-hint">
+                                            {{ $tc('sw-settings-license-check.languageSwitcher.hint') }}
+                                        </div>
+                                    </div>
+                                    <div v-else class="sw-system-config__language-switcher-empty">
+                                        <sw-icon name="regular-exclamation-triangle" size="16"></sw-icon>
+                                        <span>{{ $tc('sw-settings-license-check.languageSwitcher.noLanguages') }}</span>
+                                    </div>
+                                </div>
                             </template>
                         </sw-inherit-wrapper>
                         {% endblock %}
@@ -413,12 +460,18 @@
                         {{ getInlineSnippet(card.title) }}
                     </h3>
                     <div class="sw-system-config__license-card-header-right">
-                        {# License Status Chip - nur wenn aktiv #}
+                        {# License Status Chip - zeigt Status (Active/Expired) #}
                         <sw-status 
                             v-if="licenseStatusClass === 'is--license-active'"
                             color="green"
                         >
                             {{ $tc('sw-settings-license-check.status.active') }}
+                        </sw-status>
+                        <sw-status 
+                            v-else-if="licenseStatusClass === 'is--license-expired'"
+                            color="red"
+                        >
+                            {{ $tc('sw-settings-license-check.status.expired') }}
                         </sw-status>
                         <mt-icon 
                             :name="expanded ? 'regular-chevron-up-xs' : 'regular-chevron-down-xs'" 
@@ -513,6 +566,165 @@
         >
         </slot>
     </mt-card>
+            </template>
+        </sw-collapse>
+        
+        {# Instagram Feed Settings Card (index 4): Collapsible (nur wenn enableHeroInstagramFeed aktiv) - Design wie Standard Cards #}
+        <sw-collapse 
+            v-if="isHeroBlocksConfig() && index === 4 && isInstagramFeedEnabled" 
+            :expand-on-loading="false" 
+            ref="instagramFeedCardCollapse"
+        >
+            <template #header="{ expanded }">
+                {# Header wie mt-card Header - Design identisch zu Standard Cards, gleiche Breite #}
+                <div class="sw-system-config__mega-menu-card-header">
+                    <h3 class="mt-text--size-m mt-text--weight-semibold">
+                        {{ getInlineSnippet(card.title) }}
+                    </h3>
+                    <div class="sw-system-config__mega-menu-card-header-right">
+                        <mt-icon 
+                            :name="expanded ? 'regular-chevron-up-xs' : 'regular-chevron-down-xs'" 
+                            size="16"
+                            class="sw-system-config__mega-menu-card-chevron"
+                        />
+                    </div>
+                </div>
+            </template>
+            <template #content="{ expanded }">
+                {# mt-card ohne v-show - sw-collapse handhabt expanded bereits #}
+                <mt-card
+                    position-identifier="sw-system-config-content"
+                    :class="`sw-system-config__card--${index}`"
+                    :is-loading="isLoading"
+                >
+                    <slot
+                        name="beforeElements"
+                        v-bind="{ card, config: actualConfigData[currentSalesChannelId] }"
+                    ></slot>
+                    <template
+                        v-if="salesChannelSwitchable && config.length === 1"
+                        #toolbar
+                    >
+                        <sw-sales-channel-switch
+                            :label="$tc('sw-settings.system-config.labelSalesChannelSelect')"
+                            @change-sales-channel-id="onSalesChannelChanged"
+                        />
+                    </template>
+                    <template v-if="hasCssFields">
+                        {% block sw_system_config_content_compile_notice_instagram_feed %}
+                        <mt-banner variant="attention">
+                            {{ $tc('sw-settings.system-config.compileNotice') }}
+                        </mt-banner>
+                        {% endblock %}
+                    </template>
+                    <template v-if="!isLoading">
+                        {# WICHTIG: Zeige Warnung wenn License expired - keine API-Anfragen möglich #}
+                        <mt-banner 
+                            v-if="isLicenseExpired" 
+                            variant="critical"
+                            class="sw-system-config__license-expired-warning"
+                        >
+                            {{ $tc('sw-settings-license-check.instagramFeed.licenseExpiredMessage') }}
+                        </mt-banner>
+                        
+                        {# WICHTIG: Anleitungstext mit Links zu Meta/Facebook/Instagram Einrichtung #}
+                        {% block sw_system_config_instagram_feed_setup_guide %}
+                        <mt-banner variant="info" class="sw-system-config__instagram-feed-setup-guide">
+                            <div class="sw-system-config__instagram-feed-setup-guide-content">
+                                <h4 class="sw-system-config__instagram-feed-setup-guide-title">
+                                    {{ $tc('sw-settings-license-check.instagram.setupGuide.title') }}
+                                </h4>
+                                <p class="sw-system-config__instagram-feed-setup-guide-text">
+                                    {{ $tc('sw-settings-license-check.instagram.setupGuide.description') }}
+                                </p>
+                                <ul class="sw-system-config__instagram-feed-setup-guide-steps">
+                                    <li>
+                                        <strong>{{ $tc('sw-settings-license-check.instagram.setupGuide.step1.title') }}</strong>
+                                        <p>{{ $tc('sw-settings-license-check.instagram.setupGuide.step1.description') }}</p>
+                                        <a href="https://developers.facebook.com/apps/" target="_blank" rel="noopener noreferrer" class="sw-system-config__instagram-feed-setup-guide-link">
+                                            {{ $tc('sw-settings-license-check.instagram.setupGuide.step1.link') }}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <strong>{{ $tc('sw-settings-license-check.instagram.setupGuide.step2.title') }}</strong>
+                                        <p>{{ $tc('sw-settings-license-check.instagram.setupGuide.step2.description') }}</p>
+                                        <a href="https://developers.facebook.com/docs/instagram-basic-display-api/getting-started" target="_blank" rel="noopener noreferrer" class="sw-system-config__instagram-feed-setup-guide-link">
+                                            {{ $tc('sw-settings-license-check.instagram.setupGuide.step2.link') }}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <strong>{{ $tc('sw-settings-license-check.instagram.setupGuide.step3.title') }}</strong>
+                                        <p>{{ $tc('sw-settings-license-check.instagram.setupGuide.step3.description') }}</p>
+                                        <a href="https://developers.facebook.com/docs/instagram-basic-display-api/overview" target="_blank" rel="noopener noreferrer" class="sw-system-config__instagram-feed-setup-guide-link">
+                                            {{ $tc('sw-settings-license-check.instagram.setupGuide.step3.link') }}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </mt-banner>
+                        {% endblock %}
+                        
+                        <template v-for="element in card.elements">
+                            <slot
+                                name="card-element"
+                                v-bind="{ element: getElementBind(element), config: actualConfigData[currentSalesChannelId], card }"
+                            >
+                                {% block sw_system_config_content_card_field_instagram_feed %}
+                                <sw-inherit-wrapper
+                                    v-model:value="actualConfigData[currentSalesChannelId][element.name]"
+                                    v-bind="getInheritWrapperBind(element)"
+                                    :has-parent="isNotDefaultSalesChannel"
+                                    :inherited-value="getInheritedValue(element)"
+                                    :class="'sw-system-config--field-' + kebabCase(getElementBind(element).name)"
+                                >
+                                    <template #content="props">
+                                        <sw-form-field-renderer
+                                            v-bind="getElementBind(element, props)"
+                                            :key="props.isInheritField + props.isInherited"
+                                            :disabled="props.isInherited || isLicenseExpired"
+                                            :value="props.currentValue"
+                                            :error="getFieldError(element.name)"
+                                            @update:value="props.updateCurrentValue"
+                                        />
+                                    </template>
+                                </sw-inherit-wrapper>
+                                {% endblock %}
+                            </slot>
+                        </template>
+                        
+                        {# Hero Blocks Instagram Token Check Button - In Instagram Feed Settings Card #}
+                        {% block sw_system_config_instagram_feed_token_check %}
+                        <div class="sw-system-config__hero-blocks-instagram-token-check">
+                            <div class="sw-system-config__hero-blocks-instagram-token-check-buttons">
+                                <mt-button
+                                    variant="primary"
+                                    size="default"
+                                    :is-loading="isInstagramTokenChecking"
+                                    :disabled="isInstagramTokenChecking || isLicenseExpired"
+                                    @click="checkHeroBlocksInstagramToken"
+                                    class="hero-blocks-instagram-token-check-button"
+                                >
+                                    <template v-if="!isInstagramTokenChecking">
+                                        <mt-icon name="regular-check-circle" size="16"></mt-icon>
+                                        <span>{{ $tc('sw-settings-license-check.instagram.checkToken') }}</span>
+                                    </template>
+                                    <template v-else>
+                                        <sw-loader size="16px"></sw-loader>
+                                        <span>{{ $tc('sw-settings-license-check.instagram.checking') }}</span>
+                                    </template>
+                                </mt-button>
+                            </div>
+                        </div>
+                        {% endblock %}
+                        
+                        <slot name="card-element-last"></slot>
+                    </template>
+                    <slot
+                        name="afterElements"
+                        v-bind="{ card, config: actualConfigData[currentSalesChannelId], index, isNotDefaultSalesChannel, inheritance: actualConfigData.null }"
+                    >
+                    </slot>
+                </mt-card>
             </template>
         </sw-collapse>
     </template>

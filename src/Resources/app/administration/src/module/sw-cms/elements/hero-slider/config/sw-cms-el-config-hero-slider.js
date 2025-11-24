@@ -507,7 +507,8 @@ export default {
       );
 
       if (logoMedia) {
-        this.$set(this.slideLogoMedia, index, logoMedia);
+        // Vue 3: Direkte Zuweisung statt $set
+        this.slideLogoMedia[index] = logoMedia;
         return logoMedia;
       }
 
@@ -515,11 +516,13 @@ export default {
     },
 
     async onOpenSlideLogoModal(index) {
-      this.$set(this.slideLogoModals, index, true);
+      // Vue 3: Direkte Zuweisung statt $set
+      this.slideLogoModals[index] = true;
     },
 
     onCloseSlideLogoModal(index) {
-      this.$set(this.slideLogoModals, index, false);
+      // Vue 3: Direkte Zuweisung statt $set
+      this.slideLogoModals[index] = false;
     },
 
     async onSlideLogoSelectionChange(index, [logoMedia]) {
@@ -533,7 +536,8 @@ export default {
       }
 
       sliderItem.logoImageId = logoMedia.id;
-      this.$set(this.slideLogoMedia, index, logoMedia);
+      // Vue 3: Direkte Zuweisung statt $set
+      this.slideLogoMedia[index] = logoMedia;
 
       // Lade Logo Media Entity wenn noch nicht vorhanden
       if (!this.mediaItems.find((item) => item.id === logoMedia.id)) {
@@ -548,7 +552,8 @@ export default {
       }
 
       this.emitUpdateEl();
-      this.$set(this.slideLogoModals, index, false);
+      // Vue 3: Direkte Zuweisung statt $set
+      this.slideLogoModals[index] = false;
     },
 
     async onSlideLogoUpload(index, uploadedMedia) {
@@ -563,7 +568,8 @@ export default {
         );
         if (mediaEntity) {
           sliderItem.logoImageId = mediaEntity.id;
-          this.$set(this.slideLogoMedia, index, mediaEntity);
+          // Vue 3: Direkte Zuweisung statt $set
+          this.slideLogoMedia[index] = mediaEntity;
 
           if (!this.mediaItems.find((item) => item.id === mediaEntity.id)) {
             this.mediaItems.push(mediaEntity);
@@ -583,7 +589,8 @@ export default {
       }
 
       sliderItem.logoImageId = null;
-      this.$set(this.slideLogoMedia, index, null);
+      // Vue 3: Direkte Zuweisung statt $set
+      this.slideLogoMedia[index] = null;
       this.emitUpdateEl();
     },
 
@@ -679,12 +686,14 @@ export default {
       if (!this.element?.config?.[colorKey]) {
         // Initialisiere Config wenn nicht vorhanden
         if (!this.element.config) {
-          this.$set(this.element, "config", {});
+          // Vue 3: Direkte Zuweisung statt $set
+          this.element.config = {};
         }
-        this.$set(this.element.config, colorKey, {
+        // Vue 3: Direkte Zuweisung statt $set
+        this.element.config[colorKey] = {
           source: "static",
           value: null,
-        });
+        };
       }
       // Setze Wert (null oder String)
       this.element.config[colorKey].value = value || null;
@@ -693,12 +702,118 @@ export default {
 
     onClearButtonUrl(sliderItem, key) {
       if (!sliderItem || !key) return;
-      this.$set(sliderItem, key, null);
+      // Vue 3: Direkte Zuweisung statt $set
+      sliderItem[key] = null;
       this.emitUpdateEl();
     },
 
     setActiveSlide(index) {
       this.activeSlideIndex = index;
+    },
+
+    // Slide löschen
+    onDeleteSlide(index) {
+      if (index < 0 || index >= this.items.length) {
+        return;
+      }
+
+      // Entferne Slide aus items und mediaItems
+      const sliderItem = this.items[index];
+      if (sliderItem?.mediaId) {
+        // Entferne aus mediaItems
+        this.mediaItems = this.mediaItems.filter(
+          (item) => item.id !== sliderItem.mediaId
+        );
+      }
+
+      // Entferne aus sliderItems
+      this.element.config.sliderItems.value.splice(index, 1);
+
+      // Entferne zugehörige Logo Media
+      if (this.slideLogoMedia[index]) {
+        delete this.slideLogoMedia[index];
+      }
+      if (this.slideLogoModals[index]) {
+        delete this.slideLogoModals[index];
+      }
+
+      // Aktualisiere activeSlideIndex
+      if (this.activeSlideIndex >= this.items.length) {
+        this.activeSlideIndex = Math.max(0, this.items.length - 1);
+      }
+
+      this.updateMediaDataValue();
+      this.emitUpdateEl();
+    },
+
+    // Drag & Drop für Slide Navigation
+    onSlideDragSort(dragData, dropData, valid) {
+      if (!valid || !dragData || !dropData) {
+        return;
+      }
+
+      const dragIndex = dragData.position;
+      const dropIndex = dropData.position;
+
+      if (dragIndex === dropIndex || dragIndex === undefined || dropIndex === undefined) {
+        return;
+      }
+
+      // Verschiebe in items (sliderItems.value)
+      moveItem(
+        this.element.config.sliderItems.value,
+        dragIndex,
+        dropIndex
+      );
+
+      // Verschiebe in mediaItems
+      moveItem(this.mediaItems, dragIndex, dropIndex);
+
+      // Aktualisiere activeSlideIndex
+      if (this.activeSlideIndex === dragIndex) {
+        this.activeSlideIndex = dropIndex;
+      } else if (
+        this.activeSlideIndex === dropIndex &&
+        dragIndex < dropIndex
+      ) {
+        this.activeSlideIndex = dropIndex - 1;
+      } else if (
+        this.activeSlideIndex === dropIndex &&
+        dragIndex > dropIndex
+      ) {
+        this.activeSlideIndex = dropIndex + 1;
+      } else if (
+        this.activeSlideIndex > dragIndex &&
+        this.activeSlideIndex <= dropIndex
+      ) {
+        this.activeSlideIndex -= 1;
+      } else if (
+        this.activeSlideIndex < dragIndex &&
+        this.activeSlideIndex >= dropIndex
+      ) {
+        this.activeSlideIndex += 1;
+      }
+
+      // Verschiebe Logo Media Daten
+      const logoMedia = this.slideLogoMedia[dragIndex];
+      const logoModal = this.slideLogoModals[dragIndex];
+
+      if (logoMedia !== undefined) {
+        // Entferne alte Position
+        delete this.slideLogoMedia[dragIndex];
+        // Setze neue Position
+        this.slideLogoMedia[dropIndex] = logoMedia;
+      }
+
+      if (logoModal !== undefined) {
+        // Entferne alte Position
+        delete this.slideLogoModals[dragIndex];
+        // Setze neue Position
+        this.slideLogoModals[dropIndex] = logoModal;
+      }
+
+      this.updateMediaDataValue();
+      this.emitUpdateEl();
     },
   },
 };

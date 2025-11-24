@@ -1,0 +1,64 @@
+{% block block_hero_instagram_feed %}
+    {# WICHTIG: Instagram Feed Block - Rendert Instagram Posts aus API #}
+    {# WICHTIG: API Credentials werden aus System-Config geladen (HeroBlocks.config.instagramAppId, etc.) #}
+    
+    {% set postLimit = block.customFields.postLimit|default(config('HeroBlocks.config.instagramFeedLimit')|default(12)) %}
+    {% set displayMode = block.customFields.displayMode|default('grid') %}
+    {% set columns = block.customFields.columns|default(4) %}
+    {% set showCaptions = block.customFields.showCaptions|default(true) %}
+    {% set showLikes = block.customFields.showLikes|default(false) %}
+    {% set showComments = block.customFields.showComments|default(false) %}
+    
+    {# WICHTIG: Slider-spezifische Config (nur wenn displayMode = 'slider') #}
+    {% set navigationArrows = block.customFields.navigationArrows|default('outside') %}
+    {% set navigationDots = block.customFields.navigationDots|default(true) %}
+    {% set autoSlide = block.customFields.autoSlide|default(false) %}
+    {% set autoplayTimeout = block.customFields.autoplayTimeout|default(5000) %}
+    {% set speed = block.customFields.speed|default(300) %}
+    
+    <div class="cms-block-hero-instagram-feed" 
+         data-hero-instagram-feed="true"
+         data-display-mode="{{ displayMode }}"
+         data-columns="{{ columns }}"
+         data-post-limit="{{ postLimit }}"
+         data-navigation-arrows="{{ navigationArrows }}"
+         data-navigation-dots="{{ navigationDots }}"
+         data-auto-slide="{{ autoSlide }}"
+         data-autoplay-timeout="{{ autoplayTimeout }}"
+         data-speed="{{ speed }}">
+        
+        {% if displayMode == 'grid' %}
+            {# Grid Layout #}
+            <div class="hero-instagram-feed-grid hero-instagram-feed-grid--columns-{{ columns }}">
+                {# WICHTIG: Instagram Posts werden hier via JavaScript Plugin gerendert #}
+                <div class="hero-instagram-feed-grid__loading">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">{{ 'heroBlocks.instagramFeed.loading'|trans }}</span>
+                    </div>
+                </div>
+                <div class="hero-instagram-feed-grid__posts" data-instagram-posts-container="true">
+                    {# Posts werden hier dynamisch eingefügt #}
+                </div>
+                <div class="hero-instagram-feed-grid__error" data-instagram-error-container="true" style="display: none;">
+                    {# Error Messages werden hier angezeigt #}
+                </div>
+            </div>
+        {% else %}
+            {# Slider Layout #}
+            <div class="hero-instagram-feed-slider">
+                <div class="hero-instagram-feed-slider__loading">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">{{ 'heroBlocks.instagramFeed.loading'|trans }}</span>
+                    </div>
+                </div>
+                <div class="hero-instagram-feed-slider__container" data-instagram-slider-container="true">
+                    {# Slider wird hier dynamisch gerendert #}
+                </div>
+                <div class="hero-instagram-feed-slider__error" data-instagram-error-container="true" style="display: none;">
+                    {# Error Messages werden hier angezeigt #}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+

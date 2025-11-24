@@ -1,67 +1,51 @@
 {% sw_extends '@Storefront/storefront/section/cms-section-block-container.html.twig' %}
 
-{% block section_content_block %}
-    {# Für hero-block-slider: Entferne Block-Wrapper (cms-block pos-0 cms-block-hero-block-slider position-relative) #}
-    {% if block.type == 'hero-block-slider' %}
-        {% block section_content_block_hero_slider %}
-            {# Direkt Block-Inhalt rendern ohne Block-Wrapper #}
-            {% set top = block.marginTop ? block.marginTop : 0 %}
-            {% set right = block.marginRight ? block.marginRight : 0 %}
-            {% set bottom = block.marginBottom ? block.marginBottom : 0 %}
-            {% set left = block.marginLeft ? block.marginLeft : 0 %}
-
-            {% if top or right or bottom or left %}
-                {% set padding = top ~ ' ' ~ right ~ ' ' ~ bottom ~ ' ' ~ left %}
-            {% endif %}
-
-            {% set blockBgColor = block.backgroundColor %}
-
-            {% set columns = 3 %}
-            {% set isInSidebar = block.sectionPosition == 'sidebar' %}
-            {% set sidebarClasses = '' %}
-
-            {% if isInSidebar == true %}
-                {% set sidebarClasses = 'has--sidebar' %}
-            {% endif %}
-
-            {% if block.visibility is null %}
-                {% set visibility = {
-                    mobile: true,
-                    tablet: true,
-                    desktop: true
-                } %}
-            {% else %}
-                {% set visibility = block.visibility %}
-            {% endif %}
-
-            {# Background Image Handling #}
-            {% block section_content_block_hero_slider_background_image %}
-                {% if block.backgroundMedia %}
-                    {% sw_thumbnails 'cms-block-background' with {
-                        media: block.backgroundMedia,
-                        autoColumnSizes: false,
-                        attributes: {
-                            class: 'cms-block-background media-mode--' ~ block.backgroundMediaMode
-                        }
-                    } %}
-                {% endif %}
-            {% endblock %}
-
-            {# Container ohne Block-Wrapper #}
-            {% block section_content_block_hero_slider_container %}
-                <div class="cms-block-container"
-                     style="{% if padding %}padding: {{ padding }};{% endif %}{% if blockBgColor %}background-color: {{ blockBgColor }};{% endif %}">
-                    {% block section_content_block_hero_slider_row %}
-                        <div class="cms-block-container-row row cms-row {{ sidebarClasses }}">
-                            {% sw_include '@HeroBlocks/storefront/block/cms-block-' ~ block.type ~ '.html.twig' ignore missing %}
-                        </div>
-                    {% endblock %}
-                </div>
-            {% endblock %}
-        {% endblock %}
-    {% else %}
-        {# Für alle anderen Blocks: Standard-Verhalten beibehalten #}
-        {{ parent() }}
+{% block section_content_block_container %}
+    {# WICHTIG: Container-Klasse für hero-two-columns Block bei full-width Section #}
+    {% set isFullWidth = section.sizingMode == 'full_width' %}
+    {% set isHeroTwoColumns = block.type == 'hero-two-columns' %}
+    {% set containerClass = 'cms-block-container' %}
+    
+    {# WICHTIG: Bootstrap container Klasse hinzufügen wenn full-width und hero-two-columns #}
+    {% if isFullWidth and isHeroTwoColumns %}
+        {% set containerClass = containerClass ~ ' container' %}
     {% endif %}
+    
+    {# WICHTIG: Kein Padding bei full-width und hero-two-columns #}
+    {% set shouldHavePadding = padding and not (isFullWidth and isHeroTwoColumns) %}
+    
+    <div class="{{ containerClass }}"
+         style="{% if shouldHavePadding %}padding: {{ padding }};{% endif %}">
+        {% block section_content_block_row %}
+            <div class="cms-block-container-row row cms-row {{ sidebarClasses }}">
+                {% sw_include '@Storefront/storefront/block/cms-block-' ~ block.type ~ '.html.twig' ignore missing %}
+            </div>
+        {% endblock %}
+        
+        {# WICHTIG: Audio-Icon außerhalb der .row rendern (nur für hero-two-columns) #}
+        {% if isHeroTwoColumns and block.customFields.audioFile is defined and block.customFields.audioFile %}
+            {% set audioFileUrl = hero_media_url(block.customFields.audioFile) %}
+            {% if audioFileUrl %}
+                <div class="hero-two-columns-audio-wrapper">
+                    <button class="hero-two-columns-audio-button" 
+                            type="button"
+                            aria-label="Audio abspielen"
+                            data-audio-url="{{ audioFileUrl }}">
+                        <svg class="hero-two-columns-audio-icon" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="24" cy="24" r="23" stroke="currentColor" stroke-width="2"/>
+                            <path d="M18 16C18 15.4477 18.4477 15 19 15H23C23.5523 15 24 15.4477 24 16V32C24 32.5523 23.5523 33 23 33H19C18.4477 33 18 32.5523 18 32V16Z" fill="currentColor"/>
+                            <path d="M24 20L30 18V30L24 28V20Z" fill="currentColor"/>
+                            <path d="M32 18C32 18 34 20 34 24C34 28 32 30 32 30" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M36 16C36 16 38 18 38 24C38 30 36 32 36 32" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                    <audio class="hero-two-columns-audio-element" preload="none">
+                        <source src="{{ audioFileUrl }}" type="audio/mpeg">
+                        <source src="{{ audioFileUrl }}" type="audio/ogg">
+                        Ihr Browser unterstützt das Audio-Element nicht.
+                    </audio>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
 {% endblock %}
-

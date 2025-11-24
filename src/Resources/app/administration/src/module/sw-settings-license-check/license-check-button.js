@@ -5,7 +5,8 @@ import overrideTemplate from "./sw-system-config-override.html.twig";
 import "./sw-system-config-override.scss";
 
 // Debug-Modus (nur in Development - prüft ob Shopware in Dev-Mode läuft)
-const DEBUG = typeof process !== 'undefined' && process.env?.NODE_ENV !== 'production';
+const DEBUG =
+  typeof process !== "undefined" && process.env?.NODE_ENV !== "production";
 
 // Helper: Debug-Log nur in Development
 const debugLog = (...args) => {
@@ -29,7 +30,7 @@ const debugWarn = (...args) => {
 Shopware.Component.override("sw-system-config", {
   template: overrideTemplate,
 
-  inject: ["systemConfigApiService"],
+  inject: ["systemConfigApiService", "repositoryFactory"],
 
   mixins: [Shopware.Mixin.getByName("notification")],
 
@@ -38,6 +39,21 @@ Shopware.Component.override("sw-system-config", {
       isLicenseChecking: false,
       isUpdateChecking: false,
       isUpdateDownloading: false,
+      isInstagramTokenChecking: false,
+      // Feature-Validierung: Schritt-für-Schritt-Status
+      featureValidation: {
+        isRunning: false,
+        currentFeature: null,
+        currentStep: null,
+        steps: [],
+        results: {},
+        debugInfo: {},
+      },
+      // Vorherige Config-Werte für Change-Detection
+      previousConfig: {},
+      // Verfügbare Sprachen für Language Switcher
+      availableLanguages: [],
+      isLoadingLanguages: false,
     };
   },
 
@@ -111,11 +127,23 @@ Shopware.Component.override("sw-system-config", {
      */
     isMegaMenuEnabled() {
       if (!this.isHeroBlocksConfig()) return false;
-      const config =
-        this.actualConfigData?.[this.currentSalesChannelId] || {};
+      const config = this.actualConfigData?.[this.currentSalesChannelId] || {};
       return (
         config["HeroBlocks.config.enableMegaMenu"] === true ||
         config["enableMegaMenu"] === true
+      );
+    },
+
+    /**
+     * Prüft ob Instagram Feed aktiviert ist
+     * WICHTIG: Für Collapsible Card "Instagram Feed Settings" (nur wenn aktiv)
+     */
+    isInstagramFeedEnabled() {
+      if (!this.isHeroBlocksConfig()) return false;
+      const config = this.actualConfigData?.[this.currentSalesChannelId] || {};
+      return (
+        config["HeroBlocks.config.enableHeroInstagramFeed"] === true ||
+        config["enableHeroInstagramFeed"] === true
       );
     },
 
@@ -124,8 +152,7 @@ Shopware.Component.override("sw-system-config", {
      */
     updateAvailable() {
       if (!this.isHeroBlocksConfig()) return false;
-      const config =
-        this.actualConfigData?.[this.currentSalesChannelId] || {};
+      const config = this.actualConfigData?.[this.currentSalesChannelId] || {};
       return (
         config["HeroBlocks.config.updateAvailable"] === true ||
         config["updateAvailable"] === true
@@ -137,8 +164,7 @@ Shopware.Component.override("sw-system-config", {
      */
     updateDownloadUrl() {
       if (!this.isHeroBlocksConfig()) return null;
-      const config =
-        this.actualConfigData?.[this.currentSalesChannelId] || {};
+      const config = this.actualConfigData?.[this.currentSalesChannelId] || {};
       return (
         config["HeroBlocks.config.updateDownloadUrl"] ||
         config["updateDownloadUrl"] ||
@@ -147,8 +173,31 @@ Shopware.Component.override("sw-system-config", {
     },
   },
 
+  watch: {
+    /**
+     * Watch auf Config-Änderungen - Startet automatische Feature-Validierung
+     */
+    actualConfigData: {
+      handler(newConfig, oldConfig) {
+        if (!this.isHeroBlocksConfig()) return;
+
+        // Prüfe auf Feature-Aktivierungen
+        this.checkFeatureActivations(newConfig, oldConfig);
+      },
+      deep: true,
+      immediate: false,
+    },
+  },
+
   // WICHTIG: Kein Auto-Check mehr hier - wird von sw-extension-config Override übernommen (Silent Check)
   // mounted() entfernt - Silent Check wird von sw-extension-config Override gemacht
+
+  created() {
+    // Lade verfügbare Sprachen wenn HeroBlocks Config
+    if (this.isHeroBlocksConfig()) {
+      this.loadAvailableLanguages();
+    }
+  },
 
   methods: {
     collapseItem() {
@@ -195,6 +244,19 @@ Shopware.Component.override("sw-system-config", {
     },
 
     async checkHeroBlocksLicense() {
+      // WICHTIG: Keine API-Anfrage wenn Lizenz bereits abgelaufen ist
+      if (this.isLicenseExpired) {
+        this.createNotificationError({
+          title: this.$tc(
+            "sw-settings-license-check.button.licenseExpiredTitle"
+          ),
+          message: this.$tc(
+            "sw-settings-license-check.button.licenseExpiredMessage"
+          ),
+        });
+        return;
+      }
+
       this.isLicenseChecking = true;
 
       try {
@@ -345,16 +407,21 @@ Shopware.Component.override("sw-system-config", {
 
           // Nach 1 Sekunde nochmal laden um sicherzustellen
           // WICHTIG: requestIdleCallback für bessere Performance (verhindert setTimeout Violations)
-          if (typeof requestIdleCallback !== 'undefined') {
-            requestIdleCallback(() => {
-              if (
-                this.actualConfigData &&
-                this.actualConfigData.hasOwnProperty(this.currentSalesChannelId)
-              ) {
-                delete this.actualConfigData[this.currentSalesChannelId];
-                this.loadCurrentSalesChannelConfig();
-              }
-            }, { timeout: 1000 });
+          if (typeof requestIdleCallback !== "undefined") {
+            requestIdleCallback(
+              () => {
+                if (
+                  this.actualConfigData &&
+                  this.actualConfigData.hasOwnProperty(
+                    this.currentSalesChannelId
+                  )
+                ) {
+                  delete this.actualConfigData[this.currentSalesChannelId];
+                  this.loadCurrentSalesChannelConfig();
+                }
+              },
+              { timeout: 1000 }
+            );
           } else {
             // Fallback: setTimeout mit minimalem Delay
             setTimeout(() => {
@@ -421,11 +488,12 @@ Shopware.Component.override("sw-system-config", {
      */
     isActiveBlock(blockName) {
       if (!this.isHeroBlocksConfig()) return false;
-      // Aktive Blocks: enableHeroBlockSlider, enableHeroTwoColumns, enableMegaMenu
+      // Aktive Blocks: enableHeroBlockSlider, enableHeroTwoColumns, enableMegaMenu, enableCategorySlider
       const activeBlocks = [
         "HeroBlocks.config.enableHeroBlockSlider",
         "HeroBlocks.config.enableHeroTwoColumns",
         "HeroBlocks.config.enableMegaMenu",
+        "HeroBlocks.config.enableCategorySlider",
       ];
       return activeBlocks.includes(blockName);
     },
@@ -447,12 +515,9 @@ Shopware.Component.override("sw-system-config", {
         let response;
         try {
           debugLog("📡 Calling update check API...");
-          response = await httpClient.get(
-            "/_action/hero-blocks/update-check",
-            {
-              headers: this.systemConfigApiService.getBasicHeaders(),
-            }
-          );
+          response = await httpClient.get("/_action/hero-blocks/update-check", {
+            headers: this.systemConfigApiService.getBasicHeaders(),
+          });
 
           const duration = Date.now() - startTime;
           debugLog(`✅ API call completed in ${duration}ms`, response.data);
@@ -497,11 +562,17 @@ Shopware.Component.override("sw-system-config", {
           // WICHTIG: Zeige Warnung wenn License expired
           if (result.licenseExpired === true) {
             this.createNotificationError({
-              title: this.$tc("sw-settings-license-check.update.licenseExpired"),
-              message: result.licenseExpiredMessage || this.$tc("sw-settings-license-check.update.licenseExpiredMessage"),
+              title: this.$tc(
+                "sw-settings-license-check.update.licenseExpired"
+              ),
+              message:
+                result.licenseExpiredMessage ||
+                this.$tc(
+                  "sw-settings-license-check.update.licenseExpiredMessage"
+                ),
               autoClose: false,
             });
-            
+
             // Reload Config Data um Status zu aktualisieren
             if (
               this.actualConfigData &&
@@ -528,7 +599,9 @@ Shopware.Component.override("sw-system-config", {
           // Unterschiedliche Notifications für available/not available
           if (result.available === true) {
             this.createNotificationSuccess({
-              title: this.$tc("sw-settings-license-check.update.updateAvailable"),
+              title: this.$tc(
+                "sw-settings-license-check.update.updateAvailable"
+              ),
               message: this.$tc(
                 "sw-settings-license-check.update.updateAvailableMessage",
                 {
@@ -543,14 +616,18 @@ Shopware.Component.override("sw-system-config", {
             if (result.changelog) {
               this.createNotificationInfo({
                 title: this.$tc("sw-settings-license-check.update.changelog"),
-                message: result.changelog.substring(0, 200) + (result.changelog.length > 200 ? "..." : ""),
+                message:
+                  result.changelog.substring(0, 200) +
+                  (result.changelog.length > 200 ? "..." : ""),
                 autoClose: true,
                 duration: 10000,
               });
             }
           } else {
             this.createNotificationInfo({
-              title: this.$tc("sw-settings-license-check.update.noUpdateAvailable"),
+              title: this.$tc(
+                "sw-settings-license-check.update.noUpdateAvailable"
+              ),
               message: this.$tc(
                 "sw-settings-license-check.update.noUpdateAvailableMessage",
                 {
@@ -562,16 +639,21 @@ Shopware.Component.override("sw-system-config", {
 
           // Nach 1 Sekunde nochmal laden um sicherzustellen
           // WICHTIG: requestIdleCallback für bessere Performance (verhindert setTimeout Violations)
-          if (typeof requestIdleCallback !== 'undefined') {
-            requestIdleCallback(() => {
-              if (
-                this.actualConfigData &&
-                this.actualConfigData.hasOwnProperty(this.currentSalesChannelId)
-              ) {
-                delete this.actualConfigData[this.currentSalesChannelId];
-                this.loadCurrentSalesChannelConfig();
-              }
-            }, { timeout: 1000 });
+          if (typeof requestIdleCallback !== "undefined") {
+            requestIdleCallback(
+              () => {
+                if (
+                  this.actualConfigData &&
+                  this.actualConfigData.hasOwnProperty(
+                    this.currentSalesChannelId
+                  )
+                ) {
+                  delete this.actualConfigData[this.currentSalesChannelId];
+                  this.loadCurrentSalesChannelConfig();
+                }
+              },
+              { timeout: 1000 }
+            );
           } else {
             // Fallback: setTimeout mit minimalem Delay
             setTimeout(() => {
@@ -714,16 +796,21 @@ Shopware.Component.override("sw-system-config", {
 
           // Nach 1 Sekunde nochmal laden um sicherzustellen
           // WICHTIG: requestIdleCallback für bessere Performance (verhindert setTimeout Violations)
-          if (typeof requestIdleCallback !== 'undefined') {
-            requestIdleCallback(() => {
-              if (
-                this.actualConfigData &&
-                this.actualConfigData.hasOwnProperty(this.currentSalesChannelId)
-              ) {
-                delete this.actualConfigData[this.currentSalesChannelId];
-                this.loadCurrentSalesChannelConfig();
-              }
-            }, { timeout: 1000 });
+          if (typeof requestIdleCallback !== "undefined") {
+            requestIdleCallback(
+              () => {
+                if (
+                  this.actualConfigData &&
+                  this.actualConfigData.hasOwnProperty(
+                    this.currentSalesChannelId
+                  )
+                ) {
+                  delete this.actualConfigData[this.currentSalesChannelId];
+                  this.loadCurrentSalesChannelConfig();
+                }
+              },
+              { timeout: 1000 }
+            );
           } else {
             // Fallback: setTimeout mit minimalem Delay
             setTimeout(() => {
@@ -775,6 +862,567 @@ Shopware.Component.override("sw-system-config", {
       } finally {
         this.isUpdateDownloading = false;
       }
+    },
+
+    /**
+     * Validiert Instagram API Credentials
+     * WICHTIG: Ähnlich wie checkHeroBlocksLicense, aber für Instagram Token
+     */
+    async checkHeroBlocksInstagramToken() {
+      // WICHTIG: Keine API-Anfrage wenn Lizenz abgelaufen ist
+      if (this.isLicenseExpired) {
+        this.createNotificationError({
+          title: this.$tc(
+            "sw-settings-license-check.instagram.validationFailed"
+          ),
+          message: this.$tc(
+            "sw-settings-license-check.instagram.licenseExpiredMessage"
+          ),
+        });
+        return;
+      }
+
+      this.isInstagramTokenChecking = true;
+
+      try {
+        const httpClient = this.systemConfigApiService.httpClient;
+        if (!httpClient) {
+          throw new Error("HTTP Client nicht verfügbar");
+        }
+
+        debugLog("🚀 Starting Instagram token validation...");
+        const startTime = Date.now();
+
+        let response;
+        try {
+          debugLog("📡 Calling Instagram token validation API...");
+          response = await httpClient.post(
+            "/_action/hero-blocks/check-instagram-token",
+            {},
+            {
+              headers: this.systemConfigApiService.getBasicHeaders(),
+            }
+          );
+
+          const duration = Date.now() - startTime;
+          debugLog(`✅ API call completed in ${duration}ms`, response.data);
+        } catch (httpError) {
+          const duration = Date.now() - startTime;
+          debugError("❌ Instagram token validation HTTP error:", {
+            error: httpError,
+            message: httpError.message,
+            response: httpError.response?.data,
+            status: httpError.response?.status,
+            durationMs: duration,
+          });
+
+          throw new Error(
+            httpError.response?.data?.errors?.[0]?.detail ||
+              httpError.message ||
+              "Network error during Instagram token validation"
+          );
+        }
+
+        if (!response || !response.data) {
+          debugError(
+            "❌ Empty response from Instagram token validation API",
+            response
+          );
+          throw new Error("Empty response from Instagram token validation API");
+        }
+
+        debugLog("📦 Response data:", response.data);
+
+        if (response.data.success === true && response.data.data) {
+          const result = response.data.data;
+
+          debugLog("✅ Instagram token validation successful:", {
+            valid: result.valid,
+            message: result.message,
+            details: result.details,
+          });
+
+          // Force reload Config Data
+          if (
+            this.actualConfigData &&
+            this.actualConfigData.hasOwnProperty(this.currentSalesChannelId)
+          ) {
+            delete this.actualConfigData[this.currentSalesChannelId];
+          }
+
+          await this.loadCurrentSalesChannelConfig();
+          await this.$nextTick();
+
+          if (result.valid === true) {
+            this.createNotificationSuccess({
+              title: this.$tc(
+                "sw-settings-license-check.instagram.validationSuccess"
+              ),
+              message:
+                result.message ||
+                this.$tc(
+                  "sw-settings-license-check.instagram.validationSuccessMessage"
+                ),
+            });
+          } else {
+            this.createNotificationError({
+              title: this.$tc(
+                "sw-settings-license-check.instagram.validationFailed"
+              ),
+              message:
+                result.message ||
+                this.$tc(
+                  "sw-settings-license-check.instagram.validationFailedMessage"
+                ),
+            });
+          }
+        } else {
+          debugError(
+            "❌ Instagram token validation failed with unexpected response:",
+            response.data
+          );
+          throw new Error(
+            response.data.message ||
+              "Unexpected response from Instagram token validation API"
+          );
+        }
+      } catch (error) {
+        debugError("❌ Final Instagram token validation error:", error);
+        this.createNotificationError({
+          title: this.$tc(
+            "sw-settings-license-check.instagram.validationFailed"
+          ),
+          message: error.message,
+        });
+      } finally {
+        this.isInstagramTokenChecking = false;
+      }
+    },
+
+    /**
+     * Prüft auf Feature-Aktivierungen und startet Validierung
+     */
+    checkFeatureActivations(newConfig, oldConfig) {
+      if (!this.isHeroBlocksConfig()) return;
+
+      const currentConfig = newConfig?.[this.currentSalesChannelId] || {};
+      const previousConfig =
+        oldConfig?.[this.currentSalesChannelId] || this.previousConfig || {};
+
+      // Feature-Mapping: Config-Key → Feature-Name → Validierungsfunktion
+      const featureMappings = {
+        "HeroBlocks.config.enableLanguageSwitcher": {
+          name: "Language Switcher",
+          validator: this.validateLanguageSwitcher.bind(this),
+        },
+        "HeroBlocks.config.enableMegaMenu": {
+          name: "Mega Menu",
+          validator: this.validateMegaMenu.bind(this),
+        },
+        "HeroBlocks.config.enableHeroInstagramFeed": {
+          name: "Instagram Feed",
+          validator: this.validateInstagramFeed.bind(this),
+        },
+        "HeroBlocks.config.enableCategorySlider": {
+          name: "Category Slider",
+          validator: this.validateCategorySlider.bind(this),
+        },
+      };
+
+      // Prüfe jede Feature-Mapping
+      Object.keys(featureMappings).forEach((configKey) => {
+        const oldValue = previousConfig[configKey];
+        const newValue = currentConfig[configKey];
+
+        // Feature wurde aktiviert (von false/undefined zu true)
+        if (
+          (oldValue === false || oldValue === undefined || oldValue === null) &&
+          newValue === true
+        ) {
+          const feature = featureMappings[configKey];
+          debugLog(`✅ Feature aktiviert: ${feature.name}`);
+
+          // Starte Validierung
+          this.validateFeature(feature.name, feature.validator, configKey);
+        }
+      });
+
+      // Speichere aktuelle Config als previous für nächsten Check
+      this.previousConfig = { ...currentConfig };
+    },
+
+    /**
+     * Schritt-für-Schritt Feature-Validierung
+     */
+    async validateFeature(featureName, validator, configKey) {
+      if (this.featureValidation.isRunning) {
+        debugWarn(
+          `⚠️ Validierung bereits läuft für: ${this.featureValidation.currentFeature}`
+        );
+        return;
+      }
+
+      this.featureValidation.isRunning = true;
+      this.featureValidation.currentFeature = featureName;
+      this.featureValidation.currentStep = null;
+      this.featureValidation.steps = [];
+      this.featureValidation.results = {};
+      this.featureValidation.debugInfo = {};
+
+      try {
+        // Zeige Start-Notification
+        this.createNotificationInfo({
+          title: `Validierung: ${featureName}`,
+          message: `Starte Schritt-für-Schritt-Validierung für ${featureName}...`,
+          duration: 3000,
+        });
+
+        // Führe Validierung aus
+        const result = await validator(configKey);
+
+        // Zeige Ergebnis
+        if (result.success) {
+          this.createNotificationSuccess({
+            title: `✅ ${featureName} aktiviert`,
+            message:
+              result.message ||
+              `Alle Validierungsschritte erfolgreich abgeschlossen.`,
+            duration: 5000,
+          });
+        } else {
+          this.createNotificationWarning({
+            title: `⚠️ ${featureName} - Validierung mit Warnungen`,
+            message:
+              result.message ||
+              `Einige Validierungsschritte haben Warnungen ergeben.`,
+            duration: 7000,
+          });
+        }
+
+        // Debug-Informationen speichern
+        this.featureValidation.debugInfo = {
+          feature: featureName,
+          configKey,
+          timestamp: new Date().toISOString(),
+          result,
+          steps: this.featureValidation.steps,
+        };
+
+        // Debug-Info in Console (nur Development)
+        if (DEBUG) {
+          console.group(`🔍 Feature-Validierung: ${featureName}`);
+          console.log("Config Key:", configKey);
+          console.log("Ergebnis:", result);
+          console.log("Schritte:", this.featureValidation.steps);
+          console.log("Debug Info:", this.featureValidation.debugInfo);
+          console.groupEnd();
+        }
+      } catch (error) {
+        debugError(`❌ Validierungsfehler für ${featureName}:`, error);
+        this.createNotificationError({
+          title: `❌ ${featureName} - Validierungsfehler`,
+          message: error.message || "Ein unerwarteter Fehler ist aufgetreten.",
+          duration: 10000,
+        });
+      } finally {
+        this.featureValidation.isRunning = false;
+        this.featureValidation.currentFeature = null;
+        this.featureValidation.currentStep = null;
+      }
+    },
+
+    /**
+     * Validierung für Language Switcher
+     */
+    async validateLanguageSwitcher(configKey) {
+      const steps = [];
+      const results = {};
+
+      // Schritt 1: Prüfe ob Theme-Template existiert
+      this.featureValidation.currentStep = "Template-Prüfung";
+      steps.push({
+        name: "Template-Prüfung",
+        status: "running",
+        message: "Prüfe Theme-Template...",
+      });
+
+      try {
+        // Prüfe Frontend-Template (via API oder direkt)
+        const templateExists = await this.checkFrontendTemplate(
+          "language-widget-flags"
+        );
+
+        steps[steps.length - 1] = {
+          name: "Template-Prüfung",
+          status: templateExists ? "success" : "warning",
+          message: templateExists
+            ? "Theme-Template gefunden ✅"
+            : "Theme-Template nicht gefunden ⚠️ (kann normal sein wenn Standard-Template verwendet wird)",
+        };
+        results.templateCheck = templateExists;
+
+        // Schritt 2: Prüfe Frontend-Rendering
+        this.featureValidation.currentStep = "Frontend-Rendering-Prüfung";
+        steps.push({
+          name: "Frontend-Rendering-Prüfung",
+          status: "running",
+          message: "Prüfe Frontend-Rendering...",
+        });
+
+        const frontendCheck = await this.checkFrontendRendering(
+          "language-switcher"
+        );
+
+        steps[steps.length - 1] = {
+          name: "Frontend-Rendering-Prüfung",
+          status: frontendCheck.success ? "success" : "warning",
+          message: frontendCheck.message,
+        };
+        results.frontendCheck = frontendCheck;
+
+        // Schritt 3: Prüfe JavaScript-Plugin
+        this.featureValidation.currentStep = "JavaScript-Plugin-Prüfung";
+        steps.push({
+          name: "JavaScript-Plugin-Prüfung",
+          status: "running",
+          message: "Prüfe JavaScript-Plugin...",
+        });
+
+        const jsCheck = await this.checkJavaScriptPlugin("LanguageWidgetFlags");
+
+        steps[steps.length - 1] = {
+          name: "JavaScript-Plugin-Prüfung",
+          status: jsCheck.success ? "success" : "warning",
+          message: jsCheck.message,
+        };
+        results.jsCheck = jsCheck;
+
+        // Aktualisiere Steps
+        this.featureValidation.steps = steps;
+        this.featureValidation.results = results;
+
+        // Gesamt-Ergebnis
+        const allSuccess = Object.values(results).every(
+          (r) =>
+            (typeof r === "boolean" && r) ||
+            (typeof r === "object" && r.success)
+        );
+
+        return {
+          success: allSuccess,
+          message: allSuccess
+            ? "Alle Validierungsschritte erfolgreich. Language Switcher sollte im Frontend funktionieren."
+            : "Einige Validierungsschritte haben Warnungen ergeben. Bitte Frontend prüfen.",
+          steps,
+          results,
+        };
+      } catch (error) {
+        steps[steps.length - 1] = {
+          name: this.featureValidation.currentStep,
+          status: "error",
+          message: `Fehler: ${error.message}`,
+        };
+        this.featureValidation.steps = steps;
+
+        throw error;
+      }
+    },
+
+    /**
+     * Validierung für Mega Menu
+     */
+    async validateMegaMenu(configKey) {
+      // TODO: Implementiere Mega Menu Validierung
+      return {
+        success: true,
+        message: "Mega Menu Validierung noch nicht implementiert.",
+      };
+    },
+
+    /**
+     * Validierung für Instagram Feed
+     */
+    async validateInstagramFeed(configKey) {
+      // TODO: Implementiere Instagram Feed Validierung
+      return {
+        success: true,
+        message: "Instagram Feed Validierung noch nicht implementiert.",
+      };
+    },
+
+    /**
+     * Validierung für Category Slider
+     */
+    async validateCategorySlider(configKey) {
+      // TODO: Implementiere Category Slider Validierung
+      return {
+        success: true,
+        message: "Category Slider Validierung noch nicht implementiert.",
+      };
+    },
+
+    /**
+     * Prüft ob Frontend-Template existiert
+     */
+    async checkFrontendTemplate(templateName) {
+      try {
+        // Prüfe via API oder direkt im Frontend
+        const httpClient = this.systemConfigApiService.httpClient;
+        if (!httpClient) {
+          return false;
+        }
+
+        const response = await httpClient.get(
+          `/_action/hero-blocks/check-template/${templateName}`,
+          {
+            headers: this.systemConfigApiService.getBasicHeaders(),
+          }
+        );
+
+        return response.data?.exists === true;
+      } catch (error) {
+        debugWarn(`⚠️ Template-Check fehlgeschlagen:`, error);
+        return false;
+      }
+    },
+
+    /**
+     * Prüft Frontend-Rendering
+     */
+    async checkFrontendRendering(componentName) {
+      try {
+        const httpClient = this.systemConfigApiService.httpClient;
+        if (!httpClient) {
+          return {
+            success: false,
+            message: "HTTP Client nicht verfügbar",
+          };
+        }
+
+        const response = await httpClient.get(
+          `/_action/hero-blocks/check-frontend/${componentName}`,
+          {
+            headers: this.systemConfigApiService.getBasicHeaders(),
+          }
+        );
+
+        return {
+          success: response.data?.rendered === true,
+          message:
+            response.data?.message ||
+            "Frontend-Rendering-Prüfung abgeschlossen",
+        };
+      } catch (error) {
+        debugWarn(`⚠️ Frontend-Rendering-Check fehlgeschlagen:`, error);
+        return {
+          success: false,
+          message: `Frontend-Rendering-Check fehlgeschlagen: ${error.message}`,
+        };
+      }
+    },
+
+    /**
+     * Prüft JavaScript-Plugin
+     */
+    async checkJavaScriptPlugin(pluginName) {
+      try {
+        const httpClient = this.systemConfigApiService.httpClient;
+        if (!httpClient) {
+          return {
+            success: false,
+            message: "HTTP Client nicht verfügbar",
+          };
+        }
+
+        const response = await httpClient.get(
+          `/_action/hero-blocks/check-plugin/${pluginName}`,
+          {
+            headers: this.systemConfigApiService.getBasicHeaders(),
+          }
+        );
+
+        return {
+          success: response.data?.registered === true,
+          message:
+            response.data?.message || "JavaScript-Plugin-Prüfung abgeschlossen",
+        };
+      } catch (error) {
+        debugWarn(`⚠️ JavaScript-Plugin-Check fehlgeschlagen:`, error);
+        return {
+          success: false,
+          message: `JavaScript-Plugin-Check fehlgeschlagen: ${error.message}`,
+        };
+      }
+    },
+
+    /**
+     * Lade verfügbare Sprachen für Language Switcher
+     */
+    async loadAvailableLanguages() {
+      if (!this.isHeroBlocksConfig()) return;
+
+      this.isLoadingLanguages = true;
+
+      try {
+        const { Criteria } = Shopware.Data;
+        const languageRepository = this.repositoryFactory.create("language");
+
+        // Hole alle registrierten Locales
+        const factoryContainer = Shopware.Application.getContainer("factory");
+        const localeFactory = factoryContainer.locale;
+        const registeredLocales = Array.from(
+          localeFactory.getLocaleRegistry().keys()
+        );
+
+        // Criteria für Sprachen
+        const languageCriteria = new Criteria(1, 500);
+        languageCriteria.addAssociation("locale");
+        languageCriteria.addSorting(Criteria.sort("locale.name", "ASC"));
+        languageCriteria.addSorting(Criteria.sort("locale.territory", "ASC"));
+        languageCriteria.addFilter(
+          Criteria.equalsAny("locale.code", registeredLocales)
+        );
+
+        const result = await languageRepository.search(languageCriteria);
+
+        this.availableLanguages = [];
+        result.forEach((lang) => {
+          const localeCode = lang.locale?.code || "";
+          const localeName = lang.locale?.translated?.name || "";
+          const localeTerritory = lang.locale?.translated?.territory || "";
+
+          this.availableLanguages.push({
+            id: lang.id,
+            name: lang.name,
+            localeCode,
+            localeName,
+            localeTerritory,
+            displayName: localeTerritory
+              ? `${localeName} (${localeTerritory})`
+              : localeName,
+            isActive: lang.id === Shopware.Context.api.languageId,
+          });
+        });
+
+        debugLog("✅ Verfügbare Sprachen geladen:", this.availableLanguages);
+      } catch (error) {
+        debugError("❌ Fehler beim Laden der Sprachen:", error);
+        this.availableLanguages = [];
+      } finally {
+        this.isLoadingLanguages = false;
+      }
+    },
+
+    /**
+     * Prüft ob Language Switcher aktiviert ist
+     */
+    isLanguageSwitcherEnabled() {
+      if (!this.isHeroBlocksConfig()) return false;
+      const config = this.actualConfigData?.[this.currentSalesChannelId] || {};
+      return (
+        config["HeroBlocks.config.enableLanguageSwitcher"] === true ||
+        config["enableLanguageSwitcher"] === true
+      );
     },
   },
 });

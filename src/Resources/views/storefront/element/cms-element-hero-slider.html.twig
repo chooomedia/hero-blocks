@@ -129,12 +129,17 @@
                             <div class="hero-slider-item-container">
                                 <div class="hero-slider-item{% if loop.first != true %} is-not-first{% endif %} is-{{ displayMode }}"{% if minHeight and displayMode == "cover" %} style="min-height: {{ minHeight|trim|replace({' ':''}) }}"{% endif %}>
                                     {% if slide.media %}
-                                        {# Per-Slide Logo Image (aus Extension - bereits von DataResolver aufgelöst) #}
+                                        {# Per-Slide Logo Image (aus Extension - bereits von DataResolver aufgelöst) - Robuste null Prüfung #}
                                         {% set logoMediaExt = slide.extensions.logoImage %}
-                                        {% set logoMedia = (logoMediaExt and logoMediaExt.value) ? logoMediaExt.value : null %}
+                                        {% set logoMedia = (logoMediaExt and logoMediaExt.value is defined and logoMediaExt.value is not null) ? logoMediaExt.value : null %}
                                         
-                                        {% set slideUrl = slide.url %}
-                                        {% set slideNewTab = slide.newTab ?: false %}
+                                        {# Slide URL - Robuste null/empty Prüfung #}
+                                        {% set slideUrl = (slide.url is defined and slide.url is not null and slide.url is not empty) ? slide.url : null %}
+                                        {% set slideNewTab = (slide.newTab is defined) ? (slide.newTab is same as(true) or slide.newTab == '1' or slide.newTab == 1) : false %}
+                                        
+                                        {# Alt-Text für Bild - Fallback zu Headline oder Standard-Text #}
+                                        {% set slideHeadlineForAlt = (slide.extensions.headline is defined and slide.extensions.headline.value is defined and slide.extensions.headline.value is not null and slide.extensions.headline.value is not empty) ? slide.extensions.headline.value : ((slide.headline is defined and slide.headline is not null and slide.headline is not empty) ? slide.headline : ((sliderConfig.headline is defined and sliderConfig.headline.value is defined and sliderConfig.headline.value is not null and sliderConfig.headline.value is not empty) ? sliderConfig.headline.value : null)) %}
+                                        {% set imageAltText = isDecorative ? ' ' : (slide.media.translated.alt ?: (slideHeadlineForAlt ?: 'Hero Slide')) %}
                                         
                                         {# Background Image - WIE STANDARD SLIDER STRUCTURE #}
                                         {% set imageElement %}
@@ -142,7 +147,7 @@
                                                 {% set imageAttributes = {
                                                     'class': 'hero-slide-img img-fluid',
                                                     'loading': 'lazy',
-                                                    'alt': isDecorative ? ' ' : (slide.media.translated.alt ?: (slide.headline ?: (sliderConfig.headline.value ?: 'Hero Slide'))),
+                                                    'alt': imageAltText,
                                                     'title': isDecorative ? '' : (slide.media.translated.title ?: ''),
                                                     'tabindex': slideUrl ? '-1' : '0'
                                                 } %}
@@ -201,19 +206,19 @@
                                                     </div>
                                                 {% endif %}
                                                 
-                                                {# Styling-Werte aus Config #}
-                                                {% set headlineColor = sliderConfig.headlineColor.value %}
-                                                {% set headlineFontSize = sliderConfig.headlineFontSize.value %}
-                                                {% set textColor = sliderConfig.textColor.value %}
-                                                {% set textFontSize = sliderConfig.textFontSize.value %}
-                                                {% set button1BgColor = sliderConfig.button1BackgroundColor.value %}
-                                                {% set button1TextColor = sliderConfig.button1TextColor.value %}
-                                                {% set button2BgColor = sliderConfig.button2BackgroundColor.value %}
-                                                {% set button2TextColor = sliderConfig.button2TextColor.value %}
+                                                {# Styling-Werte aus Config - nur setzen wenn nicht null/empty #}
+                                                {% set headlineColor = (sliderConfig.headlineColor is defined and sliderConfig.headlineColor.value is defined and sliderConfig.headlineColor.value is not null and sliderConfig.headlineColor.value is not empty) ? sliderConfig.headlineColor.value : null %}
+                                                {% set headlineFontSize = (sliderConfig.headlineFontSize is defined and sliderConfig.headlineFontSize.value is defined and sliderConfig.headlineFontSize.value is not null and sliderConfig.headlineFontSize.value is not empty) ? sliderConfig.headlineFontSize.value : null %}
+                                                {% set textColor = (sliderConfig.textColor is defined and sliderConfig.textColor.value is defined and sliderConfig.textColor.value is not null and sliderConfig.textColor.value is not empty) ? sliderConfig.textColor.value : null %}
+                                                {% set textFontSize = (sliderConfig.textFontSize is defined and sliderConfig.textFontSize.value is defined and sliderConfig.textFontSize.value is not null and sliderConfig.textFontSize.value is not empty) ? sliderConfig.textFontSize.value : null %}
+                                                {% set button1BgColor = (sliderConfig.button1BackgroundColor is defined and sliderConfig.button1BackgroundColor.value is defined and sliderConfig.button1BackgroundColor.value is not null and sliderConfig.button1BackgroundColor.value is not empty) ? sliderConfig.button1BackgroundColor.value : null %}
+                                                {% set button1TextColor = (sliderConfig.button1TextColor is defined and sliderConfig.button1TextColor.value is defined and sliderConfig.button1TextColor.value is not null and sliderConfig.button1TextColor.value is not empty) ? sliderConfig.button1TextColor.value : null %}
+                                                {% set button2BgColor = (sliderConfig.button2BackgroundColor is defined and sliderConfig.button2BackgroundColor.value is defined and sliderConfig.button2BackgroundColor.value is not null and sliderConfig.button2BackgroundColor.value is not empty) ? sliderConfig.button2BackgroundColor.value : null %}
+                                                {% set button2TextColor = (sliderConfig.button2TextColor is defined and sliderConfig.button2TextColor.value is defined and sliderConfig.button2TextColor.value is not null and sliderConfig.button2TextColor.value is not empty) ? sliderConfig.button2TextColor.value : null %}
                                                 
-                                                {# Per-Slide oder Global Headline (aus Extension oder Config) #}
+                                                {# Per-Slide oder Global Headline (aus Extension oder Config) - Robuste null/empty Prüfung #}
                                                 {% set slideHeadlineExt = slide.extensions.headline %}
-                                                {% set slideHeadline = (slideHeadlineExt and slideHeadlineExt.value) ? slideHeadlineExt.value : (slide.headline|default(sliderConfig.headline.value)) %}
+                                                {% set slideHeadline = (slideHeadlineExt and slideHeadlineExt.value is defined and slideHeadlineExt.value is not null and slideHeadlineExt.value is not empty) ? slideHeadlineExt.value : ((slide.headline is defined and slide.headline is not null and slide.headline is not empty) ? slide.headline : ((sliderConfig.headline is defined and sliderConfig.headline.value is defined and sliderConfig.headline.value is not null and sliderConfig.headline.value is not empty) ? sliderConfig.headline.value : null)) %}
                                                 {% if slideHeadline %}
                                                     {% if loop.first %}
                                                         <h1 class="hero-slide-headline" itemprop="headline"{% if headlineColor or headlineFontSize %} style="{% if headlineColor %}--hero-headline-color: {{ headlineColor }};{% endif %}{% if headlineFontSize %} --hero-headline-font-size: {{ headlineFontSize }};{% endif %}"{% endif %}>{{ slideHeadline }}</h1>
@@ -222,26 +227,26 @@
                                                     {% endif %}
                                                 {% endif %}
                                             
-                                                {# Per-Slide oder Global Text #}
+                                                {# Per-Slide oder Global Text - Robuste null/empty Prüfung #}
                                                 {% set slideTextExt = slide.extensions.text %}
-                                                {% set slideText = (slideTextExt and slideTextExt.value) ? slideTextExt.value : (slide.text|default(sliderConfig.text.value)) %}
+                                                {% set slideText = (slideTextExt and slideTextExt.value is defined and slideTextExt.value is not null and slideTextExt.value is not empty) ? slideTextExt.value : ((slide.text is defined and slide.text is not null and slide.text is not empty) ? slide.text : ((sliderConfig.text is defined and sliderConfig.text.value is defined and sliderConfig.text.value is not null and sliderConfig.text.value is not empty) ? sliderConfig.text.value : null)) %}
                                                 {% if slideText %}
                                                     <p class="hero-slide-text" itemprop="description"{% if textColor or textFontSize %} style="{% if textColor %}--hero-text-color: {{ textColor }};{% endif %}{% if textFontSize %} --hero-text-font-size: {{ textFontSize }};{% endif %}"{% endif %}>{{ slideText }}</p>
                                                 {% endif %}
                                                 
-                                                {# Per-Slide oder Global Buttons #}
+                                                {# Per-Slide oder Global Buttons - Robuste null/empty Prüfung #}
                                                 {% set slideButton1TextExt = slide.extensions.button1Text %}
-                                                {% set slideButton1Text = (slideButton1TextExt and slideButton1TextExt.value) ? slideButton1TextExt.value : (slide.button1Text|default(sliderConfig.button1Text.value)) %}
+                                                {% set slideButton1Text = (slideButton1TextExt and slideButton1TextExt.value is defined and slideButton1TextExt.value is not null and slideButton1TextExt.value is not empty) ? slideButton1TextExt.value : ((slide.button1Text is defined and slide.button1Text is not null and slide.button1Text is not empty) ? slide.button1Text : ((sliderConfig.button1Text is defined and sliderConfig.button1Text.value is defined and sliderConfig.button1Text.value is not null and sliderConfig.button1Text.value is not empty) ? sliderConfig.button1Text.value : null)) %}
                                                 {% set slideButton1UrlExt = slide.extensions.button1Url %}
-                                                {% set slideButton1Url = (slideButton1UrlExt and slideButton1UrlExt.value) ? slideButton1UrlExt.value : (slide.button1Url|default(sliderConfig.button1Url.value)) %}
+                                                {% set slideButton1Url = (slideButton1UrlExt and slideButton1UrlExt.value is defined and slideButton1UrlExt.value is not null and slideButton1UrlExt.value is not empty) ? slideButton1UrlExt.value : ((slide.button1Url is defined and slide.button1Url is not null and slide.button1Url is not empty) ? slide.button1Url : ((sliderConfig.button1Url is defined and sliderConfig.button1Url.value is defined and sliderConfig.button1Url.value is not null and sliderConfig.button1Url.value is not empty) ? sliderConfig.button1Url.value : null)) %}
                                                 {% set slideButton1NewTabExt = slide.extensions.button1NewTab %}
-                                                {% set slideButton1NewTab = (slideButton1NewTabExt and slideButton1NewTabExt.value) ? slideButton1NewTabExt.value : (slide.button1NewTab ?? sliderConfig.button1NewTab.value) %}
+                                                {% set slideButton1NewTab = (slideButton1NewTabExt and slideButton1NewTabExt.value is defined) ? (slideButton1NewTabExt.value is same as(true) or slideButton1NewTabExt.value == '1' or slideButton1NewTabExt.value == 1) : ((slide.button1NewTab is defined) ? (slide.button1NewTab is same as(true) or slide.button1NewTab == '1' or slide.button1NewTab == 1) : ((sliderConfig.button1NewTab is defined and sliderConfig.button1NewTab.value is defined) ? (sliderConfig.button1NewTab.value is same as(true) or sliderConfig.button1NewTab.value == '1' or sliderConfig.button1NewTab.value == 1) : false)) %}
                                                 {% set slideButton2TextExt = slide.extensions.button2Text %}
-                                                {% set slideButton2Text = (slideButton2TextExt and slideButton2TextExt.value) ? slideButton2TextExt.value : (slide.button2Text|default(sliderConfig.button2Text.value)) %}
+                                                {% set slideButton2Text = (slideButton2TextExt and slideButton2TextExt.value is defined and slideButton2TextExt.value is not null and slideButton2TextExt.value is not empty) ? slideButton2TextExt.value : ((slide.button2Text is defined and slide.button2Text is not null and slide.button2Text is not empty) ? slide.button2Text : ((sliderConfig.button2Text is defined and sliderConfig.button2Text.value is defined and sliderConfig.button2Text.value is not null and sliderConfig.button2Text.value is not empty) ? sliderConfig.button2Text.value : null)) %}
                                                 {% set slideButton2UrlExt = slide.extensions.button2Url %}
-                                                {% set slideButton2Url = (slideButton2UrlExt and slideButton2UrlExt.value) ? slideButton2UrlExt.value : (slide.button2Url|default(sliderConfig.button2Url.value)) %}
+                                                {% set slideButton2Url = (slideButton2UrlExt and slideButton2UrlExt.value is defined and slideButton2UrlExt.value is not null and slideButton2UrlExt.value is not empty) ? slideButton2UrlExt.value : ((slide.button2Url is defined and slide.button2Url is not null and slide.button2Url is not empty) ? slide.button2Url : ((sliderConfig.button2Url is defined and sliderConfig.button2Url.value is defined and sliderConfig.button2Url.value is not null and sliderConfig.button2Url.value is not empty) ? sliderConfig.button2Url.value : null)) %}
                                                 {% set slideButton2NewTabExt = slide.extensions.button2NewTab %}
-                                                {% set slideButton2NewTab = (slideButton2NewTabExt and slideButton2NewTabExt.value) ? slideButton2NewTabExt.value : (slide.button2NewTab ?? sliderConfig.button2NewTab.value) %}
+                                                {% set slideButton2NewTab = (slideButton2NewTabExt and slideButton2NewTabExt.value is defined) ? (slideButton2NewTabExt.value is same as(true) or slideButton2NewTabExt.value == '1' or slideButton2NewTabExt.value == 1) : ((slide.button2NewTab is defined) ? (slide.button2NewTab is same as(true) or slide.button2NewTab == '1' or slide.button2NewTab == 1) : ((sliderConfig.button2NewTab is defined and sliderConfig.button2NewTab.value is defined) ? (sliderConfig.button2NewTab.value is same as(true) or sliderConfig.button2NewTab.value == '1' or sliderConfig.button2NewTab.value == 1) : false)) %}
                                                 
                                                 {% if (slideButton1Text and slideButton1Url) or (slideButton2Text and slideButton2Url) %}
                                                     <div class="hero-slide-buttons">

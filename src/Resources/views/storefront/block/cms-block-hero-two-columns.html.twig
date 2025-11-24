@@ -17,32 +17,94 @@
         {% endif %}
     {% endif %}
     
-    {# Background Images #}
+    {# Background Images - WICHTIG: Media-URLs korrekt generieren #}
     {% set backgroundImage = (block.customFields.backgroundImage is defined) ? block.customFields.backgroundImage : null %}
     {% set backgroundImageLeft = (block.customFields.backgroundImageLeft is defined) ? block.customFields.backgroundImageLeft : null %}
     {% set backgroundImageRight = (block.customFields.backgroundImageRight is defined) ? block.customFields.backgroundImageRight : null %}
     {% set backgroundZIndex = (block.customFields.backgroundZIndex is defined) ? block.customFields.backgroundZIndex : '0' %}
+    
+    {# Background CSS Code Toggle #}
+    {% set backgroundLeftUseCss = (block.customFields.backgroundLeftUseCss is defined) ? block.customFields.backgroundLeftUseCss : false %}
+    {% set backgroundRightUseCss = (block.customFields.backgroundRightUseCss is defined) ? block.customFields.backgroundRightUseCss : false %}
+    {% set backgroundLeftCss = (block.customFields.backgroundLeftCss is defined and block.customFields.backgroundLeftCss is not empty) ? block.customFields.backgroundLeftCss : 'background: repeating-linear-gradient(123deg, #46494A 0px, #46494A 6px, transparent 6px, transparent 12px);' %}
+    {% set backgroundRightCss = (block.customFields.backgroundRightCss is defined and block.customFields.backgroundRightCss is not empty) ? block.customFields.backgroundRightCss : 'background: repeating-linear-gradient(123deg, #46494A 0px, #46494A 6px, transparent 6px, transparent 12px);' %}
+    
+    {# Scroll Animation Settings #}
+    {% set scrollAnimationAngle = (block.customFields.scrollAnimationAngle is defined and block.customFields.scrollAnimationAngle is not empty) ? block.customFields.scrollAnimationAngle : '33' %}
+    {% set scrollAnimationEnabled = (block.customFields.scrollAnimationEnabled is defined) ? block.customFields.scrollAnimationEnabled : true %}
+    
+    {# Media-URLs generieren mit Twig Extension (nur wenn nicht CSS Code verwendet wird) #}
+    {% set backgroundImageUrl = backgroundImage ? hero_media_url(backgroundImage) : null %}
+    {% set backgroundImageLeftUrl = (backgroundLeftUseCss == false and backgroundImageLeft) ? hero_media_url(backgroundImageLeft) : null %}
+    {% set backgroundImageRightUrl = (backgroundRightUseCss == false and backgroundImageRight) ? hero_media_url(backgroundImageRight) : null %}
+    
+    {# Audio-Datei #}
+    {% set audioFile = (block.customFields.audioFile is defined) ? block.customFields.audioFile : null %}
+    {% set audioFileUrl = audioFile ? hero_media_url(audioFile) : null %}
+    
+    {# Element Positionierung - Left Slot #}
+    {% set elementLeftTranslateX = (block.customFields.elementLeftTranslateX is defined) ? block.customFields.elementLeftTranslateX : '0' %}
+    {% set elementLeftTranslateY = (block.customFields.elementLeftTranslateY is defined) ? block.customFields.elementLeftTranslateY : '0' %}
+    {% set elementLeftAnimate = (block.customFields.elementLeftAnimate is defined) ? block.customFields.elementLeftAnimate : false %}
+    
+    {# Element Positionierung - Right Slot #}
+    {% set elementRightTranslateX = (block.customFields.elementRightTranslateX is defined) ? block.customFields.elementRightTranslateX : '0' %}
+    {% set elementRightTranslateY = (block.customFields.elementRightTranslateY is defined) ? block.customFields.elementRightTranslateY : '0' %}
+    {% set elementRightAnimate = (block.customFields.elementRightAnimate is defined) ? block.customFields.elementRightAnimate : false %}
 
     {# WICHTIG: Background-Bilder werden auf .cms-block Level gerendert (wie Standard-Block) #}
     {# Background Mode: Single Image #}
-    {% if backgroundMode == 'single' and backgroundImage %}
+    {% if backgroundMode == 'single' and backgroundImageUrl %}
             <div class="hero-two-columns-background hero-two-columns-background--single" 
-             style="background-image: url('/media/{{ backgroundImage }}'); z-index: {{ backgroundZIndex }};">
+             style="background-image: url('{{ backgroundImageUrl }}'); z-index: {{ backgroundZIndex }};">
             </div>
     {% endif %}
 
     {# Background Mode: Two Images (Parallax) #}
     {% if backgroundMode == 'two-images' %}
-            {% if backgroundImageLeft %}
+            {# Background Left: Image oder CSS Code #}
+            {% if backgroundLeftUseCss %}
+                {# WICHTIG: CSS Code mit z-index kombinieren #}
+                {% set backgroundLeftStyle = backgroundLeftCss|trim %}
+                {% if backgroundLeftStyle|slice(-1) != ';' %}
+                    {% set backgroundLeftStyle = backgroundLeftStyle ~ ';' %}
+                {% endif %}
+                {% set backgroundLeftStyle = backgroundLeftStyle ~ ' z-index: ' ~ backgroundZIndex ~ ';' %}
                 <div class="hero-two-columns-background hero-two-columns-background--left" 
-                     data-parallax-background="left"
-                 style="background-image: url('/media/{{ backgroundImageLeft }}'); z-index: {{ backgroundZIndex }};">
+                     {% if scrollAnimationEnabled %}data-parallax-background="left"{% endif %}
+                     data-scroll-animation-angle="{{ scrollAnimationAngle }}"
+                     data-scroll-animation-enabled="{{ scrollAnimationEnabled ? 'true' : 'false' }}"
+                     style="{{ backgroundLeftStyle|raw }}">
+                </div>
+            {% elseif backgroundImageLeftUrl %}
+                <div class="hero-two-columns-background hero-two-columns-background--left" 
+                     {% if scrollAnimationEnabled %}data-parallax-background="left"{% endif %}
+                     data-scroll-animation-angle="{{ scrollAnimationAngle }}"
+                     data-scroll-animation-enabled="{{ scrollAnimationEnabled ? 'true' : 'false' }}"
+                     style="background-image: url('{{ backgroundImageLeftUrl }}'); z-index: {{ backgroundZIndex }};">
                 </div>
             {% endif %}
-            {% if backgroundImageRight %}
+            
+            {# Background Right: Image oder CSS Code #}
+            {% if backgroundRightUseCss %}
+                {# WICHTIG: CSS Code mit z-index kombinieren #}
+                {% set backgroundRightStyle = backgroundRightCss|trim %}
+                {% if backgroundRightStyle|slice(-1) != ';' %}
+                    {% set backgroundRightStyle = backgroundRightStyle ~ ';' %}
+                {% endif %}
+                {% set backgroundRightStyle = backgroundRightStyle ~ ' z-index: ' ~ backgroundZIndex ~ ';' %}
                 <div class="hero-two-columns-background hero-two-columns-background--right" 
-                     data-parallax-background="right"
-                 style="background-image: url('/media/{{ backgroundImageRight }}'); z-index: {{ backgroundZIndex }};">
+                     {% if scrollAnimationEnabled %}data-parallax-background="right"{% endif %}
+                     data-scroll-animation-angle="{{ scrollAnimationAngle }}"
+                     data-scroll-animation-enabled="{{ scrollAnimationEnabled ? 'true' : 'false' }}"
+                     style="{{ backgroundRightStyle|raw }}">
+                </div>
+            {% elseif backgroundImageRightUrl %}
+                <div class="hero-two-columns-background hero-two-columns-background--right" 
+                     {% if scrollAnimationEnabled %}data-parallax-background="right"{% endif %}
+                     data-scroll-animation-angle="{{ scrollAnimationAngle }}"
+                     data-scroll-animation-enabled="{{ scrollAnimationEnabled ? 'true' : 'false' }}"
+                     style="background-image: url('{{ backgroundImageRightUrl }}'); z-index: {{ backgroundZIndex }};">
                 </div>
             {% endif %}
     {% endif %}
@@ -63,7 +125,13 @@
                 
                 <div class="col-md-6 {{ orderClasses }}" data-cms-element-id="{{ element.id }}">
                     {% block block_hero_two_columns_left_inner %}
-                        {% sw_include '@Storefront/storefront/element/cms-element-' ~ element.type ~ '.html.twig' ignore missing %}
+                        {# WICHTIG: Wrapper für Element-Positionierung und Animation #}
+                        <div class="hero-two-columns-element-wrapper hero-two-columns-element-wrapper--left"
+                             {% if elementLeftAnimate %}data-scroll-animate="true"{% endif %}
+                             data-translate-x="{{ elementLeftTranslateX }}"
+                             data-translate-y="{{ elementLeftTranslateY }}">
+                            {% sw_include '@Storefront/storefront/element/cms-element-' ~ element.type ~ '.html.twig' ignore missing %}
+                        </div>
                     {% endblock %}
                     </div>
             {% endif %}
@@ -81,7 +149,13 @@
                 
                 <div class="col-md-6 {{ orderClasses }}" data-cms-element-id="{{ element.id }}">
                     {% block block_hero_two_columns_right_inner %}
-                        {% sw_include '@Storefront/storefront/element/cms-element-' ~ element.type ~ '.html.twig' ignore missing %}
+                        {# WICHTIG: Wrapper für Element-Positionierung und Animation #}
+                        <div class="hero-two-columns-element-wrapper hero-two-columns-element-wrapper--right"
+                             {% if elementRightAnimate %}data-scroll-animate="true"{% endif %}
+                             data-translate-x="{{ elementRightTranslateX }}"
+                             data-translate-y="{{ elementRightTranslateY }}">
+                            {% sw_include '@Storefront/storefront/element/cms-element-' ~ element.type ~ '.html.twig' ignore missing %}
+                        </div>
                     {% endblock %}
                     </div>
             {% endif %}

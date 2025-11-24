@@ -6,5 +6,18 @@
                 "skipHeroSlider": "Skip hero slider"
             }
         }
+    },
+    "heroBlocks": {
+        "megaMenu": {
+            "link": {
+                "ariaLabel": "Open %name%"
+            },
+            "dropdown": {
+                "ariaLabel": "Sub-navigation for %name%"
+            },
+            "categories": {
+                "ariaLabel": "Categories"
+            }
+        }
     }
 }

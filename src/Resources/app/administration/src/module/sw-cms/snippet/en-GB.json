@@ -47,6 +47,58 @@
                         "backgroundImageRight": {
                             "label": "Background Image (Right)"
                         },
+                        "backgroundLeftUseCss": {
+                            "label": "Background Left - Use CSS Code",
+                            "helpText": "Enable this option to use CSS code instead of an image for the left background"
+                        },
+                        "backgroundLeftCss": {
+                            "label": "Background Left - CSS Code",
+                            "helpText": "CSS code for the left background (e.g. repeating-linear-gradient)"
+                        },
+                        "backgroundRightUseCss": {
+                            "label": "Background Right - Use CSS Code",
+                            "helpText": "Enable this option to use CSS code instead of an image for the right background"
+                        },
+                        "backgroundRightCss": {
+                            "label": "Background Right - CSS Code",
+                            "helpText": "CSS code for the right background (e.g. repeating-linear-gradient)"
+                        },
+                        "scrollAnimationAngle": {
+                            "label": "Scroll Animation Angle (degrees)",
+                            "helpText": "Angle for scroll animation in degrees (default: 33°). Left: from bottom to top, Right: from top to bottom"
+                        },
+                        "scrollAnimationEnabled": {
+                            "label": "Enable Scroll Animation",
+                            "helpText": "Enables scroll animation for background images (from outside to inside with configurable angle)"
+                        },
+                        "audioFile": {
+                            "label": "Audio File",
+                            "helpText": "Select an audio file or upload a new one. The audio file will be played when clicking on the icon."
+                        },
+                        "elementLeftTranslateX": {
+                            "label": "Element Left - Translate X (px)",
+                            "helpText": "Horizontal translation of the left element in pixels (negative = left, positive = right)"
+                        },
+                        "elementLeftTranslateY": {
+                            "label": "Element Left - Translate Y (px)",
+                            "helpText": "Vertical translation of the left element in pixels (negative = up, positive = down)"
+                        },
+                        "elementLeftAnimate": {
+                            "label": "Element Left - Enable Animation",
+                            "helpText": "Enables scroll animation for the left element (from outside to inside)"
+                        },
+                        "elementRightTranslateX": {
+                            "label": "Element Right - Translate X (px)",
+                            "helpText": "Horizontal translation of the right element in pixels (negative = left, positive = right)"
+                        },
+                        "elementRightTranslateY": {
+                            "label": "Element Right - Translate Y (px)",
+                            "helpText": "Vertical translation of the right element in pixels (negative = up, positive = down)"
+                        },
+                        "elementRightAnimate": {
+                            "label": "Element Right - Enable Animation",
+                            "helpText": "Enables scroll animation for the right element (from outside to inside)"
+                        },
                         "minHeight": {
                             "label": "Min Height",
                             "placeholder": "e.g., 500px, 80vh",
@@ -104,6 +156,201 @@
                             "label": "Dropdown Padding",
                             "placeholder": "e.g., 2rem",
                             "helpText": "Padding of dropdown menu (Top/Bottom, e.g., 2rem)"
+                        }
+                    }
+                },
+                "categorySlider": {
+                    "label": "Hero Block Category Slider",
+                    "config": {
+                        "info": "All settings (category, image count, navigation, etc.) are configured in the element modal. Here you can only adjust standard block settings (margins, sizing).",
+                        "category": {
+                            "label": "Category",
+                            "placeholder": "Select category...",
+                            "helpText": "Select a category whose images should be displayed in the slider"
+                        },
+                        "imageCount": {
+                            "label": "Number of Images",
+                            "helpText": "Select whether 1 or 2 category image elements should be displayed",
+                            "options": {
+                                "one": "1 Image",
+                                "two": "2 Images"
+                            }
+                        },
+                        "imageWidth": {
+                            "label": "Image Width",
+                            "helpText": "Select whether images should be displayed as inner-full-width or full-width",
+                            "options": {
+                                "innerFullWidth": "Inner Full-Width",
+                                "fullWidth": "Full-Width"
+                            }
+                        },
+                        "navigationDots": {
+                            "label": "Show Navigation Dots",
+                            "helpText": "Enable display of navigation dots below the slider"
+                        },
+                        "navigationArrows": {
+                            "label": "Navigation Arrows",
+                            "helpText": "Select the position of navigation arrows (none, inside, outside)",
+                            "options": {
+                                "none": "None",
+                                "inside": "Inside",
+                                "outside": "Outside"
+                            }
+                        },
+                        "autoSlide": {
+                            "label": "Auto Slide",
+                            "helpText": "Enable automatic sliding of the slider"
+                        },
+                        "autoplayTimeout": {
+                            "label": "Autoplay Timeout (ms)",
+                            "helpText": "Time in milliseconds between slides (1000-30000)"
+                        },
+                        "speed": {
+                            "label": "Slide Speed (ms)",
+                            "helpText": "Speed of slide animation in milliseconds (100-1000)"
+                        }
+                    }
+                },
+                "heroInstagramFeed": {
+                    "label": "Hero Instagram Feed",
+                    "placeholder": {
+                        "title": "Instagram Feed Block",
+                        "hint": "Configure the Instagram feed in the block settings"
+                    },
+                    "config": {
+                        "info": {
+                            "apiCredentials": "API credentials (App ID, App Secret, Access Token) are loaded from plugin settings (Hero Blocks Extension Config)."
+                        },
+                        "postLimit": {
+                            "label": "Number of Posts",
+                            "helpText": "Number of Instagram posts to display (1-50). Default from plugin settings: 12"
+                        },
+                        "displayMode": {
+                            "label": "Display Mode",
+                            "helpText": "Choose between Grid or Slider (carousel)",
+                            "options": {
+                                "grid": "Grid",
+                                "slider": "Slider (Carousel)"
+                            }
+                        },
+                        "columns": {
+                            "label": "Number of Columns (Grid)",
+                            "helpText": "Number of columns in grid mode (1-6)"
+                        },
+                        "showCaptions": {
+                            "label": "Show Captions",
+                            "helpText": "Displays Instagram post descriptions"
+                        },
+                        "showLikes": {
+                            "label": "Show Likes",
+                            "helpText": "Displays the number of likes for each post"
+                        },
+                        "showComments": {
+                            "label": "Show Comments",
+                            "helpText": "Displays the number of comments for each post"
+                        },
+                        "navigationArrows": {
+                            "label": "Navigation Arrows (Slider)",
+                            "helpText": "Select the position of navigation arrows (none, inside, outside)",
+                            "options": {
+                                "none": "None",
+                                "inside": "Inside",
+                                "outside": "Outside"
+                            }
+                        },
+                        "navigationDots": {
+                            "label": "Navigation Dots (Slider)",
+                            "helpText": "Enable display of navigation dots below the slider"
+                        },
+                        "autoSlide": {
+                            "label": "Auto Slide",
+                            "helpText": "Enable automatic sliding of the slider"
+                        },
+                        "autoplayTimeout": {
+                            "label": "Autoplay Timeout (ms)",
+                            "helpText": "Time in milliseconds between slides (1000-30000)"
+                        },
+                        "speed": {
+                            "label": "Slide Speed (ms)",
+                            "helpText": "Speed of slide animation in milliseconds (100-1000)"
+                        }
+                    }
+                }
+            },
+            "elements": {
+                "categorySlider": {
+                    "label": "Hero Block Category Slider",
+                    "preview": {
+                        "images": "images",
+                        "noCategory": "No category selected"
+                    },
+                    "config": {
+                        "category": {
+                            "label": "Category",
+                            "placeholder": "Select category...",
+                            "helpText": "Select a category whose images should be displayed in the slider"
+                        },
+                        "info": "Slider settings (navigation, auto-slide, etc.) can also be configured in the block settings.",
+                        "settings": {
+                            "title": "Slider Settings"
+                        },
+                        "navigationArrows": {
+                            "label": "Navigation Arrows",
+                            "helpText": "Select the position of navigation arrows (none, inside, outside)",
+                            "options": {
+                                "none": "None",
+                                "inside": "Inside",
+                                "outside": "Outside"
+                            }
+                        },
+                        "navigationDots": {
+                            "label": "Navigation Dots",
+                            "helpText": "Enable display of navigation dots below the slider"
+                        },
+                        "autoSlide": {
+                            "label": "Auto Slide",
+                            "helpText": "Enable automatic sliding of the slider"
+                        },
+                        "autoplayTimeout": {
+                            "label": "Autoplay Timeout (ms)",
+                            "helpText": "Time in milliseconds between slides (1000-30000)"
+                        },
+                        "speed": {
+                            "label": "Slide Speed (ms)",
+                            "helpText": "Speed of slide animation in milliseconds (100-1000)"
+                        },
+                        "displayMode": {
+                            "label": "Display Mode",
+                            "helpText": "Select the display mode for images (standard, cover, contain)",
+                            "options": {
+                                "standard": "Standard",
+                                "cover": "Cover",
+                                "contain": "Contain"
+                            }
+                        },
+                        "minHeight": {
+                            "label": "Min Height",
+                            "helpText": "Minimum height for the slider (e.g., 340px, 80vh)"
+                        },
+                        "subcategoryLevels": {
+                            "label": "Subcategory Levels",
+                            "helpText": "Number of subcategory levels to include (0 = none, 1-5 = number of levels)"
+                        },
+                        "imageCount": {
+                            "label": "Number of Images per Slide",
+                            "helpText": "Select whether 1 or 2 images should be displayed per slide",
+                            "options": {
+                                "one": "1 Image",
+                                "two": "2 Images"
+                            }
+                        },
+                        "imageWidth": {
+                            "label": "Image Width",
+                            "helpText": "Select the image width (inner-full-width = within container, full-width = full width)",
+                            "options": {
+                                "innerFullWidth": "Within Container",
+                                "fullWidth": "Full Width"
+                            }
                         }
                     }
                 }

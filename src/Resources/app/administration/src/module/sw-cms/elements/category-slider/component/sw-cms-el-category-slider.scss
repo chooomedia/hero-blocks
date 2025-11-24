@@ -1,0 +1,130 @@
+@import "~scss/variables";
+
+.sw-cms-el-category-slider {
+    position: relative;
+    height: 100%;
+    min-height: 400px;
+    width: 100%;
+    background: var(--color-gray-50);
+    border: 1px solid var(--color-gray-300);
+    border-radius: 4px;
+    overflow: hidden;
+    
+    // WICHTIG: Preview für große Ansicht (wie Hero Block Slider) - Mini-Vorschau mit 2 Bildern nebeneinander
+    &__preview {
+        position: relative;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        
+        // Category Title (oben links) - wie in Sidebar Preview
+        &-title {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            z-index: 10;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            padding: 0.25rem 0.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+        }
+        
+        // Slider Preview - Zwei Elemente nebeneinander (wie Hero Block Slider Sidebar Preview)
+        &-slider {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            gap: 0.25rem;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+            
+            &-slide {
+                flex: 1;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+                border-radius: 4px;
+                background: var(--color-gray-100);
+            }
+            
+            &-image {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 4px;
+            }
+        }
+        
+        // Navigation Dots (außerhalb unterhalb) - wie in Sidebar Preview
+        &-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.25rem;
+            padding: 0.5rem 0;
+            margin-top: auto;
+            
+            &-dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background-color: rgba(0, 0, 0, 0.2);
+                cursor: pointer;
+                transition: background-color 0.2s;
+                
+                &--active {
+                    background-color: var(--color-shopware-brand-500, #189eff);
+                }
+            }
+        }
+        
+        // Image Count Info
+        &-count {
+            position: absolute;
+            bottom: 2.5rem;
+            right: 0.5rem;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(0, 0, 0, 0.4);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            z-index: 10;
+        }
+    }
+    
+    // WICHTIG: Placeholder nur wenn KEINE Kategorie ausgewählt
+    &__placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        text-align: center;
+        color: var(--color-text-secondary-default);
+        height: 100%;
+        
+        &-icon {
+            margin-bottom: 12px;
+            opacity: 0.5;
+            
+            .mt-icon {
+                color: var(--color-gray-400);
+            }
+        }
+        
+        &-text {
+            font-size: 14px;
+            color: var(--color-text-secondary-default);
+        }
+    }
+}
+

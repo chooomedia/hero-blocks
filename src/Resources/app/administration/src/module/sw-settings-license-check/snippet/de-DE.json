@@ -11,7 +11,9 @@
         },
         "button": {
             "checkLicense": "Lizenz prüfen",
-            "checking": "Prüfe..."
+            "checking": "Prüfe...",
+            "licenseExpiredTitle": "Lizenz abgelaufen",
+            "licenseExpiredMessage": "⚠️ Ihre Lizenz ist abgelaufen. Bitte verlängern Sie Ihre Lizenz, um Hero Blocks weiterhin nutzen zu können."
         },
         "status": {
             "active": "Lizenz aktiv",
@@ -52,6 +54,56 @@
             "downloadSuccess": "Update erfolgreich installiert",
             "downloadSuccessMessage": "Das Plugin-Update wurde erfolgreich heruntergeladen und installiert. Bitte aktualisieren Sie die Seite, um die Änderungen zu sehen.",
             "downloadFailed": "Update-Download fehlgeschlagen"
+        },
+        "instagram": {
+            "licenseExpiredMessage": "⚠️ Ihre Lizenz ist abgelaufen. Instagram Feed API-Anfragen sind nicht mehr möglich. Bitte verlängern Sie Ihre Lizenz.",
+            "checkToken": "Instagram Token prüfen",
+            "checking": "Prüfe Token...",
+            "validationSuccess": "Instagram Token Validierung erfolgreich",
+            "validationSuccessMessage": "Ihre Instagram API Credentials sind gültig und funktionieren korrekt.",
+            "validationFailed": "Instagram Token Validierung fehlgeschlagen",
+            "validationFailedMessage": "Die Instagram Token Validierung konnte nicht durchgeführt werden. Bitte überprüfen Sie Ihre API Credentials.",
+            "setupGuide": {
+                "title": "Instagram Basic Display API - Einrichtung",
+                "description": "Folgen Sie diesen Schritten, um Ihre Instagram App einzurichten und die erforderlichen API Credentials zu erhalten:",
+                "step1": {
+                    "title": "Schritt 1: Instagram App erstellen",
+                    "description": "Erstellen Sie eine neue App in der Facebook Developer Console. Wählen Sie 'Instagram Basic Display' als Produkttyp aus.",
+                    "link": "Facebook Developer Console öffnen →"
+                },
+                "step2": {
+                    "title": "Schritt 2: App konfigurieren",
+                    "description": "Konfigurieren Sie Ihre App: Fügen Sie die Redirect URI hinzu, aktivieren Sie Instagram Basic Display API und erstellen Sie Test-User (für Development).",
+                    "link": "Getting Started Guide öffnen →"
+                },
+                "step3": {
+                    "title": "Schritt 3: Access Token generieren",
+                    "description": "Generieren Sie einen Long-Lived Access Token über die Instagram Basic Display API. Dieser Token ist 60 Tage gültig und kann mit einem Refresh Token automatisch erneuert werden.",
+                    "link": "API Dokumentation öffnen →"
+                }
+            }
+        },
+        "instagramFeed": {
+            "licenseExpiredMessage": "⚠️ Ihre Lizenz ist abgelaufen. Instagram Feed API-Anfragen sind nicht mehr möglich. Bitte verlängern Sie Ihre Lizenz.",
+            "bestPractices": {
+                "title": "Instagram Basic Display API - Best Practices",
+                "appId": "Erstellen Sie eine Instagram App in der Facebook Developer Console (developers.facebook.com)",
+                "appSecret": "Speichern Sie App ID und App Secret sicher (nicht in Git committen)",
+                "redirectUri": "Registrieren Sie die Redirect URI in der Facebook Developer Console (muss exakt übereinstimmen)",
+                "accessToken": "Verwenden Sie Long-Lived Access Tokens (60 Tage gültig) mit automatischer Erneuerung via Refresh Token"
+            }
+        },
+        "featureValidation": {
+            "running": "Validierung läuft für {feature}...",
+            "success": "✅ {feature} erfolgreich aktiviert",
+            "warning": "⚠️ {feature} - Validierung mit Warnungen",
+            "error": "❌ {feature} - Validierungsfehler"
+        },
+        "languageSwitcher": {
+            "loading": "Lade verfügbare Sprachen...",
+            "availableLanguages": "Verfügbare Sprachen",
+            "hint": "Diese Sprachen werden im Language Switcher im Header angezeigt (Desktop).",
+            "noLanguages": "Keine Sprachen gefunden. Bitte prüfen Sie die Sprach-Konfiguration."
         }
     }
 }

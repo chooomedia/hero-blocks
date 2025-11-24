@@ -1,0 +1,12 @@
+.sw-cms-block-category-slider {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+
+    .sw-cms-block-category-slider__slot {
+        flex: 1;
+        overflow: hidden;
+    }
+}
+

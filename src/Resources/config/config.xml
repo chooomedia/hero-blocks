@@ -32,12 +32,12 @@
         </input-field>
         <input-field type="bool">
             <name>enableHeroInstagramFeed</name>
-            <label lang="de-DE">Hero Instagram Feed Widget aktivieren (Coming Soon)</label>
-            <label>Enable Hero Instagram Feed Widget (Coming Soon)</label>
+            <label lang="de-DE">Hero Instagram Feed Widget aktivieren</label>
+            <label>Enable Hero Instagram Feed Widget</label>
             <defaultValue>false</defaultValue>
-            <disabled>true</disabled>
-            <helpText lang="de-DE">Instagram Feed Integration für Mega-Menü und Custom-Blöcke. Dieser Block wird in einer zukünftigen Version verfügbar sein.</helpText>
-            <helpText>Instagram feed integration for mega menu and custom blocks. This block will be available in a future version.</helpText>
+            <disabled>false</disabled>
+            <helpText lang="de-DE">Instagram Feed Integration für Mega-Menü und Custom-Blöcke. Aktiviert den Instagram Feed Block in Erlebniswelten.</helpText>
+            <helpText>Instagram feed integration for mega menu and custom blocks. Enables the Instagram Feed block in Shopping Experiences.</helpText>
         </input-field>
         <input-field type="bool">
             <name>enableMegaMenu</name>
@@ -47,6 +47,15 @@
             <disabled>false</disabled>
             <helpText lang="de-DE">Erweiterte Navigations-Blöcke mit Produkten, Widgets und Instagram Feed Support.</helpText>
             <helpText>Advanced navigation block with products, widgets, and Instagram feed support.</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>enableCategorySlider</name>
+            <label lang="de-DE">Hero Block Kategorie-Slider aktivieren</label>
+            <label>Enable Hero Block Category Slider</label>
+            <defaultValue>false</defaultValue>
+            <disabled>false</disabled>
+            <helpText lang="de-DE">Aktiviert den Hero Block Kategorie-Slider in Erlebniswelten. Wenn deaktiviert, wird der Block nicht in der Block-Auswahl angezeigt.</helpText>
+            <helpText>Enables the Hero Block Category Slider in Shopping Experiences. If disabled, the block will not appear in the block selection.</helpText>
         </input-field>
         <input-field type="bool">
             <name>enableShoppingExperience</name>
@@ -60,16 +69,16 @@
     </card>
     
     <card>
-        <title lang="de-DE">Header Mega Menu Einstellungen</title>
-        <title>Header Mega Menu Settings</title>
+        <title lang="de-DE">Header + Mega Menu Einstellungen</title>
+        <title>Header + Mega Menu Settings</title>
         <input-field type="text">
             <name>megaMenuLinkColor</name>
             <label lang="de-DE">Link-Farbe</label>
             <label>Link Color</label>
-            <placeholder lang="de-DE">#000000 (leer = Theme Default)</placeholder>
-            <placeholder>#000000 (empty = Theme Default)</placeholder>
-            <helpText lang="de-DE">Farbe für Navigation-Links im Header Mega Menu. Leer lassen für Theme-Standard.</helpText>
-            <helpText>Color for navigation links in Header Mega Menu. Leave empty for theme default.</helpText>
+            <placeholder lang="de-DE">#000000 (leer = Theme Default, nur verfügbar wenn Mega Menu aktiviert)</placeholder>
+            <placeholder>#000000 (empty = Theme Default, only available when Mega Menu enabled)</placeholder>
+            <helpText lang="de-DE">Farbe für Navigation-Links im Header Mega Menu. Leer lassen für Theme-Standard. Diese Einstellungen sind nur verfügbar, wenn "Mega Menu Block aktivieren" aktiviert ist.</helpText>
+            <helpText>Color for navigation links in Header Mega Menu. Leave empty for theme default. These settings are only available when "Enable Mega Menu Block" is enabled.</helpText>
         </input-field>
         
         <input-field type="text">
@@ -101,6 +110,46 @@
             <placeholder>2rem (default)</placeholder>
             <helpText lang="de-DE">Vertikales Padding für Mega Menu Dropdowns (top/bottom). Standard: 2rem</helpText>
             <helpText>Vertical padding for Mega Menu dropdowns (top/bottom). Default: 2rem</helpText>
+        </input-field>
+        
+        <input-field type="bool">
+            <name>enableLanguageSwitcher</name>
+            <label lang="de-DE">Language Switcher aktivieren</label>
+            <label>Enable Language Switcher</label>
+            <defaultValue>true</defaultValue>
+            <helpText lang="de-DE">Aktiviert den Language Switcher im Header (Desktop). Wenn deaktiviert, wird der Language Switcher nicht angezeigt.</helpText>
+            <helpText>Enables the Language Switcher in the header (desktop). If disabled, the Language Switcher will not be displayed.</helpText>
+        </input-field>
+        
+        <!-- WICHTIG: Social Media Links für Header Icons (Instagram, Facebook, YouTube) -->
+        <input-field type="text">
+            <name>socialMediaLinksInstagram</name>
+            <label lang="de-DE">Instagram URL</label>
+            <label>Instagram URL</label>
+            <placeholder lang="de-DE">https://instagram.com/...</placeholder>
+            <placeholder>https://instagram.com/...</placeholder>
+            <helpText lang="de-DE">Instagram Profil-URL für Social Media Icons im Header (Desktop) und Sidebar (Mobile).</helpText>
+            <helpText>Instagram profile URL for social media icons in header (desktop) and sidebar (mobile).</helpText>
+        </input-field>
+        
+        <input-field type="text">
+            <name>socialMediaLinksFacebook</name>
+            <label lang="de-DE">Facebook URL</label>
+            <label>Facebook URL</label>
+            <placeholder lang="de-DE">https://facebook.com/...</placeholder>
+            <placeholder>https://facebook.com/...</placeholder>
+            <helpText lang="de-DE">Facebook Profil-URL für Social Media Icons im Header (Desktop) und Sidebar (Mobile).</helpText>
+            <helpText>Facebook profile URL for social media icons in header (desktop) and sidebar (mobile).</helpText>
+        </input-field>
+        
+        <input-field type="text">
+            <name>socialMediaLinksYoutube</name>
+            <label lang="de-DE">YouTube URL</label>
+            <label>YouTube URL</label>
+            <placeholder lang="de-DE">https://youtube.com/...</placeholder>
+            <placeholder>https://youtube.com/...</placeholder>
+            <helpText lang="de-DE">YouTube Kanal-URL für Social Media Icons im Header (Desktop) und Sidebar (Mobile).</helpText>
+            <helpText>YouTube channel URL for social media icons in header (desktop) and sidebar (mobile).</helpText>
         </input-field>
     </card>
     
@@ -178,6 +227,71 @@
             <disabled>true</disabled>
             <helpText lang="de-DE">Dieses Hero Blocks Produkt ist ein Lizenz-Produkt mit 2 Jahren Gültigkeit.</helpText>
             <helpText>This Hero Blocks product is a licensed product with 2 years validity.</helpText>
+        </input-field>
+    </card>
+    
+    <card>
+        <title lang="de-DE">Instagram Feed Einstellungen</title>
+        <title>Instagram Feed Settings</title>
+        <input-field type="text">
+            <name>instagramAppId</name>
+            <label lang="de-DE">Instagram App ID</label>
+            <label>Instagram App ID</label>
+            <placeholder lang="de-DE">Ihre Instagram App ID (aus Facebook Developer Console)</placeholder>
+            <placeholder>Your Instagram App ID (from Facebook Developer Console)</placeholder>
+            <helpText lang="de-DE">Instagram App ID für Basic Display API. Erstellen Sie eine App in der Facebook Developer Console (developers.facebook.com). Diese Einstellungen sind nur verfügbar, wenn "Hero Instagram Feed Widget aktivieren" aktiviert ist.</helpText>
+            <helpText>Instagram App ID for Basic Display API. Create an app in Facebook Developer Console (developers.facebook.com). These settings are only available when "Enable Hero Instagram Feed Widget" is enabled.</helpText>
+        </input-field>
+        
+        <input-field type="text">
+            <name>instagramAppSecret</name>
+            <label lang="de-DE">Instagram App Secret</label>
+            <label>Instagram App Secret</label>
+            <placeholder lang="de-DE">Ihr Instagram App Secret (aus Facebook Developer Console)</placeholder>
+            <placeholder>Your Instagram App Secret (from Facebook Developer Console)</placeholder>
+            <helpText lang="de-DE">Instagram App Secret für Basic Display API. Wird für OAuth-Authentifizierung benötigt.</helpText>
+            <helpText>Instagram App Secret for Basic Display API. Required for OAuth authentication.</helpText>
+        </input-field>
+        
+        <input-field type="text">
+            <name>instagramAccessToken</name>
+            <label lang="de-DE">Instagram Access Token (Long-Lived)</label>
+            <label>Instagram Access Token (Long-Lived)</label>
+            <placeholder lang="de-DE">Long-Lived Access Token (60 Tage gültig)</placeholder>
+            <placeholder>Long-Lived Access Token (valid for 60 days)</placeholder>
+            <helpText lang="de-DE">Long-Lived Access Token für Instagram Basic Display API. Wird automatisch erneuert, wenn Refresh Token vorhanden ist. Token ist 60 Tage gültig.</helpText>
+            <helpText>Long-Lived Access Token for Instagram Basic Display API. Automatically refreshed if Refresh Token is available. Token is valid for 60 days.</helpText>
+        </input-field>
+        
+        <input-field type="text">
+            <name>instagramRefreshToken</name>
+            <label lang="de-DE">Instagram Refresh Token</label>
+            <label>Instagram Refresh Token</label>
+            <placeholder lang="de-DE">Refresh Token für automatische Token-Erneuerung</placeholder>
+            <placeholder>Refresh Token for automatic token renewal</placeholder>
+            <helpText lang="de-DE">Refresh Token für automatische Erneuerung des Access Tokens. Wird bei OAuth-Authentifizierung erhalten.</helpText>
+            <helpText>Refresh Token for automatic Access Token renewal. Obtained during OAuth authentication.</helpText>
+        </input-field>
+        
+        <input-field type="text">
+            <name>instagramRedirectUri</name>
+            <label lang="de-DE">Instagram Redirect URI</label>
+            <label>Instagram Redirect URI</label>
+            <placeholder lang="de-DE">https://ihre-domain.de/admin#/sw/extension/config/HeroBlocks</placeholder>
+            <placeholder>https://your-domain.com/admin#/sw/extension/config/HeroBlocks</placeholder>
+            <helpText lang="de-DE">Redirect URI für OAuth-Authentifizierung. Muss in Facebook Developer Console als gültige Redirect URI eingetragen sein.</helpText>
+            <helpText>Redirect URI for OAuth authentication. Must be registered as valid redirect URI in Facebook Developer Console.</helpText>
+        </input-field>
+        
+        <input-field type="int">
+            <name>instagramFeedLimit</name>
+            <label lang="de-DE">Anzahl der Posts</label>
+            <label>Number of Posts</label>
+            <defaultValue>12</defaultValue>
+            <placeholder lang="de-DE">12 (Standard)</placeholder>
+            <placeholder>12 (default)</placeholder>
+            <helpText lang="de-DE">Anzahl der Instagram-Posts, die im Feed angezeigt werden sollen. Standard: 12</helpText>
+            <helpText>Number of Instagram posts to display in the feed. Default: 12</helpText>
         </input-field>
     </card>
 

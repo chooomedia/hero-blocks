@@ -1,0 +1,33 @@
+.sw-cms-block-hero-instagram-feed {
+    min-height: 200px;
+    border: 2px dashed var(--color-gray-300);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-gray-50);
+
+    &__placeholder {
+        text-align: center;
+        padding: 2rem;
+
+        &-icon {
+            color: var(--color-gray-400);
+            margin-bottom: 1rem;
+        }
+
+        &-text {
+            color: var(--color-gray-600);
+
+            p {
+                margin: 0.5rem 0;
+            }
+        }
+
+        &-hint {
+            font-size: 0.875rem;
+            color: var(--color-gray-500);
+        }
+    }
+}
+
