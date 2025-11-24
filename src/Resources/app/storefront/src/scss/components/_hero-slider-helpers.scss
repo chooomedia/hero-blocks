@@ -1,0 +1,40 @@
+/**
+ * HeroBlocks Plugin - Hero Slider Helper Classes
+ * 
+ * WICHTIG: Plugin-Styles - Theme-Variablen werden automatisch übernommen
+ * 
+ * Step-by-step:
+ * 1. Text styling helpers using CSS variables for dynamic colors and sizes
+ * 2. Button styling helpers with CSS variable support
+ * 
+ * WICHTIG: Height-Control-Regeln sind in _hero-slider.scss definiert (keine Duplikate!)
+ */
+
+.hero-slide-headline {
+    color: var(--hero-headline-color, #fff);
+    font-size: var(--hero-headline-font-size, inherit);
+}
+
+.hero-slide-text {
+    color: var(--hero-text-color, #fff);
+    font-size: var(--hero-text-font-size, inherit);
+}
+
+.btn-hero-primary {
+    --hero-button1-bg-color: #c20017;
+    --hero-button1-text-color: #fff;
+    
+    background-color: var(--hero-button1-bg-color, #c20017);
+    color: var(--hero-button1-text-color, #fff);
+    border-color: var(--hero-button1-bg-color, #c20017);
+}
+
+.btn-hero-secondary {
+    --hero-button2-bg-color: var(--bs-body-bg, #fff);
+    --hero-button2-text-color: var(--bs-body-color, #2b3136);
+    
+    background-color: var(--hero-button2-bg-color, var(--bs-body-bg, #fff));
+    color: var(--hero-button2-text-color, var(--bs-body-color, #2b3136));
+    border-color: var(--bs-border-color, #dee2e6);
+}
+

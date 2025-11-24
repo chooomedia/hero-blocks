@@ -1,0 +1,20 @@
+/**
+ * HeroBlocks Plugin - Hero Slider Component Styles
+ * 
+ * WICHTIG: Plugin-Styles werden nach Theme-Styles geladen
+ * Bootstrap Mixins sind bereits verfügbar (Theme lädt @Storefront vorher)
+ * 
+ * Step-by-step:
+ * 1. Hero Slider Component Styles (Bootstrap Mixins bereits verfügbar)
+ * 2. Hero Slider Helper Classes
+ */
+
+// WICHTIG: Kein @Storefront Import nötig - Plugin-Styles werden nach Theme geladen
+// Bootstrap Mixins (@include media-breakpoint-*) sind bereits verfügbar
+
+// Hero Slider Component Styles
+@import "components/hero-slider";
+
+// Hero Slider Helper Classes
+@import "components/hero-slider-helpers";
+

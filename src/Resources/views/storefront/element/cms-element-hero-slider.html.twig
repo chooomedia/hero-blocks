@@ -6,9 +6,49 @@
     {% set visibleDotsValues = ['bottom'] %}
     {% set blockId = block.id %}
     {% set displayMode = sliderConfig.displayMode.value ?: 'cover' %}
-    {% set minHeight = sliderConfig.minHeight is defined and sliderConfig.minHeight.value is defined and sliderConfig.minHeight.value is not null and sliderConfig.minHeight.value is not empty and sliderConfig.minHeight.value|trim|length > 0 ? sliderConfig.minHeight.value|trim : null %}
-    {% set maxHeight = sliderConfig.maxHeight is defined and sliderConfig.maxHeight.value is defined and sliderConfig.maxHeight.value is not null and sliderConfig.maxHeight.value is not empty and sliderConfig.maxHeight.value|trim|length > 0 ? sliderConfig.maxHeight.value|trim : null %}
-    {% set fullHeight = sliderConfig.fullHeight is defined and (sliderConfig.fullHeight.value == true or sliderConfig.fullHeight.value == 1 or sliderConfig.fullHeight.value == '1' or sliderConfig.fullHeight.value == 'true') ? true : false %}
+    
+    {# WICHTIG: fullHeight korrekt auslesen - nur wenn explizit aktiviert (true, 1, '1', 'true') #}
+    {# Alle anderen Werte (false, 0, '0', 'false', null, undefined, '') werden als false behandelt #}
+    {# WICHTIG: Standard ist false - nur explizite true-Werte aktivieren fullHeight #}
+    {% set fullHeight = false %}
+    {% if sliderConfig.fullHeight is defined and sliderConfig.fullHeight.value is defined %}
+        {% set fullHeightValue = sliderConfig.fullHeight.value %}
+        {# WICHTIG: Explizite false-Prüfung zuerst (um sicherzustellen, dass false auch false bleibt) #}
+        {% if fullHeightValue is same as(false) or fullHeightValue is same as(0) or fullHeightValue == '0' or fullHeightValue == 'false' or fullHeightValue == '' or fullHeightValue is null %}
+            {% set fullHeight = false %}
+        {# WICHTIG: Nur explizite true-Werte aktivieren fullHeight #}
+        {% elseif fullHeightValue is same as(true) %}
+            {% set fullHeight = true %}
+        {% elseif fullHeightValue is same as(1) %}
+            {% set fullHeight = true %}
+        {% elseif fullHeightValue == '1' %}
+            {% set fullHeight = true %}
+        {% elseif fullHeightValue == 'true' %}
+            {% set fullHeight = true %}
+        {% else %}
+            {# Fallback: Alles andere ist false (sicherheitshalber) #}
+            {% set fullHeight = false %}
+        {% endif %}
+    {% endif %}
+    
+    {# WICHTIG: minHeight und maxHeight nur setzen wenn sie existieren UND nicht calc(100vh...) enthalten #}
+    {# Wenn fullHeight aktiviert ist, werden calc(100vh...) Werte ignoriert (werden automatisch gesetzt) #}
+    {% set minHeight = null %}
+    {% set maxHeight = null %}
+    {% if sliderConfig.minHeight is defined and sliderConfig.minHeight.value is defined and sliderConfig.minHeight.value is not null and sliderConfig.minHeight.value is not empty %}
+        {% set minHeightValue = sliderConfig.minHeight.value|trim %}
+        {# WICHTIG: Ignoriere calc(100vh...) Werte - diese werden nur bei fullHeight verwendet #}
+        {% if minHeightValue|length > 0 and 'calc(100vh' not in minHeightValue %}
+            {% set minHeight = minHeightValue %}
+        {% endif %}
+    {% endif %}
+    {% if sliderConfig.maxHeight is defined and sliderConfig.maxHeight.value is defined and sliderConfig.maxHeight.value is not null and sliderConfig.maxHeight.value is not empty %}
+        {% set maxHeightValue = sliderConfig.maxHeight.value|trim %}
+        {# WICHTIG: Ignoriere calc(100vh...) Werte - diese werden nur bei fullHeight verwendet #}
+        {% if maxHeightValue|length > 0 and 'calc(100vh' not in maxHeightValue %}
+            {% set maxHeight = maxHeightValue %}
+        {% endif %}
+    {% endif %}
     {% set verticalAlign = sliderConfig.verticalAlign.value %}
     {% set isDecorative = sliderConfig.isDecorative.value ?: false %}
 
@@ -48,23 +88,29 @@
                     itemscope
                     itemtype="https://schema.org/ImageGallery"
                     {% if displayMode in ["cover", "contain"] %}
-                        style="
-                            {% if fullHeight %}
+                        {# WICHTIG: CSS-Variablen NUR setzen wenn Admin-Werte vorhanden sind #}
+                        {# Inline-style hat höchste Priorität, daher werden Admin-Werte immer verwendet #}
+                        {# Fallback-Werte werden im SCSS definiert (80vh, none) - nur wenn keine CSS-Variablen gesetzt sind #}
+                        {# WICHTIG: fullHeight muss explizit true sein (strict comparison), sonst werden calc(100vh...) Werte NICHT gesetzt #}
+                        {# Prüfe explizit: Nur wenn fullHeight wirklich true ist, setze calc(100vh...) Werte #}
+                        {% if fullHeight is same as(true) %}
+                            {# WICHTIG: Full-Height aktiviert - automatisch 100vh minus Header #}
+                            style="
                                 --hero-slider-min-height: calc(100vh - var(--header-height, 80px));
                                 --hero-slider-max-height: calc(100vh - var(--header-height, 80px));
-                            {% else %}
-                                {% if minHeight is defined and minHeight is not null and minHeight is not empty and minHeight|trim|length > 0 %}
+                            "
+                        {% elseif minHeight or maxHeight %}
+                            {# WICHTIG: Admin-Werte aus Erlebniswelten Custom Block Einstellungen #}
+                            {# NUR wenn fullHeight NICHT aktiviert ist (fullHeight != true) #}
+                            style="
+                                {% if minHeight %}
                                     --hero-slider-min-height: {{ minHeight|trim|replace({' ':''}) }};
-                                {% else %}
-                                    --hero-slider-min-height: 80vh;
                                 {% endif %}
-                                {% if maxHeight is defined and maxHeight is not null and maxHeight is not empty and maxHeight|trim|length > 0 %}
+                                {% if maxHeight %}
                                     --hero-slider-max-height: {{ maxHeight|trim|replace({' ':''}) }};
-                                {% else %}
-                                    --hero-slider-max-height: none;
                                 {% endif %}
-                            {% endif %}
-                        "
+                            "
+                        {% endif %}
                     {% endif %}
                 >
                 {% block element_hero_slider_skip_slider %}
