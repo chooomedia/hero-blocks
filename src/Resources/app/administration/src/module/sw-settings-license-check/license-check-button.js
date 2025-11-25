@@ -51,9 +51,6 @@ Shopware.Component.override("sw-system-config", {
       },
       // Vorherige Config-Werte für Change-Detection
       previousConfig: {},
-      // Verfügbare Sprachen für Language Switcher
-      availableLanguages: [],
-      isLoadingLanguages: false,
     };
   },
 
@@ -191,13 +188,7 @@ Shopware.Component.override("sw-system-config", {
 
   // WICHTIG: Kein Auto-Check mehr hier - wird von sw-extension-config Override übernommen (Silent Check)
   // mounted() entfernt - Silent Check wird von sw-extension-config Override gemacht
-
-  created() {
-    // Lade verfügbare Sprachen wenn HeroBlocks Config
-    if (this.isHeroBlocksConfig()) {
-      this.loadAvailableLanguages();
-    }
-  },
+  // created() entfernt - Language Switcher wird immer angezeigt (kein Toggle mehr)
 
   methods: {
     collapseItem() {
@@ -1010,11 +1001,8 @@ Shopware.Component.override("sw-system-config", {
         oldConfig?.[this.currentSalesChannelId] || this.previousConfig || {};
 
       // Feature-Mapping: Config-Key → Feature-Name → Validierungsfunktion
+      // HINWEIS: Language Switcher wird immer angezeigt (kein Toggle mehr)
       const featureMappings = {
-        "HeroBlocks.config.enableLanguageSwitcher": {
-          name: "Language Switcher",
-          validator: this.validateLanguageSwitcher.bind(this),
-        },
         "HeroBlocks.config.enableMegaMenu": {
           name: "Mega Menu",
           validator: this.validateMegaMenu.bind(this),
@@ -1131,102 +1119,7 @@ Shopware.Component.override("sw-system-config", {
       }
     },
 
-    /**
-     * Validierung für Language Switcher
-     */
-    async validateLanguageSwitcher(configKey) {
-      const steps = [];
-      const results = {};
-
-      // Schritt 1: Prüfe ob Theme-Template existiert
-      this.featureValidation.currentStep = "Template-Prüfung";
-      steps.push({
-        name: "Template-Prüfung",
-        status: "running",
-        message: "Prüfe Theme-Template...",
-      });
-
-      try {
-        // Prüfe Frontend-Template (via API oder direkt)
-        const templateExists = await this.checkFrontendTemplate(
-          "language-widget-flags"
-        );
-
-        steps[steps.length - 1] = {
-          name: "Template-Prüfung",
-          status: templateExists ? "success" : "warning",
-          message: templateExists
-            ? "Theme-Template gefunden ✅"
-            : "Theme-Template nicht gefunden ⚠️ (kann normal sein wenn Standard-Template verwendet wird)",
-        };
-        results.templateCheck = templateExists;
-
-        // Schritt 2: Prüfe Frontend-Rendering
-        this.featureValidation.currentStep = "Frontend-Rendering-Prüfung";
-        steps.push({
-          name: "Frontend-Rendering-Prüfung",
-          status: "running",
-          message: "Prüfe Frontend-Rendering...",
-        });
-
-        const frontendCheck = await this.checkFrontendRendering(
-          "language-switcher"
-        );
-
-        steps[steps.length - 1] = {
-          name: "Frontend-Rendering-Prüfung",
-          status: frontendCheck.success ? "success" : "warning",
-          message: frontendCheck.message,
-        };
-        results.frontendCheck = frontendCheck;
-
-        // Schritt 3: Prüfe JavaScript-Plugin
-        this.featureValidation.currentStep = "JavaScript-Plugin-Prüfung";
-        steps.push({
-          name: "JavaScript-Plugin-Prüfung",
-          status: "running",
-          message: "Prüfe JavaScript-Plugin...",
-        });
-
-        const jsCheck = await this.checkJavaScriptPlugin("LanguageWidgetFlags");
-
-        steps[steps.length - 1] = {
-          name: "JavaScript-Plugin-Prüfung",
-          status: jsCheck.success ? "success" : "warning",
-          message: jsCheck.message,
-        };
-        results.jsCheck = jsCheck;
-
-        // Aktualisiere Steps
-        this.featureValidation.steps = steps;
-        this.featureValidation.results = results;
-
-        // Gesamt-Ergebnis
-        const allSuccess = Object.values(results).every(
-          (r) =>
-            (typeof r === "boolean" && r) ||
-            (typeof r === "object" && r.success)
-        );
-
-        return {
-          success: allSuccess,
-          message: allSuccess
-            ? "Alle Validierungsschritte erfolgreich. Language Switcher sollte im Frontend funktionieren."
-            : "Einige Validierungsschritte haben Warnungen ergeben. Bitte Frontend prüfen.",
-          steps,
-          results,
-        };
-      } catch (error) {
-        steps[steps.length - 1] = {
-          name: this.featureValidation.currentStep,
-          status: "error",
-          message: `Fehler: ${error.message}`,
-        };
-        this.featureValidation.steps = steps;
-
-        throw error;
-      }
-    },
+    // HINWEIS: validateLanguageSwitcher() Methode entfernt - Language Switcher wird immer angezeigt
 
     /**
      * Validierung für Mega Menu
@@ -1355,74 +1248,6 @@ Shopware.Component.override("sw-system-config", {
       }
     },
 
-    /**
-     * Lade verfügbare Sprachen für Language Switcher
-     */
-    async loadAvailableLanguages() {
-      if (!this.isHeroBlocksConfig()) return;
-
-      this.isLoadingLanguages = true;
-
-      try {
-        const { Criteria } = Shopware.Data;
-        const languageRepository = this.repositoryFactory.create("language");
-
-        // Hole alle registrierten Locales
-        const factoryContainer = Shopware.Application.getContainer("factory");
-        const localeFactory = factoryContainer.locale;
-        const registeredLocales = Array.from(
-          localeFactory.getLocaleRegistry().keys()
-        );
-
-        // Criteria für Sprachen
-        const languageCriteria = new Criteria(1, 500);
-        languageCriteria.addAssociation("locale");
-        languageCriteria.addSorting(Criteria.sort("locale.name", "ASC"));
-        languageCriteria.addSorting(Criteria.sort("locale.territory", "ASC"));
-        languageCriteria.addFilter(
-          Criteria.equalsAny("locale.code", registeredLocales)
-        );
-
-        const result = await languageRepository.search(languageCriteria);
-
-        this.availableLanguages = [];
-        result.forEach((lang) => {
-          const localeCode = lang.locale?.code || "";
-          const localeName = lang.locale?.translated?.name || "";
-          const localeTerritory = lang.locale?.translated?.territory || "";
-
-          this.availableLanguages.push({
-            id: lang.id,
-            name: lang.name,
-            localeCode,
-            localeName,
-            localeTerritory,
-            displayName: localeTerritory
-              ? `${localeName} (${localeTerritory})`
-              : localeName,
-            isActive: lang.id === Shopware.Context.api.languageId,
-          });
-        });
-
-        debugLog("✅ Verfügbare Sprachen geladen:", this.availableLanguages);
-      } catch (error) {
-        debugError("❌ Fehler beim Laden der Sprachen:", error);
-        this.availableLanguages = [];
-      } finally {
-        this.isLoadingLanguages = false;
-      }
-    },
-
-    /**
-     * Prüft ob Language Switcher aktiviert ist
-     */
-    isLanguageSwitcherEnabled() {
-      if (!this.isHeroBlocksConfig()) return false;
-      const config = this.actualConfigData?.[this.currentSalesChannelId] || {};
-      return (
-        config["HeroBlocks.config.enableLanguageSwitcher"] === true ||
-        config["enableLanguageSwitcher"] === true
-      );
-    },
+    // HINWEIS: Language Switcher Methoden entfernt - wird immer angezeigt (kein Toggle mehr)
   },
 });

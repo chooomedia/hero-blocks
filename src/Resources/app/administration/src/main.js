@@ -7,12 +7,13 @@
 
 // WICHTIG: Snippets global registrieren (für alle Komponenten verfügbar)
 // CRITICAL: Muss VOR allen anderen Imports sein, damit Snippets verfügbar sind
-import deDE from "./module/sw-cms/snippet/de-DE.json";
-import enGB from "./module/sw-cms/snippet/en-GB.json";
+// WICHTIG: Snippets aus Haupt-Snippet-Dateien laden (werden auch über API geladen)
+import deDE from "./snippet/de-DE.json";
+import enGB from "./snippet/en-GB.json";
 
 // Snippets global registrieren
-Shopware.Locale.extend('de-DE', deDE);
-Shopware.Locale.extend('en-GB', enGB);
+Shopware.Locale.extend("de-DE", deDE);
+Shopware.Locale.extend("en-GB", enGB);
 
 // Import CMS elements (always needed)
 // CRITICAL: Must use explicit index.js path for ES modules
@@ -32,6 +33,8 @@ import "./module/sw-extension/page/sw-extension-config-override.js";
 import "./module/sw-cms/component/sw-cms-block/sw-cms-block-config/sw-cms-block-config-override.js";
 // Import CMS Sidebar Override (Block Visibility based on System Config)
 import "./module/sw-cms/component/sw-cms-sidebar/sw-cms-sidebar-override.js";
+// Import CMS Slot Override (Modal Title with Element Name)
+import "./module/sw-cms/component/sw-cms-slot/sw-cms-slot-override.js";
 
 // WICHTIG: Matt Interfaces Branding für Hero Blocks
 import "./app/assets/scss/_hero-blocks-branding.scss";

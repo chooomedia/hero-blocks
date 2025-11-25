@@ -1,7 +1,53 @@
+/**
+ * HOREX Theme - Hero Two Columns Block Component Styles
+ * 
+ * WICHTIG: Block-Component Styles für Administration
+ * Der Settings-Button wird automatisch vom Parent sw-cms-block Component bereitgestellt
+ * Wir müssen nur sicherstellen, dass unsere Custom Block-Component den Overlay nicht blockiert
+ * 
+ * WICHTIG: Slot-Settings-Buttons werden automatisch von sw-cms-slot Component bereitgestellt
+ * Diese werden beim Hover über den Slot angezeigt (sw-cms-slot__overlay)
+ */
+
 .sw-cms-block-hero-two-columns {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
-    grid-gap: 40px; // WICHTIG: Wie Standard-Block (image-text) - 40px Abstand zwischen Slots
+    position: relative;
     width: 100%;
     height: 100%;
+    
+    // WICHTIG: Stelle sicher, dass der Parent sw-cms-block__config-overlay sichtbar ist
+    // Der Overlay wird vom Parent sw-cms-block Component bereitgestellt
+    // Wir müssen nur sicherstellen, dass unsere Custom Block-Component den Hover nicht stört
+    // WICHTIG: Der Parent sw-cms-block hat bereits den Hover-Mechanismus für sw-cms-block__config-overlay
+    // Unser Custom Block sollte den Hover nicht blockieren
+    
+    // WICHTIG: Slots nebeneinander anzeigen (wie Frontend)
+    display: flex;
+    flex-direction: row;
+    gap: 20px; // WICHTIG: Spacing zwischen Slots (wie Standard text-image Block)
+    width: 100%;
+    height: 100%;
+    
+    // WICHTIG: Stelle sicher, dass Slot-Overlays (Settings-Buttons) sichtbar sind
+    // Die sw-cms-slot Component hat bereits den Hover-Mechanismus für sw-cms-slot__overlay
+    // Wir müssen nur sicherstellen, dass unsere Custom Block-Component den Hover nicht blockiert
+    // WICHTIG: Slots müssen position: relative haben, damit Overlays korrekt positioniert werden
+    > * {
+        position: relative;
+        flex: 1;
+        min-width: 0; // WICHTIG: Verhindert Overflow-Probleme
+    }
+    
+    // WICHTIG: Stelle sicher, dass Slot-Overlays nicht blockiert werden
+    // Die sw-cms-slot Component hat z-index: 210 für Overlays
+    // Wir müssen sicherstellen, dass unsere Block-Component keinen höheren z-index hat
+    z-index: 0;
+    
+    // WICHTIG: Layout-Wechsel für Block-Component (text-left)
+    &.is--layout-text-left {
+        flex-direction: row-reverse; // Text zuerst, dann Bild
+    }
+    
+    &.is--layout-image-left {
+        flex-direction: row; // Bild zuerst, dann Text (Standard)
+    }
 }

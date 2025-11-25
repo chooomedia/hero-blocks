@@ -71,7 +71,7 @@
                                  role="menu"
                                  aria-label="{{ 'heroBlocks.megaMenu.dropdown.ariaLabel'|trans({'%name%': name})|default('Unternavigation für ' ~ name)|striptags }}"
                                  aria-hidden="true">
-                                <div class="hero-mega-menu-nav__dropdown-content">
+                                <div class="container hero-mega-menu-nav__dropdown-content p-4">
                                     {# Kategorien #}
                                     <div class="hero-mega-menu-nav__categories" role="group" aria-label="{{ 'heroBlocks.megaMenu.categories.ariaLabel'|trans|default('Kategorien')|striptags }}">
                                         {% sw_include '@Storefront/storefront/layout/navbar/categories.html.twig' with {

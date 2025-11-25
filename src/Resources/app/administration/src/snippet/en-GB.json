@@ -1,64 +1,64 @@
 {
     "sw-cms": {
         "blocks": {
-                    "heroBlocks": {
-                        "heroBlockSlider": {
-                            "label": "Hero Block Slider",
-                "description": "The versatile hero slider: bold visuals, clear messaging, smart CTAs. Built for brand stories and campaigns."
-                        },
-                        "heroTwoColumns": {
-                            "label": "Hero Two Columns Image & Text",
-                            "description": "Two-column layout with image and text, parallax scroll effects and flexible background options.",
-                            "config": {
-                                "layout": {
-                                    "label": "Layout (Mobile)",
-                                    "helpText": "Choose the column arrangement for mobile devices: image left or text left.",
-                                    "options": {
-                                        "imageLeft": "Image left, text right",
-                                        "textLeft": "Text left, image right"
-                                    }
-                                },
-                                "layoutDesktop": {
-                                    "label": "Layout (Desktop)",
-                                    "helpText": "Choose the column arrangement for desktop devices: image left or text left.",
-                                    "options": {
-                                        "imageLeft": "Image left, text right",
-                                        "textLeft": "Text left, image right"
-                                    }
-                                },
-                                "layoutTablet": {
-                                    "label": "Layout (Tablet)",
-                                    "helpText": "Choose the column arrangement for tablet devices: image left or text left.",
-                                    "options": {
-                                        "imageLeft": "Image left, text right",
-                                        "textLeft": "Text left, image right"
-                                    }
-                                },
-                                "backgroundMode": {
-                                    "label": "Background mode",
-                                    "helpText": "Choose the background mode: No background, single image or two images.",
-                                    "options": {
-                                        "none": "No background",
-                                        "single": "Single image",
-                                        "twoImages": "Two images"
-                                    }
-                                },
-                                "backgroundImage": {
-                                    "label": "Background image"
-                                },
-                                "backgroundImageLeft": {
-                                    "label": "Background image left"
-                                },
-                                "backgroundImageRight": {
-                                    "label": "Background image right"
-                                },
-                                "minHeight": {
-                                    "label": "Minimum height",
-                                    "placeholder": "e.g. 500px or 80vh",
-                                    "helpText": "Minimum height for the block (e.g. 500px or 80vh)"
-                                }
+            "heroBlocks": {
+                "heroBlockSlider": {
+                    "label": "Hero Block Slider",
+                    "description": "The versatile hero slider: bold visuals, clear messaging, smart CTAs. Built for brand stories and campaigns."
+                },
+                "heroTwoColumns": {
+                    "label": "Hero Two Columns Image & Text",
+                    "description": "Two-column layout with image and text, parallax scroll effects and flexible background options.",
+                    "config": {
+                        "layout": {
+                            "label": "Layout (Mobile)",
+                            "helpText": "Choose the column arrangement for mobile devices: image left or text left.",
+                            "options": {
+                                "imageLeft": "Image left, text right",
+                                "textLeft": "Text left, image right"
                             }
+                        },
+                        "layoutDesktop": {
+                            "label": "Layout (Desktop)",
+                            "helpText": "Choose the column arrangement for desktop devices: image left or text left.",
+                            "options": {
+                                "imageLeft": "Image left, text right",
+                                "textLeft": "Text left, image right"
+                            }
+                        },
+                        "layoutTablet": {
+                            "label": "Layout (Tablet)",
+                            "helpText": "Choose the column arrangement for tablet devices: image left or text left.",
+                            "options": {
+                                "imageLeft": "Image left, text right",
+                                "textLeft": "Text left, image right"
+                            }
+                        },
+                        "backgroundMode": {
+                            "label": "Background mode",
+                            "helpText": "Choose the background mode: No background, single image or two images.",
+                            "options": {
+                                "none": "No background",
+                                "single": "Single image",
+                                "twoImages": "Two images"
+                            }
+                        },
+                        "backgroundImage": {
+                            "label": "Background image"
+                        },
+                        "backgroundImageLeft": {
+                            "label": "Background image left"
+                        },
+                        "backgroundImageRight": {
+                            "label": "Background image right"
+                        },
+                        "minHeight": {
+                            "label": "Minimum height",
+                            "placeholder": "e.g. 500px or 80vh",
+                            "helpText": "Minimum height for the block (e.g. 500px or 80vh)"
                         }
+                    }
+                }
             }
         },
         "elements": {
@@ -211,6 +211,82 @@
                     },
                     "helpText": {
                         "displayMode": "How should the images be displayed?"
+                    }
+                }
+            },
+            "categorySlider": {
+                "label": "Hero Block Category Slider",
+                "preview": {
+                    "images": "images",
+                    "noCategory": "No category selected"
+                },
+                "config": {
+                    "category": {
+                        "label": "Category",
+                        "placeholder": "Select category...",
+                        "helpText": "Select a category whose images should be displayed in the slider"
+                    },
+                    "info": "Slider settings (navigation, auto-slide, etc.) can also be configured in the block settings.",
+                    "settings": {
+                        "title": "Slider Settings"
+                    },
+                    "navigationArrows": {
+                        "label": "Navigation Arrows",
+                        "helpText": "Select the position of navigation arrows (none, inside, outside)",
+                        "options": {
+                            "none": "None",
+                            "inside": "Inside",
+                            "outside": "Outside"
+                        }
+                    },
+                    "navigationDots": {
+                        "label": "Navigation Dots",
+                        "helpText": "Enable display of navigation dots below the slider"
+                    },
+                    "autoSlide": {
+                        "label": "Auto Slide",
+                        "helpText": "Enable automatic sliding of the slider"
+                    },
+                    "autoplayTimeout": {
+                        "label": "Autoplay Timeout (ms)",
+                        "helpText": "Time in milliseconds between slides (1000-30000)"
+                    },
+                    "speed": {
+                        "label": "Slide Speed (ms)",
+                        "helpText": "Speed of slide animation in milliseconds (100-1000)"
+                    },
+                    "displayMode": {
+                        "label": "Display Mode",
+                        "helpText": "Select the display mode for images (standard, cover, contain)",
+                        "options": {
+                            "standard": "Standard",
+                            "cover": "Cover",
+                            "contain": "Contain"
+                        }
+                    },
+                    "minHeight": {
+                        "label": "Min Height",
+                        "helpText": "Minimum height for the slider (e.g., 340px, 80vh)"
+                    },
+                    "subcategoryLevels": {
+                        "label": "Subcategory Levels",
+                        "helpText": "Number of subcategory levels to include (0 = none, 1-5 = number of levels)"
+                    },
+                    "imageCount": {
+                        "label": "Number of Images per Slide",
+                        "helpText": "Select whether 1 or 2 images should be displayed per slide",
+                        "options": {
+                            "one": "1 Image",
+                            "two": "2 Images"
+                        }
+                    },
+                    "imageWidth": {
+                        "label": "Image Width",
+                        "helpText": "Select the image width (inner-full-width = within container, full-width = full width)",
+                        "options": {
+                            "innerFullWidth": "Within Container",
+                            "fullWidth": "Full Width"
+                        }
                     }
                 }
             }

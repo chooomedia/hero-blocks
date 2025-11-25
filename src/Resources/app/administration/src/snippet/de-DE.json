@@ -1,64 +1,64 @@
 {
     "sw-cms": {
         "blocks": {
-                    "heroBlocks": {
-                        "heroBlockSlider": {
-                            "label": "Hero Block Slider",
-                "description": "Der flexible Hero-Slider: starke Visuals, klare Botschaften, smarte CTAs. Perfekt für Markenstories und Kampagnen."
-                        },
-                        "heroTwoColumns": {
-                            "label": "Hero Two Columns Image & Text",
-                            "description": "Zwei-Spalten Layout mit Bild und Text, Parallax-Scroll-Effekten und flexiblen Hintergrundoptionen.",
-                            "config": {
-                                "layout": {
-                                    "label": "Layout (Mobile)",
-                                    "helpText": "Wählen Sie die Spaltenanordnung für mobile Geräte: Bild links oder Text links.",
-                                    "options": {
-                                        "imageLeft": "Bild links, Text rechts",
-                                        "textLeft": "Text links, Bild rechts"
-                                    }
-                                },
-                                "layoutDesktop": {
-                                    "label": "Layout (Desktop)",
-                                    "helpText": "Wählen Sie die Spaltenanordnung für Desktop-Geräte: Bild links oder Text links.",
-                                    "options": {
-                                        "imageLeft": "Bild links, Text rechts",
-                                        "textLeft": "Text links, Bild rechts"
-                                    }
-                                },
-                                "layoutTablet": {
-                                    "label": "Layout (Tablet)",
-                                    "helpText": "Wählen Sie die Spaltenanordnung für Tablet-Geräte: Bild links oder Text links.",
-                                    "options": {
-                                        "imageLeft": "Bild links, Text rechts",
-                                        "textLeft": "Text links, Bild rechts"
-                                    }
-                                },
-                                "backgroundMode": {
-                                    "label": "Hintergrundmodus",
-                                    "helpText": "Wählen Sie den Hintergrundmodus: Kein Hintergrund, Einzelbild oder Zwei Bilder.",
-                                    "options": {
-                                        "none": "Kein Hintergrund",
-                                        "single": "Einzelbild",
-                                        "twoImages": "Zwei Bilder"
-                                    }
-                                },
-                                "backgroundImage": {
-                                    "label": "Hintergrundbild"
-                                },
-                                "backgroundImageLeft": {
-                                    "label": "Hintergrundbild links"
-                                },
-                                "backgroundImageRight": {
-                                    "label": "Hintergrundbild rechts"
-                                },
-                                "minHeight": {
-                                    "label": "Mindesthöhe",
-                                    "placeholder": "z.B. 500px oder 80vh",
-                                    "helpText": "Mindesthöhe für den Block (z.B. 500px oder 80vh)"
-                                }
+            "heroBlocks": {
+                "heroBlockSlider": {
+                    "label": "Hero Block Slider",
+                    "description": "Der flexible Hero-Slider: starke Visuals, klare Botschaften, smarte CTAs. Perfekt für Markenstories und Kampagnen."
+                },
+                "heroTwoColumns": {
+                    "label": "Hero Two Columns Image & Text",
+                    "description": "Zwei-Spalten Layout mit Bild und Text, Parallax-Scroll-Effekten und flexiblen Hintergrundoptionen.",
+                    "config": {
+                        "layout": {
+                            "label": "Layout (Mobile)",
+                            "helpText": "Wählen Sie die Spaltenanordnung für mobile Geräte: Bild links oder Text links.",
+                            "options": {
+                                "imageLeft": "Bild links, Text rechts",
+                                "textLeft": "Text links, Bild rechts"
                             }
+                        },
+                        "layoutDesktop": {
+                            "label": "Layout (Desktop)",
+                            "helpText": "Wählen Sie die Spaltenanordnung für Desktop-Geräte: Bild links oder Text links.",
+                            "options": {
+                                "imageLeft": "Bild links, Text rechts",
+                                "textLeft": "Text links, Bild rechts"
+                            }
+                        },
+                        "layoutTablet": {
+                            "label": "Layout (Tablet)",
+                            "helpText": "Wählen Sie die Spaltenanordnung für Tablet-Geräte: Bild links oder Text links.",
+                            "options": {
+                                "imageLeft": "Bild links, Text rechts",
+                                "textLeft": "Text links, Bild rechts"
+                            }
+                        },
+                        "backgroundMode": {
+                            "label": "Hintergrundmodus",
+                            "helpText": "Wählen Sie den Hintergrundmodus: Kein Hintergrund, Einzelbild oder Zwei Bilder.",
+                            "options": {
+                                "none": "Kein Hintergrund",
+                                "single": "Einzelbild",
+                                "twoImages": "Zwei Bilder"
+                            }
+                        },
+                        "backgroundImage": {
+                            "label": "Hintergrundbild"
+                        },
+                        "backgroundImageLeft": {
+                            "label": "Hintergrundbild links"
+                        },
+                        "backgroundImageRight": {
+                            "label": "Hintergrundbild rechts"
+                        },
+                        "minHeight": {
+                            "label": "Mindesthöhe",
+                            "placeholder": "z.B. 500px oder 80vh",
+                            "helpText": "Mindesthöhe für den Block (z.B. 500px oder 80vh)"
                         }
+                    }
+                }
             }
         },
         "elements": {
@@ -209,6 +209,82 @@
                     },
                     "helpText": {
                         "displayMode": "Wie sollen die Bilder dargestellt werden?"
+                    }
+                }
+            },
+            "categorySlider": {
+                "label": "Hero Block Category Slider",
+                "preview": {
+                    "images": "Bilder",
+                    "noCategory": "Keine Kategorie ausgewählt"
+                },
+                "config": {
+                    "category": {
+                        "label": "Kategorie",
+                        "placeholder": "Kategorie auswählen...",
+                        "helpText": "Wählen Sie eine Kategorie aus, deren Bilder im Slider angezeigt werden sollen"
+                    },
+                    "info": "Slider-Einstellungen (Navigation, Auto-Slide, etc.) können auch in den Block-Einstellungen konfiguriert werden.",
+                    "settings": {
+                        "title": "Slider-Einstellungen"
+                    },
+                    "navigationArrows": {
+                        "label": "Navigationspfeile",
+                        "helpText": "Wählen Sie die Position der Navigationspfeile (none, inside, outside)",
+                        "options": {
+                            "none": "Keine",
+                            "inside": "Innen",
+                            "outside": "Außen"
+                        }
+                    },
+                    "navigationDots": {
+                        "label": "Navigationspunkte",
+                        "helpText": "Aktivieren Sie die Anzeige der Navigationspunkte unterhalb des Sliders"
+                    },
+                    "autoSlide": {
+                        "label": "Automatisches Sliden",
+                        "helpText": "Aktivieren Sie das automatische Sliden des Sliders"
+                    },
+                    "autoplayTimeout": {
+                        "label": "Autoplay-Timeout (ms)",
+                        "helpText": "Zeit in Millisekunden zwischen den Slides (1000-30000)"
+                    },
+                    "speed": {
+                        "label": "Slide-Geschwindigkeit (ms)",
+                        "helpText": "Geschwindigkeit der Slide-Animation in Millisekunden (100-1000)"
+                    },
+                    "displayMode": {
+                        "label": "Anzeigemodus",
+                        "helpText": "Wählen Sie den Anzeigemodus für die Bilder (standard, cover, contain)",
+                        "options": {
+                            "standard": "Standard",
+                            "cover": "Cover",
+                            "contain": "Contain"
+                        }
+                    },
+                    "minHeight": {
+                        "label": "Mindesthöhe",
+                        "helpText": "Mindesthöhe für den Slider (z.B. 340px, 80vh)"
+                    },
+                    "subcategoryLevels": {
+                        "label": "Unterkategorie-Ebenen",
+                        "helpText": "Anzahl der Unterkategorie-Ebenen, die einbezogen werden sollen (0 = keine, 1-5 = Anzahl der Ebenen)"
+                    },
+                    "imageCount": {
+                        "label": "Anzahl der Bilder pro Slide",
+                        "helpText": "Wählen Sie, ob 1 oder 2 Bilder pro Slide angezeigt werden sollen",
+                        "options": {
+                            "one": "1 Bild",
+                            "two": "2 Bilder"
+                        }
+                    },
+                    "imageWidth": {
+                        "label": "Bildbreite",
+                        "helpText": "Wählen Sie die Bildbreite (inner-full-width = innerhalb des Containers, full-width = volle Breite)",
+                        "options": {
+                            "innerFullWidth": "Innerhalb des Containers",
+                            "fullWidth": "Volle Breite"
+                        }
                     }
                 }
             }

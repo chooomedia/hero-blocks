@@ -1,0 +1,33 @@
+{% block sw_cms_slot_content_settings_modal %}
+    {# WICHTIG: Override für Modal-Titel - zeigt Element-Namen korrekt an #}
+    <sw-modal
+        v-show="showElementSettings"
+        class="sw-cms-slot__config-modal"
+        :variant="modalVariant"
+        :title="elementConfig?.label ? $tc('sw-cms.detail.title.elementSettingsModal') + ' (' + $tc(elementConfig.label) + ')' : $tc('sw-cms.detail.title.elementSettingsModal')"
+        @modal-close="onCloseSettingsModal"
+    >
+        {% block sw_cms_slot_content_settings_modal_component %}
+        <component
+            :is="elementConfig?.configComponent"
+            ref="elementComponentRef"
+            v-model:element="element"
+            :element-data="elementConfig"
+        />
+        {% endblock %}
+
+        {% block sw_cms_slot_content_settings_modal_footer %}
+        <template #modal-footer>
+            {% block sw_cms_slot_content_settings_modal_action_confirm %}
+            <mt-button
+                variant="primary"
+                @click="onCloseSettingsModal"
+            >
+                {{ $tc('sw-cms.detail.label.buttonElementSettingsConfirm') }}
+            </mt-button>
+            {% endblock %}
+        </template>
+        {% endblock %}
+    </sw-modal>
+{% endblock %}
+

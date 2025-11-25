@@ -3,22 +3,24 @@
 {% block page_content_section_default %}
     {# ludtwig-ignore twig-hash-key-no-quotes #}
     {% set layout = section.sizingMode ? section.sizingMode|replace({'_': '-'}) : 'container' %}
-    {# WICHTIG: CSS-Klasse für hero-two-columns Block hinzufügen wenn full-width #}
+    
+    {# WICHTIG: Section-Klassen ohne Duplikate #}
     {% set sectionClasses = ['cms-section-default', layout] %}
-    {% if layout == 'full-width' %}
-        {# Prüfe ob hero-two-columns Block vorhanden ist #}
-        {% set hasHeroTwoColumns = false %}
-        {% for block in section.blocks %}
-            {% if block.type == 'hero-two-columns' %}
-                {% set hasHeroTwoColumns = true %}
-                {% break %}
-            {% endif %}
-        {% endfor %}
-        {% if hasHeroTwoColumns %}
-            {% set sectionClasses = sectionClasses|merge(['cms-block-hero-two-columns']) %}
+    
+    {# Prüfe, ob hero-two-columns Block vorhanden ist #}
+    {% set hasHeroTwoColumns = false %}
+    {% for block in section.blocks %}
+        {% if block.type == 'hero-two-columns' %}
+            {% set hasHeroTwoColumns = true %}
+            {% break %}
         {% endif %}
+    {% endfor %}
+    
+    {% if hasHeroTwoColumns and layout == 'full-width' %}
+        {% set sectionClasses = sectionClasses|merge(['cms-block-hero-two-columns']) %}
     {% endif %}
-    <section class="{{ sectionClasses|join(' ') }}">
+    
+    <section class="{{ sectionClasses|join(' ') }}"{% if hasHeroTwoColumns and layout == 'full-width' %} style="padding: 0;"{% endif %}>
         {% for block in section.blocks %}
             {% block section_default_content_block %}
                 {% sw_include '@Storefront/storefront/section/cms-section-block-container.html.twig' %}

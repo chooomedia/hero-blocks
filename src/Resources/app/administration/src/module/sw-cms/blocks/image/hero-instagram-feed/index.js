@@ -5,6 +5,14 @@
  * Gemäß Shopware Best Practices für Custom CMS Blocks
  */
 
+// Note: Import and register snippets for translations
+import deDE from '../../../snippet/de-DE.json';
+import enGB from '../../../snippet/en-GB.json';
+
+// Register snippets
+Shopware.Locale.extend('de-DE', deDE);
+Shopware.Locale.extend('en-GB', enGB);
+
 // WICHTIG: Block-Komponenten immer registrieren (für dynamisches Laden)
 Shopware.Component.register('sw-cms-preview-hero-instagram-feed', () => import('./preview/index.js'));
 Shopware.Component.register('sw-cms-block-hero-instagram-feed', () => import('./component/index.js'));

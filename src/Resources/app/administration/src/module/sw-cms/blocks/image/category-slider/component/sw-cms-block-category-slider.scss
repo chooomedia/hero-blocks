@@ -1,12 +1,11 @@
+// WICHTIG: Block Component Styles - einfacher Wrapper wie Image Gallery Block
+// Standard-Buttons werden vom sw-cms-slot Component bereitgestellt
+// Block-Settings werden über den Parent sw-cms-block__config-overlay geöffnet
+// WICHTIG: Keine Preview-Styles hier - Preview wird im Element-Component angezeigt
+
 .sw-cms-block-category-slider {
     display: flex;
     flex-direction: column;
     height: 100%;
     width: 100%;
-
-    .sw-cms-block-category-slider__slot {
-        flex: 1;
-        overflow: hidden;
-    }
 }
-

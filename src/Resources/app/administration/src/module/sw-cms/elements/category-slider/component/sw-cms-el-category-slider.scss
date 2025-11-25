@@ -3,12 +3,12 @@
 .sw-cms-el-category-slider {
     position: relative;
     height: 100%;
-    min-height: 400px;
+    max-height: 400px; // WICHTIG: Max height für Container
     width: 100%;
     background: var(--color-gray-50);
     border: 1px solid var(--color-gray-300);
     border-radius: 4px;
-    overflow: hidden;
+    overflow: hidden; // WICHTIG: Verhindert Überlauf
     
     // WICHTIG: Preview für große Ansicht (wie Hero Block Slider) - Mini-Vorschau mit 2 Bildern nebeneinander
     &__preview {
@@ -17,7 +17,7 @@
         width: 100%;
         display: flex;
         flex-direction: column;
-        overflow: hidden;
+        overflow: hidden; // WICHTIG: Verhindert Überlauf
         
         // Category Title (oben links) - wie in Sidebar Preview
         &-title {
@@ -38,29 +38,33 @@
         // Slider Preview - Zwei Elemente nebeneinander (wie Hero Block Slider Sidebar Preview)
         &-slider {
             flex: 1;
-            overflow: hidden;
+            min-height: 0; // WICHTIG: Erlaubt Flexbox-Shrinking
+            overflow: hidden; // WICHTIG: Verhindert Überlauf
             position: relative;
             display: flex;
-            gap: 0.25rem;
+            gap: 0.5rem;
             align-items: center;
             justify-content: center;
-            padding: 0.5rem;
+            padding: 2rem 0.5rem 0.5rem 0.5rem; // Top padding für Title
+            max-height: 340px; // WICHTIG: Reserviert Platz für Dots
             
             &-slide {
                 flex: 1;
-                height: 100%;
+                min-height: 0; // WICHTIG: Erlaubt Flexbox-Shrinking
+                max-width: 48%; // WICHTIG: Maximal 48% Breite pro Slide (2 nebeneinander)
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                overflow: hidden;
+                overflow: hidden; // WICHTIG: Verhindert Überlauf
                 border-radius: 4px;
                 background: var(--color-gray-100);
             }
             
             &-image {
                 width: 100%;
-                height: 100%;
-                object-fit: cover;
+                height: auto; // WICHTIG: Auto height für korrekte Proportionen
+                max-height: 300px; // WICHTIG: Maximal 300px Höhe
+                object-fit: contain; // WICHTIG: contain (vollständiges Bild sichtbar)
                 border-radius: 4px;
             }
         }

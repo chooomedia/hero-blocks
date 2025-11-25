@@ -1,0 +1,20 @@
+{% sw_extends '@Storefront/storefront/page/content/index.html.twig' %}
+
+{# WICHTIG: Kategorie Header mit Parallax-Effekt #}
+{% block page_content_blocks %}
+    {# WICHTIG: Category Header BEFORE CMS Blocks #}
+    {% if page.header %}
+        {% block page_content_category_header %}
+            {% sw_include '@HeroBlocks/storefront/component/category-header.html.twig' %}
+        {% endblock %}
+    {% endif %}
+    
+    {# WICHTIG: Standard CMS Blocks AFTER Category Header #}
+    {{ parent() }}
+{% endblock %}
+
+{# WICHTIG: Breadcrumb auskommentiert (nicht im Frontend anzeigen) #}
+{% block page_content_breadcrumb %}
+    {# {{ parent() }} #}
+{% endblock %}
+

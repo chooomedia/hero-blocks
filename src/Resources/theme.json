@@ -1,8 +1,0 @@
-{
-    "name": "HeroBlocks",
-    "author": "Matt Interfaces",
-    "style": [
-        "app/storefront/src/scss/hero-slider.scss"
-    ]
-}
-

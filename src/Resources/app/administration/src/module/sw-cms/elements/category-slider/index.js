@@ -3,15 +3,10 @@
  * 
  * WICHTIG: Eigenes Element für Category Slider (nicht image-gallery)
  * Zeigt Category Slider spezifische Config (Kategorie-Auswahl, Image Count, etc.)
+ * 
+ * WICHTIG: Snippets werden bereits in main.js registriert (VOR diesem Import)
+ * Keine doppelte Registrierung hier nötig!
  */
-
-// WICHTIG: Snippets importieren und registrieren (für Übersetzungen)
-import deDE from '../../snippet/de-DE.json';
-import enGB from '../../snippet/en-GB.json';
-
-// Snippets registrieren
-Shopware.Locale.extend('de-DE', deDE);
-Shopware.Locale.extend('en-GB', enGB);
 
 Shopware.Component.register('sw-cms-el-category-slider', () => import('./component/index.js'));
 Shopware.Component.register('sw-cms-el-config-category-slider', () => import('./config/index.js'));
@@ -25,10 +20,10 @@ Shopware.Service('cmsService').registerCmsElement({
     previewComponent: 'sw-cms-el-preview-category-slider',
     defaultConfig: {
         // WICHTIG: Category Slider verwendet Kategorie-Bilder (nicht manuelle Media-Auswahl)
-        // Bilder werden aus der ausgewählten Kategorie geladen
-        categoryId: {
+        // Bilder werden aus den ausgewählten Kategorien geladen
+        categoryIds: {
             source: 'static',
-            value: null,
+            value: [],
             entity: {
                 name: 'category',
             },
@@ -80,19 +75,26 @@ Shopware.Service('cmsService').registerCmsElement({
         },
     },
     enrich: function enrich(slot, data) {
-        // WICHTIG: Category Slider lädt Bilder aus der ausgewählten Kategorie
+        // WICHTIG: Category Slider lädt Bilder aus den ausgewählten Kategorien
         // Die Bilder werden über TypeDataResolver geladen (siehe CategorySliderTypeDataResolver)
         if (Object.keys(data).length < 1) {
             return;
         }
 
-        // Kategorie-Entity laden (wenn categoryId vorhanden)
-        if (slot.config.categoryId?.entity && slot.config.categoryId?.value) {
-            const entity = slot.config.categoryId.entity;
+        // Kategorien-Entities laden (wenn categoryIds vorhanden)
+        if (slot.config.categoryIds?.entity && slot.config.categoryIds?.value && slot.config.categoryIds.value.length > 0) {
+            const entity = slot.config.categoryIds.entity;
             const entityKey = `entity-${entity.name}-0`;
-
+            
             if (data[entityKey]) {
-                slot.data.category = data[entityKey].get(slot.config.categoryId.value);
+                // Multi-Select: Lade alle ausgewählten Kategorien
+                slot.data.categories = [];
+                slot.config.categoryIds.value.forEach((categoryId) => {
+                    const category = data[entityKey].get(categoryId);
+                    if (category) {
+                        slot.data.categories.push(category);
+                    }
+                });
             }
         }
     },

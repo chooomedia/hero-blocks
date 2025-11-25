@@ -1,14 +1,8 @@
 import template from './sw-cms-el-category-slider.html.twig';
 import './sw-cms-el-category-slider.scss';
 
-// WICHTIG: Snippets importieren und registrieren (für Übersetzungen)
-// WICHTIG: Pfad von component/ aus: ../../../snippet/
-import deDE from '../../../snippet/de-DE.json';
-import enGB from '../../../snippet/en-GB.json';
-
-// Snippets registrieren
-Shopware.Locale.extend('de-DE', deDE);
-Shopware.Locale.extend('en-GB', enGB);
+// WICHTIG: Snippets werden bereits in elements/category-slider/index.js registriert
+// Keine doppelte Registrierung hier nötig!
 
 export default {
     template,

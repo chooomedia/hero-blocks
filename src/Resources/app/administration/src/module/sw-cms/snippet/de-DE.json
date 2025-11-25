@@ -2,6 +2,20 @@
     "sw-cms": {
         "blocks": {
             "heroBlocks": {
+                "heroBlockSlider": {
+                    "label": "Hero Block Slider",
+                    "placeholder": {
+                        "title": "Hero Slider Block",
+                        "hint": "Konfigurieren Sie den Hero Slider in den Block-Einstellungen"
+                    }
+                },
+                "twoImages": {
+                    "label": "Hero Two Images",
+                    "placeholder": {
+                        "title": "Two Images Block",
+                        "hint": "Zwei Bilder nebeneinander anzeigen"
+                    }
+                },
                 "heroTwoColumns": {
                     "label": "Hero Two Columns",
                     "config": {

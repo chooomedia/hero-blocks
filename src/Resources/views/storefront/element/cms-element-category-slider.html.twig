@@ -1,4 +1,50 @@
 {% block element_category_slider %}
+    {# WICHTIG: Inline CSS für Platzhalter (nebeneinander) #}
+    <style>
+        .category-slider-placeholder-wrapper {
+            display: flex;
+            gap: 1rem;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        @media screen and (max-width: 767px) {
+            .category-slider-placeholder-wrapper {
+                flex-direction: column;
+            }
+        }
+        
+        .category-slider-placeholder-item {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .category-slider-placeholder-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            background-color: #F3F4F6;
+            border-radius: 8px;
+            padding: 2rem;
+        }
+        
+        .category-slider-placeholder-img {
+            max-width: 200px;
+            width: 100%;
+            height: auto;
+            opacity: 0.6;
+        }
+        
+        .category-slider-placeholder-text {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: #6B7280;
+            text-align: center;
+        }
+    </style>
+    
     {# WICHTIG: Config-Zugriff - element.fieldConfig.elements ist die korrekte Quelle für gespeicherte Werte #}
     {# WICHTIG: Block-Config hat Priorität über Element-Config (falls vorhanden) #}
     {% set elementConfig = element.fieldConfig.elements %}
@@ -11,7 +57,8 @@
         speed: { value: blockConfig.speed|default(elementConfig.speed.value|default(300)) },
         displayMode: { value: elementConfig.displayMode.value|default('cover') },
         minHeight: { value: elementConfig.minHeight.value|default(null) },
-        verticalAlign: { value: elementConfig.verticalAlign.value|default(null) }
+        verticalAlign: { value: elementConfig.verticalAlign.value|default(null) },
+        imageCount: { value: elementConfig.imageCount.value|default('1') }
     } %}
     {% set visibleNavValues = ['inside', 'outside'] %}
     {% set visibleDotsValues = ['bottom'] %}
@@ -114,19 +161,28 @@
                                     </div>
                                 {% endblock %}
                             {% endfor %}
-                        {% else %}
-                            {# Empty State #}
-                            <div class="category-slider-item-container">
-                                <div class="category-slider-item is-{{ displayMode }}">
-                                    <div class="category-slide-background is-{{ displayMode }}">
-                                        <div class="category-slide-placeholder">
-                                            <p>{{ 'component.cms.categorySlider.noImages'|trans|sw_sanitize }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         {% endif %}
                     </div>
+                    
+                    {# WICHTIG: Empty State - Platzhalter AUSSERHALB Slider (nebeneinander) #}
+                    {% if not element.data.sliderItems or element.data.sliderItems|length == 0 %}
+                    <div class="category-slider-placeholder-wrapper">
+                        {% set imageCount = sliderConfig.imageCount.value|default('1')|number_format(0, '', '') %}
+                        {% for i in 1..imageCount %}
+                            <div class="category-slider-placeholder-item">
+                                <div class="category-slider-placeholder-content"{% if minHeight %} style="min-height: {{ minHeight|trim|replace({' ':''}) }}"{% endif %}>
+                                    {# WICHTIG: Platzhalter-Bild aus Plugin Assets #}
+                                    <img 
+                                        src="{{ asset('bundles/heroblocks/assets/placeholder.svg') }}" 
+                                        alt="{{ 'component.cms.categorySlider.noImages'|trans|sw_sanitize }}"
+                                        class="category-slider-placeholder-img"
+                                    />
+                                    <p class="category-slider-placeholder-text">{{ 'component.cms.categorySlider.noImages'|trans|sw_sanitize }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
 
                     {% block element_category_slider_controls %}
                         {% if element.data.sliderItems is defined and element.data.sliderItems|length > 1 and sliderConfig.navigationArrows.value in visibleNavValues %}

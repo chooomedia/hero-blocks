@@ -123,38 +123,6 @@
                                     :error="getFieldError(element.name)"
                                     @update:value="props.updateCurrentValue"
                                 />
-                                
-                                {# Language Switcher: Verfügbare Sprachen anzeigen #}
-                                <div v-if="element.name === 'HeroBlocks.config.enableLanguageSwitcher' || element.name === 'enableLanguageSwitcher'" class="sw-system-config__language-switcher-info">
-                                    <div v-if="isLoadingLanguages" class="sw-system-config__language-switcher-loading">
-                                        <sw-loader size="14px"></sw-loader>
-                                        <span class="sw-system-config__language-switcher-loading-text">
-                                            {{ $tc('sw-settings-license-check.languageSwitcher.loading') }}
-                                        </span>
-                                    </div>
-                                    <div v-else-if="availableLanguages.length > 0" class="sw-system-config__language-switcher-languages">
-                                        <div class="sw-system-config__language-switcher-label">
-                                            {{ $tc('sw-settings-license-check.languageSwitcher.availableLanguages') }}:
-                                        </div>
-                                        <div class="sw-system-config__language-switcher-list">
-                                            <span
-                                                v-for="(language, index) in availableLanguages"
-                                                :key="language.id"
-                                                class="sw-system-config__language-switcher-item"
-                                                :class="{ 'is-active': language.isActive }"
-                                            >
-                                                {{ language.displayName }}<span v-if="index < availableLanguages.length - 1">, </span>
-                                            </span>
-                                        </div>
-                                        <div class="sw-system-config__language-switcher-hint">
-                                            {{ $tc('sw-settings-license-check.languageSwitcher.hint') }}
-                                        </div>
-                                    </div>
-                                    <div v-else class="sw-system-config__language-switcher-empty">
-                                        <sw-icon name="regular-exclamation-triangle" size="16"></sw-icon>
-                                        <span>{{ $tc('sw-settings-license-check.languageSwitcher.noLanguages') }}</span>
-                                    </div>
-                                </div>
                             </template>
                         </sw-inherit-wrapper>
                         {% endblock %}

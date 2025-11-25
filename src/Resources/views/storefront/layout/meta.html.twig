@@ -1,0 +1,144 @@
+{% sw_extends '@Storefront/storefront/layout/meta.html.twig' %}
+
+{% block layout_head_stylesheet %}
+    {{ parent() }}
+    {# WICHTIG: Tiny Slider CSS - Für Fallback wenn BaseSlider nicht funktioniert #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.4/tiny-slider.css" crossorigin="anonymous" />
+{% endblock %}
+
+{% block layout_head_javascript_hmr_mode %}
+    {{ parent() }}
+    
+    {# WICHTIG: Tiny Slider JS Library - Für Fallback wenn BaseSlider nicht funktioniert #}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.4/min/tiny-slider.js" crossorigin="anonymous"></script>
+    
+    {# WICHTIG: Universal BaseSlider Fallback - Für ALLE Slider (Hero + Category + etc.) #}
+    {# Initialisiert Slider direkt mit Tiny Slider wenn Shopware's BaseSlider nicht funktioniert #}
+    <script>
+        (function() {
+            'use strict';
+            
+            // Flag um Doppel-Initialisierung zu verhindern
+            if (window.HeroBlocksSliderInitialized) {
+                console.log('[HeroBlocks] Slider bereits initialisiert');
+                return;
+            }
+            window.HeroBlocksSliderInitialized = true;
+            
+            function initializeAllSliders() {
+                console.log('[HeroBlocks] Universal Slider Fallback - Starte Initialisierung...');
+                
+                // Finde ALLE Slider Elemente (Hero Slider, Category Slider, etc.)
+                const sliders = document.querySelectorAll('[data-base-slider="true"]');
+                
+                if (sliders.length === 0) {
+                    console.log('[HeroBlocks] Keine Slider gefunden');
+                    return;
+                }
+                
+                console.log('[HeroBlocks] Gefunden:', sliders.length, 'Slider');
+                
+                // Prüfe ob Tiny Slider geladen ist
+                if (typeof window.tns === 'undefined') {
+                    console.warn('[HeroBlocks] Tiny Slider (tns) noch nicht geladen, warte...');
+                    // Versuche es erneut nach 500ms
+                    setTimeout(initializeAllSliders, 500);
+                    return;
+                }
+                
+                console.log('[HeroBlocks] ✓ Tiny Slider verfügbar')
+                
+                // Initialisiere jeden Slider
+                sliders.forEach((sliderElement, index) => {
+                    // Prüfe ob Slider bereits initialisiert wurde
+                    if (sliderElement.classList.contains('tns-slider')) {
+                        console.log('[HeroBlocks] Slider', index, 'bereits initialisiert (skip)');
+                        return;
+                    }
+                    
+                    try {
+                        // Finde Container
+                        const container = sliderElement.querySelector('[data-base-slider-container="true"]');
+                        
+                        if (!container) {
+                            console.warn('[HeroBlocks] Container nicht gefunden für Slider', index);
+                            return;
+                        }
+                        
+                        // Prüfe ob Container Slides hat
+                        const slides = container.children;
+                        if (slides.length === 0) {
+                            console.warn('[HeroBlocks] Keine Slides gefunden in Slider', index);
+                            return;
+                        }
+                        
+                        console.log('[HeroBlocks] Initialisiere Slider', index, '(', slides.length, 'Slides)');
+                        
+                        // Parse Slider Options
+                        const optionsAttr = sliderElement.getAttribute('data-base-slider-options');
+                        let sliderOptions = {};
+                        
+                        if (optionsAttr) {
+                            try {
+                                const parsedOptions = JSON.parse(optionsAttr);
+                                sliderOptions = parsedOptions.slider || {};
+                            } catch (e) {
+                                console.error('[HeroBlocks] Fehler beim Parsen der Optionen:', e);
+                            }
+                        }
+                        
+                        // Controls Container (Navigation Pfeile)
+                        const controlsContainer = sliderElement.querySelector('[data-base-slider-controls="true"]');
+                        
+                        // Tiny Slider Config
+                        const tnsConfig = {
+                            container: container,
+                            items: 1,
+                            slideBy: 'page',
+                            autoplay: sliderOptions.autoplay || false,
+                            controls: sliderOptions.controls !== false && controlsContainer !== null,
+                            controlsContainer: controlsContainer || false,
+                            nav: sliderOptions.nav !== false,
+                            navPosition: sliderOptions.navPosition || 'bottom',
+                            autoplayTimeout: sliderOptions.autoplayTimeout || 5000,
+                            autoplayHoverPause: sliderOptions.autoplayHoverPause !== false,
+                            autoplayButtonOutput: false,
+                            speed: sliderOptions.speed || 300,
+                            loop: sliderOptions.loop !== false,
+                            rewind: sliderOptions.rewind !== false,
+                            mouseDrag: sliderOptions.mouseDrag !== false,
+                            touch: true,
+                            mode: 'carousel',
+                            autoHeight: sliderOptions.autoHeight || false
+                        };
+                        
+                        // Initialisiere Tiny Slider
+                        const tnsInstance = window.tns(tnsConfig);
+                        
+                        console.log('[HeroBlocks] ✓ Slider', index, 'erfolgreich initialisiert');
+                        
+                        // Speichere Instanz für spätere Referenz
+                        sliderElement._tnsInstance = tnsInstance;
+                        
+                    } catch (error) {
+                        console.error('[HeroBlocks] Fehler bei Slider', index, ':', error);
+                    }
+                });
+                
+                console.log('[HeroBlocks] Slider-Initialisierung abgeschlossen');
+            }
+            
+            // Warte bis DOM ready und Tiny Slider geladen ist
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Warte kurz bis Tiny Slider CDN geladen ist
+                    setTimeout(initializeAllSliders, 100);
+                });
+            } else {
+                // DOM bereits geladen, starte sofort
+                setTimeout(initializeAllSliders, 100);
+            }
+        })();
+    </script>
+{% endblock %}
+

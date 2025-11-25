@@ -5,6 +5,14 @@ const CMS = {
     },
 };
 
+// Note: Import and register snippets for translations
+import deDE from '../../../snippet/de-DE.json';
+import enGB from '../../../snippet/en-GB.json';
+
+// Register snippets
+Shopware.Locale.extend('de-DE', deDE);
+Shopware.Locale.extend('en-GB', enGB);
+
 /**
  * @private
  */

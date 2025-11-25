@@ -28,129 +28,67 @@ class CategorySliderTypeDataResolver extends AbstractCmsElementResolver
 
     public function collect(CmsSlotEntity $slot, ResolverContext $resolverContext): ?CriteriaCollection
     {
-        // WICHTIG: Prüfe ob Block ein "category-slider" Block ist
-        $block = $slot->getCmsBlock();
-        if (!$block || $block->getType() !== 'category-slider') {
+        // WICHTIG: Hole categoryIds aus Element-Config (nicht aus Block customFields)
+        $config = $slot->getConfig();
+        if (!$config || !isset($config['categoryIds']) || !$config['categoryIds']['value']) {
             return null;
         }
 
-        $customFields = $block->getCustomFields();
-        if (!$customFields || !isset($customFields['categoryId']) || !$customFields['categoryId']) {
+        $categoryIds = $config['categoryIds']['value'];
+        if (!is_array($categoryIds) || empty($categoryIds)) {
             return null;
         }
 
-        $categoryId = $customFields['categoryId'];
-
-        // Lade Kategorie mit Media und Translations
-        $categoryCriteria = new Criteria([$categoryId]);
+        // Lade Kategorien mit Media und Translations
+        $categoryCriteria = new Criteria($categoryIds);
         $categoryCriteria->addAssociation('media');
         $categoryCriteria->addAssociation('translations');
-        // WICHTIG: Lade auch Produkte für Produktbilder (Cover-Bilder)
-        // Aber nicht direkt als Association, sondern separat über ProductCriteria
-
-        // Lade Produkte der Kategorie (für Produktbilder)
-        // WICHTIG: Verwende SalesChannel-Kontext für korrekte Produkt-Filterung
-        $productCriteria = new Criteria();
-        $productCriteria->addFilter(new EqualsFilter('product.categories.id', $categoryId));
-        $productCriteria->addFilter(new EqualsFilter('product.active', true));
-        // WICHTIG: ProductAvailableFilter für SalesChannel-spezifische Produkt-Filterung
-        $productCriteria->addFilter(
-            new ProductAvailableFilter(
-                $resolverContext->getSalesChannelContext()->getSalesChannelId(),
-                ProductVisibilityDefinition::VISIBILITY_ALL
-            )
-        );
-        $productCriteria->addAssociation('cover');
-        $productCriteria->addAssociation('cover.media');
-        $productCriteria->addSorting(new FieldSorting('product.createdAt', FieldSorting::DESCENDING));
-        $productCriteria->setLimit(20); // Maximal 20 Produkte für Slider
-
         $criteriaCollection = new CriteriaCollection();
-        $criteriaCollection->add('category_' . $slot->getUniqueIdentifier(), CategoryDefinition::class, $categoryCriteria);
-        // WICHTIG: Verwende SalesChannelProductDefinition für SalesChannel-Kontext
-        $criteriaCollection->add('products_' . $slot->getUniqueIdentifier(), SalesChannelProductDefinition::class, $productCriteria);
+        $criteriaCollection->add('categories_' . $slot->getUniqueIdentifier(), CategoryDefinition::class, $categoryCriteria);
 
         return $criteriaCollection;
     }
 
     public function enrich(CmsSlotEntity $slot, ResolverContext $resolverContext, ElementDataCollection $result): void
     {
-        // WICHTIG: Prüfe ob Block ein "category-slider" Block ist
-        $block = $slot->getCmsBlock();
-        if (!$block || $block->getType() !== 'category-slider') {
+        // Hole categoryIds aus Element-Config
+        $config = $slot->getConfig();
+        if (!$config || !isset($config['categoryIds']) || !$config['categoryIds']['value']) {
             return;
         }
 
-        $customFields = $block->getCustomFields();
-        if (!$customFields || !isset($customFields['categoryId']) || !$customFields['categoryId']) {
+        $categoryIds = $config['categoryIds']['value'];
+        if (!is_array($categoryIds) || empty($categoryIds)) {
             return;
         }
 
-        $categoryId = $customFields['categoryId'];
-        $imageCount = (int)($customFields['imageCount'] ?? 1);
-
-        // Lade Kategorie
-        $categoryResult = $result->get('category_' . $slot->getUniqueIdentifier());
-        if (!$categoryResult) {
+        // Lade Kategorien
+        $categoriesResult = $result->get('categories_' . $slot->getUniqueIdentifier());
+        if (!$categoriesResult) {
             return;
         }
-
-        $category = $categoryResult->get($categoryId);
-        if (!$category) {
-            return;
-        }
-
-        // WICHTIG: Kategorie als Extension speichern (für Template-Zugriff auf categoryTitle)
-        // Nutze ArrayStruct für einfache Werte-Speicherung
-        $slot->addArrayExtension('category', ['value' => $category]);
 
         // Erstelle ImageSliderStruct
         $imageSlider = new ImageSliderStruct();
         $slot->setData($imageSlider);
 
-        // Lade Produkte
-        $productsResult = $result->get('products_' . $slot->getUniqueIdentifier());
-        $products = $productsResult ? $productsResult->getEntities() : null;
+        // Erstelle Slider-Items für jede Kategorie (mit Kategorie-Media)
+        foreach ($categoryIds as $categoryId) {
+            $category = $categoriesResult->get($categoryId);
+            
+            if (!$category || !$category->getMedia()) {
+                continue; // Skip categories ohne Media
+            }
 
-        $sliderItems = [];
-
-        // WICHTIG: Priorität: 1. Kategorie-Media, 2. Produktbilder
-        // Option 1: Kategorie-Media verwenden (falls vorhanden)
-        if ($category->getMedia()) {
             $sliderItem = new ImageSliderItemStruct();
             $sliderItem->setMedia($category->getMedia());
-            $sliderItems[] = $sliderItem;
-        }
-
-        // Option 2: Produktbilder verwenden (falls vorhanden und imageCount erlaubt)
-        // WICHTIG: Wenn imageCount = 2, lade 2 Produktbilder (zusätzlich zu Kategorie-Media)
-        if ($products && $products->count() > 0) {
-            // Berechne wie viele Produktbilder geladen werden sollen
-            // Wenn Kategorie-Media vorhanden: imageCount - 1, sonst imageCount
-            $productLimit = $imageCount;
-            if ($category->getMedia()) {
-                // Kategorie-Media zählt als 1 Bild, daher -1 für Produktbilder
-                $productLimit = max(0, $imageCount - 1);
-            }
             
-            $productCount = 0;
-            foreach ($products as $product) {
-                if ($productCount >= $productLimit) {
-                    break;
-                }
-
-                $cover = $product->getCover();
-                if ($cover && $cover->getMedia()) {
-                    $sliderItem = new ImageSliderItemStruct();
-                    $sliderItem->setMedia($cover->getMedia());
-                    $sliderItems[] = $sliderItem;
-                    $productCount++;
-                }
-            }
-        }
-
-        // Füge Slider-Items hinzu
-        foreach ($sliderItems as $sliderItem) {
+            // WICHTIG: Speichere Kategorie-Titel für Overlay (als customFields)
+            $sliderItem->setCustomFields([
+                'categoryTitle' => $category->getTranslated()['name'] ?? $category->getName(),
+                'categoryId' => $categoryId,
+            ]);
+            
             $imageSlider->addSliderItem($sliderItem);
         }
     }

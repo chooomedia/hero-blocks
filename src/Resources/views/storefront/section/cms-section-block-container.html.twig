@@ -6,20 +6,32 @@
     {% set isHeroTwoColumns = block.type == 'hero-two-columns' %}
     {% set containerClass = 'cms-block-container' %}
     
-    {# WICHTIG: Bootstrap container Klasse hinzufügen wenn full-width und hero-two-columns #}
-    {% if isFullWidth and isHeroTwoColumns %}
-        {% set containerClass = containerClass ~ ' container' %}
-    {% endif %}
-    
     {# WICHTIG: Kein Padding bei full-width und hero-two-columns #}
     {% set shouldHavePadding = padding and not (isFullWidth and isHeroTwoColumns) %}
     
+    {# WICHTIG: Inline-Style für full-width ohne padding #}
+    {% set containerStyle = '' %}
+    {% if shouldHavePadding %}
+        {% set containerStyle = containerStyle ~ 'padding: ' ~ padding ~ ';' %}
+    {% elseif isFullWidth and isHeroTwoColumns %}
+        {# WICHTIG: KEIN padding, margin für full-width! #}
+        {% set containerStyle = containerStyle ~ 'padding: 0; margin: 0; max-width: 100%; width: 100%;' %}
+    {% endif %}
+    
     <div class="{{ containerClass }}"
-         style="{% if shouldHavePadding %}padding: {{ padding }};{% endif %}">
+         {% if isHeroTwoColumns %}data-hero-two-columns-parallax="true"{% endif %}
+         {% if containerStyle %}style="{{ containerStyle }}"{% endif %}>
         {% block section_content_block_row %}
-            <div class="cms-block-container-row row cms-row {{ sidebarClasses }}">
-                {% sw_include '@Storefront/storefront/block/cms-block-' ~ block.type ~ '.html.twig' ignore missing %}
-            </div>
+            {# WICHTIG: .row immer rendern außer bei full-width + hero-two-columns #}
+            {% if not (isFullWidth and isHeroTwoColumns) %}
+                <div class="cms-block-container-row row cms-row {{ sidebarClasses }}">
+            {% endif %}
+            
+            {% sw_include '@Storefront/storefront/block/cms-block-' ~ block.type ~ '.html.twig' ignore missing %}
+            
+            {% if not (isFullWidth and isHeroTwoColumns) %}
+                </div>
+            {% endif %}
         {% endblock %}
         
         {# WICHTIG: Audio-Icon außerhalb der .row rendern (nur für hero-two-columns) #}

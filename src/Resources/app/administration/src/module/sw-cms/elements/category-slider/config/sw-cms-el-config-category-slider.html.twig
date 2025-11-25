@@ -1,17 +1,16 @@
 {% block sw_cms_el_config_category_slider %}
 <div class="sw-cms-el-config-category-slider" v-if="element && element.config">
-    {# WICHTIG: Kategorie-Auswahl (aus Element config) - HAUPTFEATURE #}
+    {# WICHTIG: Kategorie-Mehrfachauswahl (aus Element config) - HAUPTFEATURE #}
     {% block sw_cms_el_config_category_slider_category %}
-    <sw-category-tree-field
-        v-if="categoryCollection !== null && categoryCriteria !== null"
-        :categories-collection="categoryCollection"
-        :category-criteria="categoryCriteria"
-        :single-select="true"
+    <sw-entity-multi-select
+        entity="category"
+        v-model:ids="selectedCategoryIds"
+        :criteria="categoryCriteria"
         :placeholder="$tc('sw-cms.elements.categorySlider.config.category.placeholder')"
         :label="$tc('sw-cms.elements.categorySlider.config.category.label')"
         :help-text="$tc('sw-cms.elements.categorySlider.config.category.helpText')"
-        @selection-add="onCategoryChange"
-        @selection-remove="onCategoryChange(null)"
+        label-property="name"
+        @update:ids="onCategoryChange"
     />
     {% endblock %}
     

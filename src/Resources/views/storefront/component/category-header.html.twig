@@ -1,0 +1,176 @@
+{# WICHTIG: Category Header Component - Full-width mit Parallax #}
+{% set category = page.category %}
+{% set categoryMedia = category.media %}
+
+{# WICHTIG: Inline Styles für Category Header #}
+<style>
+    /* WICHTIG: Category Header Styling - Full-width mit Parallax */
+    .category-header {
+        position: relative;
+        width: 100%;
+        height: 60vh;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        
+        /* WICHTIG: Full-width ohne Spacings */
+        margin-left: calc(-50vw + 50%);
+        margin-right: calc(-50vw + 50%);
+        width: 100vw;
+    }
+    
+    .category-header__image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 120%;
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+        will-change: transform;
+    }
+    
+    .category-header__title.sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+    
+    /* WICHTIG: Responsive Anpassungen */
+    @media screen and (max-width: 767px) {
+        .category-header {
+            height: 50vh;
+        }
+        .category-header__image {
+            height: 130%;
+        }
+    }
+    
+    @media screen and (min-width: 768px) and (max-width: 1199px) {
+        .category-header {
+            height: 55vh;
+        }
+    }
+    
+    /* WICHTIG: Print Styles */
+    @media print {
+        .category-header {
+            height: auto;
+        }
+        .category-header__image {
+            position: relative;
+            height: 400px;
+            transform: none !important;
+        }
+    }
+</style>
+
+{# WICHTIG: Nur rendern wenn Kategorie ein Bild hat #}
+{% if categoryMedia and categoryMedia.url %}
+    <div class="category-header" data-category-header-parallax="true">
+        {# WICHTIG: Full-width Background Image mit Parallax #}
+        <div class="category-header__image" 
+             data-parallax-element="true"
+             style="background-image: url('{{ categoryMedia.url }}');">
+        </div>
+        
+        {# WICHTIG: Category Title - Screen Reader Only (sr-only) #}
+        <h1 class="category-header__title sr-only">
+            {{ category.translated.name }}
+        </h1>
+    </div>
+    
+    {# WICHTIG: Inline JavaScript für Parallax-Effekt #}
+    <script>
+        (function() {
+            'use strict';
+            
+            // WICHTIG: Namespace-Check um Doppel-Initialisierung zu verhindern
+            if (window.HeroBlocksCategoryHeaderInitialized) {
+                console.log('[HeroBlocks] Category Header Parallax bereits initialisiert');
+                return;
+            }
+            window.HeroBlocksCategoryHeaderInitialized = true;
+            
+            function initCategoryHeaderParallax() {
+                console.log('[HeroBlocks] Initialisiere Category Header Parallax...');
+                
+                const header = document.querySelector('[data-category-header-parallax="true"]');
+                const parallaxElement = header ? header.querySelector('[data-parallax-element="true"]') : null;
+                
+                if (!header || !parallaxElement) {
+                    console.log('[HeroBlocks] Kein Category Header gefunden');
+                    return;
+                }
+                
+                console.log('[HeroBlocks] ✓ Category Header gefunden');
+                
+                // WICHTIG: Throttle für Performance
+                let ticking = false;
+                
+                function updateParallax() {
+                    const headerRect = header.getBoundingClientRect();
+                    const headerTop = headerRect.top;
+                    const headerHeight = headerRect.height;
+                    const windowHeight = window.innerHeight;
+                    
+                    // WICHTIG: Parallax nur wenn Header sichtbar ist
+                    if (headerTop > windowHeight || headerTop + headerHeight < 0) {
+                        return;
+                    }
+                    
+                    // WICHTIG: Berechne Scroll Progress (0 = oben, 1 = unten)
+                    // Wenn Header am oberen Viewport-Rand ist: progress = 0
+                    // Wenn Header komplett aus Viewport verschwindet: progress = 1
+                    const scrolled = -headerTop;
+                    const maxScroll = headerHeight;
+                    let progress = scrolled / maxScroll;
+                    
+                    // WICHTIG: Progress zwischen 0 und 1 clampen
+                    progress = Math.max(0, Math.min(1, progress));
+                    
+                    // WICHTIG: Parallax Transform berechnen
+                    // translateY von 0% (oben) zu -30% (unten) für subtilen Effekt
+                    const translateY = progress * -30;
+                    
+                    // WICHTIG: Transform anwenden
+                    parallaxElement.style.transform = `translateY(${translateY}%)`;
+                    
+                    ticking = false;
+                }
+                
+                function requestTick() {
+                    if (!ticking) {
+                        window.requestAnimationFrame(updateParallax);
+                        ticking = true;
+                    }
+                }
+                
+                // WICHTIG: Event Listeners mit Passive Flag für Performance
+                window.addEventListener('scroll', requestTick, { passive: true });
+                window.addEventListener('resize', requestTick, { passive: true });
+                
+                // WICHTIG: Initial Update
+                updateParallax();
+                
+                console.log('[HeroBlocks] ✓ Category Header Parallax initialisiert');
+            }
+            
+            // WICHTIG: Warte bis DOM ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initCategoryHeaderParallax);
+            } else {
+                // DOM bereits geladen, starte sofort
+                initCategoryHeaderParallax();
+            }
+        })();
+    </script>
+{% endif %}
+

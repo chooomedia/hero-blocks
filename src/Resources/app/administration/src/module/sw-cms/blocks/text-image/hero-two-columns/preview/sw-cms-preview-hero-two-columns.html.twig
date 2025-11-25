@@ -1,20 +1,22 @@
 {% block sw_cms_preview_hero_two_columns %}
 <div class="sw-cms-preview-hero-two-columns" :class="previewClasses">
-    {# WICHTIG: Background Images für Preview (nur bei two-images Mode) #}
+    {# WICHTIG: Background Images oder CSS für Preview (nur bei two-images Mode) #}
     <template v-if="block.customFields && block.customFields.backgroundMode === 'two-images'">
+        {# Background Left: Image oder CSS Code #}
         <div 
-            v-if="backgroundImageLeftUrl" 
+            v-if="hasBackgroundLeft" 
             class="sw-cms-preview-hero-two-columns__background sw-cms-preview-hero-two-columns__background--left"
-            :style="{ backgroundImage: 'url(' + backgroundImageLeftUrl + ')' }">
+            :style="backgroundLeftStyle">
         </div>
+        {# Background Right: Image oder CSS Code #}
         <div 
-            v-if="backgroundImageRightUrl" 
+            v-if="hasBackgroundRight" 
             class="sw-cms-preview-hero-two-columns__background sw-cms-preview-hero-two-columns__background--right"
-            :style="{ backgroundImage: 'url(' + backgroundImageRightUrl + ')' }">
+            :style="backgroundRightStyle">
         </div>
     </template>
     
-    {# WICHTIG: Reihenfolge basierend auf layoutDesktop #}
+    {# WICHTIG: Content nebeneinander - Reihenfolge basierend auf layoutDesktop #}
     <template v-if="layoutDesktop === 'text-left'">
         {# Text zuerst, dann Bild #}
         <div class="sw-cms-preview-hero-two-columns__right">
@@ -30,16 +32,16 @@
     </template>
     <template v-else>
         {# Bild zuerst, dann Text (Standard) #}
-    <div class="sw-cms-preview-hero-two-columns__left">
-        <img
+        <div class="sw-cms-preview-hero-two-columns__left">
+            <img
                 :src="assetFilter('/administration/administration/static/img/cms/preview_mountain_small.jpg')"
-            alt="Preview"
-        >
-    </div>
-    <div class="sw-cms-preview-hero-two-columns__right">
-        <h2>Lorem Ipsum</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-    </div>
+                alt="Preview"
+            >
+        </div>
+        <div class="sw-cms-preview-hero-two-columns__right">
+            <h2>Lorem Ipsum</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </div>
     </template>
 </div>
 {% endblock %}

@@ -41,12 +41,12 @@
         </input-field>
         <input-field type="bool">
             <name>enableMegaMenu</name>
-            <label lang="de-DE">Mega Menu Block aktivieren</label>
-            <label>Enable Mega Menu Block</label>
-            <defaultValue>false</defaultValue>
+            <label lang="de-DE">Mega Menu aktivieren</label>
+            <label>Enable Mega Menu</label>
+            <defaultValue>true</defaultValue>
             <disabled>false</disabled>
-            <helpText lang="de-DE">Erweiterte Navigations-Blöcke mit Produkten, Widgets und Instagram Feed Support.</helpText>
-            <helpText>Advanced navigation block with products, widgets, and Instagram feed support.</helpText>
+            <helpText lang="de-DE">Aktiviert das erweiterte Mega Menu für die Navigation mit Produkten, Widgets und Instagram Feed Support.</helpText>
+            <helpText>Enables the advanced Mega Menu for navigation with products, widgets, and Instagram feed support.</helpText>
         </input-field>
         <input-field type="bool">
             <name>enableCategorySlider</name>
@@ -77,8 +77,8 @@
             <label>Link Color</label>
             <placeholder lang="de-DE">#000000 (leer = Theme Default, nur verfügbar wenn Mega Menu aktiviert)</placeholder>
             <placeholder>#000000 (empty = Theme Default, only available when Mega Menu enabled)</placeholder>
-            <helpText lang="de-DE">Farbe für Navigation-Links im Header Mega Menu. Leer lassen für Theme-Standard. Diese Einstellungen sind nur verfügbar, wenn "Mega Menu Block aktivieren" aktiviert ist.</helpText>
-            <helpText>Color for navigation links in Header Mega Menu. Leave empty for theme default. These settings are only available when "Enable Mega Menu Block" is enabled.</helpText>
+            <helpText lang="de-DE">Farbe für Navigation-Links im Header Mega Menu. Leer lassen für Theme-Standard. Diese Einstellungen sind nur verfügbar, wenn "Mega Menu aktivieren" aktiviert ist.</helpText>
+            <helpText>Color for navigation links in Header Mega Menu. Leave empty for theme default. These settings are only available when "Enable Mega Menu" is enabled.</helpText>
         </input-field>
         
         <input-field type="text">
@@ -112,14 +112,7 @@
             <helpText>Vertical padding for Mega Menu dropdowns (top/bottom). Default: 2rem</helpText>
         </input-field>
         
-        <input-field type="bool">
-            <name>enableLanguageSwitcher</name>
-            <label lang="de-DE">Language Switcher aktivieren</label>
-            <label>Enable Language Switcher</label>
-            <defaultValue>true</defaultValue>
-            <helpText lang="de-DE">Aktiviert den Language Switcher im Header (Desktop). Wenn deaktiviert, wird der Language Switcher nicht angezeigt.</helpText>
-            <helpText>Enables the Language Switcher in the header (desktop). If disabled, the Language Switcher will not be displayed.</helpText>
-        </input-field>
+        <!-- WICHTIG: Language Switcher wird IMMER angezeigt wenn > 1 Sprache vorhanden (kein Toggle mehr) -->
         
         <!-- WICHTIG: Social Media Links für Header Icons (Instagram, Facebook, YouTube) -->
         <input-field type="text">
