@@ -1,0 +1,76 @@
+{% block block_hero_video_extended %}
+    {# WICHTIG: Config-Werte aus block.customFields lesen (NICHT block.config!) #}
+    {# CmsBlockEntity nutzt EntityCustomFieldsTrait - Config wird in customFields gespeichert #}
+    
+    {# Video Settings #}
+    {% set autoplay = (block.customFields.autoplay is defined) ? block.customFields.autoplay : true %}
+    {% set loop = (block.customFields.loop is defined) ? block.customFields.loop : true %}
+    {% set muted = (block.customFields.muted is defined) ? block.customFields.muted : true %}
+    {% set controls = (block.customFields.controls is defined) ? block.customFields.controls : false %}
+    {% set poster = (block.customFields.poster is defined) ? block.customFields.poster : null %}
+    
+    {# Min Height #}
+    {% set minHeight = null %}
+    {% if block.customFields.minHeight is defined and block.customFields.minHeight is not null and block.customFields.minHeight is not empty %}
+        {% set minHeightValue = block.customFields.minHeight|trim %}
+        {% if minHeightValue|length > 0 %}
+            {% set minHeight = minHeightValue %}
+        {% endif %}
+    {% endif %}
+    
+    {# Overlay Opacity #}
+    {% set overlayOpacity = (block.customFields.overlayOpacity is defined) ? block.customFields.overlayOpacity : '0.3' %}
+    
+    {# Content Alignment #}
+    {% set contentAlignment = (block.customFields.contentAlignment is defined) ? block.customFields.contentAlignment : 'center' %}
+    
+    <div class="cms-block-hero-video-extended" 
+         data-hero-video-extended
+         {% if minHeight %}style="min-height: {{ minHeight }};"{% endif %}>
+        
+        {% block block_hero_video_extended_video %}
+            {# Video Slot - Hintergrund #}
+            {% set videoElement = block.slots.getSlot('video') %}
+            {% if videoElement and videoElement.type %}
+                <div class="hero-video-extended__video-wrapper">
+                    <div class="hero-video-extended__video-container">
+                        {% sw_include '@Storefront/storefront/element/cms-element-' ~ videoElement.type ~ '.html.twig' ignore missing %}
+                    </div>
+                    
+                    {# Overlay für bessere Lesbarkeit #}
+                    <div class="hero-video-extended__overlay" 
+                         style="opacity: {{ overlayOpacity }};"></div>
+                </div>
+            {% endif %}
+        {% endblock %}
+        
+        {% block block_hero_video_extended_content %}
+            {# Content Slot - Overlay #}
+            {% set contentElement = block.slots.getSlot('content') %}
+            {% if contentElement and contentElement.type %}
+                {% set alignmentClass = 'align-items-' ~ contentAlignment %}
+                
+                <div class="hero-video-extended__content-wrapper {{ alignmentClass }}">
+                    {# WICHTIG: Bei full-width Section: Container um Content für innere Breite #}
+                    {% set isFullWidth = section.sizingMode == 'full_width' %}
+                    {% if isFullWidth %}
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-lg-8 col-xl-6">
+                    {% endif %}
+                    
+                    <div class="hero-video-extended__content">
+                        {% sw_include '@Storefront/storefront/element/cms-element-' ~ contentElement.type ~ '.html.twig' ignore missing %}
+                    </div>
+                    
+                    {% if isFullWidth %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% endblock %}
+    </div>
+{% endblock %}
+

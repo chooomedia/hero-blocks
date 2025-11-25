@@ -4,6 +4,23 @@
             "heroSlider": {
                 "ariaLabel": "Hero slider containing %total% items",
                 "skipHeroSlider": "Skip hero slider"
+            },
+            "categorySlider": {
+                "ariaLabel": "Category slider containing %total% items",
+                "noImages": "No images available",
+                "skipCategorySlider": "Skip category slider"
+            },
+            "instagramFeed": {
+                "ariaLabel": "Instagram Feed",
+                "viewPost": "View Instagram post",
+                "empty": {
+                    "title": "No Instagram posts available",
+                    "description": "Please configure your Instagram API credentials in the plugin settings."
+                }
+            },
+            "imageGallery": {
+                "ariaLabel": "Image gallery containing %total% items",
+                "skipImageGallery": "Skip image gallery"
             }
         }
     },

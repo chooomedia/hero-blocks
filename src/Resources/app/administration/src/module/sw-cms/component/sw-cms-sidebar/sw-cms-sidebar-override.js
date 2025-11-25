@@ -39,7 +39,7 @@ Shopware.Component.override('sw-cms-sidebar', {
 
                     // WICHTIG: Zusätzliche Filter für Hero Blocks basierend auf System-Config
                     // Hero Block Category Slider Block
-                    if (name === 'category-slider') {
+                    if (name === 'hero-category-slider') {
                         if (!this.heroBlocksConfig.enableCategorySlider) {
                             return false;
                         }

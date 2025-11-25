@@ -1,0 +1,24 @@
+{% block sw_cms_preview_hero_video_extended %}
+{# Mini-Vorschau für Sidebar - Video Background mit Play Icon und Content Overlay #}
+<div class="sw-cms-preview-hero-video-extended">
+    {# Background Video Preview (simuliert mit Gradient) #}
+    <div class="sw-cms-preview-hero-video-extended__background">
+        {# Simuliertes Video-Pattern #}
+        <div class="sw-cms-preview-hero-video-extended__video-pattern"></div>
+        
+        {# Play Icon (zentriert, groß) #}
+        <div class="sw-cms-preview-hero-video-extended__play-icon">
+            <mt-icon name="solid-play-circle-s" size="32"></mt-icon>
+        </div>
+        
+        {# Gradient Overlay #}
+        <div class="sw-cms-preview-hero-video-extended__overlay"></div>
+    </div>
+    
+    {# Content Overlay (zentriert unten) #}
+    <div class="sw-cms-preview-hero-video-extended__content">
+        <div class="sw-cms-preview-hero-video-extended__headline">Hero Video</div>
+        <div class="sw-cms-preview-hero-video-extended__text">Extended Features</div>
+    </div>
+</div>
+{% endblock %}

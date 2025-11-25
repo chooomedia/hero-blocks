@@ -23,7 +23,7 @@ class CategorySliderTypeDataResolver extends AbstractCmsElementResolver
 {
     public function getType(): string
     {
-        return 'image-gallery'; // Nutzt Standard image-gallery Element
+        return 'hero-category-slider'; // Hero Category Slider Element Type
     }
 
     public function collect(CmsSlotEntity $slot, ResolverContext $resolverContext): ?CriteriaCollection

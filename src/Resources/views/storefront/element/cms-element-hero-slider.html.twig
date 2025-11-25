@@ -127,7 +127,7 @@
                         {% block element_hero_slider_slide %}
                             {# Slide Item Container - WIE STANDARD IMAGE SLIDER #}
                             <div class="hero-slider-item-container">
-                                <div class="hero-slider-item{% if loop.first != true %} is-not-first{% endif %} is-{{ displayMode }}"{% if minHeight and displayMode == "cover" %} style="min-height: {{ minHeight|trim|replace({' ':''}) }}"{% endif %}>
+                                <div class="hero-slider-item is-{{ displayMode }}"{% if minHeight and displayMode == "cover" %} style="min-height: {{ minHeight|trim|replace({' ':''}) }}"{% endif %}>
                                     {% if slide.media %}
                                         {# Per-Slide Logo Image (aus Extension - bereits von DataResolver aufgelöst) - Robuste null Prüfung #}
                                         {% set logoMediaExt = slide.extensions.logoImage %}

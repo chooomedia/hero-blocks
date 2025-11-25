@@ -289,6 +289,26 @@
                             "helpText": "Speed of slide animation in milliseconds (100-1000)"
                         }
                     }
+                },
+                "heroVideoExtended": {
+                    "label": "Hero Video Extended (Coming Soon)",
+                    "placeholder": {
+                        "title": "Hero Video Extended Block",
+                        "hint": "Advanced video features (In Development)"
+                    },
+                    "config": {
+                        "comingSoon": "This feature is currently under development and will be available in a future release."
+                    }
+                },
+                "heroShoppingExperience": {
+                    "label": "Shopping Experience Blocks (In Development)",
+                    "placeholder": {
+                        "title": "Shopping Experience Block",
+                        "hint": "Advanced shopping features (In Development)"
+                    },
+                    "config": {
+                        "inDevelopment": "This feature is currently under development and will be available in a future release."
+                    }
                 }
             },
             "elements": {
@@ -352,10 +372,12 @@
                         },
                         "imageCount": {
                             "label": "Number of Images per Slide",
-                            "helpText": "Select whether 1 or 2 images should be displayed per slide",
+                            "helpText": "Select how many images should be displayed per slide (1-4)",
                             "options": {
                                 "one": "1 Image",
-                                "two": "2 Images"
+                                "two": "2 Images",
+                                "three": "3 Images",
+                                "four": "4 Images"
                             }
                         },
                         "imageWidth": {

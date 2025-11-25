@@ -1,0 +1,278 @@
+/**
+ * Hero Instagram Feed Component Styles
+ * 
+ * Styled nach Shopware Best Practices:
+ * - Mobile First (Base → Tablet → Desktop)
+ * - BEM Naming Convention
+ * - CSS Custom Properties für Theme-Integration
+ */
+
+.hero-instagram-feed {
+    position: relative;
+    width: 100%;
+    padding: 2rem 0;
+
+    // Title Section
+    &__title {
+        margin-bottom: 2rem;
+        text-align: center;
+
+        h2 {
+            font-family: var(--font-family-headline, 'Oswald', sans-serif);
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--color-text-primary, #1a202c);
+            margin: 0;
+
+            @media screen and (min-width: 768px) {
+                font-size: 2.5rem;
+            }
+        }
+    }
+
+    // Empty State
+    &__empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 2rem;
+        text-align: center;
+        min-height: 400px;
+        background: var(--color-gray-50, #f9fafb);
+        border-radius: 8px;
+
+        &-icon {
+            margin-bottom: 1.5rem;
+            opacity: 0.4;
+            color: var(--color-gray-400, #9ca3af);
+        }
+
+        &-text {
+            h3 {
+                font-size: 1.25rem;
+                font-weight: 600;
+                color: var(--color-text-primary, #1a202c);
+                margin: 0 0 0.5rem;
+            }
+
+            p {
+                font-size: 0.875rem;
+                color: var(--color-text-secondary, #6b7280);
+                margin: 0;
+            }
+        }
+    }
+}
+
+// Instagram Grid Layout
+.instagram-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--instagram-grid-columns, 4), 1fr);
+    gap: 1rem;
+
+    // Responsive Grid
+    @media screen and (max-width: 1023px) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media screen and (max-width: 767px) {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+
+    @media screen and (max-width: 479px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+// Instagram Slider Layout (nutzt base-slider von Shopware)
+.instagram-slider {
+    position: relative;
+
+    &-container {
+        // tinyslider container
+    }
+
+    // Navigation Controls Override (spezifisch für Instagram)
+    &-controls-container {
+        .base-slider-controls {
+            button {
+                background: var(--color-white, #fff);
+                border: 1px solid var(--color-gray-300, #d1d5db);
+                color: var(--color-text-primary, #1a202c);
+                transition: all 0.2s ease;
+
+                &:hover {
+                    background: var(--color-gray-50, #f9fafb);
+                    border-color: var(--color-gray-400, #9ca3af);
+                }
+            }
+        }
+    }
+
+    // Navigation Outside Position
+    &.has-nav-outside {
+        .instagram-slider-controls-prev {
+            &.is-nav-prev-outside {
+                left: -3rem;
+            }
+        }
+
+        .instagram-slider-controls-next {
+            &.is-nav-next-outside {
+                right: -3rem;
+            }
+        }
+    }
+}
+
+// Instagram Item (einzelner Post)
+.instagram-item {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: 8px;
+    background: var(--color-white, #fff);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+
+        .instagram-item__overlay {
+            opacity: 1;
+        }
+
+        .instagram-item__media img {
+            transform: scale(1.05);
+        }
+    }
+
+    // Link Wrapper
+    &__link {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    // Media Container (Bild oder Video)
+    &__media {
+        position: relative;
+        width: 100%;
+        padding-bottom: 100%; // 1:1 Aspect Ratio
+        overflow: hidden;
+        background: var(--color-gray-100, #f3f4f6);
+    }
+
+    &__image,
+    &__video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    // Video Play Icon
+    &__video-icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: var(--color-white, #fff);
+        opacity: 0.9;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    // Overlay (Likes & Comments)
+    &__overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0) 0%,
+            rgba(0, 0, 0, 0.7) 100%
+        );
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 1.5rem;
+        padding: 1rem;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 3;
+    }
+
+    &__stat {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--color-white, #fff);
+        font-size: 0.875rem;
+        font-weight: 600;
+
+        svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        &-count {
+            font-variant-numeric: tabular-nums;
+        }
+
+        &--likes {
+            svg {
+                fill: #ff4d4d; // Instagram Rot
+            }
+        }
+
+        &--comments {
+            // Standard Weiß
+        }
+    }
+
+    // Caption (optional)
+    &__caption {
+        padding: 1rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        color: var(--color-text-secondary, #6b7280);
+        background: var(--color-white, #fff);
+
+        // Ellipsis nach 2 Zeilen
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+}
+
+// Accessibility: Reduced Motion
+@media (prefers-reduced-motion: reduce) {
+    .instagram-item {
+        &:hover {
+            transform: none;
+        }
+
+        &__media img {
+            transition: none;
+        }
+    }
+}
+
+// Print Styles
+@media print {
+    .instagram-slider-controls-container,
+    .instagram-item__overlay {
+        display: none;
+    }
+}
+

@@ -1,0 +1,267 @@
+/**
+ * Hero Shopping Experience Component Styles
+ * 
+ * Styled nach Shopware Best Practices:
+ * - Mobile First (Base → Tablet → Desktop)
+ * - BEM Naming Convention
+ * - CSS Custom Properties für Theme-Integration
+ */
+
+.cms-block-hero-shopping-experience {
+    position: relative;
+    width: 100%;
+    padding: 2rem 0;
+    
+    @media screen and (min-width: 768px) {
+        padding: 3rem 0;
+    }
+    
+    @media screen and (min-width: 1024px) {
+        padding: 4rem 0;
+    }
+}
+
+// Content Section
+.hero-shopping-experience__content {
+    margin-bottom: 2rem;
+    
+    &--top {
+        text-align: center;
+        
+        h2, h3 {
+            font-family: var(--font-family-headline, 'Oswald', sans-serif);
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--color-text-primary, #1a202c);
+            margin-bottom: 1rem;
+            
+            @media screen and (min-width: 768px) {
+                font-size: 2.5rem;
+            }
+        }
+        
+        p {
+            font-size: 1rem;
+            color: var(--color-text-secondary, #6b7280);
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            
+            @media screen and (min-width: 768px) {
+                font-size: 1.125rem;
+            }
+        }
+    }
+    
+    &--bottom {
+        margin-top: 2rem;
+        margin-bottom: 0;
+        text-align: center;
+    }
+    
+    &--side {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
+        padding: 2rem;
+        background: var(--color-gray-50, #f9fafb);
+        border-radius: 8px;
+        
+        @media screen and (min-width: 1024px) {
+            padding: 3rem;
+        }
+    }
+}
+
+// Products Section
+.hero-shopping-experience__products {
+    position: relative;
+}
+
+// Grid Layout
+.hero-shopping-experience__products-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    
+    @media screen and (min-width: 768px) {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+    
+    @media screen and (min-width: 1024px) {
+        grid-template-columns: repeat(var(--product-columns, 4), 1fr);
+        gap: 2rem;
+    }
+    
+    // Product Box Styles
+    .product-box {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        
+        &:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+    }
+}
+
+// Slider Layout
+.hero-shopping-experience__products-slider {
+    position: relative;
+    
+    // Nutzt Shopware's base-slider Component
+    .product-slider-container {
+        // tinyslider container
+    }
+    
+    // Navigation Controls
+    .base-slider-controls {
+        button {
+            background: var(--color-white, #fff);
+            border: 1px solid var(--color-gray-300, #d1d5db);
+            color: var(--color-text-primary, #1a202c);
+            transition: all 0.2s ease;
+            
+            &:hover {
+                background: var(--color-gray-50, #f9fafb);
+                border-color: var(--color-gray-400, #9ca3af);
+            }
+        }
+    }
+    
+    // Navigation Outside Position
+    &[data-navigation-arrows="outside"] {
+        .base-slider-controls-prev {
+            left: -3rem;
+        }
+        
+        .base-slider-controls-next {
+            right: -3rem;
+        }
+    }
+}
+
+// Side by Side Layout
+.hero-shopping-experience__side-by-side {
+    .row {
+        align-items: stretch;
+    }
+    
+    @media screen and (max-width: 1023px) {
+        .hero-shopping-experience__content--side {
+            margin-bottom: 2rem;
+        }
+    }
+}
+
+// Product Card Enhancements (Integration mit Shopware Product Box)
+.hero-shopping-experience__products {
+    .product-box {
+        border-radius: 8px;
+        overflow: hidden;
+        background: var(--color-white, #fff);
+        
+        .product-image-wrapper {
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+        }
+        
+        .product-info {
+            padding: 1rem;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            color: var(--color-text-primary, #1a202c);
+            margin-bottom: 0.5rem;
+            
+            // Ellipsis nach 2 Zeilen
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .product-price {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--color-brand-primary, #189eff);
+        }
+        
+        .product-rating {
+            margin-top: 0.5rem;
+        }
+    }
+}
+
+// Loading State
+.hero-shopping-experience__loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+        color: var(--color-brand-primary, #189eff);
+    }
+}
+
+// Empty State
+.hero-shopping-experience__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+    min-height: 400px;
+    background: var(--color-gray-50, #f9fafb);
+    border-radius: 8px;
+    
+    &-icon {
+        margin-bottom: 1.5rem;
+        opacity: 0.4;
+        color: var(--color-gray-400, #9ca3af);
+        
+        svg {
+            width: 64px;
+            height: 64px;
+        }
+    }
+    
+    &-text {
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-text-primary, #1a202c);
+            margin: 0 0 0.5rem;
+        }
+        
+        p {
+            font-size: 0.875rem;
+            color: var(--color-text-secondary, #6b7280);
+            margin: 0;
+        }
+    }
+}
+
+// Accessibility: Reduced Motion
+@media (prefers-reduced-motion: reduce) {
+    .hero-shopping-experience__products-grid .product-box {
+        &:hover {
+            transform: none;
+        }
+    }
+}
+
+// Print Styles
+@media print {
+    .hero-shopping-experience__products-slider {
+        .base-slider-controls {
+            display: none;
+        }
+    }
+}
+

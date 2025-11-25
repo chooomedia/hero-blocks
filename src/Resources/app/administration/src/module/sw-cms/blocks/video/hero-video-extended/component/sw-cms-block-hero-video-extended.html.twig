@@ -1,0 +1,14 @@
+{% block sw_cms_block_hero_video_extended %}
+    <div class="sw-cms-block-hero-video-extended">
+        {# Video Slot #}
+        <div class="sw-cms-block-hero-video-extended__video">
+            <slot name="video"></slot>
+        </div>
+        
+        {# Content Overlay #}
+        <div class="sw-cms-block-hero-video-extended__content">
+            <slot name="content"></slot>
+        </div>
+    </div>
+{% endblock %}
+

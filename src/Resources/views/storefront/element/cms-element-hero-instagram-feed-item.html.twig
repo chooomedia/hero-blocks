@@ -1,0 +1,65 @@
+{% block element_hero_instagram_feed_item %}
+    <div class="instagram-item" 
+         data-post-id="{{ post.id }}"
+         itemscope
+         itemtype="https://schema.org/SocialMediaPosting">
+        
+        {% block element_hero_instagram_feed_item_link %}
+            <a href="{{ post.permalink }}" 
+               class="instagram-item__link"
+               target="_blank"
+               rel="noopener noreferrer"
+               aria-label="{{ 'component.cms.instagramFeed.viewPost'|trans|sw_sanitize }}">
+                
+                {% block element_hero_instagram_feed_item_media %}
+                    <div class="instagram-item__media">
+                        {# WICHTIG: Lazy Loading für Performance #}
+                        {% if post.media_type == 'VIDEO' %}
+                            <video class="instagram-item__video" 
+                                   poster="{{ post.thumbnail_url }}"
+                                   preload="none"
+                                   muted
+                                   playsinline>
+                                <source src="{{ post.media_url }}" type="video/mp4">
+                            </video>
+                            <div class="instagram-item__video-icon">
+                                {% sw_icon 'play-circle' style { size: '32px' } %}
+                            </div>
+                        {% else %}
+                            <img src="{{ post.media_url }}" 
+                                 alt="{{ post.caption|default('')|striptags|slice(0, 100) }}"
+                                 class="instagram-item__image"
+                                 loading="lazy"
+                                 itemprop="image">
+                        {% endif %}
+                        
+                        {# Overlay für Hover-Effekt #}
+                        <div class="instagram-item__overlay">
+                            {% if config.showLikes.value and post.like_count is defined %}
+                                <span class="instagram-item__stat instagram-item__stat--likes">
+                                    {% sw_icon 'heart' style { size: '20px' } %}
+                                    <span class="instagram-item__stat-count">{{ post.like_count }}</span>
+                                </span>
+                            {% endif %}
+                            {% if config.showComments.value and post.comments_count is defined %}
+                                <span class="instagram-item__stat instagram-item__stat--comments">
+                                    {% sw_icon 'comment' style { size: '20px' } %}
+                                    <span class="instagram-item__stat-count">{{ post.comments_count }}</span>
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endblock %}
+                
+                {% block element_hero_instagram_feed_item_caption %}
+                    {% if config.showCaptions.value and post.caption %}
+                        <div class="instagram-item__caption" itemprop="text">
+                            {{ post.caption|striptags|slice(0, 100) }}{% if post.caption|length > 100 %}...{% endif %}
+                        </div>
+                    {% endif %}
+                {% endblock %}
+            </a>
+        {% endblock %}
+    </div>
+{% endblock %}
+

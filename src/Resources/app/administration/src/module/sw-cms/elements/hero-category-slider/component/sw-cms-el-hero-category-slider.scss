@@ -1,0 +1,153 @@
+@import "~scss/variables";
+
+.sw-cms-el-hero-category-slider {
+    position: relative;
+    height: 100%;
+    max-height: 400px; // WICHTIG: Max height für Container
+    width: 100%;
+    background: var(--color-gray-50);
+    border: 1px solid var(--color-gray-300);
+    border-radius: 4px;
+    overflow: hidden; // WICHTIG: Verhindert Überlauf
+    
+    // WICHTIG: Preview für große Ansicht (wie Hero Block Slider) - Mini-Vorschau mit 1-4 Bildern nebeneinander
+    &__preview {
+        position: relative;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden; // WICHTIG: Verhindert Überlauf
+        
+        // Slider Preview - Dynamisch 1-4 Elemente nebeneinander
+        &-slider {
+            flex: 1;
+            min-height: 0; // WICHTIG: Erlaubt Flexbox-Shrinking
+            overflow: hidden; // WICHTIG: Verhindert Überlauf
+            position: relative;
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 0.5rem 0.5rem 0.5rem; // Top padding für Title
+            max-height: 340px; // WICHTIG: Reserviert Platz für Dots
+        }
+        
+        &-slide {
+            flex: 1;
+            min-height: 0; // WICHTIG: Erlaubt Flexbox-Shrinking
+            max-width: 48%; // WICHTIG: Default 48% Breite pro Slide
+            position: relative; // WICHTIG: Für absolute positionierten Titel
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden; // WICHTIG: Verhindert Überlauf
+            border-radius: 4px;
+            background: var(--color-gray-100);
+            
+            // Category Title INNERHALB des Slide (oben links mit Abstand, OHNE Background)
+            &-title {
+                position: absolute;
+                top: 0.75rem;
+                left: 0.75rem;
+                font-family: 'Oswald', sans-serif;
+                font-size: 14px;
+                font-weight: 600;
+                color: #fff;
+                z-index: 10;
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+                // WICHTIG: KEIN background - nur Text-Shadow für Lesbarkeit
+            }
+        }
+        
+        &-image {
+            width: 100%;
+            height: auto; // WICHTIG: Auto height für korrekte Proportionen
+            max-height: 300px; // WICHTIG: Maximal 300px Höhe
+            object-fit: contain; // WICHTIG: contain (vollständiges Bild sichtbar)
+            border-radius: 4px;
+        }
+        
+        // Navigation Dots (außerhalb unterhalb)
+        &-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.25rem;
+            padding: 0.5rem 0;
+            margin-top: auto;
+            
+            &-dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background-color: rgba(0, 0, 0, 0.2);
+                cursor: pointer;
+                transition: background-color 0.2s;
+                
+                &--active {
+                    background-color: var(--color-shopware-brand-500, #189eff);
+                }
+            }
+        }
+        
+        // Image Count Info
+        &-count {
+            position: absolute;
+            bottom: 2.5rem;
+            right: 0.5rem;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(0, 0, 0, 0.4);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            z-index: 10;
+        }
+    }
+    
+    // WICHTIG: Dynamische Breiten basierend auf imageCount
+    // 1 Bild: Volle Breite (100%)
+    &__preview.is-single-image &__preview-slide {
+        max-width: 100%;
+    }
+    
+    // 2 Bilder: Je 48% Breite (2 nebeneinander)
+    &__preview.is-double-image &__preview-slide {
+        max-width: 48%;
+    }
+    
+    // 3 Bilder: Je 31% Breite (3 nebeneinander)
+    &__preview.is-triple-image &__preview-slide {
+        max-width: 31%;
+    }
+    
+    // 4 Bilder: Je 23% Breite (4 nebeneinander)
+    &__preview.is-quad-image &__preview-slide {
+        max-width: 23%;
+    }
+    
+    // WICHTIG: Placeholder nur wenn KEINE Kategorie ausgewählt
+    &__placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        text-align: center;
+        color: var(--color-text-secondary-default);
+        height: 100%;
+        
+        &-icon {
+            margin-bottom: 12px;
+            opacity: 0.5;
+            
+            .mt-icon {
+                color: var(--color-gray-400);
+            }
+        }
+        
+        &-text {
+            font-size: 14px;
+            color: var(--color-text-secondary-default);
+        }
+    }
+}

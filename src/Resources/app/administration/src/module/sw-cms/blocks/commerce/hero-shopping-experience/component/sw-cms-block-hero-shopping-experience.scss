@@ -1,0 +1,16 @@
+@import "~scss/variables";
+
+.sw-cms-block-hero-shopping-experience {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    
+    &__content {
+        // Content styles
+    }
+    
+    &__products {
+        // Products grid/slider styles
+    }
+}
+

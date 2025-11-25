@@ -1,0 +1,128 @@
+{% block block_hero_shopping_experience %}
+    {# WICHTIG: Config-Werte aus block.customFields lesen (NICHT block.config!) #}
+    {# CmsBlockEntity nutzt EntityCustomFieldsTrait - Config wird in customFields gespeichert #}
+    
+    {# Layout Settings #}
+    {% set layout = (block.customFields.layout is defined) ? block.customFields.layout : 'content-top' %}
+    {% set productColumns = (block.customFields.productColumns is defined) ? block.customFields.productColumns : 4 %}
+    {% set showProductPrices = (block.customFields.showProductPrices is defined) ? block.customFields.showProductPrices : true %}
+    {% set showProductRatings = (block.customFields.showProductRatings is defined) ? block.customFields.showProductRatings : true %}
+    
+    {# Product Display Mode #}
+    {% set productDisplayMode = (block.customFields.productDisplayMode is defined) ? block.customFields.productDisplayMode : 'grid' %}
+    
+    {# Slider Settings (wenn productDisplayMode = 'slider') #}
+    {% set navigationArrows = (block.customFields.navigationArrows is defined) ? block.customFields.navigationArrows : 'outside' %}
+    {% set navigationDots = (block.customFields.navigationDots is defined) ? block.customFields.navigationDots : true %}
+    {% set autoSlide = (block.customFields.autoSlide is defined) ? block.customFields.autoSlide : false %}
+    {% set autoplayTimeout = (block.customFields.autoplayTimeout is defined) ? block.customFields.autoplayTimeout : 5000 %}
+    {% set speed = (block.customFields.speed is defined) ? block.customFields.speed : 300 %}
+    
+    <div class="cms-block-hero-shopping-experience" 
+         data-hero-shopping-experience
+         data-layout="{{ layout }}"
+         data-product-display-mode="{{ productDisplayMode }}">
+        
+        {% block block_hero_shopping_experience_wrapper %}
+            {% set contentElement = block.slots.getSlot('content') %}
+            {% set productsElement = block.slots.getSlot('products') %}
+            
+            {# Layout: Content Top #}
+            {% if layout == 'content-top' %}
+                {% if contentElement and contentElement.type %}
+                    <div class="hero-shopping-experience__content hero-shopping-experience__content--top">
+                        {% sw_include '@Storefront/storefront/element/cms-element-' ~ contentElement.type ~ '.html.twig' ignore missing %}
+                    </div>
+                {% endif %}
+                
+                {% if productsElement and productsElement.type %}
+                    <div class="hero-shopping-experience__products">
+                        {% if productDisplayMode == 'grid' %}
+                            <div class="hero-shopping-experience__products-grid" 
+                                 data-product-columns="{{ productColumns }}">
+                                {% sw_include '@Storefront/storefront/element/cms-element-' ~ productsElement.type ~ '.html.twig' ignore missing %}
+                            </div>
+                        {% else %}
+                            {# Slider Mode #}
+                            <div class="hero-shopping-experience__products-slider"
+                                 data-navigation-arrows="{{ navigationArrows }}"
+                                 data-navigation-dots="{{ navigationDots }}"
+                                 data-auto-slide="{{ autoSlide }}"
+                                 data-autoplay-timeout="{{ autoplayTimeout }}"
+                                 data-speed="{{ speed }}">
+                                {% sw_include '@Storefront/storefront/element/cms-element-' ~ productsElement.type ~ '.html.twig' ignore missing %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            
+            {# Layout: Content Bottom #}
+            {% elseif layout == 'content-bottom' %}
+                {% if productsElement and productsElement.type %}
+                    <div class="hero-shopping-experience__products">
+                        {% if productDisplayMode == 'grid' %}
+                            <div class="hero-shopping-experience__products-grid" 
+                                 data-product-columns="{{ productColumns }}">
+                                {% sw_include '@Storefront/storefront/element/cms-element-' ~ productsElement.type ~ '.html.twig' ignore missing %}
+                            </div>
+                        {% else %}
+                            {# Slider Mode #}
+                            <div class="hero-shopping-experience__products-slider"
+                                 data-navigation-arrows="{{ navigationArrows }}"
+                                 data-navigation-dots="{{ navigationDots }}"
+                                 data-auto-slide="{{ autoSlide }}"
+                                 data-autoplay-timeout="{{ autoplayTimeout }}"
+                                 data-speed="{{ speed }}">
+                                {% sw_include '@Storefront/storefront/element/cms-element-' ~ productsElement.type ~ '.html.twig' ignore missing %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+                
+                {% if contentElement and contentElement.type %}
+                    <div class="hero-shopping-experience__content hero-shopping-experience__content--bottom">
+                        {% sw_include '@Storefront/storefront/element/cms-element-' ~ contentElement.type ~ '.html.twig' ignore missing %}
+                    </div>
+                {% endif %}
+            
+            {# Layout: Side by Side #}
+            {% elseif layout == 'side-by-side' %}
+                <div class="hero-shopping-experience__side-by-side">
+                    <div class="row">
+                        {% if contentElement and contentElement.type %}
+                            <div class="col-lg-4">
+                                <div class="hero-shopping-experience__content hero-shopping-experience__content--side">
+                                    {% sw_include '@Storefront/storefront/element/cms-element-' ~ contentElement.type ~ '.html.twig' ignore missing %}
+                                </div>
+                            </div>
+                        {% endif %}
+                        
+                        {% if productsElement and productsElement.type %}
+                            <div class="col-lg-8">
+                                <div class="hero-shopping-experience__products">
+                                    {% if productDisplayMode == 'grid' %}
+                                        <div class="hero-shopping-experience__products-grid" 
+                                             data-product-columns="{{ productColumns }}">
+                                            {% sw_include '@Storefront/storefront/element/cms-element-' ~ productsElement.type ~ '.html.twig' ignore missing %}
+                                        </div>
+                                    {% else %}
+                                        {# Slider Mode #}
+                                        <div class="hero-shopping-experience__products-slider"
+                                             data-navigation-arrows="{{ navigationArrows }}"
+                                             data-navigation-dots="{{ navigationDots }}"
+                                             data-auto-slide="{{ autoSlide }}"
+                                             data-autoplay-timeout="{{ autoplayTimeout }}"
+                                             data-speed="{{ speed }}">
+                                            {% sw_include '@Storefront/storefront/element/cms-element-' ~ productsElement.type ~ '.html.twig' ignore missing %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endblock %}
+    </div>
+{% endblock %}
+

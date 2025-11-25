@@ -4,6 +4,23 @@
             "heroSlider": {
                 "ariaLabel": "Hero-Slider mit %total% Elementen",
                 "skipHeroSlider": "Hero-Slider überspringen"
+            },
+            "categorySlider": {
+                "ariaLabel": "Kategorie-Slider mit %total% Elementen",
+                "noImages": "Keine Bilder verfügbar",
+                "skipCategorySlider": "Kategorie-Slider überspringen"
+            },
+            "instagramFeed": {
+                "ariaLabel": "Instagram Feed",
+                "viewPost": "Instagram-Beitrag ansehen",
+                "empty": {
+                    "title": "Keine Instagram-Posts verfügbar",
+                    "description": "Bitte konfigurieren Sie Ihre Instagram API-Zugangsdaten in den Plugin-Einstellungen."
+                }
+            },
+            "imageGallery": {
+                "ariaLabel": "Bildergalerie mit %total% Elementen",
+                "skipImageGallery": "Bildergalerie überspringen"
             }
         }
     },

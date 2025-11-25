@@ -289,6 +289,26 @@
                             "helpText": "Geschwindigkeit der Slide-Animation in Millisekunden (100-1000)"
                         }
                     }
+                },
+                "heroVideoExtended": {
+                    "label": "Hero Video Extended (Coming Soon)",
+                    "placeholder": {
+                        "title": "Hero Video Extended Block",
+                        "hint": "Erweiterte Video-Funktionen (In Entwicklung)"
+                    },
+                    "config": {
+                        "comingSoon": "Dieses Feature ist aktuell in Entwicklung und wird in einer zukünftigen Version verfügbar sein."
+                    }
+                },
+                "heroShoppingExperience": {
+                    "label": "Shopping Experience Blocks (In Development)",
+                    "placeholder": {
+                        "title": "Shopping Experience Block",
+                        "hint": "Erweiterte Shopping-Funktionen (In Entwicklung)"
+                    },
+                    "config": {
+                        "inDevelopment": "Dieses Feature ist aktuell in Entwicklung und wird in einer zukünftigen Version verfügbar sein."
+                    }
                 }
             },
             "elements": {
@@ -352,10 +372,12 @@
                         },
                         "imageCount": {
                             "label": "Anzahl der Bilder pro Slide",
-                            "helpText": "Wählen Sie, ob 1 oder 2 Bilder pro Slide angezeigt werden sollen",
+                            "helpText": "Wählen Sie, wie viele Bilder pro Slide angezeigt werden sollen (1-4)",
                             "options": {
                                 "one": "1 Bild",
-                                "two": "2 Bilder"
+                                "two": "2 Bilder",
+                                "three": "3 Bilder",
+                                "four": "4 Bilder"
                             }
                         },
                         "imageWidth": {

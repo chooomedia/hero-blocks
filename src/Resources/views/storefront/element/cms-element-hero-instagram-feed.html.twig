@@ -1,0 +1,135 @@
+{% block element_hero_instagram_feed %}
+    {# WICHTIG: Config-Zugriff - block.customFields hat Priorität über element.config #}
+    {% set elementConfig = element.fieldConfig.elements %}
+    {% set blockConfig = block.customFields %}
+    {% set feedConfig = {
+        postLimit: { value: blockConfig.postLimit|default(elementConfig.postLimit.value|default(12)) },
+        displayMode: { value: blockConfig.displayMode|default(elementConfig.displayMode.value|default('grid')) },
+        columns: { value: blockConfig.columns|default(elementConfig.columns.value|default(4)) },
+        showCaptions: { value: blockConfig.showCaptions|default(elementConfig.showCaptions.value|default(true)) },
+        showLikes: { value: blockConfig.showLikes|default(elementConfig.showLikes.value|default(false)) },
+        showComments: { value: blockConfig.showComments|default(elementConfig.showComments.value|default(false)) },
+        navigationArrows: { value: blockConfig.navigationArrows|default(elementConfig.navigationArrows.value|default('outside')) },
+        navigationDots: { value: blockConfig.navigationDots|default(elementConfig.navigationDots.value|default(true)) },
+        autoSlide: { value: blockConfig.autoSlide|default(elementConfig.autoSlide.value|default(false)) },
+        autoplayTimeout: { value: blockConfig.autoplayTimeout|default(elementConfig.autoplayTimeout.value|default(5000)) },
+        speed: { value: blockConfig.speed|default(elementConfig.speed.value|default(300)) }
+    } %}
+    
+    {% set blockId = block.id %}
+    {% set displayMode = feedConfig.displayMode.value %}
+    {% set columns = feedConfig.columns.value %}
+    
+    <div class="cms-element-{{ element.type }}" data-hero-instagram-feed>
+        {% block element_hero_instagram_feed_wrapper %}
+            <div class="hero-instagram-feed" 
+                 data-display-mode="{{ displayMode }}"
+                 data-columns="{{ columns }}"
+                 data-show-captions="{{ feedConfig.showCaptions.value ? 'true' : 'false' }}"
+                 data-show-likes="{{ feedConfig.showLikes.value ? 'true' : 'false' }}"
+                 data-show-comments="{{ feedConfig.showComments.value ? 'true' : 'false' }}">
+                
+                {% block element_hero_instagram_feed_title %}
+                    {# Optional: Instagram Feed Title #}
+                    {% if block.customFields.title is defined and block.customFields.title %}
+                        <div class="hero-instagram-feed__title">
+                            <h2>{{ block.customFields.title }}</h2>
+                        </div>
+                    {% endif %}
+                {% endblock %}
+                
+                {% block element_hero_instagram_feed_content %}
+                    {# WICHTIG: Instagram Posts werden dynamisch via JavaScript geladen #}
+                    {# element.data.instagramPosts enthält die Posts vom Backend #}
+                    
+                    {% if element.data.instagramPosts is defined and element.data.instagramPosts|length > 0 %}
+                        {% if displayMode == 'slider' %}
+                            {# SLIDER MODUS #}
+                            {% set visibleNavValues = ['inside', 'outside'] %}
+                            {% set baseSliderOptions = {
+                                slider: {
+                                    controls: feedConfig.navigationArrows.value in visibleNavValues,
+                                    nav: feedConfig.navigationDots.value,
+                                    navPosition: 'bottom',
+                                    mouseDrag: true,
+                                    autoplay: feedConfig.autoSlide.value,
+                                    autoplayButtonOutput: false,
+                                    autoplayTimeout: feedConfig.autoplayTimeout.value ?: 5000,
+                                    autoplayHoverPause: true,
+                                    speed: feedConfig.speed.value ?: 300,
+                                    ariaLive: feedConfig.autoSlide.value ? false : true,
+                                    loop: false,
+                                    rewind: true,
+                                    responsive: {
+                                        640: { items: 2, gutter: 16 },
+                                        768: { items: 3, gutter: 20 },
+                                        1024: { items: 4, gutter: 24 }
+                                    }
+                                }
+                            } %}
+                            
+                            <div class="instagram-slider base-slider{% if feedConfig.navigationArrows.value == 'outside' %} has-nav-outside{% endif %}{% if feedConfig.navigationDots.value %} has-dots-bottom{% endif %}"
+                                 data-base-slider="true"
+                                 data-base-slider-options='{{ baseSliderOptions|json_encode }}'
+                                 role="region"
+                                 aria-label="{{ 'component.cms.instagramFeed.ariaLabel'|trans|sw_sanitize }}"
+                                 tabindex="0">
+                                
+                                <div class="instagram-slider-container" data-base-slider-container="true">
+                                    {% for post in element.data.instagramPosts %}
+                                        {% sw_include '@Storefront/storefront/element/cms-element-hero-instagram-feed-item.html.twig' with {
+                                            post: post,
+                                            config: feedConfig
+                                        } %}
+                                    {% endfor %}
+                                </div>
+                                
+                                {# Navigation Controls #}
+                                {% if element.data.instagramPosts|length > 1 and feedConfig.navigationArrows.value in visibleNavValues %}
+                                    <div class="instagram-slider-controls-container">
+                                        <div class="base-slider-controls" data-base-slider-controls="true">
+                                            <button class="base-slider-controls-prev instagram-slider-controls-prev{% if feedConfig.navigationArrows.value == 'outside' %} is-nav-prev-outside{% elseif feedConfig.navigationArrows.value == 'inside' %} is-nav-prev-inside{% endif %}"
+                                                    aria-label="{{ 'general.previous'|trans|striptags }}">
+                                                {% sw_icon 'arrow-head-left' %}
+                                            </button>
+                                            <button class="base-slider-controls-next instagram-slider-controls-next{% if feedConfig.navigationArrows.value == 'outside' %} is-nav-next-outside{% elseif feedConfig.navigationArrows.value == 'inside' %} is-nav-next-inside{% endif %}"
+                                                    aria-label="{{ 'general.next'|trans|striptags }}">
+                                                {% sw_icon 'arrow-head-right' %}
+                                            </button>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            {# GRID MODUS #}
+                            <div class="instagram-grid" 
+                                 data-columns="{{ columns }}"
+                                 style="--instagram-grid-columns: {{ columns }};">
+                                {% for post in element.data.instagramPosts %}
+                                    {% sw_include '@Storefront/storefront/element/cms-element-hero-instagram-feed-item.html.twig' with {
+                                        post: post,
+                                        config: feedConfig
+                                    } %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        {# EMPTY STATE - Placeholder #}
+                        {% block element_hero_instagram_feed_empty %}
+                            <div class="hero-instagram-feed__empty">
+                                <div class="hero-instagram-feed__empty-icon">
+                                    {% sw_icon 'instagram' style { size: '64px' } %}
+                                </div>
+                                <div class="hero-instagram-feed__empty-text">
+                                    <h3>{{ 'component.cms.instagramFeed.empty.title'|trans|sw_sanitize }}</h3>
+                                    <p>{{ 'component.cms.instagramFeed.empty.description'|trans|sw_sanitize }}</p>
+                                </div>
+                            </div>
+                        {% endblock %}
+                    {% endif %}
+                {% endblock %}
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}
+

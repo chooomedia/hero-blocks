@@ -1,0 +1,28 @@
+@import "~scss/variables";
+
+.sw-cms-block-hero-video-extended {
+    position: relative;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    
+    &__video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 0;
+    }
+    
+    &__content {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        padding: 2rem;
+    }
+}
+

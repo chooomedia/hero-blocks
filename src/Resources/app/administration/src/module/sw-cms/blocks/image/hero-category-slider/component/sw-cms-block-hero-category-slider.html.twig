@@ -1,0 +1,13 @@
+{% block sw_cms_block_hero_category_slider %}
+{# WICHTIG: Block Component - einfacher Wrapper wie Image Gallery Block #}
+{# WICHTIG: Standard-Buttons werden vom sw-cms-slot Component bereitgestellt #}
+{# WICHTIG: Block-Settings werden über den Parent sw-cms-block__config-overlay geöffnet #}
+{# WICHTIG: Slot MUSS IMMER gerendert werden, damit Standard-Buttons verfügbar sind! #}
+<div class="sw-cms-block-hero-category-slider">
+    {# WICHTIG: Slot für Element - IMMER rendern (auch wenn keine Kategorie ausgewählt) #}
+    {# WICHTIG: Standard-Buttons (sw-cms-slot__actions) werden automatisch vom Slot bereitgestellt #}
+    {# WICHTIG: Preview wird im Element-Component angezeigt (wenn keine Kategorie ausgewählt) #}
+    <slot name="categoryImages"></slot>
+</div>
+{% endblock %}
+

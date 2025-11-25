@@ -1,0 +1,156 @@
+/**
+ * Hero Video Extended Component Styles
+ * 
+ * Styled nach Shopware Best Practices:
+ * - Mobile First (Base → Tablet → Desktop)
+ * - BEM Naming Convention
+ * - CSS Custom Properties für Theme-Integration
+ */
+
+.cms-block-hero-video-extended {
+    position: relative;
+    width: 100%;
+    min-height: 60vh;
+    overflow: hidden;
+    
+    @media screen and (min-width: 768px) {
+        min-height: 70vh;
+    }
+    
+    @media screen and (min-width: 1024px) {
+        min-height: 80vh;
+    }
+}
+
+// Video Wrapper (Background)
+.hero-video-extended__video-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.hero-video-extended__video-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    
+    // Video Element (vom CMS Video Element)
+    video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+// Overlay für bessere Lesbarkeit
+.hero-video-extended__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.2) 0%,
+        rgba(0, 0, 0, 0.5) 100%
+    );
+    z-index: 1;
+}
+
+// Content Wrapper (Overlay)
+.hero-video-extended__content-wrapper {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    min-height: inherit;
+    padding: 3rem 1rem;
+    
+    @media screen and (min-width: 768px) {
+        padding: 4rem 2rem;
+    }
+    
+    // Alignment Options
+    &.align-items-top {
+        align-items: flex-start;
+    }
+    
+    &.align-items-center {
+        align-items: center;
+    }
+    
+    &.align-items-bottom {
+        align-items: flex-end;
+    }
+}
+
+// Content Container
+.hero-video-extended__content {
+    width: 100%;
+    max-width: 800px;
+    color: var(--color-white, #fff);
+    text-align: center;
+    
+    // Text Shadow für bessere Lesbarkeit
+    h1, h2, h3, h4, h5, h6 {
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        color: var(--color-white, #fff);
+        margin-bottom: 1rem;
+    }
+    
+    p {
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+        font-size: 1.125rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        
+        @media screen and (min-width: 768px) {
+            font-size: 1.25rem;
+        }
+    }
+    
+    // Buttons
+    .btn {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+        
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+    }
+}
+
+// Accessibility: Reduced Motion
+@media (prefers-reduced-motion: reduce) {
+    .hero-video-extended__content .btn {
+        &:hover {
+            transform: none;
+        }
+    }
+}
+
+// Print Styles
+@media print {
+    .cms-block-hero-video-extended {
+        min-height: 400px;
+        
+        video {
+            display: none;
+        }
+        
+        .hero-video-extended__overlay {
+            opacity: 0.1 !important;
+        }
+    }
+}
+

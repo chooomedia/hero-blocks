@@ -1,0 +1,39 @@
+{% block block_hero_category_slider %}
+    {% set element = block.slots.getSlot('categoryImages') %}
+    {% set columns = 1 %}
+    
+    {# Block Config aus customFields #}
+    {% set categoryId = block.customFields.categoryId|default(null) %}
+    {% set imageCount = block.customFields.imageCount|default('1') %}
+    {% set imageWidth = block.customFields.imageWidth|default('inner-full-width') %}
+    {% set navigationDots = block.customFields.navigationDots|default(true) %}
+    {% set navigationArrows = block.customFields.navigationArrows|default('outside') %}
+    {% set autoSlide = block.customFields.autoSlide|default(false) %}
+    {% set autoplayTimeout = block.customFields.autoplayTimeout|default(5000) %}
+    {% set speed = block.customFields.speed|default(300) %}
+    
+    {# Category Entity aus Element Extensions (wird von TypeDataResolver geladen) #}
+    {% set categoryExt = element.extensions.category %}
+    {% set category = (categoryExt and categoryExt.value) ? categoryExt.value : null %}
+    {% set categoryTitle = category ? category.translated.name : '' %}
+    
+    {# Image Width Classes #}
+    {% set widthClass = imageWidth == 'full-width' ? 'g-0 px-0' : '' %}
+    
+    <div class="col-12 {{ widthClass }} hero-category-slider-wrapper" data-cms-element-id="{{ element.id }}">
+        {% block block_hero_category_slider_inner %}
+            {# Category Title (oben links) #}
+            {% if categoryTitle %}
+                <div class="hero-category-slider-title">
+                    <h3 class="hero-category-slider-title__text">{{ categoryTitle }}</h3>
+                </div>
+            {% endif %}
+            
+            {# Slider Element #}
+            <div class="hero-category-slider-content">
+                {% sw_include '@Storefront/storefront/element/cms-element-' ~ element.type ~ '.html.twig' ignore missing %}
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}
+
