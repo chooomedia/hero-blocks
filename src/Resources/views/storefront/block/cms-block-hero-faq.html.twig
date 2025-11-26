@@ -1,5 +1,3 @@
-{% sw_extends '@Storefront/storefront/block/cms-block-text.html.twig' %}
-
 {% block block_hero_faq %}
     {% set element = block.slots.getSlot('content') %}
     {% set config = element.config %}
@@ -7,8 +5,9 @@
     {% set accordionBehavior = hero_faq_accordion_behavior(app.request.salesChannelContext.salesChannel.id) %}
     {% set openFirstItem = hero_faq_open_first_item(app.request.salesChannelContext.salesChannel.id) %}
     {% set richSnippetsEnabled = hero_faq_rich_snippets_enabled(app.request.salesChannelContext.salesChannel.id) %}
+    {% set colorTheme = hero_faq_color_theme(app.request.salesChannelContext.salesChannel.id) %}
 
-    <div class="cms-block-hero-faq"
+    <div class="cms-block-hero-faq cms-block-hero-faq--{{ colorTheme }}"
          data-hero-faq="true"
          data-hero-faq-options='{"accordionBehavior":"{{ accordionBehavior }}","openFirstItem":{{ openFirstItem ? 'true' : 'false' }}}'
          {% if richSnippetsEnabled and faqItems|length > 0 %}itemscope itemtype="https://schema.org/FAQPage"{% endif %}>
@@ -37,59 +36,170 @@
 
         <div class="cms-block-hero-faq__content">
             {% if faqItems|length > 0 %}
-                <div class="hero-faq-items">
+                {# Bootstrap Accordion-Style FAQ #}
+                <div class="accordion" id="faq-accordion-{{ block.id }}">
                     {% for faq in faqItems %}
-                        <div class="hero-faq-item{% if openFirstItem and loop.first %} is--open{% endif %}" 
+                        <div class="cms-block-hero-faq__content-item" 
                              {% if richSnippetsEnabled %}itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"{% endif %}>
-                            <div class="hero-faq-question">
-                                <button class="hero-faq-toggle"
-                                        type="button"
-                                        aria-expanded="{{ (openFirstItem and loop.first) ? 'true' : 'false' }}"
-                                        aria-controls="hero-faq-answer-{{ block.id }}-{{ loop.index }}"
-                                        data-faq-target="#hero-faq-answer-{{ block.id }}-{{ loop.index }}">
-                                    <span class="hero-faq-toggle-text" {% if richSnippetsEnabled %}itemprop="name"{% endif %}>
-                                        {{ faq.question }}
-                                    </span>
-                                    <svg class="hero-faq-toggle-icon" 
-                                         xmlns="http://www.w3.org/2000/svg" 
-                                         width="24" 
-                                         height="24" 
-                                         viewBox="0 0 24 24" 
-                                         fill="none" 
-                                         stroke="currentColor" 
-                                         stroke-width="2" 
-                                         stroke-linecap="round" 
-                                         stroke-linejoin="round"
-                                         aria-hidden="true">
-                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                    </svg>
-                                </button>
-                            </div>
-                            <div id="hero-faq-answer-{{ block.id }}-{{ loop.index }}"
-                                 class="hero-faq-answer"
-                                 role="region"
-                                 aria-labelledby="hero-faq-question-{{ block.id }}-{{ loop.index }}"
-                                 {% if richSnippetsEnabled %}itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"{% endif %}
-                                 {% if not (openFirstItem and loop.first) %}hidden{% endif %}>
-                                <div class="hero-faq-answer-content" {% if richSnippetsEnabled %}itemprop="text"{% endif %}>
-                                    {{ faq.answer|sw_sanitize }}
+                            
+                            {# FAQ Question Button - Bootstrap btn + custom dark/light bg #}
+                            <button class="btn w-100 text-start d-flex align-items-center p-3 border-bottom border-white rounded-0 faq-question-btn {% if colorTheme == 'dark' %}bg-dark text-white{% else %}bg-light text-dark{% endif %}"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#faq-answer-{{ block.id }}-{{ loop.index }}"
+                                    aria-expanded="{{ (openFirstItem and loop.first) ? 'true' : 'false' }}"
+                                    aria-controls="faq-answer-{{ block.id }}-{{ loop.index }}"
+                                    style="transition: all 0.3s ease; min-height: 56px; {% if colorTheme == 'dark' %}background-color: #4a4a4a;{% endif %}">
+                                
+                                <span class="faq-question-text flex-grow-1 me-2" {% if richSnippetsEnabled %}itemprop="name"{% endif %}>
+                                    {{ faq.question }}
+                                </span>
+                                
+                                {# Plus Icon (rotates to X when open) #}
+                                <svg class="faq-icon-toggle" 
+                                     width="20" 
+                                     height="20" 
+                                     viewBox="0 0 24 24" 
+                                     fill="none" 
+                                     stroke="currentColor" 
+                                     stroke-width="2.5" 
+                                     stroke-linecap="round" 
+                                     stroke-linejoin="round"
+                                     style="transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);"
+                                     aria-hidden="true">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                            </button>
+                            
+                            {# FAQ Answer - Bootstrap collapse #}
+                            <div id="faq-answer-{{ block.id }}-{{ loop.index }}"
+                                 class="collapse {% if openFirstItem and loop.first %}show{% endif %}"
+                                 data-bs-parent="{% if accordionBehavior == 'single' %}#faq-accordion-{{ block.id }}{% endif %}"
+                                 {% if richSnippetsEnabled %}itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"{% endif %}>
+                                <div class="p-3 bg-white faq-answer-content"
+                                     {% if richSnippetsEnabled %}itemprop="text"{% endif %}>
+                                    {{ faq.answer|raw }}
                                 </div>
                             </div>
                         </div>
                     {% endfor %}
                 </div>
             {% else %}
-                {# Fallback für leere FAQ-Liste (nur im Admin sichtbar) #}
-                <div class="hero-faq-empty">
+                {# Fallback für leere FAQ-Liste #}
+                <div class="text-center py-5">
                     <p class="text-muted">{{ 'component.cms.faq.empty.description'|trans }}</p>
                 </div>
             {% endif %}
-
-            <div class="cms-block-hero-faq__slot">
-                {% block block_hero_faq_inner %}
-                    {{ parent() }}
-                {% endblock %}
-            </div>
         </div>
+        
+        {# Inline CSS für Icon-Rotation und Hover-Effekte #}
+        <style>
+            /* WICHTIG: Kein Bootstrap Grid Padding! */
+            .cms-block-hero-faq {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                max-width: 100% !important;
+            }
+            
+            /* Icon-Rotation: Plus → X */
+            [data-bs-toggle="collapse"][aria-expanded="true"] svg {
+                transform: rotate(45deg) !important;
+            }
+            
+            /* Dark Theme Hover */
+            .cms-block-hero-faq--dark .faq-question-btn {
+                background-color: #4a4a4a !important;
+            }
+            .cms-block-hero-faq--dark .faq-question-btn:hover {
+                background-color: #5a5a5a !important;
+            }
+            .cms-block-hero-faq--dark .faq-question-btn:hover .faq-question-text {
+                color: var(--danger, #dc3545) !important; /* Theme-Rot */
+            }
+            .cms-block-hero-faq--dark .faq-question-btn:hover svg {
+                stroke: var(--danger, #dc3545) !important; /* SVG Icon wird auch rot */
+            }
+            
+            /* Light Theme Hover */
+            .cms-block-hero-faq--light .faq-question-btn {
+                background-color: #f8f9fa !important;
+            }
+            .cms-block-hero-faq--light .faq-question-btn:hover {
+                background-color: #e9ecef !important;
+            }
+            .cms-block-hero-faq--light .faq-question-btn:hover .faq-question-text {
+                color: var(--danger, #dc3545) !important; /* Theme-Rot */
+            }
+            .cms-block-hero-faq--light .faq-question-btn:hover svg {
+                stroke: var(--danger, #dc3545) !important; /* SVG Icon wird auch rot */
+            }
+            
+            /* Answer Border - sichtbar in gleicher Farbe wie Question-Background */
+            .faq-answer-content {
+                border: 1px solid #4a4a4a !important;
+            }
+            
+            /* Links in Answer - Theme-Farbe */
+            .faq-answer-content a {
+                color: var(--primary, #0563c1) !important;
+                text-decoration: underline;
+            }
+            .faq-answer-content a:hover {
+                color: var(--danger, #dc3545) !important;
+            }
+            
+            /* Text und Icon Styling */
+            .faq-question-text {
+                flex: 1 1 auto;
+                margin-right: 1rem;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                hyphens: auto;
+                line-height: 1.5;
+            }
+            
+            .faq-icon-toggle {
+                flex: 0 0 auto;
+                margin-left: auto;
+            }
+            
+            /* Mobile Optimierung: Text-Umbruch und Icon-Zentrierung */
+            @media (max-width: 767px) {
+                .faq-question-btn {
+                    min-height: 64px !important;
+                    padding: 1rem !important;
+                }
+                
+                .faq-question-text {
+                    margin-right: 0.75rem !important;
+                    font-size: 0.95rem !important;
+                }
+                
+                .faq-icon-toggle {
+                    width: 20px !important;
+                    height: 20px !important;
+                    flex-shrink: 0 !important;
+                }
+            }
+            
+            /* Extra-Small Mobile (iPhone SE, etc.) */
+            @media (max-width: 375px) {
+                .faq-question-btn {
+                    padding: 0.875rem !important;
+                    min-height: 60px !important;
+                }
+                
+                .faq-question-text {
+                    font-size: 0.875rem !important;
+                    margin-right: 0.625rem !important;
+                }
+                
+                .faq-icon-toggle {
+                    width: 18px !important;
+                    height: 18px !important;
+                }
+            }
+        </style>
     </div>
 {% endblock %}

@@ -106,12 +106,20 @@ Shopware.Component.register('sw-cms-block-config-hero-faq', {
 
     onQuestionInput(index, value) {
       console.log('[FAQ Config] Question input at index:', index, 'value:', value);
-      this.faqItems[index].question = value;
+      // WICHTIG: Neues Array erstellen für Shopware State Management
+      const newItems = [...this.faqItems];
+      newItems[index] = { ...newItems[index], question: value };
+      this.faqItems = newItems;
+      console.log('[FAQ Config] Question updated, triggering save');
     },
 
     onAnswerInput(index, value) {
       console.log('[FAQ Config] Answer input at index:', index);
-      this.faqItems[index].answer = value;
+      // WICHTIG: Neues Array erstellen für Shopware State Management  
+      const newItems = [...this.faqItems];
+      newItems[index] = { ...newItems[index], answer: value };
+      this.faqItems = newItems;
+      console.log('[FAQ Config] Answer updated, triggering save');
     },
   },
 });

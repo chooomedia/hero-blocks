@@ -520,8 +520,9 @@
                                 </template>
                             </mt-button>
                             
-                            {# Test Email Button (DEV ONLY) #}
+                            {# Test Email Button (DEV ONLY) - Nur in Entwicklungsumgebung anzeigen #}
                             <mt-button
+                                v-if="isDevelopmentMode"
                                 variant="ghost"
                                 size="default"
                                 :is-loading="isEmailTestSending"
@@ -531,7 +532,7 @@
                             >
                                 <template v-if="!isEmailTestSending">
                                     <mt-icon name="regular-envelope" size="16"></mt-icon>
-                                    <span>📧 Test Email</span>
+                                    <span>DEV Test Email</span>
                                 </template>
                                 <template v-else>
                                     <sw-loader size="16px"></sw-loader>

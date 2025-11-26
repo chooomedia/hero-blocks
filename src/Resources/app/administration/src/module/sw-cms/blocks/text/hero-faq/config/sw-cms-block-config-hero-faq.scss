@@ -5,6 +5,8 @@
 
 .sw-cms-block-config-hero-faq {
     padding: 0;
+    position: relative;
+    overflow: visible; // Important: Allow TinyMCE to overflow
 
     &__header {
         margin-bottom: 24px;
@@ -28,6 +30,7 @@
         margin-bottom: 20px;
         max-height: 60vh;
         overflow-y: auto;
+        overflow-x: hidden;
     }
 
     &__item {
@@ -67,9 +70,29 @@
     &__question-field,
     &__answer-field {
         margin-bottom: 16px;
+        position: relative;
+        z-index: 1;
 
         &:last-child {
             margin-bottom: 0;
+        }
+
+        // TinyMCE Editor Fix: Prevent Overflow
+        .sw-text-editor {
+            position: relative;
+            z-index: 1;
+
+            // TinyMCE Toolbar should stay within bounds
+            .sw-text-editor__content-editor {
+                position: relative;
+                overflow: visible;
+                z-index: 1;
+            }
+
+            // TinyMCE Dropdowns (z-index higher to appear above sidebar elements)
+            .tox-tinymce-aux {
+                z-index: 10000 !important;
+            }
         }
     }
 

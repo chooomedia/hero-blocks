@@ -35,6 +35,8 @@
             <argument type="service" id="HeroBlocks\Service\InstagramTokenCheckService"/>
             <argument type="service" id="logger"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="Shopware\Core\Content\Mail\Service\MailService"/>
+            <argument type="service" id="user.repository"/>
             <tag name="controller.service_arguments"/>
             <tag name="container.service_subscriber"/>
             <call method="setContainer">
@@ -105,7 +107,7 @@
             <tag name="shopware.scheduled.task"/>
         </service>
         
-        <service id="HeroBlocks\ScheduledTask\LicenseExpiryReminderTaskHandler">
+        <service id="HeroBlocks\ScheduledTask\LicenseExpiryReminderTaskHandler" public="true">
             <argument type="service" id="scheduled_task.repository"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="Shopware\Core\Content\Mail\Service\MailService"/>

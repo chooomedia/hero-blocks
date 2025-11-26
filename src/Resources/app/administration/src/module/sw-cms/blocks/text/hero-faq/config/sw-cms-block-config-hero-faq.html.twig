@@ -24,17 +24,18 @@
                 <sw-text-field
                     :label="$tc('sw-cms.blocks.heroBlocks.heroFaq.config.question')"
                     :placeholder="$tc('sw-cms.blocks.heroBlocks.heroFaq.config.questionPlaceholder')"
-                    v-model="faqItems[index].question"
+                    :value="faqItems[index].question"
+                    @update:value="(value) => onQuestionInput(index, value)"
                     class="sw-cms-block-config-hero-faq__question-field"
                 />
 
                 <sw-text-editor
                     :label="$tc('sw-cms.blocks.heroBlocks.heroFaq.config.answer')"
                     :placeholder="$tc('sw-cms.blocks.heroBlocks.heroFaq.config.answerPlaceholder')"
-                    v-model="faqItems[index].answer"
+                    :value="faqItems[index].answer"
+                    @update:value="(value) => onAnswerInput(index, value)"
                     :isInlineEdit="false"
                     :enableInlineDataMapping="false"
-                    sanitize-input
                     class="sw-cms-block-config-hero-faq__answer-field"
                 />
             </div>

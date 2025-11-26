@@ -44,4 +44,12 @@ class ConfigService
             $salesChannelId
         ) ?? true;
     }
+
+    public function getFaqColorTheme(?string $salesChannelId = null): string
+    {
+        return (string) $this->systemConfigService->get(
+            'HeroBlocks.config.faqColorTheme',
+            $salesChannelId
+        ) ?: 'dark';
+    }
 }

@@ -157,6 +157,26 @@
     <card>
         <title lang="de-DE">FAQ Block Einstellungen</title>
         <title>FAQ Block Settings</title>
+        <input-field type="single-select">
+            <name>faqColorTheme</name>
+            <label lang="de-DE">Farbschema</label>
+            <label>Color Theme</label>
+            <options>
+                <option>
+                    <id>dark</id>
+                    <name lang="de-DE">Dunkel (Standard)</name>
+                    <name>Dark (Default)</name>
+                </option>
+                <option>
+                    <id>light</id>
+                    <name lang="de-DE">Hell</name>
+                    <name>Light</name>
+                </option>
+            </options>
+            <defaultValue>dark</defaultValue>
+            <helpText lang="de-DE">Wählen Sie das Farbschema für die FAQ-Elemente: Dunkel (dunkler Hintergrund, weiße Schrift) oder Hell (heller Hintergrund, dunkle Schrift).</helpText>
+            <helpText>Choose the color theme for FAQ elements: Dark (dark background, white text) or Light (light background, dark text).</helpText>
+        </input-field>
         <input-field type="bool">
             <name>enableFaqRichSnippets</name>
             <label lang="de-DE">FAQ Rich Snippets aktivieren</label>

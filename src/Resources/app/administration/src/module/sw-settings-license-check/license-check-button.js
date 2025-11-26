@@ -71,6 +71,19 @@ Shopware.Component.override("sw-system-config", {
     },
 
     /**
+     * WICHTIG: Prüft ob wir in DEV-Umgebung sind
+     * DEV-only Features (Test-E-Mail-Button) werden nur in DEV angezeigt
+     */
+    isDevelopmentMode() {
+      // Shopware Context hat keinen direkten APP_ENV Access
+      // Wir prüfen stattdessen: window.location.hostname === 'localhost' ODER debug=true Parameter
+      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const hasDebugParam = window.location.href.includes('debug=true');
+      
+      return isLocalhost || hasDebugParam;
+    },
+
+    /**
      * WICHTIG: Prüft ob License abgelaufen ist
      * Wenn expired → Update Check Button deaktivieren
      */
@@ -871,8 +884,17 @@ Shopware.Component.override("sw-system-config", {
 
     /**
      * TEST: Sendet Test-E-Mail für License-Expiry-Reminder (DEV ONLY)
+     * 
+     * WICHTIG: Diese Methode ist ISOLIERT von der produktiven License-Logik!
+     * - Funktioniert unabhängig von License-Status
+     * - Ändert KEINE Config-Werte
+     * - Nur E-Mail-Preview (kein Storefront-Effekt)
      */
     async sendTestExpiryEmail() {
+      // =====================================================================
+      // SICHERHEIT: Keine License-Validierung! Nur E-Mail-Test.
+      // =====================================================================
+      
       this.isEmailTestSending = true;
 
       try {
@@ -881,7 +903,7 @@ Shopware.Component.override("sw-system-config", {
           throw new Error("HTTP Client not available");
         }
 
-        debugLog("📧 Sending test expiry email...");
+        debugLog("📧 DEV Test: Sending isolated test email (no config changes)...");
         const startTime = Date.now();
 
         const response = await httpClient.post(
@@ -893,12 +915,12 @@ Shopware.Component.override("sw-system-config", {
         );
 
         const duration = Date.now() - startTime;
-        debugLog(`✅ Test email sent in ${duration}ms`, response.data);
+        debugLog(`✅ Test email sent in ${duration}ms (isolated mode)`, response.data);
 
         if (response.data?.success) {
           this.createNotificationSuccess({
-            title: "Test Email Sent",
-            message: `Test expiry reminder email sent to: ${response.data.data.recipient}`,
+            title: "🧪 DEV Test Email Sent",
+            message: response.data.message || `Test email sent successfully`,
           });
         } else {
           throw new Error(
