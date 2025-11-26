@@ -1,0 +1,58 @@
+{% block sw_cms_block_config_hero_faq %}
+    <div class="sw-cms-block-config-hero-faq">
+        <div class="sw-cms-block-config-hero-faq__header">
+            <h3>{{ $tc('sw-cms.blocks.heroBlocks.heroFaq.config.title') }}</h3>
+            <p class="sw-cms-block-config-hero-faq__description">
+                {{ $tc('sw-cms.blocks.heroBlocks.heroFaq.config.description') }}
+            </p>
+        </div>
+
+        <div class="sw-cms-block-config-hero-faq__items">
+            <div class="sw-cms-block-config-hero-faq__item" v-for="(faq, index) in faqItems" :key="'faq-config-' + index">
+                <div class="sw-cms-block-config-hero-faq__item-header">
+                    <h4>{{ $tc('sw-cms.blocks.heroBlocks.heroFaq.config.itemNumber', 0, { number: index + 1 }) }}</h4>
+                    <sw-button
+                        variant="danger"
+                        size="small"
+                        @click="removeFaq(index)"
+                    >
+                        <sw-icon name="regular-times-s" size="12"></sw-icon>
+                        {{ $tc('sw-cms.blocks.heroBlocks.heroFaq.config.removeItem') }}
+                    </sw-button>
+                </div>
+
+                <sw-text-field
+                    :label="$tc('sw-cms.blocks.heroBlocks.heroFaq.config.question')"
+                    :placeholder="$tc('sw-cms.blocks.heroBlocks.heroFaq.config.questionPlaceholder')"
+                    v-model="faqItems[index].question"
+                    class="sw-cms-block-config-hero-faq__question-field"
+                />
+
+                <sw-text-editor
+                    :label="$tc('sw-cms.blocks.heroBlocks.heroFaq.config.answer')"
+                    :placeholder="$tc('sw-cms.blocks.heroBlocks.heroFaq.config.answerPlaceholder')"
+                    v-model="faqItems[index].answer"
+                    :isInlineEdit="false"
+                    :enableInlineDataMapping="false"
+                    sanitize-input
+                    class="sw-cms-block-config-hero-faq__answer-field"
+                />
+            </div>
+
+            <div class="sw-cms-block-config-hero-faq__empty" v-if="faqItems.length === 0">
+                <sw-icon name="regular-lightbulb" size="48"></sw-icon>
+                <p>{{ $tc('sw-cms.blocks.heroBlocks.heroFaq.config.noItems') }}</p>
+            </div>
+        </div>
+
+        <sw-button
+            variant="primary"
+            size="small"
+            @click="addFaq"
+            class="sw-cms-block-config-hero-faq__add-button"
+        >
+            <sw-icon name="regular-plus-s" size="12"></sw-icon>
+            {{ $tc('sw-cms.blocks.heroBlocks.heroFaq.config.addItem') }}
+        </sw-button>
+    </div>
+{% endblock %}

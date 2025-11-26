@@ -1,9 +1,6 @@
 {% block sw_cms_block_hero_block_slider %}
-{# Block Component - einfacher Wrapper wie Image Gallery Block #}
-{# WICHTIG: Matt Interfaces Branding - Logo wird via CSS (::after) hinzugefügt #}
 <div :class="blockClass">
     <div class="sw-cms-block-hero-block-slider__slot">
-        {# Slot für Element - Element zeigt eigenen Empty State wenn leer #}
         <slot name="heroSlider"></slot>
     </div>
 </div>

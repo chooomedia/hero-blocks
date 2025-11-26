@@ -4,17 +4,17 @@ import "./sw-cms-el-hero-category-slider.scss";
 // V3.0 - SLIDE-BASED PREVIEW mit reaktiver Anzeige
 
 export default {
-  template,
-
-  props: {
-    element: {
-      type: Object,
-      required: true,
-      default() {
-        return {};
-      },
+    template,
+    
+    props: {
+        element: {
+            type: Object,
+            required: true,
+            default() {
+                return {};
+            },
+        },
     },
-  },
 
   data() {
     return {
@@ -44,12 +44,12 @@ export default {
       },
     },
   },
-
-  computed: {
-    assetFilter() {
+    
+    computed: {
+        assetFilter() {
       return Shopware.Filter.getByName("asset");
-    },
-
+        },
+        
     // V3.0 - Slides aus Config
     slides() {
       const slides = this.element?.config?.categorySlides?.value || [];
@@ -96,8 +96,8 @@ export default {
         hasData,
       });
       return hasConfig || hasData;
-    },
-
+        },
+        
     // V3.0 - Preview-Bilder für Großansicht (reaktiv basierend auf imageCount & Slides)
     previewImages() {
       const count = parseInt(this.imageCount, 10);
@@ -122,9 +122,9 @@ export default {
             text: null,
             isReal: false,
           });
-        }
-      }
-
+                }
+            }
+            
       console.log("[CategorySlider Component V3.0] previewImages:", images);
       return images;
     },
@@ -159,5 +159,5 @@ export default {
     console.log("  → slideImages:", this.slideImages);
     console.log("  → imageCount:", this.imageCount);
     console.log("  → hasSlides:", this.hasSlides);
-  },
+    },
 };

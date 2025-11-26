@@ -10,7 +10,7 @@
                     <div class="sw-cms-el-hero-category-slider__preview-slide-title">
                         {{ previewImg.title }}
                         <span v-if="!previewImg.isReal" class="sw-cms-el-hero-category-slider__preview-slide-badge">(Preview)</span>
-                    </div>
+                </div>
                     <img
                         :src="previewImg.url"
                         :alt="previewImg.title"
@@ -19,7 +19,7 @@
                     {# Custom Text (wenn vorhanden) #}
                     <div v-if="previewImg.text" class="sw-cms-el-hero-category-slider__preview-slide-text">
                         {{ previewImg.text }}
-                    </div>
+                </div>
                 </div>
             </template>
         </div>

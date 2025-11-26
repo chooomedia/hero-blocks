@@ -4,11 +4,18 @@
     {# WICHTIG: Block-spezifische Config-Komponente dynamisch laden #}
     {# WICHTIG: Keine Events nötig - Shopware erkennt Änderungen über Vue's Reactivity #}
     {% block sw_cms_block_config_custom %}
-    <component
-        v-if="blockConfig && blockConfig.configComponent"
-        :is="blockConfig.configComponent"
-        :block="block"
-    />
+    {# Debug: Config Component wird gerendert #}
+    <div v-if="blockConfig && blockConfig.configComponent" style="border: 2px solid green; padding: 10px; margin: 10px 0;">
+        <p style="color: green; font-weight: bold;">DEBUG: Rendering Custom Config for {{ blockConfig.configComponent }}</p>
+        <component
+            :is="blockConfig.configComponent"
+            :block="block"
+        />
+    </div>
+    <div v-else style="border: 2px solid red; padding: 10px; margin: 10px 0;">
+        <p style="color: red; font-weight: bold;">DEBUG: No Custom Config Component</p>
+        <p>blockConfig: {{ blockConfig }}</p>
+    </div>
     {% endblock %}
 {% endblock %}
 

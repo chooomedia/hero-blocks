@@ -1,0 +1,234 @@
+/**
+ * Hero FAQ Block - Storefront Styles
+ * Modern FAQ-Accordion mit Icon-Animation und Best Practices
+ */
+
+.cms-block-hero-faq {
+    padding: 40px 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+
+    @media (min-width: 768px) {
+        padding: 60px 40px;
+    }
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__slot {
+        flex: 1;
+        margin-top: 40px;
+    }
+}
+
+.hero-faq-items {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.hero-faq-item {
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        border-color: #189eff;
+    }
+
+    &.is--open {
+        box-shadow: 0 6px 16px rgba(24, 158, 255, 0.12);
+        border-color: #189eff;
+
+        .hero-faq-toggle {
+            background: linear-gradient(135deg, #189eff 0%, #0e6fc4 100%);
+            color: #fff;
+        }
+
+        .hero-faq-toggle-icon {
+            transform: rotate(180deg);
+            color: #fff;
+        }
+
+        .hero-faq-answer {
+            max-height: 2000px;
+            padding: 24px;
+            opacity: 1;
+        }
+    }
+}
+
+.hero-faq-toggle {
+    width: 100%;
+    padding: 20px 24px;
+    background: #f8f9fa;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s ease;
+
+    &:hover {
+        background: #e9ecef;
+    }
+
+    &:focus {
+        outline: 2px solid #189eff;
+        outline-offset: -2px;
+    }
+
+    @media (min-width: 768px) {
+        padding: 24px 28px;
+    }
+}
+
+.hero-faq-toggle-text {
+    flex: 1;
+    font-size: 17px;
+    font-weight: 600;
+    color: #333;
+    line-height: 1.5;
+    transition: color 0.3s ease;
+
+    .is--open & {
+        color: #fff;
+    }
+
+    @media (min-width: 768px) {
+        font-size: 19px;
+    }
+}
+
+.hero-faq-toggle-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    color: #189eff;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s ease;
+    margin-left: 12px;
+
+    @media (min-width: 768px) {
+        width: 28px;
+        height: 28px;
+        margin-left: 16px;
+    }
+}
+
+.hero-faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 24px;
+    opacity: 0;
+    background: #fff;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                padding 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s ease;
+
+    @media (min-width: 768px) {
+        padding: 0 28px;
+    }
+}
+
+.hero-faq-answer-content {
+    font-size: 15px;
+    line-height: 1.8;
+    color: #666;
+
+    // HTML Content Styling
+    p {
+        margin-bottom: 16px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    a {
+        color: #189eff;
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 2px;
+        transition: all 0.2s ease;
+
+        &:hover {
+            color: #0e6fc4;
+            text-decoration-thickness: 2px;
+        }
+
+        &:focus {
+            outline: 2px solid #189eff;
+            outline-offset: 2px;
+            border-radius: 2px;
+        }
+    }
+
+    ul, ol {
+        margin: 16px 0;
+        padding-left: 24px;
+
+        li {
+            margin-bottom: 10px;
+            line-height: 1.7;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+
+    ul {
+        list-style-type: disc;
+    }
+
+    ol {
+        list-style-type: decimal;
+    }
+
+    strong, b {
+        font-weight: 600;
+        color: #333;
+    }
+
+    em, i {
+        font-style: italic;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        margin: 20px 0 12px 0;
+        color: #333;
+        font-weight: 600;
+
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+
+    blockquote {
+        margin: 20px 0;
+        padding: 16px 20px;
+        border-left: 4px solid #189eff;
+        background: #f8f9fa;
+        color: #666;
+        font-style: italic;
+    }
+
+    @media (min-width: 768px) {
+        font-size: 16px;
+    }
+}
+
+.hero-faq-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+    font-size: 16px;
+    line-height: 1.6;
+}

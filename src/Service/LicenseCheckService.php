@@ -130,12 +130,22 @@ class LicenseCheckService
                 'isArray' => is_array($data),
             ]);
             
-            // Handle n8n Response-Formate:
-            // 1. {"message": "Workflow was started"} - Asynchrone Response (Webhook wartet nicht)
-            // 2. {"valid": true, "expiresAt": "...", "daysRemaining": 730} - Direkte Response
-            // 3. [{"valid": true, ...}, ...] - Array mit Response-Data
+            // WICHTIG: Ignoriere Slack-Responses explizit (Manipulationssicher)
+            // Slack gibt zurück: {"response_type": "ephemeral", "text": "..."}
+            // → Dies ist KEINE gültige License-Response → Fallback
+            if (is_array($data) && isset($data['response_type']) && !isset($data['valid'])) {
+                $this->logger->warning('n8n returned Slack response instead of license data - using fallback', [
+                    'response_type' => $data['response_type'],
+                    'text' => $data['text'] ?? 'not set',
+                    'rawContent' => substr($content, 0, 500),
+                ]);
+                // Slack-Response → Webhook gibt falsche Daten zurück → Fallback
+                return $this->getDefaultValidResponse();
+            }
             
-            // Prüfe ob asynchrone Response
+            // WICHTIG: Ignoriere async/workflow-started Responses
+            // n8n gibt zurück: {"message": "Workflow was started"}
+            // → Dies ist KEINE gültige License-Response → Fallback
             if (is_array($data) && isset($data['message']) && !isset($data['valid'])) {
                 $this->logger->warning('n8n returned async response (workflow started but not waiting)', [
                     'message' => $data['message'],
@@ -145,39 +155,53 @@ class LicenseCheckService
                 return $this->getDefaultValidResponse();
             }
             
-            // n8n kann Array oder Object zurückgeben - handle beide Fälle
-            // Format 1: [{"valid": true, "expiresAt": "...", "daysRemaining": 776, ...}] - Array mit Request-Daten + Lizenz-Daten
-            // Format 2: {"valid": true, "expiresAt": "...", "daysRemaining": 776} - Direktes Objekt
+            // WICHTIG: Robustes Parsing für n8n Response-Formate (Manipulationssicher)
+            // Format 1: [{"valid": false, "expiresAt": "...", "daysRemaining": 0, ...}] - Array mit einem Objekt
+            // Format 2: {"valid": false, "expiresAt": "...", "daysRemaining": 0} - Direktes Objekt
+            // Format 3: [{"headers": {...}, "valid": false, ...}] - Array mit Objekt das auch Request-Daten enthält
             $responseData = null;
+            
             if (is_array($data)) {
-                // Prüfe ob Array von Objekten (n8n gibt oft Array zurück)
-                if (isset($data[0]) && is_array($data[0])) {
-                    // Array mit Objekten - suche nach Element mit 'valid' key
-                    // n8n kann Request-Daten + Lizenz-Daten in einem Objekt mischen
-                    foreach ($data as $item) {
+                // WICHTIG: Prüfe ob 'valid' direkt im Top-Level Object ist
+                if (isset($data['valid'])) {
+                    // Format 2: Direktes Objekt mit 'valid' key
+                    $responseData = $data;
+                    $this->logger->info('License check: Found valid key in top-level object', [
+                        'valid' => $data['valid'],
+                    ]);
+                } 
+                // WICHTIG: Prüfe ob Array von Objekten (n8n gibt oft Array zurück)
+                elseif (isset($data[0]) && is_array($data[0])) {
+                    // Format 1 oder 3: Array mit Objekten
+                    // Suche nach erstem Element mit 'valid' key
+                    foreach ($data as $index => $item) {
                         if (is_array($item) && isset($item['valid'])) {
-                            // Element mit 'valid' key gefunden - verwende es
+                            // Element mit 'valid' key gefunden
                             $responseData = $item;
+                            $this->logger->info('License check: Found valid key in array element', [
+                                'index' => $index,
+                                'valid' => $item['valid'],
+                            ]);
                             break;
                         }
                     }
-                    // Falls kein Element mit 'valid' gefunden, versuche erstes Element
-                    // (kann sein, dass 'valid' später hinzugefügt wird)
-                    if ($responseData === null && isset($data[0])) {
-                        $responseData = $data[0];
-                    }
-                } elseif (isset($data['valid'])) {
-                    // Direktes Objekt mit 'valid' key (kein Array-Wrapper)
-                    $responseData = $data;
                 }
             }
             
-            // Prüfe ob Response-Format korrekt ist
+            // WICHTIG: Validiere Response-Format strikt (Manipulationssicher)
+            // Response MUSS enthalten: 'valid' (bool), 'expiresAt' (string), 'daysRemaining' (int)
             if ($responseData === null || !is_array($responseData) || !isset($responseData['valid'])) {
-                $this->logger->warning('Invalid license response format from n8n', [
+                $this->logger->warning('Invalid license response format from n8n - missing required fields', [
                     'data' => $data,
                     'responseData' => $responseData,
                     'rawContent' => substr($content, 0, 500),
+                    'validation' => [
+                        'isArrayData' => is_array($data),
+                        'hasDataZero' => isset($data[0]),
+                        'dataZeroIsArray' => isset($data[0]) && is_array($data[0]),
+                        'hasValidInData' => isset($data['valid']),
+                        'hasValidInDataZero' => isset($data[0]['valid']),
+                    ],
                 ]);
                 return $this->getDefaultValidResponse();
             }
@@ -185,14 +209,42 @@ class LicenseCheckService
             // Verwende die extrahierte Response-Struktur
             $data = $responseData;
             
-            $this->logger->info('License check: Valid response from n8n', [
-                'valid' => $data['valid'],
+            // WICHTIG: Konvertiere 'valid' zu strikem boolean (Manipulationssicher)
+            // PHP's loose comparison: "false" == true, aber (bool) "false" === true
+            // Nur echte booleans akzeptieren: true oder false
+            $isValid = filter_var($data['valid'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+            
+            // Wenn NULL zurückkommt, ist der Wert ungültig
+            if ($isValid === null) {
+                $this->logger->warning('License check: Invalid boolean value for "valid"', [
+                    'valid_raw' => $data['valid'],
+                    'valid_type' => gettype($data['valid']),
+                ]);
+                // Ungültiger Wert → Als expired behandeln (sicherer Fallback)
+                $isValid = false;
+            }
+            
+            // DEBUG: Log exakt was wir speichern werden
+            $this->logger->info('License check: Parsed and validated response', [
+                'valid_raw' => $data['valid'],
+                'valid_type' => gettype($data['valid']),
+                'valid_filtered' => $isValid,
+                'will_save_status' => $isValid ? 'active' : 'expired',
                 'expiresAt' => $data['expiresAt'] ?? 'not set',
                 'daysRemaining' => $data['daysRemaining'] ?? 'not set',
             ]);
-
-            // Speichere das Ergebnis in System Config
-            $this->systemConfigService->set('HeroBlocks.config.licenseStatus', $data['valid'] ? 'active' : 'expired');
+            
+            // WICHTIG: Speichere das Ergebnis in System Config (verwende validierte $isValid Variable)
+            // Status: 'active' oder 'expired' (KEINE anderen Werte!)
+            $licenseStatus = $isValid ? 'active' : 'expired';
+            $this->systemConfigService->set('HeroBlocks.config.licenseStatus', $licenseStatus);
+            
+            $this->logger->info('License check: Saved license status to config', [
+                'status' => $licenseStatus,
+                'valid' => $isValid,
+                'expiresAt' => $data['expiresAt'] ?? 'not set',
+                'daysRemaining' => $data['daysRemaining'] ?? 'not set',
+            ]);
             
             // Ablaufsdatum: Verwende expiresAt von n8n oder Fallback (Installation Date + licenseValidYears)
             if (isset($data['expiresAt']) && !empty($data['expiresAt'])) {
@@ -214,22 +266,54 @@ class LicenseCheckService
                 $expiresAt = $this->calculateExpirationDateFromInstallation();
             }
             $this->systemConfigService->set('HeroBlocks.config.licenseExpiresAt', $expiresAt);
-
-            // Verwende daysRemaining aus n8n Response, oder berechne es selbst
-            $daysRemaining = (int) ($data['daysRemaining'] ?? 0);
+            // Speichere auch daysRemaining und yearsRemaining (wird später berechnet)
+            
+            // WICHTIG: Verwende daysRemaining aus n8n Response, oder berechne es selbst
+            // daysRemaining muss IMMER >= 0 sein (keine negativen Werte!)
+            $daysRemaining = isset($data['daysRemaining']) ? max(0, (int) $data['daysRemaining']) : 0;
+            
+            // WICHTIG: Berechne Viertel-Jahre (auf Viertel-Jahre aufgerundet)
+            // 399 Tage = 1.09 Jahre → aufgerundet auf 0.25er-Schritte = 1.25 Jahre
+            $yearsRemaining = $this->calculateQuarterYears($daysRemaining);
+            
+            // Speichere daysRemaining und yearsRemaining im System-Config
+            $this->systemConfigService->set('HeroBlocks.config.daysRemaining', $daysRemaining);
+            $this->systemConfigService->set('HeroBlocks.config.yearsRemaining', $yearsRemaining);
+            
+            // Falls daysRemaining = 0 aber expiresAt gesetzt ist, berechne neu
             if ($daysRemaining === 0 && isset($data['expiresAt']) && !empty($data['expiresAt'])) {
                 try {
                     $expiresDate = new \DateTime($data['expiresAt']);
                     $now = new \DateTime();
-                    $diff = $expiresDate->diff($now);
-                    $daysRemaining = max(0, (int) $diff->days);
+                    // WICHTIG: Prüfe ob Datum in Vergangenheit liegt
+                    if ($expiresDate < $now) {
+                        // Abgelaufen → daysRemaining = 0
+                        $daysRemaining = 0;
+                        // WICHTIG: Wenn abgelaufen, setze valid = false (Manipulationssicher!)
+                        $isValid = false;
+                        $licenseStatus = 'expired';
+                        $this->systemConfigService->set('HeroBlocks.config.licenseStatus', $licenseStatus);
+                        $this->logger->info('License check: License expired (expiresAt in past)', [
+                            'expiresAt' => $data['expiresAt'],
+                            'now' => $now->format('c'),
+                            'status' => 'expired',
+                        ]);
+                    } else {
+                        // Noch gültig → berechne verbleibende Tage
+                        $diff = $expiresDate->diff($now);
+                        $daysRemaining = max(0, (int) $diff->days);
+                    }
                 } catch (\Exception $e) {
-                    // Ignore
+                    $this->logger->warning('Failed to parse expiresAt date', [
+                        'expiresAt' => $data['expiresAt'],
+                        'error' => $e->getMessage(),
+                    ]);
                 }
             }
 
+            // WICHTIG: Return validierte Werte (nicht Roh-Daten von n8n!)
             return [
-                'valid' => (bool) ($data['valid'] ?? false),
+                'valid' => $isValid, // Verwendet validierte boolean Variable
                 'expiresAt' => $expiresAt ?? $data['expiresAt'] ?? '',
                 'daysRemaining' => $daysRemaining,
             ];
@@ -447,6 +531,36 @@ class LicenseCheckService
         ]);
         
         return $url;
+    }
+    
+    /**
+     * Berechnet Viertel-Jahre aus Tagen (aufgerundet auf 0.25er-Schritte)
+     * 
+     * Beispiele:
+     * - 399 Tage = 1.09 Jahre → aufgerundet = 1.25 Jahre
+     * - 91 Tage = 0.25 Jahre → aufgerundet = 0.25 Jahre
+     * - 365 Tage = 1.00 Jahre → aufgerundet = 1.00 Jahre
+     * - 730 Tage = 2.00 Jahre → aufgerundet = 2.00 Jahre
+     * 
+     * @param int $days Anzahl der Tage
+     * @return float Jahre (aufgerundet auf 0.25er-Schritte)
+     */
+    private function calculateQuarterYears(int $days): float
+    {
+        // Tage in Jahre umrechnen (365 Tage = 1 Jahr)
+        $years = $days / 365.0;
+        
+        // Auf Viertel-Jahre aufrunden (0.25er-Schritte)
+        // ceil($years * 4) / 4 = aufrunden auf 0.25er-Schritte
+        $quarterYears = ceil($years * 4) / 4;
+        
+        $this->logger->info('Calculated quarter years from days', [
+            'days' => $days,
+            'exactYears' => round($years, 2),
+            'quarterYears' => $quarterYears,
+        ]);
+        
+        return $quarterYears;
     }
 }
 

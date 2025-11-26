@@ -209,6 +209,44 @@
                     "config": {
                         "inDevelopment": "This block is currently in development and can be enabled via plugin settings."
                     }
+                },
+        "twoImages": {
+            "label": "Hero Two Images",
+            "description": "Two images side by side with flexible layout options"
+        },
+        "mattInterfacesBranding": {
+            "title": "Developed by Matt Interfaces - Learn more about Shopware Hero Blocks"
+        },
+                "heroVideoExtended": {
+                    "label": "Hero Video Extended",
+                    "description": "Video hero block with overlay content and call-to-actions"
+                },
+                "heroFaq": {
+                    "label": "Hero FAQ Block",
+                    "description": "FAQ block with accordion functionality",
+                    "emptyState": "No FAQ entries available. Click on the gear icon to add FAQ entries.",
+                    "preview": {
+                        "question1": "How does this block work?",
+                        "answer1": "This is an answer...",
+                        "question2": "Another question?",
+                        "answer2": "Another answer..."
+                    },
+                    "config": {
+                        "title": "Manage FAQ Entries",
+                        "description": "Add questions and answers for your FAQ block.",
+                        "question": "Question",
+                        "questionPlaceholder": "e.g. How long does shipping take?",
+                        "answer": "Answer",
+                        "answerPlaceholder": "e.g. Shipping usually takes 2-3 business days...",
+                        "addItem": "Add FAQ Entry",
+                        "removeItem": "Remove",
+                        "itemNumber": "FAQ #{number}",
+                        "noItems": "No FAQ entries yet. Add your first entry."
+                    }
+                },
+                "heroMegaMenu": {
+                    "label": "Hero Mega Menu",
+                    "description": "Advanced mega menu navigation with categories, products and widgets"
                 }
             }
         },
@@ -231,7 +269,8 @@
                         "verticalAlignBottom": "Bottom",
                         "autoplayTimeout": "Delay",
                         "speed": "Animation duration",
-                        "autoSlide": "Automatic transition"
+                        "autoSlide": "Automatic transition",
+                        "newTab": "Open in new tab"
                     },
                     "helpText": {
                         "displayMode": "How should the image be displayed?",
@@ -377,7 +416,9 @@
                 "label": "Hero Instagram Feed",
                 "preview": {
                     "loading": "Loading Instagram posts...",
-                    "noPosts": "No posts available"
+                    "noPosts": "No posts available",
+                    "gridMode": "Grid Mode ({columns} Columns)",
+                    "sliderMode": "Slider Mode"
                 },
                 "config": {
                     "infoText": "API credentials (App ID, App Secret, Access Token) are loaded from plugin settings (Hero Blocks Extension Config)."
@@ -501,7 +542,10 @@
                         "displayModeContain": "Contain (Fully Visible)",
                         "displayModeStandard": "Standard",
                         "minHeight": "Minimum Height",
-                        "minHeightHelpText": "E.g. 400px, 50vh, or leave empty"
+                        "minHeightHelpText": "E.g. 400px, 50vh, or leave empty",
+                        "maxHeight": "Maximum Height",
+                        "maxHeightHelpText": "E.g. 800px, 80vh, or leave empty",
+                        "navigationPositionBottom": "Bottom"
                     }
                 }
             }

@@ -39,6 +39,8 @@ import "./module/sw-cms/component/sw-cms-slot/sw-cms-slot-override.js";
 
 // WICHTIG: Matt Interfaces Branding für Hero Blocks
 import "./app/assets/scss/_hero-blocks-branding.scss";
+// WICHTIG: Matt Interfaces Branding Component (für Preview Blocks)
+import "./module/sw-cms/_blocks/_matt-interfaces-branding.scss";
 
 // Always import blocks - they will check config internally if needed
 // CRITICAL: Must use explicit index.js path for ES modules
@@ -56,3 +58,5 @@ import "./module/sw-cms/blocks/image/hero-instagram-feed/index.js";
 import "./module/sw-cms/blocks/video/hero-video-extended/index.js";
 // WICHTIG: Hero Shopping Experience Block - In Development (disabled)
 import "./module/sw-cms/blocks/commerce/hero-shopping-experience/index.js";
+// WICHTIG: Hero FAQ Block - wird nur angezeigt wenn enableFaqBlock aktiviert ist
+import "./module/sw-cms/blocks/text/hero-faq/index.js";

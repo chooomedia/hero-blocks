@@ -2,8 +2,8 @@
     <div class="sw-cms-el-hero-instagram-feed" :class="'sw-cms-el-hero-instagram-feed--' + displayMode">
         {% block sw_cms_el_hero_instagram_feed_mode_label %}
             <div class="sw-cms-el-hero-instagram-feed__mode-label">
-                <span v-if="displayMode === 'grid'">Grid Mode ({{ columns }} Spalten)</span>
-                <span v-else>Slider Mode</span>
+                <span v-if="displayMode === 'grid'">{{ $tc('sw-cms.elements.heroInstagramFeed.preview.gridMode', { columns: columns }) }}</span>
+                <span v-else>{{ $tc('sw-cms.elements.heroInstagramFeed.preview.sliderMode') }}</span>
                 <span class="sw-cms-el-hero-instagram-feed__post-count"> · {{ postLimit }} Posts</span>
             </div>
         {% endblock %}

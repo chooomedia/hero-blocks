@@ -1,0 +1,90 @@
+{% block hero_blocks_license_expired_notice %}
+    {# 
+        Lizenz-Hinweis für Premium-Features
+        Wird angezeigt wenn die Lizenz abgelaufen ist
+        
+        Usage:
+        {% include '@HeroBlocks/storefront/component/license-expired-notice.html.twig' with {
+            feature: 'Instagram Feed',
+            licenseStatus: 'expired'
+        } %}
+    #}
+    
+    {% if licenseStatus|default('active') == 'expired' %}
+        {# URL-Parameter für Renewal-Link #}
+        {% set renewalParams = {
+            'plugin': 'hero-blocks',
+            'feature': feature|default('premium'),
+            'shop_url': app.request.httpHost,
+            'return_url': url('frontend.home.page')
+        } %}
+        
+        {% set renewalUrl = 'https://matt-interfaces.ch/shopware-hero-block?' ~ renewalParams|url_encode %}
+        
+        {# Desktop: Alles in einer Zeile - elegant, minimal, schmal #}
+        <div class="alert alert-warning hero-blocks-license-expired-notice hero-blocks-license-expired-notice--desktop mb-4 d-none d-lg-flex" role="alert">
+            <div class="d-flex align-items-center w-100">
+                {# Text Content: Links, flex-grow #}
+                <div class="flex-grow-1 d-flex align-items-center hero-blocks-license-expired-notice__content">
+                    <strong class="me-2 hero-blocks-license-expired-notice__title">
+                        {{ 'component.cms.licenseExpired.title'|trans|sw_sanitize }}
+                    </strong>
+                    <span class="text-muted me-3 hero-blocks-license-expired-notice__text">
+                        {{ 'component.cms.licenseExpired.message'|trans|sw_sanitize }}
+                    </span>
+                </div>
+                
+                {# CTA Button: Mitte #}
+                <a href="{{ renewalUrl }}" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   class="btn btn-primary btn-sm me-3 text-nowrap hero-blocks-license-expired-notice__button">
+                    {{ 'component.cms.licenseExpired.renewButton'|trans|sw_sanitize }}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="ms-1" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                    </svg>
+                </a>
+                
+                {# Lock Icon: Rechts - Mit Hover-Animation (geschlossen → offen) #}
+                <div class="hero-blocks-license-expired-notice__icon">
+                    {# Geschlossenes Schloss (Default) #}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="lock-closed text-warning" viewBox="0 0 16 16">
+                        <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                    </svg>
+                    {# Offenes Schloss (Hover) #}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="lock-open text-success" viewBox="0 0 16 16">
+                        <path d="M11 1a2 2 0 0 0-2 2v4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h5V3a3 3 0 0 1 6 0v4a.5.5 0 0 1-1 0V3a2 2 0 0 0-2-2z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        
+        {# Mobile/Tablet: Gestackt für bessere Lesbarkeit #}
+        <div class="alert alert-warning hero-blocks-license-expired-notice hero-blocks-license-expired-notice--mobile mb-4 d-lg-none" role="alert">
+            <div class="d-flex align-items-start">
+                <div class="flex-grow-1">
+                    <h6 class="alert-heading mb-2">
+                        <strong>{{ 'component.cms.licenseExpired.title'|trans|sw_sanitize }}</strong>
+                    </h6>
+                    <p class="mb-3 small">
+                        {{ 'component.cms.licenseExpired.message'|trans|sw_sanitize }}
+                    </p>
+                    <a href="{{ renewalUrl }}" 
+                       target="_blank" 
+                       rel="noopener noreferrer" 
+                       class="btn btn-primary btn-sm">
+                        {{ 'component.cms.licenseExpired.renewButton'|trans|sw_sanitize }}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="ms-1" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                        </svg>
+                    </a>
+                </div>
+                <div class="ms-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="text-warning opacity-50" viewBox="0 0 16 16">
+                        <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

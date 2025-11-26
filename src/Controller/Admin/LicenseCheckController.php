@@ -274,5 +274,129 @@ class LicenseCheckController extends AbstractController
             ], 500);
         }
     }
+    
+    /**
+     * TEST-Methode: Sendet Test-E-Mail für License-Expiry-Reminder (DEV ONLY)
+     * 
+     * Route: /api/_action/hero-blocks/test-expiry-email
+     * Method: POST
+     */
+    #[Route(
+        path: '/api/_action/hero-blocks/test-expiry-email',
+        name: 'api.action.hero-blocks.test-expiry-email',
+        methods: ['POST']
+    )]
+    public function testExpiryEmail(Request $request, Context $context): JsonResponse
+    {
+        $startTime = microtime(true);
+        
+        try {
+            $this->logger->info('[HeroBlocks] Test Expiry Email: Starting manual test');
+            
+            // Trigger den Handler manuell (simuliert Scheduled Task)
+            /** @var \HeroBlocks\ScheduledTask\LicenseExpiryReminderTaskHandler $handler */
+            $handler = $this->container->get(\HeroBlocks\ScheduledTask\LicenseExpiryReminderTaskHandler::class);
+            
+            // Force execution (ignore thresholds for testing)
+            $licenseStatus = $this->systemConfigService->getString('HeroBlocks.config.licenseStatus');
+            $expiresAt = $this->systemConfigService->getString('HeroBlocks.config.licenseExpiresAt');
+            $daysRemaining = $this->systemConfigService->getInt('HeroBlocks.config.daysRemaining');
+            
+            // Berechne verbleibende Tage neu
+            if (!empty($expiresAt)) {
+                $expiryDate = new \DateTime($expiresAt);
+                $now = new \DateTime();
+                $daysRemaining = (int) $now->diff($expiryDate)->days;
+            }
+            
+            // Test-E-Mail senden (unabhängig von Schwellenwerten)
+            $adminEmail = $this->systemConfigService->getString('core.basicInformation.email');
+            
+            if (empty($adminEmail)) {
+                throw new \Exception('No admin email configured in system settings');
+            }
+            
+            // Sende Test-E-Mail via Shopware MailService
+            /** @var \Shopware\Core\Content\Mail\Service\MailService $mailService */
+            $mailService = $this->container->get(\Shopware\Core\Content\Mail\Service\MailService::class);
+            
+            $subject = sprintf('🧪 TEST: HeroBlocks License Expiry Reminder (%d days)', $daysRemaining);
+            $bodyHtml = sprintf(
+                '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">' .
+                '<h2 style="color: #ff6b6b;">🧪 TEST-EMAIL</h2>' .
+                '<h3>⚠️ Your HeroBlocks license expires soon!</h3>' .
+                '<table style="width: 100%%; border-collapse: collapse; margin: 20px 0;">' .
+                '<tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>License Status:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">%s</td></tr>' .
+                '<tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Days Remaining:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">%d</td></tr>' .
+                '<tr><td style="padding: 8px; border: 1px solid #ddd;"><strong>Expiry Date:</strong></td><td style="padding: 8px; border: 1px solid #ddd;">%s</td></tr>' .
+                '</table>' .
+                '<p><a href="%s" style="display: inline-block; padding: 12px 24px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 4px; margin: 10px 0;">Renew License Now</a></p>' .
+                '<hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">' .
+                '<p style="color: #666; font-size: 12px;">This is a TEST email sent from the HeroBlocks License System. In production, this email is sent automatically 30 days before license expiry.</p>' .
+                '</div>',
+                $licenseStatus,
+                $daysRemaining,
+                !empty($expiresAt) ? (new \DateTime($expiresAt))->format('d.m.Y') : 'N/A',
+                'https://matt-interfaces.ch/shopware-hero-block?plugin=hero-blocks&action=renew'
+            );
+            
+            $data = [
+                'recipients' => [$adminEmail => $adminEmail],
+                'senderName' => 'HeroBlocks License System (TEST)',
+                'salesChannelId' => null,
+                'contentHtml' => $bodyHtml,
+                'contentPlain' => strip_tags($bodyHtml),
+                'subject' => $subject,
+            ];
+            
+            $mailService->send($data, $context, []);
+            
+            $duration = round((microtime(true) - $startTime) * 1000, 2);
+            
+            $this->logger->info('[HeroBlocks] Test email sent successfully', [
+                'recipient' => $adminEmail,
+                'daysRemaining' => $daysRemaining,
+                'durationMs' => $duration,
+            ]);
+            
+            return new JsonResponse([
+                'success' => true,
+                'data' => [
+                    'recipient' => $adminEmail,
+                    'daysRemaining' => $daysRemaining,
+                    'licenseStatus' => $licenseStatus,
+                    'expiresAt' => $expiresAt,
+                ],
+                'message' => 'Test email sent successfully',
+                'debug' => [
+                    'durationMs' => $duration,
+                    'timestamp' => (new \DateTime())->format('c'),
+                ],
+            ]);
+            
+        } catch (\Exception $e) {
+            $duration = round((microtime(true) - $startTime) * 1000, 2);
+            
+            $this->logger->error('[HeroBlocks] Failed to send test email', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            
+            return new JsonResponse([
+                'success' => false,
+                'errors' => [
+                    [
+                        'code' => 'EMAIL_SEND_FAILED',
+                        'detail' => $e->getMessage(),
+                        'status' => '500',
+                    ]
+                ],
+                'debug' => [
+                    'durationMs' => $duration,
+                    'timestamp' => (new \DateTime())->format('c'),
+                ],
+            ], 500);
+        }
+    }
 }
 

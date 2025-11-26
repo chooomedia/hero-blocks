@@ -1,0 +1,95 @@
+{% sw_extends '@Storefront/storefront/block/cms-block-text.html.twig' %}
+
+{% block block_hero_faq %}
+    {% set element = block.slots.getSlot('content') %}
+    {% set config = element.config %}
+    {% set faqItems = block.customFields.faqItems|default([]) %}
+    {% set accordionBehavior = hero_faq_accordion_behavior(app.request.salesChannelContext.salesChannel.id) %}
+    {% set openFirstItem = hero_faq_open_first_item(app.request.salesChannelContext.salesChannel.id) %}
+    {% set richSnippetsEnabled = hero_faq_rich_snippets_enabled(app.request.salesChannelContext.salesChannel.id) %}
+
+    <div class="cms-block-hero-faq"
+         data-hero-faq="true"
+         data-hero-faq-options='{"accordionBehavior":"{{ accordionBehavior }}","openFirstItem":{{ openFirstItem ? 'true' : 'false' }}}'
+         {% if richSnippetsEnabled and faqItems|length > 0 %}itemscope itemtype="https://schema.org/FAQPage"{% endif %}>
+
+        {# Rich Snippets (JSON-LD) - nur wenn aktiviert #}
+        {% if richSnippetsEnabled and faqItems|length > 0 %}
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+                {% for faq in faqItems %}
+                {
+                    "@type": "Question",
+                    "name": {{ faq.question|json_encode|raw }},
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": {{ faq.answer|striptags|json_encode|raw }}
+                    }
+                }{% if not loop.last %},{% endif %}
+                {% endfor %}
+            ]
+        }
+        </script>
+        {% endif %}
+
+        <div class="cms-block-hero-faq__content">
+            {% if faqItems|length > 0 %}
+                <div class="hero-faq-items">
+                    {% for faq in faqItems %}
+                        <div class="hero-faq-item{% if openFirstItem and loop.first %} is--open{% endif %}" 
+                             {% if richSnippetsEnabled %}itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"{% endif %}>
+                            <div class="hero-faq-question">
+                                <button class="hero-faq-toggle"
+                                        type="button"
+                                        aria-expanded="{{ (openFirstItem and loop.first) ? 'true' : 'false' }}"
+                                        aria-controls="hero-faq-answer-{{ block.id }}-{{ loop.index }}"
+                                        data-faq-target="#hero-faq-answer-{{ block.id }}-{{ loop.index }}">
+                                    <span class="hero-faq-toggle-text" {% if richSnippetsEnabled %}itemprop="name"{% endif %}>
+                                        {{ faq.question }}
+                                    </span>
+                                    <svg class="hero-faq-toggle-icon" 
+                                         xmlns="http://www.w3.org/2000/svg" 
+                                         width="24" 
+                                         height="24" 
+                                         viewBox="0 0 24 24" 
+                                         fill="none" 
+                                         stroke="currentColor" 
+                                         stroke-width="2" 
+                                         stroke-linecap="round" 
+                                         stroke-linejoin="round"
+                                         aria-hidden="true">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div id="hero-faq-answer-{{ block.id }}-{{ loop.index }}"
+                                 class="hero-faq-answer"
+                                 role="region"
+                                 aria-labelledby="hero-faq-question-{{ block.id }}-{{ loop.index }}"
+                                 {% if richSnippetsEnabled %}itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"{% endif %}
+                                 {% if not (openFirstItem and loop.first) %}hidden{% endif %}>
+                                <div class="hero-faq-answer-content" {% if richSnippetsEnabled %}itemprop="text"{% endif %}>
+                                    {{ faq.answer|sw_sanitize }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {# Fallback für leere FAQ-Liste (nur im Admin sichtbar) #}
+                <div class="hero-faq-empty">
+                    <p class="text-muted">{{ 'component.cms.faq.empty.description'|trans }}</p>
+                </div>
+            {% endif %}
+
+            <div class="cms-block-hero-faq__slot">
+                {% block block_hero_faq_inner %}
+                    {{ parent() }}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

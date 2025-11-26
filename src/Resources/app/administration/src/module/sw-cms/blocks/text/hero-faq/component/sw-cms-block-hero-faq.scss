@@ -1,0 +1,101 @@
+/**
+ * Hero FAQ Block Component - Administration Styles
+ * Styles für die FAQ-Block-Vorschau im CMS-Editor (große Ansicht)
+ */
+
+.sw-cms-block-hero-faq {
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 8px;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+
+    &__items {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        flex: 1;
+    }
+
+    &__item {
+        padding: 20px;
+        background: #f9fafb;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+
+        &:hover {
+            border-color: #189eff;
+            box-shadow: 0 2px 8px rgba(24, 158, 255, 0.08);
+        }
+    }
+
+    &__question {
+        font-weight: 600;
+        font-size: 15px;
+        color: #52667a;
+        margin-bottom: 12px;
+        line-height: 1.5;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+
+        svg {
+            flex-shrink: 0;
+            margin-top: 2px;
+            color: #189eff;
+        }
+    }
+
+    &__answer {
+        font-size: 14px;
+        color: #758ca3;
+        line-height: 1.7;
+        padding-left: 28px;
+        
+        // HTML Content Styling
+        p {
+            margin-bottom: 12px;
+            
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+
+        a {
+            color: #189eff;
+            text-decoration: underline;
+            
+            &:hover {
+                color: #0e6fc4;
+            }
+        }
+
+        ul, ol {
+            margin: 12px 0;
+            padding-left: 20px;
+        }
+
+        strong {
+            font-weight: 600;
+            color: #52667a;
+        }
+    }
+
+    &__empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        padding: 60px 20px;
+        text-align: center;
+        color: #758ca3;
+        font-size: 15px;
+        line-height: 1.6;
+        background: #f9fafb;
+        border-radius: 8px;
+        border: 2px dashed #d1d9e0;
+    }
+}

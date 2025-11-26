@@ -209,6 +209,44 @@
                     "config": {
                         "inDevelopment": "Dieser Block ist aktuell in Entwicklung und wird über die Plugin-Einstellungen aktiviert."
                     }
+                },
+        "twoImages": {
+            "label": "Hero Two Images",
+            "description": "Zwei Bilder nebeneinander mit flexiblen Layout-Optionen"
+        },
+        "mattInterfacesBranding": {
+            "title": "Entwickelt von Matt Interfaces - Mehr erfahren über Shopware Hero Blocks"
+        },
+                "heroVideoExtended": {
+                    "label": "Hero Video Extended",
+                    "description": "Video-Hero-Block mit Overlay-Content und Call-to-Actions"
+                },
+                "heroFaq": {
+                    "label": "Hero FAQ Block",
+                    "description": "FAQ Block mit Accordion-Funktionalität",
+                    "emptyState": "Keine FAQ-Einträge vorhanden. Klicken Sie auf das Zahnrad-Symbol, um FAQ-Einträge hinzuzufügen.",
+                    "preview": {
+                        "question1": "Wie funktioniert dieser Block?",
+                        "answer1": "Dies ist eine Antwort...",
+                        "question2": "Weitere Frage?",
+                        "answer2": "Weitere Antwort..."
+                    },
+                    "config": {
+                        "title": "FAQ Einträge verwalten",
+                        "description": "Fügen Sie Fragen und Antworten für Ihren FAQ-Block hinzu.",
+                        "question": "Frage",
+                        "questionPlaceholder": "z.B. Wie lange dauert der Versand?",
+                        "answer": "Antwort",
+                        "answerPlaceholder": "z.B. Der Versand dauert in der Regel 2-3 Werktage...",
+                        "addItem": "FAQ-Eintrag hinzufügen",
+                        "removeItem": "Entfernen",
+                        "itemNumber": "FAQ #{number}",
+                        "noItems": "Noch keine FAQ-Einträge vorhanden. Fügen Sie den ersten Eintrag hinzu."
+                    }
+                },
+                "heroMegaMenu": {
+                    "label": "Hero Mega Menu",
+                    "description": "Erweiterte Mega-Menü-Navigation mit Kategorien, Produkten und Widgets"
                 }
             }
         },
@@ -231,7 +269,8 @@
                         "verticalAlignBottom": "Unten",
                         "autoplayTimeout": "Verzögerung",
                         "speed": "Animationsdauer",
-                        "autoSlide": "Automatische Übergänge"
+                        "autoSlide": "Automatische Übergänge",
+                        "newTab": "In neuem Tab öffnen"
                     },
                     "helpText": {
                         "displayMode": "Wie soll das Bild dargestellt werden?",
@@ -375,7 +414,9 @@
                 "label": "Hero Instagram Feed",
                 "preview": {
                     "loading": "Instagram Posts werden geladen...",
-                    "noPosts": "Keine Posts verfügbar"
+                    "noPosts": "Keine Posts verfügbar",
+                    "gridMode": "Grid Mode ({columns} Spalten)",
+                    "sliderMode": "Slider Mode"
                 },
                 "config": {
                     "infoText": "API-Credentials (App ID, App Secret, Access Token) werden aus den Plugin-Einstellungen (Hero Blocks Extension Config) geladen."
@@ -499,7 +540,10 @@
                         "displayModeContain": "Contain (Bild vollständig sichtbar)",
                         "displayModeStandard": "Standard",
                         "minHeight": "Minimale Höhe",
-                        "minHeightHelpText": "Z.B. 400px, 50vh, oder leer lassen"
+                        "minHeightHelpText": "Z.B. 400px, 50vh, oder leer lassen",
+                        "maxHeight": "Maximale Höhe",
+                        "maxHeightHelpText": "Z.B. 800px, 80vh, oder leer lassen",
+                        "navigationPositionBottom": "Unten"
                     }
                 }
             }

@@ -1,0 +1,403 @@
+// ========================================================================
+// HERO CATEGORY SLIDER - V3.1 FINAL
+// Bootstrap Grid + Tiny Slider + Entry Animations
+// ========================================================================
+
+// ========================================================================
+// CONTAINER
+// ========================================================================
+.hero-category-slider-container {
+    width: 100%;
+    max-width: 100%;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-sizing: border-box;
+}
+
+.hero-category-slider-container--static {
+    display: flex !important;
+}
+
+// ========================================================================
+// ITEM CONTAINER - WICHTIG: Minimales CSS für Tiny Slider!
+// ========================================================================
+.hero-category-slider-item-container {
+    // Tiny Slider setzt: position, width, left via inline-styles!
+    // KEIN display, width, oder position hier setzen!
+}
+
+.hero-category-slider-container--static .hero-category-slider-item-container {
+    display: flex;
+}
+
+// ========================================================================
+// ITEM - Haupt-Box
+// ========================================================================
+.hero-category-slider-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #000;
+    min-height: 400px;
+    display: block;
+}
+
+// ========================================================================
+// MEDIA LAYER - Background mit Image (absolute, z-1)
+// ========================================================================
+.hero-category-slide-media {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.hero-category-slide-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.6s ease;
+}
+
+// Zoom on Hover
+.hero-category-slide-link-wrapper:hover .hero-category-slide-img {
+    transform: scale(1.1);
+}
+
+// Placeholder
+.hero-category-slide-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #1a1a1a;
+}
+
+.hero-category-slide-placeholder-img {
+    max-width: 100px;
+    opacity: 0.3;
+}
+
+// ========================================================================
+// CONTENT LAYER - Title & Button (absolute, z-10)
+// ========================================================================
+.hero-category-slide-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    pointer-events: none;
+    
+    // ENTRY ANIMATION - WIE HERO SLIDER!
+    opacity: 0;
+    transform: translateY(-30px);
+    transition: opacity 0.9s ease-in-out 0.3s, transform 0.9s ease-in-out 0.3s;
+}
+
+// Animation aktivieren für ersten Slide UND aktive Slides
+.hero-category-slider-item-container:first-child .hero-category-slide-content,
+.hero-category-slider-item-container.tns-slide-active .hero-category-slide-content {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.hero-category-slide-title-wrapper {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    max-width: calc(100% - 200px);
+    pointer-events: auto;
+}
+
+.hero-category-slide-title {
+    color: #fff;
+    font-family: 'Oswald', sans-serif;
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1.2;
+    margin: 0;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.hero-category-slide-button-wrapper {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    pointer-events: auto;
+}
+
+.hero-category-slide-button {
+    font-family: 'Oswald', sans-serif !important;
+    font-weight: 500 !important;
+    font-size: 0.875rem !important;
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    color: #333 !important;
+    border: none !important;
+    padding: 0.5rem 1.25rem !important;
+    border-radius: 0.25rem !important;
+    transition: all 0.3s ease !important;
+    display: inline-block !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+}
+
+.hero-category-slide-link-wrapper:hover .hero-category-slide-button {
+    background-color: rgba(255, 255, 255, 1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+// ========================================================================
+// LINK WRAPPER
+// ========================================================================
+.hero-category-slide-link-wrapper {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+// ========================================================================
+// NAVIGATION BUTTONS - 1:1 KOPIE VON HERO SLIDER!
+// ========================================================================
+.hero-category-slider-controls-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1rem;
+
+    @media screen and (min-width: 768px) {
+        padding: 0 2rem;
+    }
+
+    .hero-category-slider-controls-prev,
+    .hero-category-slider-controls-next {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(255, 255, 255, 0.5);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 0.375rem;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.25s ease, opacity 0.3s ease;
+        color: var(--bs-body-color, #2b3136);
+        pointer-events: auto;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        // Hover-Only: Initial versteckt
+        opacity: 0;
+
+        svg {
+            width: 20px;
+            height: 20px;
+            display: block;
+            margin: 0 auto;
+            position: relative;
+            top: 0;
+        }
+
+        .icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            line-height: 1;
+        }
+
+        &:hover,
+        &:focus {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-color: var(--bs-primary, #798490);
+            transform: translateY(-50%) scale(1.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        &:active {
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        &:focus {
+            outline: 2px solid var(--bs-primary, #0042a0);
+            outline-offset: 2px;
+        }
+    }
+
+    .hero-category-slider-controls-prev {
+        left: 1rem;
+
+        @media screen and (min-width: 768px) {
+            left: 2rem;
+        }
+
+        &.is-nav-prev-outside {
+            left: -3rem;
+
+            @media screen and (max-width: 1199px) {
+                left: 1rem;
+            }
+        }
+    }
+
+    .hero-category-slider-controls-next {
+        right: 1rem;
+
+        @media screen and (min-width: 768px) {
+            right: 2rem;
+        }
+
+        &.is-nav-next-outside {
+            right: -3rem;
+
+            @media screen and (max-width: 1199px) {
+                right: 1rem;
+            }
+        }
+    }
+}
+
+// Hover-Only: Prev/Next Buttons nur bei Hover über Slider sichtbar
+.hero-category-slider:hover {
+    .hero-category-slider-controls-prev,
+    .hero-category-slider-controls-next {
+        opacity: 1;
+    }
+}
+
+// ========================================================================
+// DOTS NAVIGATION - 1:1 KOPIE VON HERO SLIDER!
+// ========================================================================
+.hero-category-slider {
+    .tns-nav,
+    .base-slider-dots {
+        position: absolute;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 15;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin: 0;
+        padding: 0.5rem 1rem;
+        pointer-events: auto;
+
+        @media screen and (max-width: 767px) {
+            bottom: 1rem;
+            padding: 0.375rem 0.75rem;
+        }
+
+        button,
+        .base-slider-dot {
+            width: 14px !important;
+            height: 14px !important;
+            border-radius: 50% !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            background-color: rgba(255, 255, 255, 0.3) !important;
+            transition: background-color 0.3s ease, transform 0.3s ease !important;
+            box-shadow: none !important;
+            cursor: pointer;
+
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.5) !important;
+                transform: scale(1.1);
+            }
+
+            &.tns-nav-active,
+            &[aria-label*="Current"] {
+                background-color: rgba(255, 255, 255, 0.9) !important;
+                transform: scale(1.2);
+            }
+
+            &:focus {
+                outline: none !important;
+                border: none !important;
+            }
+        }
+    }
+
+    &.has-dots-outside {
+        padding-bottom: 4rem;
+
+        @media screen and (max-width: 767px) {
+            padding-bottom: 3.5rem;
+        }
+
+        .tns-nav,
+        .base-slider-dots {
+            bottom: 1rem;
+        }
+    }
+}
+
+// ========================================================================
+// RESPONSIVE - MOBILE
+// ========================================================================
+@media screen and (max-width: 767px) {
+    .hero-category-slide-title {
+        font-size: 1.5rem;
+    }
+    
+    .hero-category-slide-title-wrapper {
+        top: 1rem;
+        left: 1rem;
+        max-width: calc(100% - 2rem);
+    }
+    
+    .hero-category-slide-button-wrapper {
+        top: 1rem;
+        right: 1rem;
+    }
+    
+    .hero-category-slide-button {
+        font-size: 0.75rem !important;
+        padding: 0.375rem 0.875rem !important;
+    }
+}
+
+// RESPONSIVE - TABLET
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+    .hero-category-slide-title {
+        font-size: 1.75rem;
+    }
+}
+
+// ========================================================================
+// PRINT MODE - Keine Animationen
+// ========================================================================
+@media print {
+    .hero-category-slider-controls-container,
+    .tns-nav {
+        display: none;
+    }
+    
+    .hero-category-slide-content {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+    
+    .hero-category-slider-item-container {
+        page-break-inside: avoid;
+    }
+}
+

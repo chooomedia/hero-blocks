@@ -209,11 +209,20 @@
                             {# CUSTOM LINK #}
                             {% block sw_cms_el_config_hero_category_slider_slide_custom_link %}
                             <sw-dynamic-url-field
-                                v-model="slide.customLink"
+                                v-model:value="slide.customLink"
                                 :label="$tc('sw-cms.elements.categorySlider.config.customLink.label')"
                                 :placeholder="$tc('sw-cms.elements.categorySlider.config.customLink.placeholder')"
                                 :help-text="$tc('sw-cms.elements.categorySlider.config.customLink.helpText')"
-                                @update:model-value="onCustomLinkChange(index, $event)"
+                                @update:value="onCustomLinkChange(index, $event)"
+                            />
+                            {% endblock %}
+                            
+                            {# NEW TAB #}
+                            {% block sw_cms_el_config_hero_category_slider_slide_new_tab %}
+                            <sw-switch-field
+                                v-model="slide.newTab"
+                                :label="$tc('sw-cms.elements.image.config.label.newTab')"
+                                @update:model-value="onNewTabChange(index, $event)"
                             />
                             {% endblock %}
                         </div>
@@ -367,6 +376,17 @@
                     :label="$tc('sw-cms.elements.imageSlider.config.label.minHeight')"
                     :help-text="$tc('sw-cms.elements.imageSlider.config.label.minHeightHelpText')"
                     @update:model-value="onChangeMinHeight"
+                />
+                {% endblock %}
+                
+                {# MAX HEIGHT #}
+                {% block sw_cms_el_config_hero_category_slider_max_height %}
+                <mt-text-field
+                    v-if="element.config.maxHeight"
+                    v-model="element.config.maxHeight.value"
+                    :label="$tc('sw-cms.elements.imageSlider.config.label.maxHeight')"
+                    :help-text="$tc('sw-cms.elements.imageSlider.config.label.maxHeightHelpText')"
+                    @update:model-value="onChangeMaxHeight"
                 />
                 {% endblock %}
                 

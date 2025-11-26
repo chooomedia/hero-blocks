@@ -40,6 +40,7 @@ Shopware.Component.override("sw-system-config", {
       isUpdateChecking: false,
       isUpdateDownloading: false,
       isInstagramTokenChecking: false,
+      isEmailTestSending: false,
       // Feature-Validierung: Schritt-für-Schritt-Status
       featureValidation: {
         isRunning: false,
@@ -141,6 +142,19 @@ Shopware.Component.override("sw-system-config", {
       return (
         config["HeroBlocks.config.enableHeroInstagramFeed"] === true ||
         config["enableHeroInstagramFeed"] === true
+      );
+    },
+
+    /**
+     * Prüft ob FAQ Block aktiviert ist
+     * WICHTIG: Für Collapsible Card "FAQ Block Settings" (nur wenn aktiv)
+     */
+    isFaqBlockEnabled() {
+      if (!this.isHeroBlocksConfig()) return false;
+      const config = this.actualConfigData?.[this.currentSalesChannelId] || {};
+      return (
+        config["HeroBlocks.config.enableFaqBlock"] === true ||
+        config["enableFaqBlock"] === true
       );
     },
 
@@ -852,6 +866,54 @@ Shopware.Component.override("sw-system-config", {
         });
       } finally {
         this.isUpdateDownloading = false;
+      }
+    },
+
+    /**
+     * TEST: Sendet Test-E-Mail für License-Expiry-Reminder (DEV ONLY)
+     */
+    async sendTestExpiryEmail() {
+      this.isEmailTestSending = true;
+
+      try {
+        const httpClient = this.systemConfigApiService.httpClient;
+        if (!httpClient) {
+          throw new Error("HTTP Client not available");
+        }
+
+        debugLog("📧 Sending test expiry email...");
+        const startTime = Date.now();
+
+        const response = await httpClient.post(
+          "/_action/hero-blocks/test-expiry-email",
+          {},
+          {
+            headers: this.systemConfigApiService.getBasicHeaders(),
+          }
+        );
+
+        const duration = Date.now() - startTime;
+        debugLog(`✅ Test email sent in ${duration}ms`, response.data);
+
+        if (response.data?.success) {
+          this.createNotificationSuccess({
+            title: "Test Email Sent",
+            message: `Test expiry reminder email sent to: ${response.data.data.recipient}`,
+          });
+        } else {
+          throw new Error(
+            response.data?.errors?.[0]?.detail || "Email send failed"
+          );
+        }
+      } catch (error) {
+        debugError("❌ Failed to send test email:", error);
+        
+        this.createNotificationError({
+          title: "Email Test Failed",
+          message: error.response?.data?.errors?.[0]?.detail || error.message || "Could not send test email",
+        });
+      } finally {
+        this.isEmailTestSending = false;
       }
     },
 

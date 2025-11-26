@@ -104,6 +104,18 @@
             "availableLanguages": "Available Languages",
             "hint": "These languages will be displayed in the Language Switcher in the header (desktop).",
             "noLanguages": "No languages found. Please check your language configuration."
+        },
+        "renewal": {
+            "title": "⚡ Reactivate License & Level Up",
+            "message": "Your license has expired – but no worries! With just one click, reactivate all premium features and take your store to the next level. <strong>Special benefits when renewing:</strong> Exclusive updates, priority support, and early access to new features. Invest in your success!",
+            "button": "Renew License Now",
+            "features": {
+                "title": "What you get when renewing:",
+                "updates": "All future updates for free",
+                "support": "Priority support with fast response time",
+                "newFeatures": "Early access to new features",
+                "security": "Security updates & performance optimizations"
+            }
         }
     }
 }

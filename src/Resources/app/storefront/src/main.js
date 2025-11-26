@@ -25,6 +25,7 @@ import './scss/components/hero-mega-menu.scss'; // hero-mega-menu BLOCK
 import './scss/components/hero-instagram-feed.scss'; // hero-instagram-feed ELEMENT
 import './scss/components/hero-video-extended.scss'; // hero-video-extended BLOCK
 import './scss/components/hero-shopping-experience.scss'; // hero-shopping-experience BLOCK
+import './scss/component/_license-expired-notice.scss'; // License Expired Notice Component
 
 // ============================================================================
 // Import JavaScript Plugin Classes

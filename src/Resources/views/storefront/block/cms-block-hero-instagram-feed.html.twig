@@ -2,6 +2,9 @@
     {# WICHTIG: Instagram Feed Block - TypeDataResolver lädt Posts vom Backend #}
     {# WICHTIG: Keine Slots - Block rendert direkt Instagram Posts #}
     
+    {# WICHTIG: License-Check - Prüft ob Premium-Feature verfügbar ist #}
+    {% set licenseStatus = config('HeroBlocks.config.licenseStatus')|default('active') %}
+    
     {% set element = block.slots.getSlot('instagramFeed') %}
     {% set columns = 1 %}
     
@@ -13,6 +16,14 @@
     {# Wrapper für Block (col-12 = full width) #}
     <div class="col-12 hero-instagram-feed-wrapper" data-cms-element-id="{{ element ? element.id : 'no-element' }}">
         {% block block_hero_instagram_feed_inner %}
+            {# WICHTIG: License-Hinweis anzeigen wenn abgelaufen #}
+            {% if licenseStatus == 'expired' %}
+                {% include '@HeroBlocks/storefront/component/license-expired-notice.html.twig' with {
+                    feature: 'Instagram Feed',
+                    licenseStatus: licenseStatus
+                } only %}
+            {% endif %}
+            
             {# WICHTIG: Element Template wird hier gerendert #}
             {# Element Template hat Zugriff auf element.data.instagramPosts (vom TypeDataResolver) #}
             {% if element %}

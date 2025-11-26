@@ -7,8 +7,8 @@
         <title>Block Settings</title>
         <input-field type="bool">
                         <name>enableHeroBlockSlider</name>
-                        <label lang="de-DE">Hero Block Slider aktivieren</label>
-                        <label>Enable Hero Block Slider</label>
+                        <label lang="de-DE">Hero Slider Block aktivieren</label>
+                        <label>Enable Hero Slider Block</label>
             <defaultValue>true</defaultValue>
                         <helpText lang="de-DE">Aktiviert den Hero Block Slider in Erlebniswelten. Wenn deaktiviert, wird der Block nicht in der Block-Auswahl angezeigt.</helpText>
                         <helpText>Enables the Hero Block Slider in Shopping Experiences. If disabled, the block will not appear in the block selection.</helpText>
@@ -23,16 +23,16 @@
         </input-field>
         <input-field type="bool">
             <name>enableHeroVideoExtended</name>
-            <label lang="de-DE">Hero Video Extended aktivieren</label>
-            <label>Enable Hero Video Extended</label>
+            <label lang="de-DE">Hero Video Extended Block aktivieren</label>
+            <label>Enable Hero Video Extended Block</label>
             <defaultValue>false</defaultValue>
             <disabled>false</disabled>
             <helpText lang="de-DE">Hero Video Extended Block mit Headlines, Text und Buttons. Aktiviert den Hero Video Extended Block in Erlebniswelten.</helpText>
             <helpText>Hero Video Extended block with headlines, text, and buttons. Enables the Hero Video Extended block in Shopping Experiences.</helpText>
         </input-field>        <input-field type="bool">
             <name>enableHeroInstagramFeed</name>
-            <label lang="de-DE">Hero Instagram Feed Widget aktivieren</label>
-            <label>Enable Hero Instagram Feed Widget</label>
+            <label lang="de-DE">Hero Instagram Feed Block aktivieren</label>
+            <label>Enable Hero Instagram Feed Block</label>
             <defaultValue>false</defaultValue>
             <disabled>false</disabled>
             <helpText lang="de-DE">Instagram Feed Integration für Mega-Menü und Custom-Blöcke. Aktiviert den Instagram Feed Block in Erlebniswelten.</helpText>
@@ -40,8 +40,8 @@
         </input-field>
         <input-field type="bool">
             <name>enableMegaMenu</name>
-            <label lang="de-DE">Mega Menu aktivieren</label>
-            <label>Enable Mega Menu</label>
+            <label lang="de-DE">Hero Mega Menu aktivieren</label>
+            <label>Enable Hero Mega Menu</label>
             <defaultValue>true</defaultValue>
             <disabled>false</disabled>
             <helpText lang="de-DE">Aktiviert das erweiterte Mega Menu für die Navigation mit Produkten, Widgets und Instagram Feed Support.</helpText>
@@ -49,12 +49,21 @@
         </input-field>
         <input-field type="bool">
             <name>enableCategorySlider</name>
-            <label lang="de-DE">Hero Block Kategorie-Slider aktivieren</label>
-            <label>Enable Hero Block Category Slider</label>
+            <label lang="de-DE">Hero Kategorie-Slider Block aktivieren</label>
+            <label>Enable Hero Category Slider Block</label>
             <defaultValue>false</defaultValue>
             <disabled>false</disabled>
             <helpText lang="de-DE">Aktiviert den Hero Block Kategorie-Slider in Erlebniswelten. Wenn deaktiviert, wird der Block nicht in der Block-Auswahl angezeigt.</helpText>
             <helpText>Enables the Hero Block Category Slider in Shopping Experiences. If disabled, the block will not appear in the block selection.</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>enableFaqBlock</name>
+            <label lang="de-DE">Hero FAQ Block aktivieren</label>
+            <label>Enable Hero FAQ Block</label>
+            <defaultValue>false</defaultValue>
+            <disabled>false</disabled>
+            <helpText lang="de-DE">Aktiviert den Hero FAQ Block mit Accordion-Funktionalität und Schema.org Rich Snippets für SEO.</helpText>
+            <helpText>Enables the Hero FAQ Block with accordion functionality and Schema.org rich snippets for SEO.</helpText>
         </input-field>
         <input-field type="bool">
             <name>enableShoppingExperience</name>
@@ -142,6 +151,47 @@
             <placeholder>https://youtube.com/...</placeholder>
             <helpText lang="de-DE">YouTube Kanal-URL für Social Media Icons im Header (Desktop) und Sidebar (Mobile).</helpText>
             <helpText>YouTube channel URL for social media icons in header (desktop) and sidebar (mobile).</helpText>
+        </input-field>
+    </card>
+    
+    <card>
+        <title lang="de-DE">FAQ Block Einstellungen</title>
+        <title>FAQ Block Settings</title>
+        <input-field type="bool">
+            <name>enableFaqRichSnippets</name>
+            <label lang="de-DE">FAQ Rich Snippets aktivieren</label>
+            <label>Enable FAQ Rich Snippets</label>
+            <defaultValue>true</defaultValue>
+            <helpText lang="de-DE">Aktiviert Schema.org FAQPage Rich Snippets für bessere SEO-Performance.</helpText>
+            <helpText>Enables Schema.org FAQPage rich snippets for better SEO performance.</helpText>
+        </input-field>
+        <input-field type="single-select">
+            <name>faqAccordionBehavior</name>
+            <label lang="de-DE">Accordion-Verhalten</label>
+            <label>Accordion Behavior</label>
+            <options>
+                <option>
+                    <id>single</id>
+                    <name lang="de-DE">Nur ein Item gleichzeitig öffnen</name>
+                    <name>Open only one item at a time</name>
+                </option>
+                <option>
+                    <id>multiple</id>
+                    <name lang="de-DE">Mehrere Items gleichzeitig öffnen</name>
+                    <name>Open multiple items at once</name>
+                </option>
+            </options>
+            <defaultValue>single</defaultValue>
+            <helpText lang="de-DE">Bestimmt, ob mehrere FAQ-Items gleichzeitig geöffnet sein können.</helpText>
+            <helpText>Determines whether multiple FAQ items can be opened simultaneously.</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>faqOpenFirstItem</name>
+            <label lang="de-DE">Erstes Item standardmäßig öffnen</label>
+            <label>Open first item by default</label>
+            <defaultValue>true</defaultValue>
+            <helpText lang="de-DE">Öffnet das erste FAQ-Item automatisch beim Laden der Seite.</helpText>
+            <helpText>Automatically opens the first FAQ item when the page loads.</helpText>
         </input-field>
     </card>
     

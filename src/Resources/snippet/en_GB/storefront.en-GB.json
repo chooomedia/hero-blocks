@@ -5,6 +5,17 @@
                 "noImages": "No category images available",
                 "goToCategory": "Go to %name%",
                 "moreInfo": "More Information"
+            },
+            "instagramFeed": {
+                "empty": {
+                    "title": "No Instagram posts available",
+                    "description": "Follow us on Instagram to see our latest posts."
+                }
+            },
+            "licenseExpired": {
+                "title": "🔒 Premium Feature: License Expired",
+                "message": "This exclusive feature requires an active license. Renew now and enjoy all premium features!",
+                "renewButton": "Renew Now & Benefit"
             }
         }
     }

@@ -1,0 +1,100 @@
+/**
+ * Hero FAQ Block Config - Administration Styles
+ * Styles für die FAQ-Block-Konfiguration im CMS-Editor
+ */
+
+.sw-cms-block-config-hero-faq {
+    padding: 0;
+
+    &__header {
+        margin-bottom: 24px;
+
+        h3 {
+            margin-bottom: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #52667a;
+        }
+
+        p {
+            color: #758ca3;
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 0;
+        }
+    }
+
+    &__items {
+        margin-bottom: 20px;
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+
+    &__item {
+        margin-bottom: 20px;
+        padding: 20px;
+        border: 1px solid #d1d9e0;
+        border-radius: 8px;
+        background: #f9fafb;
+        transition: all 0.2s ease;
+
+        &:hover {
+            border-color: #189eff;
+            box-shadow: 0 2px 8px rgba(24, 158, 255, 0.1);
+        }
+    }
+
+    &__item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+
+        h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #52667a;
+            margin: 0;
+        }
+
+        .sw-button {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+    }
+
+    &__question-field,
+    &__answer-field {
+        margin-bottom: 16px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    &__empty {
+        text-align: center;
+        padding: 40px 20px;
+        color: #758ca3;
+
+        .sw-icon {
+            margin-bottom: 16px;
+            color: #d1d9e0;
+        }
+
+        p {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+    }
+
+    &__add-button {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+}

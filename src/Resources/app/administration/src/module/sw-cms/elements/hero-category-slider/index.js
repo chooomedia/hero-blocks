@@ -28,7 +28,7 @@ Shopware.Service('cmsService').registerCmsElement({
         // WICHTIG: Jedes Slide = 1 Kategorie + Custom Overrides
         categorySlides: {
             source: 'static',
-            value: [], // Array von Slide-Objekten: [{ categoryId, customTitle, customImageId, customText, customLink }, ...]
+            value: [], // Array von Slide-Objekten: [{ categoryId, customTitle, customImageId, customText, customLink, newTab }, ...]
         },
         
         // DEPRECATED (for backward compatibility - wird zu Slides migriert)
@@ -85,6 +85,10 @@ Shopware.Service('cmsService').registerCmsElement({
             source: 'static',
             value: '340px',
         },
+        maxHeight: {
+            source: 'static',
+            value: null,
+        },
     },
     enrich: function enrich(slot, data) {
         // V3.0 - Slides-basiertes Enrichment
@@ -135,7 +139,7 @@ Shopware.Service('cmsService').registerCmsElement({
 
         // Lade Categories aus data (kommt vom CMS Service)
         const entityKey = 'entity-category-0';
-        if (data[entityKey]) {
+            if (data[entityKey]) {
             slot.data.categorySlides = slides.map((slide) => {
                 const category = data[entityKey].get(slide.categoryId);
                 return {

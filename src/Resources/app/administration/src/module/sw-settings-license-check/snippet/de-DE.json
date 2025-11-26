@@ -104,6 +104,18 @@
             "availableLanguages": "Verfügbare Sprachen",
             "hint": "Diese Sprachen werden im Language Switcher im Header angezeigt (Desktop).",
             "noLanguages": "Keine Sprachen gefunden. Bitte prüfen Sie die Sprach-Konfiguration."
+        },
+        "renewal": {
+            "title": "⚡ Lizenz reaktivieren & durchstarten",
+            "message": "Ihre Lizenz ist abgelaufen – aber kein Problem! Mit nur einem Klick reaktivieren Sie alle Premium-Features und heben Ihren Shop auf das nächste Level. <strong>Besondere Vorteile bei Verlängerung:</strong> Exklusive Updates, Priority-Support und neue Features zuerst. Investieren Sie in Ihren Erfolg!",
+            "button": "Jetzt Lizenz verlängern",
+            "features": {
+                "title": "Was Sie bei Verlängerung erhalten:",
+                "updates": "Alle zukünftigen Updates kostenlos",
+                "support": "Priority-Support mit schneller Reaktionszeit",
+                "newFeatures": "Frühzeitiger Zugriff auf neue Features",
+                "security": "Sicherheitsupdates & Performance-Optimierungen"
+            }
         }
     }
 }

@@ -2,6 +2,20 @@
     {# WICHTIG: Mega Menu Block - Full-Width Navigation mit Widgets #}
     {# SEO-ready: Schema.org, ARIA-Labels, Semantic HTML #}
     {# WICHTIG: Block-Config wird in block.customFields gespeichert (NICHT block.config!) #}
+    
+    {# WICHTIG: License-Check - Prüft ob Premium-Feature verfügbar ist #}
+    {% set licenseStatus = config('HeroBlocks.config.licenseStatus')|default('active') %}
+    
+    {# License-Hinweis anzeigen wenn abgelaufen (vor Block-Content) #}
+    {% if licenseStatus == 'expired' %}
+        <div class="col-12">
+            {% include '@HeroBlocks/storefront/component/license-expired-notice.html.twig' with {
+                feature: 'Mega Menu',
+                licenseStatus: licenseStatus
+            } only %}
+        </div>
+    {% endif %}
+    
     {% set customStyles = [] %}
     {% if block.customFields.linkColor is defined and block.customFields.linkColor is not empty %}
         {% set customStyles = customStyles|merge(['--hero-mega-menu-link-color: ' ~ block.customFields.linkColor]) %}

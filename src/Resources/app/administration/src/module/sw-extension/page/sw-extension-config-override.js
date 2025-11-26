@@ -121,7 +121,7 @@ Shopware.Component.override("sw-extension-config", {
             if (this.$refs.systemConfig) {
               await this.$refs.systemConfig.loadCurrentSalesChannelConfig();
               await this.$nextTick();
-              
+
               // Warte kurz bis Config-Daten geladen sind
               setTimeout(() => {
                 this.updateLicenseStatusFromConfig(
@@ -173,7 +173,7 @@ Shopware.Component.override("sw-extension-config", {
             configData[null]?.["HeroBlocks.config.licenseStatus"] ||
             configData[null]?.["licenseStatus"] ||
             null;
-          
+
           if (nullStatus) {
             this.licenseStatus = nullStatus;
             this.showLicenseChip = true;
@@ -188,7 +188,7 @@ Shopware.Component.override("sw-extension-config", {
             configData[null]?.["HeroBlocks.config.licenseExpiresAt"] ||
             configData[null]?.["licenseExpiresAt"] ||
             null;
-          
+
           if (nullExpiresAt) {
             this.licenseExpiresAt = nullExpiresAt;
           }
@@ -214,9 +214,7 @@ Shopware.Component.override("sw-extension-config", {
         if (daysRemaining > 0 && daysRemaining <= 60) {
           // Nur wenn weniger als 60 Tage (2 Monate)
           this.createNotificationWarning({
-            title: this.$tc(
-              "sw-settings-license-check.warning.expiryTitle"
-            ),
+            title: this.$tc("sw-settings-license-check.warning.expiryTitle"),
             message: this.$tc(
               "sw-settings-license-check.warning.expiryMessage",
               { days: daysRemaining }
@@ -238,4 +236,3 @@ Shopware.Component.override("sw-extension-config", {
     },
   },
 });
-

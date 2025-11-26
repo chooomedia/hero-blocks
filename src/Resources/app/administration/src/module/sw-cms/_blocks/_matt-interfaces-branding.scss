@@ -1,0 +1,67 @@
+/**
+ * Matt Interfaces Branding für alle Hero Blocks
+ */
+
+.hero-blocks-matt-interfaces-branding {
+    position: absolute;
+    bottom: 4px;
+    left: 8px;
+    z-index: 10;
+    
+    .hero-blocks-branding-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        margin: 0;
+        background: #fff;
+        border: 1px solid var(--color-border-primary-default);
+        border-radius: 4px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        
+        &::after {
+            display: none !important;
+            content: none !important;
+        }
+        
+        &:hover {
+            background: #ff5432;
+            border-color: #ff5432;
+            box-shadow: 0 2px 8px rgba(255, 84, 50, 0.3);
+            transform: translateY(-2px);
+            
+            .hero-blocks-branding-logo {
+                path {
+                    fill: #fff;
+                }
+            }
+        }
+        
+        &:active {
+            transform: translateY(0);
+        }
+    }
+    
+    .hero-blocks-branding-logo {
+        display: block;
+        width: 30px;
+        height: 30px;
+        flex-shrink: 0;
+        transition: all 0.3s ease;
+        
+        path {
+            fill: #ff5432;
+            transition: fill 0.3s ease;
+        }
+    }
+    
+    .hero-blocks-branding-text {
+        display: none;
+    }
+}
+

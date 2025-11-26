@@ -1,0 +1,27 @@
+{% block sw_cms_block_hero_faq %}
+    <div class="sw-cms-block-hero-faq">
+        <div class="sw-cms-block-hero-faq__items" v-if="faqItems && faqItems.length > 0">
+            <div class="sw-cms-block-hero-faq__item" v-for="(faq, index) in faqItems" :key="'faq-' + index">
+                <div class="sw-cms-block-hero-faq__question">
+                    <svg xmlns="http://www.w3.org/2000/svg" 
+                         width="20" 
+                         height="20" 
+                         viewBox="0 0 24 24" 
+                         fill="none" 
+                         stroke="currentColor" 
+                         stroke-width="2"
+                         stroke-linecap="round" 
+                         stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                    <span>{{ faq.question || $tc('sw-cms.blocks.heroBlocks.heroFaq.preview.question1') }}</span>
+                </div>
+                <div class="sw-cms-block-hero-faq__answer" v-html="faq.answer || $tc('sw-cms.blocks.heroBlocks.heroFaq.preview.answer1')"></div>
+            </div>
+        </div>
+        <div class="sw-cms-block-hero-faq__empty" v-else>
+            <sw-icon name="regular-lightbulb" size="48"></sw-icon>
+            <p>{{ $tc('sw-cms.blocks.heroBlocks.heroFaq.emptyState') }}</p>
+        </div>
+    </div>
+{% endblock %}

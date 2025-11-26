@@ -1,13 +1,5 @@
 {% block sw_cms_block_hero_two_columns %}
-{# WICHTIG: Matt Interfaces Branding - Logo wird via CSS (::after) hinzugefügt #}
-{# WICHTIG: Block Component - Wrapper wie Standard text-image Block #}
-{# WICHTIG: Standard-Buttons werden vom sw-cms-slot Component bereitgestellt #}
-{# WICHTIG: Block-Settings werden über den Parent sw-cms-block__config-overlay geöffnet #}
-{# WICHTIG: Slots MÜSSEN IMMER gerendert werden, damit Standard-Buttons verfügbar sind! #}
 <div class="sw-cms-block-hero-two-columns" :class="blockClass">
-    {# WICHTIG: Slots für Bild (left) und Text (right) #}
-    {# WICHTIG: Slots explizit mit Namen rendern (wie bei Category Slider) #}
-    {# WICHTIG: Standard-Buttons (sw-cms-slot__actions) werden automatisch vom Slot bereitgestellt #}
     <slot name="left"></slot>
     <slot name="right"></slot>
 </div>

@@ -325,6 +325,7 @@ export default {
         customImageId: null,
         customText: null,
         customLink: null,
+        newTab: false, // Open in new tab
       };
 
       if (!this.element.config.categorySlides) {
@@ -416,6 +417,12 @@ export default {
     onCustomLinkChange(slideIndex, value) {
       if (!this.slides[slideIndex]) return;
       this.slides[slideIndex].customLink = value;
+      this.emitUpdateEl();
+    },
+
+    onNewTabChange(slideIndex, value) {
+      if (!this.slides[slideIndex]) return;
+      this.slides[slideIndex].newTab = value;
       this.emitUpdateEl();
     },
 
@@ -562,6 +569,12 @@ export default {
     onChangeMinHeight(value) {
       if (!this.element?.config?.minHeight) return;
       this.element.config.minHeight.value = value;
+      this.emitUpdateEl();
+    },
+
+    onChangeMaxHeight(value) {
+      if (!this.element?.config?.maxHeight) return;
+      this.element.config.maxHeight.value = value;
       this.emitUpdateEl();
     },
 

@@ -123,11 +123,16 @@ class CategorySliderTypeDataResolver extends AbstractCmsElementResolver
         $imageSlider = new ImageSliderStruct();
         $slot->setData($imageSlider);
 
+        // DEBUG: Log total slides
+        error_log('[CategorySliderResolver] Total slides in config: ' . count($slides));
+
         // Erstelle Slider-Items für JEDES Slide
-        foreach ($slides as $slide) {
+        foreach ($slides as $index => $slide) {
             $categoryId = $slide['categoryId'] ?? null;
+            error_log("[CategorySliderResolver] Slide #{$index}: categoryId=" . ($categoryId ?? 'NULL'));
             
             if (!$categoryId) {
+                error_log("[CategorySliderResolver] SKIP Slide #{$index}: No categoryId");
                 continue; // Skip slides ohne Category
             }
 
@@ -135,8 +140,11 @@ class CategorySliderTypeDataResolver extends AbstractCmsElementResolver
             $category = $categoriesResult ? $categoriesResult->get($categoryId) : null;
             
             if (!$category) {
+                error_log("[CategorySliderResolver] SKIP Slide #{$index}: Category not found for ID {$categoryId}");
                 continue; // Skip nicht gefundene Kategorien
             }
+            
+            error_log("[CategorySliderResolver] ✓ Slide #{$index}: Category found - " . $category->getName());
 
             // Erstelle Slider Item
             $imageSliderItem = new ImageSliderItemStruct();
@@ -156,10 +164,10 @@ class CategorySliderTypeDataResolver extends AbstractCmsElementResolver
                 $imageSliderItem->setMedia($category->getMedia());
             }
 
-            // Skip wenn kein Media vorhanden
-            if (!$imageSliderItem->getMedia()) {
-                continue;
-            }
+            // WICHTIG: Slides AUCH ohne Media rendern (Placeholder im Frontend!)
+            // if (!$imageSliderItem->getMedia()) {
+            //     continue;
+            // }
             
             // WICHTIG: Speichere Slide-Daten als Extensions (wie Hero Slider)
             // ImageSliderItemStruct hat KEINE setCustomFields(), sondern addArrayExtension()!
@@ -189,6 +197,9 @@ class CategorySliderTypeDataResolver extends AbstractCmsElementResolver
             if (!empty($slide['customLink'])) {
                 $imageSliderItem->addArrayExtension('customLink', ['value' => $slide['customLink']]);
             }
+            
+            // NewTab Funktionalität
+            $imageSliderItem->addArrayExtension('newTab', ['value' => $slide['newTab'] ?? false]);
             
             if (!empty($customImageId)) {
                 $imageSliderItem->addArrayExtension('hasCustomImage', ['value' => true]);

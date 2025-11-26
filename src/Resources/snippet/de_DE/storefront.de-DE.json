@@ -5,6 +5,17 @@
                 "noImages": "Keine Kategorie-Bilder verfügbar",
                 "goToCategory": "Zu %name%",
                 "moreInfo": "Weitere Informationen"
+            },
+            "instagramFeed": {
+                "empty": {
+                    "title": "Keine Instagram-Posts verfügbar",
+                    "description": "Folgen Sie uns auf Instagram, um unsere neuesten Posts zu sehen."
+                }
+            },
+            "licenseExpired": {
+                "title": "🔒 Premium-Feature: Lizenz abgelaufen",
+                "message": "Dieses exklusive Feature erfordert eine aktive Lizenz. Verlängern Sie jetzt und profitieren Sie von allen Premium-Funktionen!",
+                "renewButton": "Jetzt verlängern & profitieren"
             }
         }
     }
