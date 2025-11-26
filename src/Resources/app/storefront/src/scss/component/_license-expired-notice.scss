@@ -1,115 +1,214 @@
 // ========================================
-// License Expired Notice - Modern & Minimal
+// License Expired Notice - Fixed Bottom Right (Matt Interfaces CI)
 // ========================================
 
 .hero-blocks-license-expired-notice {
-    // Desktop: Schmal, elegant, alle Elemente in einer Zeile
-    &--desktop {
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.5rem;
-        border-left: 4px solid var(--bs-warning);
-        background-color: rgba(var(--bs-warning-rgb), 0.05);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        transition: all 0.3s ease;
+    // WICHTIG: Fixed Position unten rechts - stört Navigation nicht!
+    position: fixed;
+    bottom: 1rem;
+    right: 2.5rem;
+    z-index: 9999; // Über allem
+    max-width: 420px;
+    width: calc(100% - 4rem);
+    
+    // Matt Interfaces CI Farben - Elegant, nicht zu rot
+    // Basis: #ff5432 (Matt Interfaces Rot) → Aufgehellt für Background
+    padding: 1.5rem; // Extra padding rechts für Close-Button
+    border-radius: 12px; // Moderner, runder
+    border-left: 4px solid #ff5432; // Matt Interfaces Rot
+    
+    // Solider Background mit Gradient (elegant, nicht zu rot)
+    background: linear-gradient(135deg, #fff5f3 0%, #ffe9e5 100%);
+    
+    // Fancy Shadow (Matt Interfaces Rot mit Transparenz)
+    box-shadow: 
+        0 10px 40px rgba(255, 84, 50, 0.2),
+        0 2px 8px rgba(0, 0, 0, 0.12);
+    
+    transition: opacity 0.3s ease, transform 0.3s ease, max-height 0.3s ease;
+    
+    // Hover: Leicht anheben (modern & interactive)
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 
+            0 12px 48px rgba(255, 84, 50, 0.25),
+            0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    // Close-Button (X) - Oben rechts mit Matt Interfaces Akzent
+    &__close {
+        position: absolute;
+        top: 0;
+        right: 0;
+        transform: translate(7px, -13px);
+        padding: 0.25rem;
+        background: transparent;
+        border: none;
+        color: #ff5432; // Matt Interfaces Rot
+        opacity: 0.7;
+        transition: opacity 0.2s ease, transform 0.2s ease, color 0.2s ease;
+        z-index: 10;
         
         &:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            transform: translateY(-1px);
+            opacity: 1;
+            color: #e63a1a; // Dunkleres Rot beim Hover
         }
         
-        .hero-blocks-license-expired-notice__content {
-            min-width: 0; // Ermöglicht text-overflow
-        }
-        
-        .hero-blocks-license-expired-notice__title {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--bs-dark);
-            white-space: nowrap;
-        }
-        
-        .hero-blocks-license-expired-notice__text {
-            font-size: 0.875rem;
-            line-height: 1.4;
-            color: var(--bs-secondary);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        
-        .hero-blocks-license-expired-notice__button {
-            flex-shrink: 0;
-            padding: 0.5rem 1.25rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            border-radius: 0.375rem;
-            transition: all 0.2s ease;
-            
-            &:hover {
-                transform: translateX(2px);
-            }
-            
-            svg {
-                transition: transform 0.2s ease;
-            }
-            
-            &:hover svg {
-                transform: translateX(3px);
-            }
-        }
-        
-        .hero-blocks-license-expired-notice__icon {
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            
-            svg {
-                filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-            }
+        &:focus {
+            outline: 2px solid #ff5432; // Matt Interfaces Rot
+            outline-offset: 2px;
         }
     }
     
-    // Mobile/Tablet: Gestackt, mehr Platz
-    &--mobile {
-        padding: 1.25rem;
-        border-radius: 0.5rem;
-        border-left: 4px solid var(--bs-warning);
-        background-color: rgba(var(--bs-warning-rgb), 0.05);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    // Content Container
+    &__content {
+        margin-bottom: 0;
         
-        .alert-heading {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--bs-dark);
+        // Desktop: Inline-Block für Title + Text
+        @media screen and (min-width: 768px) {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
+    }
+    
+    // Title - Matt Interfaces Akzent
+    &__title {
+        font-size: 1rem;
+        font-weight: 700; // Bold für Emphasis
+        color: #e63a1a; // Dunkleres Matt Interfaces Rot (elegant, nicht zu grell)
+        margin-right: 0.5rem;
+        display: inline-block;
+        letter-spacing: -0.02em; // Tighter spacing (modern)
         
-        p {
-            font-size: 0.875rem;
-            line-height: 1.5;
-            color: var(--bs-secondary);
+        @media screen and (max-width: 767px) {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
         }
+    }
+    
+    // Message Text - Dunkler, gute Lesbarkeit
+    &__text {
+        font-size: 0.9rem;
+        line-height: 1.6;
+        color: #4a5568; // Dunkelgrau (elegant, nicht schwarz)
+        display: inline;
         
-        .btn {
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            border-radius: 0.375rem;
-            
-            &:hover svg {
-                transform: translateX(3px);
-            }
+        @media screen and (max-width: 767px) {
+            display: block;
+        }
+    }
+    
+    // Button - Matt Interfaces CI Gradient
+    &__button {
+        padding: 0.625rem 1.5rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        
+        // Matt Interfaces Gradient (Rot → Orange)
+        background: linear-gradient(135deg, #ff5432 0%, #ff7a59 100%);
+        border: none;
+        color: white;
+        
+        // WICHTIG: Keine Animation nach rechts beim Hover!
+        &:hover {
+            // Dunklerer Gradient beim Hover
+            background: linear-gradient(135deg, #e63a1a 0%, #ff5432 100%);
+            box-shadow: 
+                0 6px 20px rgba(255, 84, 50, 0.4),
+                0 2px 8px rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
+            color: white; // Wichtig für Bootstrap Override
         }
         
         svg {
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+            transition: transform 0.2s ease;
         }
+        
+        // Nur Icon animieren (subtil)
+        &:hover svg {
+            transform: translateX(3px);
+        }
+    }
+    
+    // Lock Icon - Versteckt (minimalistisch)
+    &__icon {
+        display: none; // Minimalistisch - kein Icon
+    }
+    
+    // Mobile: Anpassungen für kleine Screens
+    @media screen and (max-width: 767px) {
+        bottom: 1rem;
+        right: 1rem;
+        left: 1rem;
+        width: auto;
+        max-width: none;
+        padding: 1.25rem 2.5rem 1.25rem 1.25rem;
+        border-radius: 10px;
+        
+        // Solider Background bleibt gleich
+        background: linear-gradient(135deg, #fff5f3 0%, #ffe9e5 100%);
+    }
+    
+    // Tablet: Breiter
+    @media screen and (min-width: 768px) and (max-width: 1023px) {
+        max-width: 380px;
+        right: 1.5rem;
+        bottom: 1.5rem;
     }
 }
 
-// Theme-Variablen-Override (falls benötigt)
-:root {
-    --hero-blocks-license-notice-bg: rgba(var(--bs-warning-rgb), 0.05);
-    --hero-blocks-license-notice-border: var(--bs-warning);
+// Accessibility: Focus-Styles mit Matt Interfaces Akzent
+.hero-blocks-license-expired-notice__close:focus-visible {
+    outline: 2px solid #ff5432; // Matt Interfaces Rot
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+}
+
+// Animation beim Erscheinen (Fancy Slide-In from bottom-right)
+@keyframes slideInFromBottomRight {
+    from {
+        opacity: 0;
+        transform: translate(100px, 100px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(0, 0);
+    }
+}
+
+.hero-blocks-license-expired-notice {
+    animation: slideInFromBottomRight 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+// Print: Verstecke Notice beim Drucken
+@media print {
+    .hero-blocks-license-expired-notice {
+        display: none;
+    }
+}
+
+// Reduced Motion Support
+@media (prefers-reduced-motion: reduce) {
+    .hero-blocks-license-expired-notice {
+        transition: none;
+        
+        &__close,
+        &__button,
+        &__button svg {
+            transition: none;
+        }
+        
+        &__close:hover,
+        &__button:hover,
+        &__button:hover svg {
+            transform: none;
+        }
+    }
 }
 

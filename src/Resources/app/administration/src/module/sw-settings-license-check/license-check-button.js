@@ -77,9 +77,11 @@ Shopware.Component.override("sw-system-config", {
     isDevelopmentMode() {
       // Shopware Context hat keinen direkten APP_ENV Access
       // Wir prüfen stattdessen: window.location.hostname === 'localhost' ODER debug=true Parameter
-      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-      const hasDebugParam = window.location.href.includes('debug=true');
-      
+      const isLocalhost =
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1";
+      const hasDebugParam = window.location.href.includes("debug=true");
+
       return isLocalhost || hasDebugParam;
     },
 
@@ -262,8 +264,13 @@ Shopware.Component.override("sw-system-config", {
     },
 
     async checkHeroBlocksLicense() {
+      console.log(
+        "[HeroBlocks] 🔵 BUTTON CLICKED - checkHeroBlocksLicense() called"
+      );
+
       // WICHTIG: Keine API-Anfrage wenn Lizenz bereits abgelaufen ist
       if (this.isLicenseExpired) {
+        console.log("[HeroBlocks] ⚠️ License already expired - skipping check");
         this.createNotificationError({
           title: this.$tc(
             "sw-settings-license-check.button.licenseExpiredTitle"
@@ -276,6 +283,7 @@ Shopware.Component.override("sw-system-config", {
       }
 
       this.isLicenseChecking = true;
+      console.log("[HeroBlocks] 🔄 isLicenseChecking = true");
 
       try {
         const httpClient = this.systemConfigApiService.httpClient;
@@ -294,32 +302,41 @@ Shopware.Component.override("sw-system-config", {
           );
           if (debugResponse.data?.success && debugResponse.data?.debug) {
             debugInfo = debugResponse.data.debug;
-            debugLog("🔍 Webhook Debug Info:", debugInfo);
+            console.log("[HeroBlocks] 🔍 Webhook Debug Info:", debugInfo);
           }
         } catch (debugErr) {
-          debugWarn("⚠️ Could not fetch debug info:", debugErr);
+          console.warn("[HeroBlocks] ⚠️ Could not fetch debug info:", debugErr);
         }
 
         // Webhook URL wird vom Backend aus Environment Variable gelesen
         // Kein Eingabefeld mehr - URL wird Server-seitig aus $_ENV gelesen
 
-        debugLog("🚀 Starting license check...");
+        console.log(
+          "[HeroBlocks] 🚀 Starting MANUAL license check with forceRefresh = true..."
+        );
         const startTime = Date.now();
 
-        // Rufe API auf - verwendet Webhook wenn URL gesetzt, sonst Fallback
+        // Rufe API auf - verwendet Webhook (forceRefresh = true für manuelle Checks)
         let response;
         try {
-          debugLog("📡 Calling license check API...");
+          console.log(
+            "[HeroBlocks] 📡 Calling API POST /_action/hero-blocks/check-license with body:",
+            { forceRefresh: true }
+          );
+
           response = await httpClient.post(
             "/_action/hero-blocks/check-license",
-            {},
+            { forceRefresh: true }, // <- WICHTIG: Force-Refresh für manuellen Button-Click!
             {
               headers: this.systemConfigApiService.getBasicHeaders(),
             }
           );
 
           const duration = Date.now() - startTime;
-          debugLog(`✅ API call completed in ${duration}ms`, response.data);
+          console.log(
+            `[HeroBlocks] ✅ MANUAL CHECK - API call completed in ${duration}ms`,
+            response.data
+          );
         } catch (httpError) {
           const duration = Date.now() - startTime;
           debugError("❌ License check HTTP error:", {
@@ -884,7 +901,7 @@ Shopware.Component.override("sw-system-config", {
 
     /**
      * TEST: Sendet Test-E-Mail für License-Expiry-Reminder (DEV ONLY)
-     * 
+     *
      * WICHTIG: Diese Methode ist ISOLIERT von der produktiven License-Logik!
      * - Funktioniert unabhängig von License-Status
      * - Ändert KEINE Config-Werte
@@ -894,7 +911,7 @@ Shopware.Component.override("sw-system-config", {
       // =====================================================================
       // SICHERHEIT: Keine License-Validierung! Nur E-Mail-Test.
       // =====================================================================
-      
+
       this.isEmailTestSending = true;
 
       try {
@@ -903,7 +920,9 @@ Shopware.Component.override("sw-system-config", {
           throw new Error("HTTP Client not available");
         }
 
-        debugLog("📧 DEV Test: Sending isolated test email (no config changes)...");
+        debugLog(
+          "📧 DEV Test: Sending isolated test email (no config changes)..."
+        );
         const startTime = Date.now();
 
         const response = await httpClient.post(
@@ -915,7 +934,10 @@ Shopware.Component.override("sw-system-config", {
         );
 
         const duration = Date.now() - startTime;
-        debugLog(`✅ Test email sent in ${duration}ms (isolated mode)`, response.data);
+        debugLog(
+          `✅ Test email sent in ${duration}ms (isolated mode)`,
+          response.data
+        );
 
         if (response.data?.success) {
           this.createNotificationSuccess({
@@ -929,10 +951,13 @@ Shopware.Component.override("sw-system-config", {
         }
       } catch (error) {
         debugError("❌ Failed to send test email:", error);
-        
+
         this.createNotificationError({
           title: "Email Test Failed",
-          message: error.response?.data?.errors?.[0]?.detail || error.message || "Could not send test email",
+          message:
+            error.response?.data?.errors?.[0]?.detail ||
+            error.message ||
+            "Could not send test email",
         });
       } finally {
         this.isEmailTestSending = false;

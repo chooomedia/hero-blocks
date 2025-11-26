@@ -17,7 +17,8 @@
         },
         "status": {
             "active": "Lizenz aktiv",
-            "expired": "Lizenz abgelaufen"
+            "expired": "Lizenz abgelaufen",
+            "invalid": "Lizenz ungültig"
         },
         "success": {
             "title": "Lizenzprüfung erfolgreich",

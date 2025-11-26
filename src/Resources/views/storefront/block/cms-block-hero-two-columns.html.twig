@@ -2,18 +2,8 @@
     {# WICHTIG: Config-Werte aus block.customFields lesen (NICHT block.config!) #}
     {# CmsBlockEntity nutzt EntityCustomFieldsTrait - Config wird in customFields gespeichert #}
     
-    {# WICHTIG: License-Check - Prüft ob Premium-Feature verfügbar ist #}
-    {% set licenseStatus = config('HeroBlocks.config.licenseStatus')|default('active') %}
-    
-    {# License-Hinweis anzeigen wenn abgelaufen (vor Block-Content) #}
-    {% if licenseStatus == 'expired' %}
-        <div class="col-12">
-            {% include '@HeroBlocks/storefront/component/license-expired-notice.html.twig' with {
-                feature: 'Hero Two Columns',
-                licenseStatus: licenseStatus
-            } only %}
-        </div>
-    {% endif %}
+    {# WICHTIG: License-Hinweis wird ZENTRAL angezeigt (page/content/index.html.twig) #}
+    {# NICHT mehr hier pro Block - verhindert Duplicates! #}
     
     {% set layout = (block.customFields.layout is defined and block.customFields.layout is not empty) ? block.customFields.layout : 'image-left' %}
     {% set layoutDesktop = (block.customFields.layoutDesktop is defined and block.customFields.layoutDesktop is not empty) ? block.customFields.layoutDesktop : layout %}

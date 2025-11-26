@@ -21,13 +21,22 @@ class LicenseCheckExtension extends AbstractExtension
     }
 
     /**
-     * Prüft die Lizenz und gibt Status zurück
+     * WICHTIG: Gibt CACHED License-Status zurück (KEIN Webhook-Call!)
+     * 
+     * Diese Methode wird bei JEDEM Storefront-Request aufgerufen!
+     * → NIEMALS checkLicense() verwenden (macht Webhook-Call)
+     * → Nur getLicenseStatus() verwenden (liest aus Cache)
+     * 
+     * Cache wird aktualisiert durch:
+     * - Manueller Button-Click im Admin
+     * - Scheduled Task (1x täglich)
      *
      * @return array{valid: bool, expiresAt: string, daysRemaining: int}
      */
     public function checkLicense(): array
     {
-        return $this->licenseCheckService->checkLicense();
+        // WICHTIG: getLicenseStatus() statt checkLicense() - KEIN Webhook-Call!
+        return $this->licenseCheckService->getLicenseStatus();
     }
 }
 

@@ -14,7 +14,7 @@ Shopware.Component.override("sw-extension-config", {
   data() {
     return {
       isSilentLicenseChecking: false,
-      licenseStatus: null, // 'active' | 'expired' | null
+      licenseStatus: null, // 'active' | 'expired' | 'invalid' | null
       licenseExpiresAt: null,
       showLicenseChip: false,
     };
@@ -32,6 +32,9 @@ Shopware.Component.override("sw-extension-config", {
       if (this.licenseStatus === "expired") {
         return this.$tc("sw-settings-license-check.status.expired");
       }
+      if (this.licenseStatus === "invalid") {
+        return this.$tc("sw-settings-license-check.status.invalid");
+      }
       return "";
     },
 
@@ -41,6 +44,9 @@ Shopware.Component.override("sw-extension-config", {
       }
       if (this.licenseStatus === "expired") {
         return "red";
+      }
+      if (this.licenseStatus === "invalid") {
+        return "red"; // Rot für invalid (wie expired)
       }
       return "neutral";
     },
@@ -79,6 +85,7 @@ Shopware.Component.override("sw-extension-config", {
   mounted() {
     if (this.isHeroBlocksConfig) {
       // Silent License Check beim Öffnen der Config-Seite
+      // WICHTIG: Mit Cache-Check (24h TTL) - nur wenn Cache abgelaufen
       this.$nextTick(() => {
         setTimeout(() => {
           this.performSilentLicenseCheck();
@@ -89,26 +96,56 @@ Shopware.Component.override("sw-extension-config", {
 
   methods: {
     // Silent License Check - ohne Notification, nur Status-Update
+    // WICHTIG: Nutzt Cache wenn < 24h (forceRefresh: false)
     async performSilentLicenseCheck() {
       if (this.isSilentLicenseChecking) {
+        console.log("[HeroBlocks] 🔵 Silent Check already running - skipping");
         return;
       }
 
+      console.log("[HeroBlocks] 🔵 SILENT CHECK STARTED - Config page opened");
       this.isSilentLicenseChecking = true;
 
       try {
         const httpClient = this.systemConfigApiService.httpClient;
         if (!httpClient) {
+          console.warn(
+            "[HeroBlocks] ⚠️ HTTP Client not available for silent check"
+          );
           return;
         }
 
+        const startTime = Date.now();
+
+        console.log(
+          "[HeroBlocks] 📡 Calling API POST /_action/hero-blocks/check-license with body:",
+          { forceRefresh: false }
+        );
+        console.log(
+          "[HeroBlocks] ℹ️ Silent Check uses CACHE if < 24h old, otherwise calls WEBHOOK"
+        );
+
+        // WICHTIG: forceRefresh = false → Backend nutzt Cache wenn < 24h
+        // Nur wenn Cache abgelaufen (> 24h) → Webhook-Call
         const response = await httpClient.post(
           "/_action/hero-blocks/check-license",
-          {},
+          { forceRefresh: false }, // <- Cache-Check aktivieren!
           {
             headers: this.systemConfigApiService.getBasicHeaders(),
           }
         );
+
+        const duration = Date.now() - startTime;
+
+        console.log("[HeroBlocks] ✅ SILENT CHECK completed:", {
+          cached: response.data?.debug?.cached,
+          cacheAge: response.data?.debug?.cacheAge,
+          durationMs: duration,
+          webhookCalled: !response.data?.debug?.cached,
+          valid: response.data?.data?.valid,
+          expiresAt: response.data?.data?.expiresAt,
+          daysRemaining: response.data?.data?.daysRemaining,
+        });
 
         if (response?.data?.success && response?.data?.data) {
           const result = response.data.data;

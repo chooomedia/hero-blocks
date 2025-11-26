@@ -1,0 +1,682 @@
+{
+    "name": "Hero Blocks - License & Update Check (OPTIMIZED)",
+    "nodes": [
+        {
+            "parameters": {
+                "path": "license/hero-blocks",
+                "responseMode": "responseNode",
+                "options": {
+                    "responseHeaders": {
+                        "entries": [
+                            {
+                                "name": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ]
+                    }
+                }
+            },
+            "id": "44c32f04-df26-49de-a50a-ae3baca35bff",
+            "name": "Webhook",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1,
+            "position": [
+                -528,
+                -128
+            ],
+            "webhookId": "hero-blocks-unified"
+        },
+        {
+            "parameters": {
+                "jsCode": "// WICHTIG: Route-Bestimmung basierend auf Query-Parameter (n8n Best Practice!)\n// n8n Webhook Path: hero-blocks\n// Query-Parameter: ?checkType=license oder ?checkType=update\n\nlet checkType = null;\n\n// Step 1: Lese Query-Parameter checkType (PRIMÄR)\nconst queryParams = $input.item.json.query || {};\nif (queryParams.checkType) {\n  checkType = String(queryParams.checkType).toLowerCase().trim();\n}\n\n// Step 2: Default: license\nif (!checkType || (checkType !== 'license' && checkType !== 'update')) {\n  checkType = 'license';\n}\n\nreturn {\n  json: {\n    ...$input.item.json,\n    checkType: checkType,\n    plugin: queryParams.plugin || 'hero-blocks',\n    version: queryParams.version || '1.0.0',\n    shopwareVersion: queryParams.shopwareVersion || '6.7.0',\n    timestamp: queryParams.timestamp || queryParams.checkDate || new Date().toISOString(),\n    currentVersion: queryParams.currentVersion || queryParams.version || \"1.0.0\"\n  }\n};"
+            },
+            "id": "b96ad9b4-89a8-42af-b549-adf7af8ead2d",
+            "name": "Code (Determine Check Type)",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                -336,
+                -128
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "caseSensitive": true,
+                        "leftValue": "",
+                        "typeValidation": "strict",
+                        "version": 1
+                    },
+                    "conditions": [
+                        {
+                            "id": "3f048ca4-29b8-4e18-866d-391fd6e15f40",
+                            "leftValue": "={{ $json.checkType }}",
+                            "rightValue": "license",
+                            "operator": {
+                                "type": "string",
+                                "operation": "equals"
+                            }
+                        }
+                    ],
+                    "combinator": "and"
+                },
+                "options": {}
+            },
+            "id": "d8c6ad27-0f56-4802-8178-c2a53098a032",
+            "name": "IF Check Type = License?",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2,
+            "position": [
+                -144,
+                -128
+            ]
+        },
+        {
+            "parameters": {
+                "values": {
+                    "string": [
+                        {
+                            "name": "expiresAt",
+                            "value": "2026-11-30T23:59:59+00:00"
+                        }
+                    ],
+                    "number": [
+                        {
+                            "name": "daysRemaining",
+                            "value": "={{ Math.max(0, Math.ceil((DateTime.fromISO('2026-11-30T23:59:59+00:00').toMillis() - $now.toMillis()) / 86400000)) }}"
+                        }
+                    ],
+                    "boolean": [
+                        {
+                            "name": "valid",
+                            "value": "={{ $now <= DateTime.fromISO('2026-11-30T23:59:59+00:00') }}"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "id": "d4e3dcb5-7d1c-4cb9-b6d1-f1a01c4ce05d",
+            "name": "Set (Compute License)",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 2,
+            "position": [
+                192,
+                272
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "caseSensitive": true,
+                        "leftValue": "",
+                        "typeValidation": "strict",
+                        "version": 1
+                    },
+                    "conditions": [
+                        {
+                            "id": "8fbac636-c62c-49f1-8df4-e2eef67844f7",
+                            "leftValue": "={{ $json.valid }}",
+                            "rightValue": "",
+                            "operator": {
+                                "type": "boolean",
+                                "operation": "true",
+                                "singleValue": true
+                            }
+                        }
+                    ],
+                    "combinator": "and"
+                },
+                "options": {}
+            },
+            "id": "170a1bd6-5c6a-47e2-b804-7cd023196e75",
+            "name": "IF License Valid?",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2,
+            "position": [
+                384,
+                272
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// FORMAT SLACK MESSAGE - LICENSE CHECK\nconst SlackBlockBuilder = {\n  header: (text, emoji = true) => ({ type: 'header', text: { type: 'plain_text', text: text, emoji: emoji }}),\n  divider: () => ({ type: 'divider' }),\n  section: (config = {}) => {\n    const block = { type: 'section' };\n    if (config.text) block.text = { type: config.textType || 'mrkdwn', text: config.text, verbatim: false };\n    if (config.fields) block.fields = config.fields.map(f => ({ type: f.type || 'mrkdwn', text: f.text || f, verbatim: false }));\n    if (config.accessory) block.accessory = config.accessory;\n    return block;\n  },\n  actions: (elements = []) => ({ type: 'actions', elements: elements }),\n  button: (config = {}) => {\n    const btn = { type: 'button', text: { type: 'plain_text', text: config.text || 'Button', emoji: config.emoji !== false }, action_id: config.actionId || 'button_click' };\n    if (config.style) btn.style = config.style;\n    if (config.url) btn.url = config.url;\n    if (config.value) btn.value = config.value;\n    return btn;\n  },\n  context: (elements = []) => ({ type: 'context', elements: Array.isArray(elements) ? elements.map(el => ({ type: el.type || 'mrkdwn', text: el.text || el, verbatim: false })) : [{ type: 'mrkdwn', text: elements }] }),\n  field: (label, value) => ({ type: 'mrkdwn', text: `*${label}:*\\n${value}` }),\n  contextElement: (text) => ({ type: 'mrkdwn', text: text })\n};\n\nconst valid = $input.item.json.valid === true;\nconst expiresAt = $input.item.json.expiresAt || null;\nconst daysRemaining = $input.item.json.daysRemaining || 0;\nconst plugin = $input.item.json.plugin || 'hero-blocks';\nconst currentVersion = $input.item.json.currentVersion || '1.0.0';\nconst messageId = `hero-blocks-license-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;\n\nconst formatExpiryDate = (ts) => {\n  if (!ts) return 'Unbekannt';\n  try { return new Date(ts).toLocaleDateString('de-DE', { year: 'numeric', month: 'long', day: 'numeric' }); }\n  catch (e) { return 'Unbekannt'; }\n};\n\nconst getStatusInfo = (isValid, days) => {\n  if (!isValid) return { emoji: '❌', text: 'Abgelaufen' };\n  if (days > 90) return { emoji: '✅', text: 'Gültig' };\n  if (days > 30) return { emoji: '⚠️', text: 'Läuft bald ab' };\n  return { emoji: '🚨', text: 'Läuft sehr bald ab' };\n};\n\nconst statusInfo = getStatusInfo(valid, daysRemaining);\nconst expiryDate = formatExpiryDate(expiresAt);\n\nlet blocks = [];\nlet text = '';\n\nif (valid) {\n  text = `✅ Hero Blocks License Check - ${statusInfo.text}`;\n  blocks = [\n    SlackBlockBuilder.header(`${statusInfo.emoji} Hero Blocks License Check - ${statusInfo.text}`),\n    SlackBlockBuilder.divider(),\n    SlackBlockBuilder.section({ fields: [\n      SlackBlockBuilder.field('🔧 Plugin', plugin),\n      SlackBlockBuilder.field('📦 Version', currentVersion),\n      SlackBlockBuilder.field(`${statusInfo.emoji} Status`, statusInfo.text),\n      SlackBlockBuilder.field('📅 Ablaufdatum', expiryDate),\n      SlackBlockBuilder.field('⏰ Tage verbleibend', `${daysRemaining} Tage`),\n      SlackBlockBuilder.field('🔖 Repository', '<https://github.com/chooomedia/hero-blocks|chooomedia/hero-blocks>')\n    ]}),\n    SlackBlockBuilder.divider(),\n    SlackBlockBuilder.actions([\n      SlackBlockBuilder.button({ text: '🔗 Repository', style: 'primary', url: 'https://github.com/chooomedia/hero-blocks', actionId: 'open_repository' }),\n      SlackBlockBuilder.button({ text: '🗑️ Löschen', style: 'danger', actionId: 'delete_message', value: messageId })\n    ]),\n    SlackBlockBuilder.context([SlackBlockBuilder.contextElement(`⏰ ${new Date().toLocaleString('de-DE')} | 🔧 Hero Blocks Plugin | 📦 ${currentVersion} | ${daysRemaining} Tage verbleibend`)])\n  ];\n} else {\n  text = `⚠️ Hero Blocks License Check - Abgelaufen`;\n  blocks = [\n    SlackBlockBuilder.header('🚨 Hero Blocks License Check - Abgelaufen'),\n    SlackBlockBuilder.divider(),\n    SlackBlockBuilder.section({ fields: [\n      SlackBlockBuilder.field('🔧 Plugin', plugin),\n      SlackBlockBuilder.field('📦 Version', currentVersion),\n      SlackBlockBuilder.field('❌ Status', 'Abgelaufen'),\n      SlackBlockBuilder.field('📅 Ablaufdatum', expiryDate),\n      SlackBlockBuilder.field('⏰ Tage verbleibend', `${daysRemaining} Tage`),\n      SlackBlockBuilder.field('🔖 Repository', '<https://github.com/chooomedia/hero-blocks|chooomedia/hero-blocks>')\n    ]}),\n    SlackBlockBuilder.divider(),\n    SlackBlockBuilder.section({ text: `*🚨 Aktion erforderlich:*\\nDie Lizenz ist abgelaufen und muss erneuert werden.` }),\n    SlackBlockBuilder.actions([\n      SlackBlockBuilder.button({ text: '📧 Kontakt', style: 'primary', url: 'https://www.matt-interfaces.ch', actionId: 'contact_support' }),\n      SlackBlockBuilder.button({ text: '🔗 Repository', style: 'primary', url: 'https://github.com/chooomedia/hero-blocks', actionId: 'open_repository' }),\n      SlackBlockBuilder.button({ text: '🗑️ Löschen', style: 'danger', actionId: 'delete_message', value: messageId })\n    ]),\n    SlackBlockBuilder.context([SlackBlockBuilder.contextElement(`⏰ ${new Date().toLocaleString('de-DE')} | 🔧 Hero Blocks Plugin | 📦 ${currentVersion} | ❌ Lizenz abgelaufen`)])\n  ];\n}\n\nreturn {\n  json: {\n    ...$input.item.json,\n    slackMessage: text,\n    slackBlocks: blocks,\n    messageId: messageId\n  }\n};"
+            },
+            "id": "57576b2a-37a5-4751-869e-0998ec617011",
+            "name": "Code (Format Slack Message - License)",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                688,
+                272
+            ]
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ { valid: $json.valid, expiresAt: $json.expiresAt, daysRemaining: $json.daysRemaining, executionMode: 'production', checkType: 'license', plugin: $json.plugin, version: $json.version || $json.currentVersion, shopwareVersion: $json.shopwareVersion, timestamp: $json.timestamp, currentVersion: $json.currentVersion } }}",
+                "options": {}
+            },
+            "id": "233bb581-9f12-4a20-b711-1f94076a0a53",
+            "name": "Respond to Webhook (License Data)",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1,
+            "position": [
+                928,
+                272
+            ]
+        },
+        {
+            "parameters": {
+                "authentication": "oAuth2",
+                "select": "channel",
+                "channelId": {
+                    "__rl": true,
+                    "value": "C04347838EP",
+                    "mode": "list",
+                    "cachedResultName": "horex"
+                },
+                "messageType": "block",
+                "blocksUi": "={{ $json.slackBlocks }}",
+                "text": "={{ $json.slackMessage }}",
+                "otherOptions": {
+                    "includeLinkToWorkflow": true,
+                    "mrkdwn": true
+                }
+            },
+            "type": "n8n-nodes-base.slack",
+            "typeVersion": 2.3,
+            "position": [
+                1168,
+                272
+            ],
+            "id": "3bf3caad-0ba0-43b0-b834-44a28780d7b3",
+            "name": "Send Slack Message (License)",
+            "webhookId": "40f85c4f-6f84-4aeb-89aa-181e6937b9a8",
+            "credentials": {
+                "slackOAuth2Api": {
+                    "id": "BSSygESdYnPg0W2W",
+                    "name": "Slack account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "resource": "release",
+                "operation": "getAll",
+                "owner": {
+                    "__rl": true,
+                    "value": "chooomedia",
+                    "mode": "list",
+                    "cachedResultName": "chooomedia"
+                },
+                "repository": {
+                    "__rl": true,
+                    "value": "hero-blocks",
+                    "mode": "list",
+                    "cachedResultName": "hero-blocks"
+                }
+            },
+            "type": "n8n-nodes-base.github",
+            "typeVersion": 1.1,
+            "position": [
+                192,
+                -448
+            ],
+            "id": "f1e19b2b-d59a-4cff-b9fb-919e0b4c4422",
+            "name": "GitHub (Get Releases)",
+            "webhookId": "be154b6c-a3ed-4c01-be7d-cd19b63163c2",
+            "alwaysOutputData": true,
+            "credentials": {
+                "githubApi": {
+                    "id": "lrNvOKmSqXVhTpHk",
+                    "name": "GitHub account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "// VERARBEITE GITHUB RESPONSE\nlet releases = $input.item.json;\nif (!Array.isArray(releases)) {\n  releases = releases.json || releases.data || [releases];\n}\n\nconst currentVersion = $input.item.json.query?.currentVersion || '1.0.0';\nconst hasError = !Array.isArray(releases) || releases.length === 0 || !releases[0]?.tag_name;\n\nif (hasError) {\n  return {\n    json: {\n      ...$input.item.json,\n      latestVersion: currentVersion,\n      downloadUrl: null,\n      changelog: null,\n      currentVersion: currentVersion,\n      githubTag: null,\n      githubError: 'No release found',\n      hasError: true\n    }\n  };\n}\n\nconst githubResponse = releases[0];\nconst latestVersion = githubResponse.tag_name?.replace(/^v/, '') || currentVersion;\n\nlet downloadUrl = null;\nif (githubResponse.assets?.length > 0) {\n  const zipAsset = githubResponse.assets.find(a => a.name?.endsWith('.zip'));\n  downloadUrl = zipAsset?.browser_download_url || null;\n}\n\nconst changelog = githubResponse.body || null;\n\nreturn {\n  json: {\n    ...$input.item.json,\n    latestVersion: latestVersion,\n    downloadUrl: downloadUrl,\n    changelog: changelog,\n    currentVersion: currentVersion,\n    githubTag: githubResponse.tag_name,\n    githubReleaseId: githubResponse.id,\n    githubReleaseUrl: githubResponse.html_url,\n    githubPublishedAt: githubResponse.published_at,\n    hasError: false\n  }\n};"
+            },
+            "id": "3e22d4db-ccf7-4292-a8cb-745347a327e6",
+            "name": "Code (Process GitHub Response)",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                384,
+                -448
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// VERSION COMPARE\nconst currentVersion = $input.item.json.currentVersion || '1.0.0';\nconst latestVersion = $input.item.json.latestVersion || currentVersion;\nconst hasError = $input.item.json.hasError === true;\n\nif (hasError) {\n  return {\n    json: {\n      ...$input.item.json,\n      available: false,\n      currentVersion: currentVersion,\n      latestVersion: currentVersion\n    }\n  };\n}\n\nfunction compareVersions(v1, v2) {\n  const parts1 = v1.split('.').map(Number);\n  const parts2 = v2.split('.').map(Number);\n  for (let i = 0; i < Math.max(parts1.length, parts2.length); i++) {\n    const p1 = parts1[i] || 0;\n    const p2 = parts2[i] || 0;\n    if (p1 < p2) return -1;\n    if (p1 > p2) return 1;\n  }\n  return 0;\n}\n\nconst versionComparison = compareVersions(currentVersion, latestVersion);\nconst updateAvailable = latestVersion && latestVersion !== currentVersion && versionComparison < 0;\n\nreturn {\n  json: {\n    ...$input.item.json,\n    available: updateAvailable,\n    currentVersion: currentVersion,\n    latestVersion: latestVersion\n  }\n};"
+            },
+            "id": "c88f1008-610f-4dfd-bcfa-5f99895e9c5d",
+            "name": "Code (Compare Versions)",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                544,
+                -448
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "caseSensitive": true,
+                        "typeValidation": "strict"
+                    },
+                    "conditions": [
+                        {
+                            "id": "81546257-bbcf-4ec4-9709-72d2c92286ae",
+                            "leftValue": "={{ $json.available }}",
+                            "rightValue": "true",
+                            "operator": {
+                                "type": "boolean",
+                                "operation": "true",
+                                "singleValue": true
+                            }
+                        }
+                    ]
+                }
+            },
+            "id": "60ae00a0-5b4c-4ae1-bece-c21ac2e78733",
+            "name": "IF Update Available?",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2,
+            "position": [
+                704,
+                -448
+            ]
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ { available: $json.available, currentVersion: $json.currentVersion, latestVersion: $json.latestVersion, downloadUrl: $json.downloadUrl, changelog: $json.changelog, releaseId: $json.githubReleaseId, releaseUrl: $json.githubReleaseUrl, executionMode: 'production', checkType: 'update', plugin: $json.plugin, version: $json.currentVersion, shopwareVersion: $json.shopwareVersion, timestamp: $json.timestamp } }}",
+                "options": {}
+            },
+            "id": "b745bfbf-4982-42c5-a6d5-e497688f3dba",
+            "name": "Respond to Webhook (Update Data)",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1,
+            "position": [
+                928,
+                -448
+            ]
+        },
+        {
+            "parameters": {
+                "authentication": "oAuth2",
+                "select": "channel",
+                "channelId": {
+                    "__rl": true,
+                    "value": "C04347838EP",
+                    "mode": "list",
+                    "cachedResultName": "horex"
+                },
+                "messageType": "block",
+                "blocksUi": "={{ $json.slackBlocks }}",
+                "text": "={{ $json.slackMessage }}",
+                "otherOptions": {
+                    "includeLinkToWorkflow": true,
+                    "mrkdwn": true
+                }
+            },
+            "type": "n8n-nodes-base.slack",
+            "typeVersion": 2.3,
+            "position": [
+                1392,
+                -448
+            ],
+            "id": "slack-update-message",
+            "name": "Send Slack Message (Update)",
+            "credentials": {
+                "slackOAuth2Api": {
+                    "id": "BSSygESdYnPg0W2W",
+                    "name": "Slack account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "// FORMAT SLACK MESSAGE - UPDATE CHECK\nconst SlackBlockBuilder = {\n  header: (text, emoji = true) => ({ type: 'header', text: { type: 'plain_text', text: text, emoji: emoji }}),\n  divider: () => ({ type: 'divider' }),\n  section: (config = {}) => {\n    const block = { type: 'section' };\n    if (config.text) block.text = { type: config.textType || 'mrkdwn', text: config.text, verbatim: false };\n    if (config.fields) block.fields = config.fields.map(f => ({ type: f.type || 'mrkdwn', text: f.text || f, verbatim: false }));\n    return block;\n  },\n  actions: (elements = []) => ({ type: 'actions', elements: elements }),\n  button: (config = {}) => {\n    const btn = { type: 'button', text: { type: 'plain_text', text: config.text || 'Button', emoji: config.emoji !== false }, action_id: config.actionId || 'button_click' };\n    if (config.style) btn.style = config.style;\n    if (config.url) btn.url = config.url;\n    if (config.value) btn.value = config.value;\n    return btn;\n  },\n  context: (elements = []) => ({ type: 'context', elements: Array.isArray(elements) ? elements.map(el => ({ type: el.type || 'mrkdwn', text: el.text || el })) : [{ type: 'mrkdwn', text: elements }] }),\n  field: (label, value) => ({ type: 'mrkdwn', text: `*${label}:*\\n${value}` })\n};\n\nconst available = $input.item.json.available || false;\nconst hasError = $input.item.json.hasError === true;\nconst currentVersion = $input.item.json.currentVersion || '1.0.0';\nconst latestVersion = $input.item.json.latestVersion || currentVersion;\nconst downloadUrl = $input.item.json.downloadUrl || null;\nconst changelog = $input.item.json.changelog || null;\nconst githubReleaseUrl = $input.item.json.githubReleaseUrl || null;\nconst messageId = `hero-blocks-update-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;\n\nlet blocks = [];\nlet text = '';\n\nif (hasError) {\n  text = '⚠️ Hero Blocks Update Check - Fehler';\n  blocks = [\n    SlackBlockBuilder.header('⚠️ Hero Blocks Update Check - Fehler'),\n    SlackBlockBuilder.divider(),\n    SlackBlockBuilder.section({ fields: [\n      SlackBlockBuilder.field('Fehler', 'Kein Release gefunden'),\n      SlackBlockBuilder.field('Status', '❌ Keine Releases verfügbar')\n    ]}),\n    SlackBlockBuilder.actions([\n      SlackBlockBuilder.button({ text: '🔗 GitHub', style: 'primary', url: 'https://github.com/chooomedia/hero-blocks/releases', actionId: 'open_github' }),\n      SlackBlockBuilder.button({ text: '🗑️ Löschen', style: 'danger', actionId: 'delete_message', value: messageId })\n    ])\n  ];\n} else if (available) {\n  text = `🚀 Hero Blocks Update verfügbar: ${latestVersion}`;\n  blocks = [\n    SlackBlockBuilder.header(`🚀 Hero Blocks Update verfügbar`),\n    SlackBlockBuilder.divider(),\n    SlackBlockBuilder.section({ fields: [\n      SlackBlockBuilder.field('📦 Aktuelle Version', `\\`${currentVersion}\\``),\n      SlackBlockBuilder.field('✨ Neue Version', `\\`${latestVersion}\\``),\n      SlackBlockBuilder.field('🔖 Release', `<${githubReleaseUrl}|v${latestVersion}>`)\n    ]}),\n    SlackBlockBuilder.divider(),\n    SlackBlockBuilder.actions([\n      downloadUrl ? SlackBlockBuilder.button({ text: '⬇️ Download', style: 'primary', url: downloadUrl, actionId: 'download' }) : null,\n      SlackBlockBuilder.button({ text: '🔗 Release', style: 'primary', url: githubReleaseUrl, actionId: 'view_release' }),\n      SlackBlockBuilder.button({ text: '🗑️ Löschen', style: 'danger', actionId: 'delete_message', value: messageId })\n    ].filter(Boolean)),\n    SlackBlockBuilder.context([`⏰ ${new Date().toLocaleString('de-DE')} | 🔧 Hero Blocks Plugin | 📦 ${currentVersion} → ${latestVersion}`])\n  ];\n} else {\n  text = 'ℹ️ Hero Blocks - Kein Update verfügbar';\n  blocks = [\n    SlackBlockBuilder.header('ℹ️ Hero Blocks - Kein Update verfügbar'),\n    SlackBlockBuilder.divider(),\n    SlackBlockBuilder.section({ fields: [\n      SlackBlockBuilder.field('📦 Aktuelle Version', `\\`${currentVersion}\\``),\n      SlackBlockBuilder.field('✅ Status', 'Plugin ist aktuell')\n    ]}),\n    SlackBlockBuilder.actions([\n      SlackBlockBuilder.button({ text: '🗑️ Löschen', style: 'danger', actionId: 'delete_message', value: messageId })\n    ])\n  ];\n}\n\nreturn {\n  json: {\n    ...$input.item.json,\n    slackMessage: text,\n    slackBlocks: blocks,\n    messageId: messageId\n  }\n};"
+            },
+            "id": "bc45c45a-111f-4205-a327-9793dc6e5553",
+            "name": "Code (Format Slack Message - Update)",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1168,
+                -448
+            ]
+        },
+        {
+            "parameters": {
+                "trigger": [
+                    "message"
+                ],
+                "channelId": {
+                    "__rl": true,
+                    "value": "C04347838EP",
+                    "mode": "id"
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.slackTrigger",
+            "typeVersion": 1,
+            "position": [
+                1920,
+                64
+            ],
+            "id": "316123bb-d82b-42ea-9314-a0a3461df6dc",
+            "name": "Slack Trigger (Button Clicks)",
+            "webhookId": "1731ba0a-6a8a-41f8-ac87-99dcf652799c",
+            "credentials": {
+                "slackApi": {
+                    "id": "EtMTrc0OvEO2qFCc",
+                    "name": "Slack account 2"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "// VERARBEITE SLACK BUTTON CLICKS\nlet payload = null;\nconst body = $input.item.json.body || $input.item.json || {};\n\nif (typeof body === 'string') {\n  try {\n    const urlParams = new URLSearchParams(body);\n    const payloadStr = urlParams.get('payload');\n    payload = payloadStr ? JSON.parse(payloadStr) : JSON.parse(body);\n  } catch (e) {\n    payload = body.payload ? JSON.parse(body.payload) : body;\n  }\n} else {\n  payload = body.payload ? (typeof body.payload === 'string' ? JSON.parse(body.payload) : body.payload) : body;\n}\n\nconst action = payload?.actions?.[0];\nconst actionId = action?.action_id;\nconst messageTs = payload?.message?.ts;\nconst channelId = payload?.channel?.id;\nconst userId = payload?.user?.id;\n\nif (actionId === 'delete_message' && messageTs && channelId) {\n  return {\n    json: {\n      action: 'delete',\n      actionId: actionId,\n      messageTs: messageTs,\n      channelId: channelId,\n      userId: userId,\n      slackResponse: { response_type: 'ephemeral', text: '✅ Nachricht wird gelöscht...' }\n    }\n  };\n}\n\nreturn {\n  json: {\n    action: 'unknown',\n    actionId: actionId || null,\n    slackResponse: { response_type: 'ephemeral', text: 'Aktion verarbeitet' }\n  }\n};"
+            },
+            "id": "e10d78c3-7b86-4fb9-a2a1-988023af775a",
+            "name": "Code (Process Button Click)",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                2112,
+                64
+            ]
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ $json.slackResponse }}",
+                "options": {}
+            },
+            "id": "818d282c-09ca-40f5-8035-60b597534107",
+            "name": "Respond (Slack Acknowledgment)",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1,
+            "position": [
+                2320,
+                64
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "caseSensitive": true,
+                        "typeValidation": "strict"
+                    },
+                    "conditions": [
+                        {
+                            "id": "d4e5f6a7-b8c9-0123-def4-456789012345",
+                            "leftValue": "={{ $json.action }}",
+                            "rightValue": "delete",
+                            "operator": {
+                                "type": "string",
+                                "operation": "equals"
+                            }
+                        }
+                    ]
+                }
+            },
+            "id": "a7c7841c-5770-46fb-8e97-a51c5c63067c",
+            "name": "IF Action = Delete?",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2,
+            "position": [
+                2320,
+                224
+            ]
+        },
+        {
+            "parameters": {
+                "authentication": "oAuth2",
+                "operation": "delete",
+                "select": "channel",
+                "channelId": {
+                    "__rl": true,
+                    "value": "C04347838EP",
+                    "mode": "list"
+                },
+                "timestamp": "={{ $json.messageTs }}"
+            },
+            "type": "n8n-nodes-base.slack",
+            "typeVersion": 2.3,
+            "position": [
+                2560,
+                224
+            ],
+            "id": "ef579e7b-2df0-48b0-ae38-751c51fc820e",
+            "name": "Delete Slack Message",
+            "continueOnFail": true,
+            "credentials": {
+                "slackOAuth2Api": {
+                    "id": "BSSygESdYnPg0W2W",
+                    "name": "Slack account"
+                }
+            }
+        }
+    ],
+    "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Code (Determine Check Type)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Code (Determine Check Type)": {
+            "main": [
+                [
+                    {
+                        "node": "IF Check Type = License?",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "IF Check Type = License?": {
+            "main": [
+                [
+                    {
+                        "node": "Set (Compute License)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "GitHub (Get Releases)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Set (Compute License)": {
+            "main": [
+                [
+                    {
+                        "node": "IF License Valid?",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "IF License Valid?": {
+            "main": [
+                [
+                    {
+                        "node": "Code (Format Slack Message - License)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Code (Format Slack Message - License)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Code (Format Slack Message - License)": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook (License Data)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Respond to Webhook (License Data)": {
+            "main": [
+                [
+                    {
+                        "node": "Send Slack Message (License)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "GitHub (Get Releases)": {
+            "main": [
+                [
+                    {
+                        "node": "Code (Process GitHub Response)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Code (Process GitHub Response)": {
+            "main": [
+                [
+                    {
+                        "node": "Code (Compare Versions)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Code (Compare Versions)": {
+            "main": [
+                [
+                    {
+                        "node": "IF Update Available?",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "IF Update Available?": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook (Update Data)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Respond to Webhook (Update Data)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Respond to Webhook (Update Data)": {
+            "main": [
+                [
+                    {
+                        "node": "Code (Format Slack Message - Update)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Code (Format Slack Message - Update)": {
+            "main": [
+                [
+                    {
+                        "node": "Send Slack Message (Update)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Slack Trigger (Button Clicks)": {
+            "main": [
+                [
+                    {
+                        "node": "Code (Process Button Click)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Code (Process Button Click)": {
+            "main": [
+                [
+                    {
+                        "node": "Respond (Slack Acknowledgment)",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "IF Action = Delete?",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "IF Action = Delete?": {
+            "main": [
+                [
+                    {
+                        "node": "Delete Slack Message",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "pinData": {},
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "staticData": null,
+    "tags": [],
+    "triggerCount": 0,
+    "updatedAt": "2025-11-26T21:00:00.000Z",
+    "versionId": "optimized-v1"
+}

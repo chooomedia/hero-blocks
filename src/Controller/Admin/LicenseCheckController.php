@@ -45,15 +45,20 @@ class LicenseCheckController extends AbstractController
     }
 
     /**
-     * Prüft die Lizenz über n8n Webhook
+     * Prüft die Lizenz über n8n Webhook mit intelligenter Cache-Strategie
      * 
-     * Request Body (von Shopware):
+     * WICHTIG: Dieser Endpoint wird aufgerufen bei:
+     * 1. Manueller Button-Click im Admin → forceRefresh = true
+     * 2. Silent Check bei Config-Öffnung → forceRefresh = false (nutzt Cache wenn < 24h)
+     * 
+     * Cache-Strategie:
+     * - forceRefresh = true → Ignoriere Cache, rufe Webhook auf (Button-Click)
+     * - forceRefresh = false → Nutze Cache wenn < 24h, sonst Webhook (Silent Check)
+     * - Aktualisiert Cache für 24h bei Webhook-Call
+     * 
+     * Request Body:
      * {
-     *   "plugin": "hero-blocks",
-     *   "timestamp": "2024-10-29T12:00:00Z",
-     *   "version": "1.0.0",
-     *   "shopwareVersion": "6.7.0",
-     *   "checkDate": "2024-10-29T12:00:00Z"
+     *   "forceRefresh": true|false  // Optional, default = true für Backwards Compatibility
      * }
      * 
      * Response:
@@ -63,6 +68,11 @@ class LicenseCheckController extends AbstractController
      *     "valid": true,
      *     "expiresAt": "2026-10-29T12:00:00.000Z",
      *     "daysRemaining": 730
+     *   },
+     *   "debug": {
+     *     "cached": false,          // true wenn aus Cache gelesen
+     *     "cacheAge": "2.5 hours",  // Wie alt ist der Cache?
+     *     "durationMs": 150
      *   }
      * }
      */
@@ -72,29 +82,70 @@ class LicenseCheckController extends AbstractController
         $startTime = microtime(true);
         
         try {
+            // WICHTIG: Lese forceRefresh aus JSON-Body (NICHT Form-Data!)
+            // Shopware Admin sendet JSON, also $request->getContent() verwenden
+            $forceRefresh = true; // Default für Backwards Compatibility
+            
+            $content = $request->getContent();
+            if (!empty($content)) {
+                $data = json_decode($content, true);
+                if (isset($data['forceRefresh'])) {
+                    $forceRefresh = (bool) $data['forceRefresh'];
+                }
+            }
+            
             // DEBUG: Log vor Service-Aufruf
             $this->logger->info('LicenseCheckController: Starting license check', [
                 'requestUri' => $request->getUri(),
                 'method' => $request->getMethod(),
                 'timestamp' => (new \DateTime())->format('c'),
+                'forceRefresh' => $forceRefresh,
+                'jsonBody' => $content,
+                'parsedData' => $data ?? null,
             ]);
             
-            $result = $this->licenseCheckService->checkLicense();
+            // WICHTIG: forceRefresh aus Request nutzen
+            // - true: Button-Click → Ignoriere Cache, rufe Webhook auf
+            // - false: Silent Check → Nutze Cache wenn < 24h
+            $result = $this->licenseCheckService->checkLicense($forceRefresh);
             
             $duration = round((microtime(true) - $startTime) * 1000, 2);
+            
+            // Prüfe ob aus Cache gelesen wurde (schnelle Response = Cache-Hit)
+            $wasCached = $duration < 100; // Webhook braucht > 100ms, Cache < 100ms
+            
+            // Berechne Cache-Alter
+            $lastCheck = $this->systemConfigService->getString('HeroBlocks.config.lastLicenseCheck');
+            $cacheAge = null;
+            if (!empty($lastCheck)) {
+                try {
+                    $lastCheckDate = new \DateTime($lastCheck);
+                    $now = new \DateTime();
+                    $hoursSinceLastCheck = ($now->getTimestamp() - $lastCheckDate->getTimestamp()) / 3600;
+                    $cacheAge = round($hoursSinceLastCheck, 1) . ' hours';
+                } catch (\Exception $e) {
+                    $cacheAge = 'unknown';
+                }
+            }
             
             // DEBUG: Log nach Service-Aufruf
             $this->logger->info('LicenseCheckController: License check completed', [
                 'result' => $result,
                 'durationMs' => $duration,
+                'cached' => $wasCached,
+                'cacheAge' => $cacheAge,
+                'forceRefresh' => $forceRefresh,
             ]);
             
             return new JsonResponse([
                 'success' => true,
                 'data' => $result,
                 'debug' => [
+                    'cached' => $wasCached,
+                    'cacheAge' => $cacheAge,
                     'durationMs' => $duration,
                     'timestamp' => (new \DateTime())->format('c'),
+                    'forceRefresh' => $forceRefresh,
                 ],
             ]);
         } catch (\Exception $e) {

@@ -1,7 +1,12 @@
 {% block hero_blocks_license_expired_notice %}
     {# 
         Lizenz-Hinweis für Premium-Features
-        Wird angezeigt wenn die Lizenz abgelaufen ist
+        Wird angezeigt wenn die Lizenz abgelaufen oder ungültig ist
+        
+        WICHTIG: Zeige Hinweis bei 'expired' UND 'invalid'
+        - 'expired': Lizenz war gültig, ist jetzt abgelaufen
+        - 'invalid': Keine gültigen Lizenz-Daten (Webhook-Fehler, keine URL, etc.)
+        - 'active': Lizenz gültig (kein Hinweis)
         
         Usage:
         {% include '@HeroBlocks/storefront/component/license-expired-notice.html.twig' with {
@@ -10,7 +15,7 @@
         } %}
     #}
     
-    {% if licenseStatus|default('active') == 'expired' %}
+    {% if licenseStatus|default('active') in ['expired', 'invalid'] %}
         {# URL-Parameter für Renewal-Link #}
         {% set renewalParams = {
             'plugin': 'hero-blocks',
@@ -21,70 +26,164 @@
         
         {% set renewalUrl = 'https://matt-interfaces.ch/shopware-hero-block?' ~ renewalParams|url_encode %}
         
-        {# Desktop: Alles in einer Zeile - elegant, minimal, schmal #}
-        <div class="alert alert-warning hero-blocks-license-expired-notice hero-blocks-license-expired-notice--desktop mb-4 d-none d-lg-flex" role="alert">
-            <div class="d-flex align-items-center w-100">
-                {# Text Content: Links, flex-grow #}
-                <div class="flex-grow-1 d-flex align-items-center hero-blocks-license-expired-notice__content">
-                    <strong class="me-2 hero-blocks-license-expired-notice__title">
-                        {{ 'component.cms.licenseExpired.title'|trans|sw_sanitize }}
-                    </strong>
-                    <span class="text-muted me-3 hero-blocks-license-expired-notice__text">
-                        {{ 'component.cms.licenseExpired.message'|trans|sw_sanitize }}
-                    </span>
+        {# WICHTIG: Ein responsives Element - kein Duplicate für Desktop/Mobile #}
+        <div class="alert alert-warning hero-blocks-license-expired-notice mb-4" 
+             role="alert" 
+             data-hero-blocks-dismissible="license-notice"
+             data-feature="{{ feature|default('premium') }}">
+            <div class="d-flex align-items-start position-relative">
+                {# Close Button (X) - Oben rechts #}
+                <button type="button" 
+                        class="btn-close hero-blocks-license-expired-notice__close"
+                        aria-label="{{ 'component.cms.licenseExpired.close'|trans|default('Close') }}"
+                        data-dismiss-notice="license-notice">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                    </svg>
+                </button>
+                
+                {# Content Wrapper #}
+                <div class="flex-grow-1 me-3">
+                    {# Title + Message: Desktop = inline, Mobile = stacked #}
+                    <div class="hero-blocks-license-expired-notice__content">
+                        <strong class="hero-blocks-license-expired-notice__title">
+                            {{ 'component.cms.licenseExpired.title'|trans|sw_sanitize }}
+                        </strong>
+                        <span class="hero-blocks-license-expired-notice__text">
+                            {{ 'component.cms.licenseExpired.message'|trans|sw_sanitize }}
+                        </span>
+                    </div>
+                    
+                    {# CTA Button #}
+                    <div class="mt-3">
+                        <a href="{{ renewalUrl }}" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="btn btn-primary btn-sm text-nowrap hero-blocks-license-expired-notice__button">
+                            {{ 'component.cms.licenseExpired.renewButton'|trans|sw_sanitize }}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="ms-1" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                            </svg>
+                        </a>
+                    </div>
                 </div>
                 
-                {# CTA Button: Mitte #}
-                <a href="{{ renewalUrl }}" 
-                   target="_blank" 
-                   rel="noopener noreferrer" 
-                   class="btn btn-primary btn-sm me-3 text-nowrap hero-blocks-license-expired-notice__button">
-                    {{ 'component.cms.licenseExpired.renewButton'|trans|sw_sanitize }}
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="ms-1" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
-                    </svg>
-                </a>
-                
-                {# Lock Icon: Rechts - Mit Hover-Animation (geschlossen → offen) #}
-                <div class="hero-blocks-license-expired-notice__icon">
-                    {# Geschlossenes Schloss (Default) #}
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="lock-closed text-warning" viewBox="0 0 16 16">
+                {# Lock Icon - Nur Desktop #}
+                <div class="hero-blocks-license-expired-notice__icon d-none d-lg-block">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="text-warning opacity-75" viewBox="0 0 16 16">
                         <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
-                    </svg>
-                    {# Offenes Schloss (Hover) #}
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="lock-open text-success" viewBox="0 0 16 16">
-                        <path d="M11 1a2 2 0 0 0-2 2v4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h5V3a3 3 0 0 1 6 0v4a.5.5 0 0 1-1 0V3a2 2 0 0 0-2-2z"/>
                     </svg>
                 </div>
             </div>
         </div>
         
-        {# Mobile/Tablet: Gestackt für bessere Lesbarkeit #}
-        <div class="alert alert-warning hero-blocks-license-expired-notice hero-blocks-license-expired-notice--mobile mb-4 d-lg-none" role="alert">
-            <div class="d-flex align-items-start">
-                <div class="flex-grow-1">
-                    <h6 class="alert-heading mb-2">
-                        <strong>{{ 'component.cms.licenseExpired.title'|trans|sw_sanitize }}</strong>
-                    </h6>
-                    <p class="mb-3 small">
-                        {{ 'component.cms.licenseExpired.message'|trans|sw_sanitize }}
-                    </p>
-                    <a href="{{ renewalUrl }}" 
-                       target="_blank" 
-                       rel="noopener noreferrer" 
-                       class="btn btn-primary btn-sm">
-                        {{ 'component.cms.licenseExpired.renewButton'|trans|sw_sanitize }}
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="ms-1" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
-                        </svg>
-                    </a>
-                </div>
-                <div class="ms-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="text-warning opacity-50" viewBox="0 0 16 16">
-                        <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
-                    </svg>
-                </div>
-            </div>
-        </div>
+        {# Inline JavaScript für Dismiss-Funktionalität mit localStorage (24h TTL) #}
+        <script>
+            (function() {
+                'use strict';
+                
+                // LocalStorage Key Pattern: hero-blocks-notice-dismissed-{feature}-{licenseStatus}
+                var STORAGE_KEY_PREFIX = 'hero-blocks-notice-dismissed-';
+                var DISMISS_DURATION_MS = 24 * 60 * 60 * 1000; // 24 Stunden
+                
+                /**
+                 * Prüft ob Notice dismissed wurde (und noch nicht abgelaufen)
+                 */
+                function isNoticeDismissed(feature, licenseStatus) {
+                    try {
+                        var storageKey = STORAGE_KEY_PREFIX + feature + '-' + licenseStatus;
+                        var dismissedData = localStorage.getItem(storageKey);
+                        
+                        if (!dismissedData) {
+                            return false;
+                        }
+                        
+                        var data = JSON.parse(dismissedData);
+                        var dismissedAt = new Date(data.dismissedAt);
+                        var now = new Date();
+                        var diffMs = now - dismissedAt;
+                        
+                        // Wenn 24h abgelaufen → Zeige Notice wieder
+                        if (diffMs >= DISMISS_DURATION_MS) {
+                            localStorage.removeItem(storageKey);
+                            return false;
+                        }
+                        
+                        return true;
+                    } catch (e) {
+                        console.warn('[HeroBlocks] LocalStorage check failed:', e);
+                        return false;
+                    }
+                }
+                
+                /**
+                 * Speichert Dismiss-Status in localStorage
+                 */
+                function dismissNotice(feature, licenseStatus) {
+                    try {
+                        var storageKey = STORAGE_KEY_PREFIX + feature + '-' + licenseStatus;
+                        var data = {
+                            dismissedAt: new Date().toISOString(),
+                            feature: feature,
+                            licenseStatus: licenseStatus
+                        };
+                        localStorage.setItem(storageKey, JSON.stringify(data));
+                        
+                        console.log('[HeroBlocks] Notice dismissed for 24h:', feature, licenseStatus);
+                    } catch (e) {
+                        console.warn('[HeroBlocks] LocalStorage save failed:', e);
+                    }
+                }
+                
+                /**
+                 * Initialisiert Dismiss-Button-Handler
+                 */
+                function initDismissHandlers() {
+                    var notices = document.querySelectorAll('[data-hero-blocks-dismissible]');
+                    
+                    notices.forEach(function(notice) {
+                        var feature = notice.dataset.feature || 'premium';
+                        var licenseStatus = '{{ licenseStatus }}';
+                        
+                        // Prüfe ob Notice bereits dismissed wurde
+                        if (isNoticeDismissed(feature, licenseStatus)) {
+                            notice.style.display = 'none';
+                            return;
+                        }
+                        
+                        // Close-Button Handler
+                        var closeBtn = notice.querySelector('[data-dismiss-notice]');
+                        if (closeBtn) {
+                            closeBtn.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                
+                                // Smooth Fade-Out
+                                notice.style.transition = 'opacity 0.3s ease, max-height 0.3s ease';
+                                notice.style.opacity = '0';
+                                notice.style.maxHeight = '0';
+                                notice.style.overflow = 'hidden';
+                                notice.style.marginBottom = '0';
+                                notice.style.paddingTop = '0';
+                                notice.style.paddingBottom = '0';
+                                
+                                setTimeout(function() {
+                                    notice.style.display = 'none';
+                                }, 300);
+                                
+                                // Speichere Dismiss-Status
+                                dismissNotice(feature, licenseStatus);
+                            });
+                        }
+                    });
+                }
+                
+                // Init bei DOM-Ready
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', initDismissHandlers);
+                } else {
+                    initDismissHandlers();
+                }
+            })();
+        </script>
     {% endif %}
 {% endblock %}

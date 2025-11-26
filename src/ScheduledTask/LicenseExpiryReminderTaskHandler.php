@@ -9,6 +9,7 @@ use Shopware\Core\Content\Mail\Service\MailService;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Content\MailTemplate\MailTemplateEntity;
 use Psr\Log\LoggerInterface;
+use HeroBlocks\Service\LicenseCheckService;
 
 /**
  * Handler für License Expiry Reminder Task
@@ -25,7 +26,8 @@ class LicenseExpiryReminderTaskHandler extends ScheduledTaskHandler
         EntityRepository $scheduledTaskRepository,
         private readonly SystemConfigService $systemConfigService,
         private readonly MailService $mailService,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly LicenseCheckService $licenseCheckService
     ) {
         parent::__construct($scheduledTaskRepository);
     }
@@ -37,12 +39,36 @@ class LicenseExpiryReminderTaskHandler extends ScheduledTaskHandler
     
     /**
      * Hauptlogik: Prüfe Lizenz-Ablauf und sende E-Mail wenn nötig
+     * 
+     * WICHTIG: Diese Methode wird täglich vom Shopware Message Queue ausgeführt!
+     * - Ruft checkLicense(true) auf → Webhook-Call mit Cache-Refresh
+     * - Prüft ob Lizenz bald abläuft (30 Tage)
+     * - Sendet E-Mail wenn nötig (max 1x pro Woche)
      */
     public function run(): void
     {
         $this->logger->info('[HeroBlocks] License Expiry Reminder Task started');
         
-        // 1. Lizenz-Status abrufen
+        // WICHTIG: Rufe checkLicense(true) auf um Cache zu aktualisieren!
+        // forceRefresh = true → Webhook-Call, ignoriere Cache
+        try {
+            $this->logger->info('[HeroBlocks] Scheduled Task: Refreshing license status via webhook');
+            $result = $this->licenseCheckService->checkLicense(true);
+            
+            $this->logger->info('[HeroBlocks] Scheduled Task: License check completed', [
+                'valid' => $result['valid'],
+                'expiresAt' => $result['expiresAt'],
+                'daysRemaining' => $result['daysRemaining'],
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('[HeroBlocks] Scheduled Task: Failed to refresh license status', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            // Continue mit cached Daten
+        }
+        
+        // 1. Lizenz-Status abrufen (aus Cache - wurde gerade aktualisiert)
         $licenseStatus = $this->systemConfigService->getString('HeroBlocks.config.licenseStatus');
         $expiresAt = $this->systemConfigService->getString('HeroBlocks.config.licenseExpiresAt');
         $lastReminderSent = $this->systemConfigService->getString('HeroBlocks.config.lastReminderSent');

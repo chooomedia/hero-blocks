@@ -1,5 +1,10 @@
 {% sw_extends '@Storefront/storefront/page/content/index.html.twig' %}
 
+{# Standard Content #}
+{% block base_main_inner %}
+    {{ parent() }}
+{% endblock %}
+
 {# WICHTIG: Kategorie Header mit Parallax-Effekt #}
 {% block page_content_blocks %}
     {# WICHTIG: Category Header BEFORE CMS Blocks #}
@@ -11,6 +16,23 @@
     
     {# WICHTIG: Standard CMS Blocks AFTER Category Header #}
     {{ parent() }}
+{% endblock %}
+
+{# WICHTIG: Zentraler Lizenz-Hinweis - Fixed Position unten rechts (stört Navigation nicht!) #}
+{% block base_body_inner %}
+    {# Standard Body Content #}
+    {{ parent() }}
+    
+    {# WICHTIG: License-Check - Zeige Hinweis nur wenn expired/invalid #}
+    {# Fixed Position unten rechts - stört KEINE Navigation! #}
+    {% set licenseStatus = config('HeroBlocks.config.licenseStatus')|default('active') %}
+    
+    {% if licenseStatus in ['expired', 'invalid'] %}
+        {% include '@HeroBlocks/storefront/component/license-expired-notice.html.twig' with {
+            feature: 'Premium Features',
+            licenseStatus: licenseStatus
+        } only %}
+    {% endif %}
 {% endblock %}
 
 {# WICHTIG: Breadcrumb auskommentiert (nicht im Frontend anzeigen) #}

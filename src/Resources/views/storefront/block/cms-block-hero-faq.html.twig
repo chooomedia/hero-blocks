@@ -138,6 +138,10 @@
             /* Answer Border - sichtbar in gleicher Farbe wie Question-Background */
             .faq-answer-content {
                 border: 1px solid #4a4a4a !important;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                word-break: break-word;
+                hyphens: auto;
             }
             
             /* Links in Answer - Theme-Farbe */
@@ -152,16 +156,21 @@
             /* Text und Icon Styling */
             .faq-question-text {
                 flex: 1 1 auto;
-                margin-right: 1rem;
-                word-wrap: break-word;
-                overflow-wrap: break-word;
+                max-width: calc(100% - 44px); /* Platz für Icon (20px) + margin (24px) */
+                word-wrap: break-word !important;
+                overflow-wrap: break-word !important;
+                word-break: break-word;
                 hyphens: auto;
                 line-height: 1.5;
+                white-space: normal !important; /* WICHTIG: Text darf umbrechen */
             }
             
             .faq-icon-toggle {
-                flex: 0 0 auto;
-                margin-left: auto;
+                flex: 0 0 20px; /* Feste Breite */
+                width: 20px;
+                height: 20px;
+                flex-shrink: 0; /* WICHTIG: Icon darf nicht schrumpfen */
+                margin-left: 1rem;
             }
             
             /* Mobile Optimierung: Text-Umbruch und Icon-Zentrierung */
@@ -169,17 +178,22 @@
                 .faq-question-btn {
                     min-height: 64px !important;
                     padding: 1rem !important;
+                    align-items: flex-start !important; /* Icon oben ausrichten bei mehrzeiligem Text */
                 }
                 
                 .faq-question-text {
-                    margin-right: 0.75rem !important;
+                    max-width: calc(100% - 32px) !important; /* Weniger Platz auf Mobile */
+                    margin-right: 0.5rem !important;
                     font-size: 0.95rem !important;
+                    padding-top: 2px; /* Optische Zentrierung */
                 }
                 
                 .faq-icon-toggle {
                     width: 20px !important;
                     height: 20px !important;
+                    flex: 0 0 20px !important;
                     flex-shrink: 0 !important;
+                    margin-top: 2px; /* Icon leicht nach unten für bessere Optik */
                 }
             }
             
@@ -191,13 +205,15 @@
                 }
                 
                 .faq-question-text {
+                    max-width: calc(100% - 28px) !important;
                     font-size: 0.875rem !important;
-                    margin-right: 0.625rem !important;
+                    margin-right: 0.5rem !important;
                 }
                 
                 .faq-icon-toggle {
                     width: 18px !important;
                     height: 18px !important;
+                    flex: 0 0 18px !important;
                 }
             }
         </style>

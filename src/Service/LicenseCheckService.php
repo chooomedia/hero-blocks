@@ -33,18 +33,120 @@ class LicenseCheckService
     }
 
     /**
-     * Prüft die Lizenz über n8n Webhook
-     *
+     * WICHTIG: Gibt CACHED License-Status zurück (KEIN Webhook-Call!)
+     * 
+     * Diese Methode wird von Twig Extension aufgerufen (Storefront)
+     * → NIEMALS Webhook aufrufen, nur aus Cache lesen!
+     * 
      * @return array{valid: bool, expiresAt: string, daysRemaining: int}
      */
-    public function checkLicense(): array
+    public function getLicenseStatus(): array
     {
+        // Lese cached Lizenz-Status aus SystemConfig
+        $licenseStatus = $this->systemConfigService->getString('HeroBlocks.config.licenseStatus') ?: 'unknown';
+        $expiresAt = $this->systemConfigService->getString('HeroBlocks.config.licenseExpiresAt') ?: '';
+        $daysRemaining = (int) $this->systemConfigService->getInt('HeroBlocks.config.daysRemaining');
+        
+        // Konvertiere Status zu boolean
+        $isValid = $licenseStatus === 'active';
+        
+        return [
+            'valid' => $isValid,
+            'expiresAt' => $expiresAt,
+            'daysRemaining' => $daysRemaining,
+        ];
+    }
+    
+    /**
+     * Prüft die Lizenz über n8n Webhook (EXPLIZITER CALL - MIT CACHE!)
+     * 
+     * WICHTIG: Diese Methode macht ECHTEN Webhook-Call!
+     * → Nur aufrufen bei:
+     *   1. Manueller Button-Click im Admin
+     *   2. Scheduled Task (1x täglich)
+     * 
+     * Cache-Strategie:
+     * - Cache-TTL: 24 Stunden
+     * - Bei Cache-Hit: Gebe cached Daten zurück (KEIN Webhook-Call)
+     * - Bei Cache-Miss: Rufe Webhook auf und speichere Result
+     *
+     * @param bool $forceRefresh Ignoriere Cache und rufe Webhook auf
+     * @return array{valid: bool, expiresAt: string, daysRemaining: int}
+     */
+    public function checkLicense(bool $forceRefresh = false): array
+    {
+        $this->logger->info('=== LICENSE CHECK STARTED ===', [
+            'forceRefresh' => $forceRefresh,
+            'source' => $forceRefresh ? 'MANUAL BUTTON CLICK' : 'SILENT CHECK (Config opened)',
+            'timestamp' => (new \DateTime())->format('c'),
+        ]);
+        
+        // CACHE-CHECK: Prüfe ob cached Daten noch gültig sind (24h TTL)
+        if (!$forceRefresh) {
+            $this->logger->info('License check: Checking cache first (forceRefresh = false)');
+            
+            $lastCheck = $this->systemConfigService->getString('HeroBlocks.config.lastLicenseCheck');
+            
+            if (!empty($lastCheck)) {
+                try {
+                    $lastCheckDate = new \DateTime($lastCheck);
+                    $now = new \DateTime();
+                    $hoursSinceLastCheck = ($now->getTimestamp() - $lastCheckDate->getTimestamp()) / 3600;
+                    
+                    // Cache-Hit: Weniger als 24 Stunden seit letztem Check
+                    if ($hoursSinceLastCheck < 24) {
+                        $this->logger->info('✅ LICENSE CHECK: Using CACHED data (no webhook call)', [
+                            'lastCheck' => $lastCheck,
+                            'hoursSinceLastCheck' => round($hoursSinceLastCheck, 2),
+                            'cacheValidUntil' => $lastCheckDate->modify('+24 hours')->format('c'),
+                            'reason' => 'Cache is fresh (< 24h)',
+                        ]);
+                        
+                        // Gebe cached Status zurück
+                        return $this->getLicenseStatus();
+                    } else {
+                        $this->logger->info('⏰ LICENSE CHECK: Cache EXPIRED - calling WEBHOOK', [
+                            'lastCheck' => $lastCheck,
+                            'hoursSinceLastCheck' => round($hoursSinceLastCheck, 2),
+                            'reason' => 'Cache is stale (> 24h)',
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    $this->logger->warning('License check: Failed to parse lastLicenseCheck timestamp', [
+                        'lastCheck' => $lastCheck,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            } else {
+                $this->logger->info('📭 LICENSE CHECK: No cache found - calling WEBHOOK for first time');
+            }
+        } else {
+            $this->logger->info('🚀 LICENSE CHECK: FORCE REFRESH - calling WEBHOOK (ignoring cache)', [
+                'reason' => 'Manual button click',
+            ]);
+        }
+        
+        // WEBHOOK-CALL: Cache-Miss oder forceRefresh = true
         $webhookUrl = $this->getWebhookUrl('license');
         
         if (!$webhookUrl) {
-            // Fallback: Wenn keine URL konfiguriert, als gültig ansehen
-            $this->logger->info('License check: No webhook URL configured, using fallback (Installation Date + licenseValidYears)');
-            return $this->getDefaultValidResponse();
+            // WICHTIG: KEIN Fallback mehr! Wenn keine URL, dann invalid!
+            $this->logger->error('License check: No webhook URL configured - marking as INVALID (no fallback!)', [
+                'envCheck' => [
+                    'HERO_BLOCKS_WEBHOOK_URL' => !empty($_ENV['HERO_BLOCKS_WEBHOOK_URL'] ?? null),
+                    'HOREX_SLIDER_WEBHOOK_URL' => !empty($_ENV['HOREX_SLIDER_WEBHOOK_URL'] ?? null),
+                ],
+            ]);
+            
+            // Setze Status auf invalid und speichere
+            $this->systemConfigService->set('HeroBlocks.config.licenseStatus', 'invalid');
+            $this->systemConfigService->set('HeroBlocks.config.lastLicenseCheck', (new \DateTime())->format('c'));
+            
+            return [
+                'valid' => false,
+                'expiresAt' => '',
+                'daysRemaining' => 0,
+            ];
         }
 
         $timestamp = (new \DateTime())->format('c'); // ISO 8601
@@ -115,11 +217,20 @@ class LicenseCheckService
             }
 
             if ($statusCode !== 200) {
-                $this->logger->warning('License check failed', [
+                $this->logger->error('License check failed - non-200 status code', [
                     'status' => $statusCode,
                     'response' => $content,
                 ]);
-                return $this->getDefaultValidResponse(); // Fallback: Gültig
+                
+                // WICHTIG: KEIN Fallback! Status = invalid
+                $this->systemConfigService->set('HeroBlocks.config.licenseStatus', 'invalid');
+                $this->systemConfigService->set('HeroBlocks.config.lastLicenseCheck', (new \DateTime())->format('c'));
+                
+                return [
+                    'valid' => false,
+                    'expiresAt' => '',
+                    'daysRemaining' => 0,
+                ];
             }
 
             $data = json_decode($content, true);
@@ -132,27 +243,41 @@ class LicenseCheckService
             
             // WICHTIG: Ignoriere Slack-Responses explizit (Manipulationssicher)
             // Slack gibt zurück: {"response_type": "ephemeral", "text": "..."}
-            // → Dies ist KEINE gültige License-Response → Fallback
+            // → Dies ist KEINE gültige License-Response → INVALID!
             if (is_array($data) && isset($data['response_type']) && !isset($data['valid'])) {
-                $this->logger->warning('n8n returned Slack response instead of license data - using fallback', [
+                $this->logger->error('n8n returned Slack response instead of license data - marking as INVALID', [
                     'response_type' => $data['response_type'],
                     'text' => $data['text'] ?? 'not set',
                     'rawContent' => substr($content, 0, 500),
                 ]);
-                // Slack-Response → Webhook gibt falsche Daten zurück → Fallback
-                return $this->getDefaultValidResponse();
+                
+                $this->systemConfigService->set('HeroBlocks.config.licenseStatus', 'invalid');
+                $this->systemConfigService->set('HeroBlocks.config.lastLicenseCheck', (new \DateTime())->format('c'));
+                
+                return [
+                    'valid' => false,
+                    'expiresAt' => '',
+                    'daysRemaining' => 0,
+                ];
             }
             
             // WICHTIG: Ignoriere async/workflow-started Responses
             // n8n gibt zurück: {"message": "Workflow was started"}
-            // → Dies ist KEINE gültige License-Response → Fallback
+            // → Dies ist KEINE gültige License-Response → INVALID!
             if (is_array($data) && isset($data['message']) && !isset($data['valid'])) {
-                $this->logger->warning('n8n returned async response (workflow started but not waiting)', [
+                $this->logger->error('n8n returned async response (workflow not waiting for response) - marking as INVALID', [
                     'message' => $data['message'],
                     'rawContent' => substr($content, 0, 500),
                 ]);
-                // Falls Webhook nicht auf "Wait for Response" gestellt ist, verwende Fallback
-                return $this->getDefaultValidResponse();
+                
+                $this->systemConfigService->set('HeroBlocks.config.licenseStatus', 'invalid');
+                $this->systemConfigService->set('HeroBlocks.config.lastLicenseCheck', (new \DateTime())->format('c'));
+                
+                return [
+                    'valid' => false,
+                    'expiresAt' => '',
+                    'daysRemaining' => 0,
+                ];
             }
             
             // WICHTIG: Robustes Parsing für n8n Response-Formate (Manipulationssicher)
@@ -191,7 +316,7 @@ class LicenseCheckService
             // WICHTIG: Validiere Response-Format strikt (Manipulationssicher)
             // Response MUSS enthalten: 'valid' (bool), 'expiresAt' (string), 'daysRemaining' (int)
             if ($responseData === null || !is_array($responseData) || !isset($responseData['valid'])) {
-                $this->logger->warning('Invalid license response format from n8n - missing required fields', [
+                $this->logger->error('Invalid license response format from n8n - missing required fields - marking as INVALID', [
                     'data' => $data,
                     'responseData' => $responseData,
                     'rawContent' => substr($content, 0, 500),
@@ -203,7 +328,15 @@ class LicenseCheckService
                         'hasValidInDataZero' => isset($data[0]['valid']),
                     ],
                 ]);
-                return $this->getDefaultValidResponse();
+                
+                $this->systemConfigService->set('HeroBlocks.config.licenseStatus', 'invalid');
+                $this->systemConfigService->set('HeroBlocks.config.lastLicenseCheck', (new \DateTime())->format('c'));
+                
+                return [
+                    'valid' => false,
+                    'expiresAt' => '',
+                    'daysRemaining' => 0,
+                ];
             }
             
             // Verwende die extrahierte Response-Struktur
@@ -311,6 +444,16 @@ class LicenseCheckService
                 }
             }
 
+            // WICHTIG: Speichere Cache-Timestamp (für 24h Cache-TTL)
+            $this->systemConfigService->set('HeroBlocks.config.lastLicenseCheck', (new \DateTime())->format('c'));
+            
+            $this->logger->info('License check completed successfully - cached for 24h', [
+                'valid' => $isValid,
+                'expiresAt' => $expiresAt,
+                'daysRemaining' => $daysRemaining,
+                'cachedUntil' => (new \DateTime())->modify('+24 hours')->format('c'),
+            ]);
+            
             // WICHTIG: Return validierte Werte (nicht Roh-Daten von n8n!)
             return [
                 'valid' => $isValid, // Verwendet validierte boolean Variable
@@ -319,34 +462,58 @@ class LicenseCheckService
             ];
         } catch (HttpExceptionInterface $e) {
             // HTTP Fehler (4xx, 5xx, Timeout, etc.)
-            $this->logger->error('License check HTTP exception', [
+            $this->logger->error('License check HTTP exception - marking as INVALID', [
                 'error' => $e->getMessage(),
                 'errorType' => get_class($e),
                 'code' => $e->getCode(),
                 'trace' => $e->getTraceAsString(),
             ]);
-            return $this->getDefaultValidResponse(); // Fallback: Gültig
+            
+            $this->systemConfigService->set('HeroBlocks.config.licenseStatus', 'invalid');
+            $this->systemConfigService->set('HeroBlocks.config.lastLicenseCheck', (new \DateTime())->format('c'));
+            
+            return [
+                'valid' => false,
+                'expiresAt' => '',
+                'daysRemaining' => 0,
+            ];
         } catch (\Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface $e) {
             // Transport Fehler (Network, DNS, Connection, etc.)
-            $this->logger->error('License check transport exception', [
+            $this->logger->error('License check transport exception - marking as INVALID', [
                 'error' => $e->getMessage(),
                 'errorType' => get_class($e),
                 'code' => $e->getCode(),
                 'webhookUrl' => $webhookUrl,
             ]);
-            return $this->getDefaultValidResponse(); // Fallback: Gültig
+            
+            $this->systemConfigService->set('HeroBlocks.config.licenseStatus', 'invalid');
+            $this->systemConfigService->set('HeroBlocks.config.lastLicenseCheck', (new \DateTime())->format('c'));
+            
+            return [
+                'valid' => false,
+                'expiresAt' => '',
+                'daysRemaining' => 0,
+            ];
         } catch (\Symfony\Contracts\HttpClient\Exception\TimeoutExceptionInterface $e) {
             // Timeout Fehler
-            $this->logger->error('License check timeout exception', [
+            $this->logger->error('License check timeout exception - marking as INVALID', [
                 'error' => $e->getMessage(),
                 'errorType' => get_class($e),
                 'webhookUrl' => $webhookUrl,
                 'timeout' => 10,
             ]);
-            return $this->getDefaultValidResponse(); // Fallback: Gültig
+            
+            $this->systemConfigService->set('HeroBlocks.config.licenseStatus', 'invalid');
+            $this->systemConfigService->set('HeroBlocks.config.lastLicenseCheck', (new \DateTime())->format('c'));
+            
+            return [
+                'valid' => false,
+                'expiresAt' => '',
+                'daysRemaining' => 0,
+            ];
         } catch (\Exception $e) {
             // Alle anderen Fehler
-            $this->logger->error('License check general exception', [
+            $this->logger->error('License check general exception - marking as INVALID', [
                 'error' => $e->getMessage(),
                 'errorType' => get_class($e),
                 'code' => $e->getCode(),
@@ -354,7 +521,15 @@ class LicenseCheckService
                 'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString(),
             ]);
-            return $this->getDefaultValidResponse(); // Fallback: Gültig
+            
+            $this->systemConfigService->set('HeroBlocks.config.licenseStatus', 'invalid');
+            $this->systemConfigService->set('HeroBlocks.config.lastLicenseCheck', (new \DateTime())->format('c'));
+            
+            return [
+                'valid' => false,
+                'expiresAt' => '',
+                'daysRemaining' => 0,
+            ];
         }
     }
 
@@ -401,19 +576,24 @@ class LicenseCheckService
     }
 
     /**
-     * Gibt Standard-Response zurück (gültig basierend auf Installation Date + licenseValidYears)
+     * DEPRECATED: Diese Methode wird nicht mehr verwendet!
+     * 
+     * Fallbacks wurden entfernt - Lizenz-Status kommt IMMER von n8n Webhook.
+     * Wenn Webhook nicht erreichbar oder keine URL konfiguriert → valid = false
+     * 
+     * @deprecated Nicht mehr verwenden! Nur für Backwards Compatibility.
      */
     private function getDefaultValidResponse(): array
     {
-        $expiresAt = $this->calculateExpirationDateFromInstallation();
-        $expiresDate = new \DateTime($expiresAt);
-        $now = new \DateTime();
-        $daysRemaining = max(0, (int) $expiresDate->diff($now)->days);
+        $this->logger->warning('DEPRECATED: getDefaultValidResponse() called - this should not happen!', [
+            'trace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3),
+        ]);
         
+        // WICHTIG: Gebe INVALID zurück (kein Fallback mehr!)
         return [
-            'valid' => true,
-            'expiresAt' => $expiresAt,
-            'daysRemaining' => $daysRemaining,
+            'valid' => false,
+            'expiresAt' => '',
+            'daysRemaining' => 0,
         ];
     }
 

@@ -17,7 +17,8 @@
         },
         "status": {
             "active": "License Active",
-            "expired": "License Expired"
+            "expired": "License Expired",
+            "invalid": "License Invalid"
         },
         "success": {
             "title": "License check successful",

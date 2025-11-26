@@ -16,13 +16,8 @@
     {# Wrapper für Block (col-12 = full width) #}
     <div class="col-12 hero-instagram-feed-wrapper" data-cms-element-id="{{ element ? element.id : 'no-element' }}">
         {% block block_hero_instagram_feed_inner %}
-            {# WICHTIG: License-Hinweis anzeigen wenn abgelaufen #}
-            {% if licenseStatus == 'expired' %}
-                {% include '@HeroBlocks/storefront/component/license-expired-notice.html.twig' with {
-                    feature: 'Instagram Feed',
-                    licenseStatus: licenseStatus
-                } only %}
-            {% endif %}
+            {# WICHTIG: License-Hinweis wird ZENTRAL angezeigt (page/content/index.html.twig) #}
+            {# NICHT mehr hier pro Block - verhindert Duplicates! #}
             
             {# WICHTIG: Element Template wird hier gerendert #}
             {# Element Template hat Zugriff auf element.data.instagramPosts (vom TypeDataResolver) #}

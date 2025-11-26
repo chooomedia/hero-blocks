@@ -30,7 +30,8 @@
         margin-bottom: 20px;
         max-height: 60vh;
         overflow-y: auto;
-        overflow-x: hidden;
+        overflow-x: visible; // WICHTIG: Horizontal sichtbar für TinyMCE Buttons!
+        padding-right: 8px; // Platz für Scrollbar
     }
 
     &__item {
@@ -40,6 +41,8 @@
         border-radius: 8px;
         background: #f9fafb;
         transition: all 0.2s ease;
+        overflow: visible; // WICHTIG: Item overflow sichtbar!
+        position: relative;
 
         &:hover {
             border-color: #189eff;
@@ -72,25 +75,47 @@
         margin-bottom: 16px;
         position: relative;
         z-index: 1;
+        overflow: visible; // WICHTIG: Field overflow sichtbar!
 
         &:last-child {
             margin-bottom: 0;
         }
 
-        // TinyMCE Editor Fix: Prevent Overflow
+        // TinyMCE Editor Fix: BEST PRACTICE für Shopware Admin
         .sw-text-editor {
             position: relative;
             z-index: 1;
+            overflow: visible !important; // Override any parent overflow
 
-            // TinyMCE Toolbar should stay within bounds
+            // TinyMCE Content Wrapper
+            .sw-text-editor__content-wrapper {
+                overflow: visible !important;
+                position: relative;
+            }
+
+            // TinyMCE Editor Container
             .sw-text-editor__content-editor {
                 position: relative;
-                overflow: visible;
+                overflow: visible !important;
                 z-index: 1;
             }
 
-            // TinyMCE Dropdowns (z-index higher to appear above sidebar elements)
-            .tox-tinymce-aux {
+            // TinyMCE Toolbar (Buttons Container)
+            .tox-toolbar,
+            .tox-toolbar__primary,
+            .tox-toolbar-overlord {
+                overflow: visible !important;
+                z-index: 100;
+            }
+
+            // TinyMCE Dropdowns & Modals (z-index höher für Sidebar)
+            .tox-tinymce-aux,
+            .tox-pop {
+                z-index: 10000 !important;
+            }
+
+            // TinyMCE Inline Popups
+            .tox-tinymce-inline {
                 z-index: 10000 !important;
             }
         }
