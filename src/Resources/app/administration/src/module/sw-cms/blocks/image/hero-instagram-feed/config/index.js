@@ -62,12 +62,25 @@ export default {
 
         columnsOptions() {
             return [
-                { id: '1', value: 1, label: '1' },
-                { id: '2', value: 2, label: '2' },
-                { id: '3', value: 3, label: '3' },
-                { id: '4', value: 4, label: '4' },
-                { id: '5', value: 5, label: '5' },
-                { id: '6', value: 6, label: '6' },
+                { id: '1', value: 1, label: '1 ' + this.$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.columns.unit') },
+                { id: '2', value: 2, label: '2 ' + this.$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.columns.unit') },
+                { id: '3', value: 3, label: '3 ' + this.$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.columns.unit') },
+                { id: '4', value: 4, label: '4 ' + this.$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.columns.unit') },
+            ];
+        },
+
+        layoutTypeOptions() {
+            return [
+                {
+                    id: 'grid',
+                    value: 'grid',
+                    label: this.$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.layoutType.options.grid'),
+                },
+                {
+                    id: 'masonry',
+                    value: 'masonry',
+                    label: this.$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.layoutType.options.masonry'),
+                },
             ];
         },
 
@@ -203,7 +216,31 @@ export default {
             if (!this.block.customFields) {
                 this.block.customFields = {};
             }
-            this.block.customFields.columns = parseInt(value, 10) || 4;
+            // WICHTIG: Max. 4 Spalten
+            const columns = Math.min(parseInt(value, 10) || 4, 4);
+            this.block.customFields.columns = columns;
+            this.$emit('block-update');
+        },
+
+        onLayoutTypeChange(value) {
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            this.block.customFields.layoutType = value || 'grid';
+            this.$emit('block-update');
+        },
+
+        onEnableLoadMoreChange(value) {
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            this.block.customFields.enableLoadMore = value === true;
             this.$emit('block-update');
         },
 

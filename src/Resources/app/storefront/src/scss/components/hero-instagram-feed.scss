@@ -84,6 +84,79 @@
     @media screen and (max-width: 479px) {
         grid-template-columns: 1fr;
     }
+
+    // MASONRY LAYOUT
+    &--masonry {
+        // WICHTIG: Nutze CSS Grid Auto-Flow Dense für Masonry-Effekt
+        grid-auto-flow: dense;
+        
+        // Featured Posts nehmen mehr Platz ein (2x2 auf Desktop)
+        .instagram-item--featured {
+            grid-column: span 2;
+            grid-row: span 2;
+
+            @media screen and (max-width: 767px) {
+                // Auf Mobile: Featured = 1x2 (volle Breite, doppelte Höhe)
+                grid-column: span 2;
+                grid-row: span 2;
+            }
+
+            @media screen and (max-width: 479px) {
+                // Single Column: Normal size
+                grid-column: span 1;
+                grid-row: span 1;
+            }
+
+            // Media Container: Keep aspect ratio für Featured
+            .instagram-item__media {
+                padding-bottom: 100%; // 1:1 auch bei Featured
+            }
+        }
+    }
+
+    // Load More Button Container
+    &__load-more {
+        grid-column: 1 / -1; // Full width
+        display: flex;
+        justify-content: center;
+        padding: 2rem 0 1rem;
+    }
+
+    &__load-more-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        min-width: 180px;
+        justify-content: center;
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        // Loading State
+        &.is-loading {
+            .instagram-grid__load-more-text {
+                opacity: 0.5;
+            }
+
+            .instagram-grid__load-more-spinner {
+                display: inline-block !important;
+            }
+        }
+    }
+
+    &__load-more-spinner {
+        .spinner-border {
+            width: 1rem;
+            height: 1rem;
+            border-width: 2px;
+        }
+    }
 }
 
 // Instagram Slider Layout (nutzt base-slider von Shopware)
@@ -136,6 +209,9 @@
     background: var(--color-white, #fff);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 
+    // WICHTIG: Smooth Animation für neue Items (Load More)
+    animation: fadeInUp 0.4s ease-out;
+
     &:hover {
         transform: translateY(-4px);
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
@@ -148,6 +224,17 @@
             transform: scale(1.05);
         }
     }
+
+    // Featured Posts (Masonry)
+    &--featured {
+        // Größerer Shadow für Featured Posts
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+
+        &:hover {
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+    }
+}
 
     // Link Wrapper
     &__link {
@@ -255,9 +342,23 @@
     }
 }
 
+// Fade In Animation (Load More)
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 // Accessibility: Reduced Motion
 @media (prefers-reduced-motion: reduce) {
     .instagram-item {
+        animation: none;
+
         &:hover {
             transform: none;
         }

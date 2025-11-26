@@ -77,12 +77,12 @@ Shopware.Service('cmsService').registerCmsElement({
     enrich: function enrich(slot, data) {
         // WICHTIG: Category Slider lädt Bilder aus den ausgewählten Kategorien
         // Die Bilder werden über TypeDataResolver geladen (siehe CategorySliderTypeDataResolver)
-        if (Object.keys(data).length < 1) {
+        if (!slot || !slot.config || Object.keys(data).length < 1) {
             return;
         }
 
         // WICHTIG: Sicherstellen, dass categoryIds korrekt initialisiert ist
-        if (!slot.config.categoryIds) {
+        if (!slot.config.categoryIds || typeof slot.config.categoryIds !== 'object') {
             slot.config.categoryIds = {
                 source: 'static',
                 value: [],
@@ -93,8 +93,15 @@ Shopware.Service('cmsService').registerCmsElement({
             return;
         }
 
+        // WICHTIG: Sicherstellen, dass entity definiert ist
+        if (!slot.config.categoryIds.entity) {
+            slot.config.categoryIds.entity = {
+                name: 'category',
+            };
+        }
+
         // Kategorien-Entities laden (wenn categoryIds vorhanden)
-        if (slot.config.categoryIds.entity && slot.config.categoryIds.value && slot.config.categoryIds.value.length > 0) {
+        if (slot.config.categoryIds.value && Array.isArray(slot.config.categoryIds.value) && slot.config.categoryIds.value.length > 0) {
             const entity = slot.config.categoryIds.entity;
             const entityKey = `entity-${entity.name}-0`;
             

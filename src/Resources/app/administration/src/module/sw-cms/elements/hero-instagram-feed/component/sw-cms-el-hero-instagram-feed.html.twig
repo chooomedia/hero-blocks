@@ -1,0 +1,31 @@
+{% block sw_cms_el_hero_instagram_feed %}
+    <div class="sw-cms-el-hero-instagram-feed" :class="'sw-cms-el-hero-instagram-feed--' + displayMode">
+        {% block sw_cms_el_hero_instagram_feed_mode_label %}
+            <div class="sw-cms-el-hero-instagram-feed__mode-label">
+                <span v-if="displayMode === 'grid'">Grid Mode ({{ columns }} Spalten)</span>
+                <span v-else>Slider Mode</span>
+                <span class="sw-cms-el-hero-instagram-feed__post-count"> · {{ postLimit }} Posts</span>
+            </div>
+        {% endblock %}
+
+        {% block sw_cms_el_hero_instagram_feed_grid %}
+            <div class="sw-cms-el-hero-instagram-feed__grid" :class="gridClass">
+                {# WICHTIG: Zeige max. 12 Preview-Items #}
+                <div class="sw-cms-el-hero-instagram-feed__item" v-for="n in Math.min(previewItemCount, 12)" :key="n">
+                    <img
+                        :src="assetFilter('/administration/administration/static/img/cms/preview_' + (['mountain', 'glasses', 'plant', 'camera'][(n - 1) % 4]) + '_' + (['small', 'large'][(n - 1) % 2]) + '.jpg')"
+                        alt="Instagram Post"
+                    >
+                </div>
+            </div>
+        {% endblock %}
+
+        {% block sw_cms_el_hero_instagram_feed_slider_hint %}
+            <div v-if="displayMode === 'slider'" class="sw-cms-el-hero-instagram-feed__slider-hint">
+                <mt-icon name="regular-image" size="20px"></mt-icon>
+                <span>Slider wird im Frontend angezeigt</span>
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}
+

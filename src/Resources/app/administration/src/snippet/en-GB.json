@@ -6,6 +6,84 @@
                     "label": "Hero Block Slider",
                     "description": "The versatile hero slider: bold visuals, clear messaging, smart CTAs. Built for brand stories and campaigns."
                 },
+                "heroInstagramFeed": {
+                    "label": "Hero Instagram Feed",
+                    "placeholder": {
+                        "title": "Instagram Feed Block",
+                        "hint": "Configure the Instagram feed in the block settings"
+                    },
+                    "config": {
+                        "info": {
+                            "apiCredentials": "API credentials (App ID, App Secret, Access Token) are loaded from plugin settings (Hero Blocks Extension Config)."
+                        },
+                        "postLimit": {
+                            "label": "Number of Posts",
+                            "helpText": "Number of Instagram posts to display initially (max. 12)"
+                        },
+                        "enableLoadMore": {
+                            "label": "Enable Load More Button",
+                            "helpText": "Activates a button to load more posts"
+                        },
+                        "displayMode": {
+                            "label": "Display Mode",
+                            "helpText": "Choose between Grid or Slider (carousel)",
+                            "options": {
+                                "grid": "Grid",
+                                "slider": "Slider (Carousel)"
+                            }
+                        },
+                        "columns": {
+                            "label": "Number of Columns (Grid)",
+                            "helpText": "Number of columns in grid mode (1-4)",
+                            "unit": "columns"
+                        },
+                        "layoutType": {
+                            "label": "Layout Type (Grid)",
+                            "helpText": "Choose between uniform grid or masonry layout",
+                            "options": {
+                                "grid": "Grid (uniform)",
+                                "masonry": "Masonry (important posts bigger)"
+                            }
+                        },
+                        "showCaptions": {
+                            "label": "Show Captions",
+                            "helpText": "Displays Instagram post descriptions"
+                        },
+                        "showLikes": {
+                            "label": "Show Likes",
+                            "helpText": "Displays the number of likes for each post"
+                        },
+                        "showComments": {
+                            "label": "Show Comments",
+                            "helpText": "Displays the number of comments for each post"
+                        },
+                        "navigationArrows": {
+                            "label": "Navigation Arrows (Slider)",
+                            "helpText": "Select the position of navigation arrows (none, inside, outside)",
+                            "options": {
+                                "none": "None",
+                                "inside": "Inside",
+                                "outside": "Outside"
+                            }
+                        },
+                        "navigationDots": {
+                            "label": "Navigation Dots (Slider)",
+                            "helpText": "Enable display of navigation dots below the slider"
+                        },
+                        "autoSlide": {
+                            "label": "Auto Slide",
+                            "helpText": "Enable automatic sliding of the slider"
+                        },
+                        "autoplayTimeout": {
+                            "label": "Autoplay Timeout (ms)",
+                            "helpText": "Time in milliseconds between slides (1000-30000)"
+                        },
+                        "speed": {
+                            "label": "Slide Speed (ms)",
+                            "helpText": "Speed of slide animation in milliseconds (100-1000)"
+                        }
+                    }
+                },
                 "heroTwoColumns": {
                     "label": "Hero Two Columns Image & Text",
                     "description": "Two-column layout with image and text, parallax scroll effects and flexible background options.",
@@ -145,7 +223,15 @@
                         "displayModeContain": "Contain"
                     },
                     "slideLabel": "Slide {index}",
+                    "deleteSlide": "Delete slide",
                     "slidesTitle": "Configure slide content",
+                    "slideColors": {
+                        "title": "Slide Colors",
+                        "headlineColor": "Headline Color",
+                        "textColor": "Text Color",
+                        "button1BgColor": "Button 1 Background Color",
+                        "button2BgColor": "Button 2 Background Color"
+                    },
                     "styling": {
                         "title": "Content Styling",
                         "headline": {
@@ -214,6 +300,13 @@
                     }
                 }
             },
+            "heroInstagramFeed": {
+                "label": "Hero Instagram Feed",
+                "preview": {
+                    "loading": "Loading Instagram posts...",
+                    "noPosts": "No posts available"
+                }
+            },
             "categorySlider": {
                 "label": "Hero Block Category Slider",
                 "preview": {
@@ -274,10 +367,12 @@
                     },
                     "imageCount": {
                         "label": "Number of Images per Slide",
-                        "helpText": "Select whether 1 or 2 images should be displayed per slide",
+                        "helpText": "Select how many images should be displayed per slide (1-4)",
                         "options": {
                             "one": "1 Image",
-                            "two": "2 Images"
+                            "two": "2 Images",
+                            "three": "3 Images",
+                            "four": "4 Images"
                         }
                     },
                     "imageWidth": {

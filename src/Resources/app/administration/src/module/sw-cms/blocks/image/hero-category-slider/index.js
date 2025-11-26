@@ -5,13 +5,7 @@
  * Gemäß Shopware Best Practices für Custom CMS Blocks
  */
 
-// WICHTIG: Snippets importieren und registrieren (für Übersetzungen)
-import deDE from '../../../snippet/de-DE.json';
-import enGB from '../../../snippet/en-GB.json';
-
-// Snippets registrieren
-Shopware.Locale.extend('de-DE', deDE);
-Shopware.Locale.extend('en-GB', enGB);
+// WICHTIG: Snippets werden aus Root-Snippets geladen (app/administration/src/snippet/)
 
 // WICHTIG: Block-Komponenten immer registrieren (für dynamisches Laden)
 Shopware.Component.register('sw-cms-preview-hero-category-slider', () => import('./preview/index.js'));

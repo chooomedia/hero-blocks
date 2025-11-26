@@ -1,9 +1,8 @@
-{% block sw_cms_el_config_category_slider %}
+{% block sw_cms_el_config_hero_category_slider %}
 <div class="sw-cms-el-config-hero-category-slider" v-if="element && element.config">
     {# WICHTIG: Kategorie-Mehrfachauswahl (aus Element config) - HAUPTFEATURE #}
-    {% block sw_cms_el_config_category_slider_category %}
+    {% block sw_cms_el_config_hero_category_slider_category %}
     <sw-entity-multi-select
-        v-if="categoryCollection && categoryCriteria"
         entity="category"
         v-model:ids="selectedCategoryIds"
         v-model:collection="categoryCollection"
@@ -17,7 +16,7 @@
     {% endblock %}
     
     {# WICHTIG: Subcategory Levels (Feature aus Shopware Store Extension) #}
-    {% block sw_cms_el_config_category_slider_subcategory_levels %}
+    {% block sw_cms_el_config_hero_category_slider_subcategory_levels %}
     <mt-number-field
         v-if="element.config.subcategoryLevels !== undefined"
         :model-value="element.config.subcategoryLevels.value || 0"
@@ -31,7 +30,7 @@
     {% endblock %}
     
     {# WICHTIG: Image Count (1 or 2) - aus Block-Config ins Modal verschoben #}
-    {% block sw_cms_el_config_category_slider_image_count %}
+    {% block sw_cms_el_config_hero_category_slider_image_count %}
     <mt-select
         v-if="element.config.imageCount"
         :model-value="element.config.imageCount.value || '1'"
@@ -43,7 +42,7 @@
     {% endblock %}
     
     {# WICHTIG: Image Width (inner-full-width or full-width) - aus Block-Config ins Modal verschoben #}
-    {% block sw_cms_el_config_category_slider_image_width %}
+    {% block sw_cms_el_config_hero_category_slider_image_width %}
     <mt-select
         v-if="element.config.imageWidth"
         :model-value="element.config.imageWidth.value || 'inner-full-width'"
@@ -55,7 +54,7 @@
     {% endblock %}
     
     {# WICHTIG: Slider Settings - ALLE Settings sind im Element-Modal! #}
-    {% block sw_cms_el_config_category_slider_settings %}
+    {% block sw_cms_el_config_hero_category_slider_settings %}
     <div class="sw-cms-el-config-hero-category-slider__settings">
         <h3 class="sw-cms-el-hero-category-slider__settings-title">
             {{ $tc('sw-cms.elements.categorySlider.config.settings.title') }}

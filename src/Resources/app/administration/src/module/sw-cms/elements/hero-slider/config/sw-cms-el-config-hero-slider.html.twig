@@ -257,6 +257,55 @@
                                 </div>
                                 {% endblock %}
                                 
+                                {# Per-Slide Color Settings - Minimal (4 Colors) #}
+                                {% block sw_cms_el_config_hero_slider_slide_colors %}
+                                <sw-collapse :expand-on-loading="false" class="sw-cms-el-config-hero-slider__collapse">
+                                    <template #header="{ expanded }">
+                                        <div class="sw-cms-el-config-hero-slider__collapse-header">
+                                            <h3 class="mt-text--size-m mt-text--weight-semibold">
+                                                {{ $tc('sw-cms.elements.heroSlider.config.slideColors.title') }}
+                                            </h3>
+                                            <mt-icon 
+                                                :name="expanded ? 'regular-chevron-up-xs' : 'regular-chevron-down-xs'" 
+                                                size="16"
+                                                class="sw-cms-el-config-hero-slider__collapse-chevron"
+                                            />
+                                        </div>
+                                    </template>
+                                    <template #content="{ expanded }">
+                                        <div class="sw-cms-el-config-hero-slider__slide-colors">
+                                            {# Headline Color #}
+                                            <mt-colorpicker
+                                                :label="$tc('sw-cms.elements.heroSlider.config.slideColors.headlineColor')"
+                                                :model-value="sliderItem.headlineColor || ''"
+                                                @update:model-value="onSlideColorChange(index, 'headlineColor', $event)"
+                                            />
+                                            
+                                            {# Text Color #}
+                                            <mt-colorpicker
+                                                :label="$tc('sw-cms.elements.heroSlider.config.slideColors.textColor')"
+                                                :model-value="sliderItem.textColor || ''"
+                                                @update:model-value="onSlideColorChange(index, 'textColor', $event)"
+                                            />
+                                            
+                                            {# Button 1 Background Color #}
+                                            <mt-colorpicker
+                                                :label="$tc('sw-cms.elements.heroSlider.config.slideColors.button1BgColor')"
+                                                :model-value="sliderItem.button1BgColor || ''"
+                                                @update:model-value="onSlideColorChange(index, 'button1BgColor', $event)"
+                                            />
+                                            
+                                            {# Button 2 Background Color #}
+                                            <mt-colorpicker
+                                                :label="$tc('sw-cms.elements.heroSlider.config.slideColors.button2BgColor')"
+                                                :model-value="sliderItem.button2BgColor || ''"
+                                                @update:model-value="onSlideColorChange(index, 'button2BgColor', $event)"
+                                            />
+                                        </div>
+                                    </template>
+                                </sw-collapse>
+                                {% endblock %}
+                                
                                 {% block sw_cms_el_config_hero_slider_slide_link %}
                                 <div class="sw-cms-el-config-hero-slider__link-group">
                                     <h5 class="sw-cms-el-config-hero-slider__link-group-title d-flex align-items-center gap-2">
@@ -513,106 +562,19 @@
                 </sw-collapse>
                 {% endblock %}
 
-                {# Content Styling Options - Collapsible #}
-                {% block sw_cms_el_config_hero_slider_settings_styling %}
-                <sw-collapse :expand-on-loading="false" class="sw-cms-el-config-hero-slider__collapse">
-                    <template #header="{ expanded }">
-                        <div class="sw-cms-el-config-hero-slider__collapse-header">
-                            <h3 class="mt-text--size-m mt-text--weight-semibold">
-                                {{ $tc('sw-cms.elements.heroSlider.config.styling.title') }}
-                            </h3>
-                            <mt-icon 
-                                :name="expanded ? 'regular-chevron-up-xs' : 'regular-chevron-down-xs'" 
-                                size="16"
-                                class="sw-cms-el-config-hero-slider__collapse-chevron"
-                            />
-                        </div>
-                    </template>
-                    <template #content="{ expanded }">
-                        <div class="sw-cms-el-config-hero-slider__setting-styling">
+                {# 
+                    ENTFERNT: Content Styling Options (2025-11-25)
                     
-                    {# Headline Styling #}
-                    {% block sw_cms_el_config_hero_slider_settings_headline_styling %}
-                    <div class="sw-cms-el-config-hero-slider__styling-group">
-                        <h5 class="sw-cms-el-config-hero-slider__styling-group-title">{{ $tc('sw-cms.elements.heroSlider.config.styling.headline.title') }}</h5>
-                        
-                        <mt-colorpicker
-                            :label="$tc('sw-cms.elements.heroSlider.config.styling.headline.color')"
-                            :model-value="element.config.headlineColor?.value || ''"
-                            @update:model-value="onChangeColor('headlineColor', $event)"
-                        />
-                        
-                        <mt-select
-                            v-model="element.config.headlineFontSize.value"
-                            :label="$tc('sw-cms.elements.heroSlider.config.styling.headline.fontSize')"
-                            :options="headlineFontSizeOptions"
-                            @update:model-value="emitUpdateEl"
-                        />
-                    </div>
-                    {% endblock %}
+                    Diese globalen Styling-Optionen wurden entfernt, da sie nun pro Slide 
+                    im "Content" Tab konfiguriert werden sollen:
+                    - Headline Color / Font Size
+                    - Text Color / Font Size
+                    - Button 1 Background / Text Color
+                    - Button 2 Background / Text Color
                     
-                    {# Text Styling #}
-                    {% block sw_cms_el_config_hero_slider_settings_text_styling %}
-                    <div class="sw-cms-el-config-hero-slider__styling-group">
-                        <h5 class="sw-cms-el-config-hero-slider__styling-group-title">{{ $tc('sw-cms.elements.heroSlider.config.styling.text.title') }}</h5>
-                        
-                        <mt-colorpicker
-                            :label="$tc('sw-cms.elements.heroSlider.config.styling.text.color')"
-                            :model-value="element.config.textColor?.value || ''"
-                            @update:model-value="onChangeColor('textColor', $event)"
-                        />
-                        
-                        <mt-select
-                            v-model="element.config.textFontSize.value"
-                            :label="$tc('sw-cms.elements.heroSlider.config.styling.text.fontSize')"
-                            :options="textFontSizeOptions"
-                            @update:model-value="emitUpdateEl"
-                        />
-                    </div>
-                    {% endblock %}
-                    
-                    {# Button 1 Styling #}
-                    {% block sw_cms_el_config_hero_slider_settings_button1_styling %}
-                    <div class="sw-cms-el-config-hero-slider__styling-group">
-                        <h5 class="sw-cms-el-config-hero-slider__styling-group-title">{{ $tc('sw-cms.elements.heroSlider.config.styling.button1.title') }}</h5>
-                        
-                        <mt-colorpicker
-                            :label="$tc('sw-cms.elements.heroSlider.config.styling.button1.backgroundColor')"
-                            :model-value="element.config.button1BackgroundColor?.value || ''"
-                            @update:model-value="onChangeColor('button1BackgroundColor', $event)"
-                        />
-                        
-                        <mt-colorpicker
-                            :label="$tc('sw-cms.elements.heroSlider.config.styling.button1.textColor')"
-                            :model-value="element.config.button1TextColor?.value || ''"
-                            @update:model-value="onChangeColor('button1TextColor', $event)"
-                        />
-                    </div>
-                    {% endblock %}
-                    
-                    {# Button 2 Styling #}
-                    {% block sw_cms_el_config_hero_slider_settings_button2_styling %}
-                    <div class="sw-cms-el-config-hero-slider__styling-group">
-                        <h5 class="sw-cms-el-config-hero-slider__styling-group-title">{{ $tc('sw-cms.elements.heroSlider.config.styling.button2.title') }}</h5>
-                        
-                        <mt-colorpicker
-                            :label="$tc('sw-cms.elements.heroSlider.config.styling.button2.backgroundColor')"
-                            :model-value="element.config.button2BackgroundColor?.value || ''"
-                            @update:model-value="onChangeColor('button2BackgroundColor', $event)"
-                        />
-                        
-                        <mt-colorpicker
-                            :label="$tc('sw-cms.elements.heroSlider.config.styling.button2.textColor')"
-                            :model-value="element.config.button2TextColor?.value || ''"
-                            @update:model-value="onChangeColor('button2TextColor', $event)"
-                        />
-                    </div>
-                    {% endblock %}
-                    
-                        </div>
-                    </template>
-                </sw-collapse>
-                {% endblock %}
+                    TODO: Per-Slide Styling im Content Tab implementieren (pro sliderItem)
+                #}
+                {# {% block sw_cms_el_config_hero_slider_settings_styling %}{% endblock %} #}
             </sw-container>
             </template>
             {% endblock %}

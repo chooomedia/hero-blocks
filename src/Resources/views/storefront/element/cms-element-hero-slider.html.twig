@@ -206,24 +206,20 @@
                                                     </div>
                                                 {% endif %}
                                                 
-                                                {# Styling-Werte aus Config - nur setzen wenn nicht null/empty #}
-                                                {% set headlineColor = (sliderConfig.headlineColor is defined and sliderConfig.headlineColor.value is defined and sliderConfig.headlineColor.value is not null and sliderConfig.headlineColor.value is not empty) ? sliderConfig.headlineColor.value : null %}
-                                                {% set headlineFontSize = (sliderConfig.headlineFontSize is defined and sliderConfig.headlineFontSize.value is defined and sliderConfig.headlineFontSize.value is not null and sliderConfig.headlineFontSize.value is not empty) ? sliderConfig.headlineFontSize.value : null %}
-                                                {% set textColor = (sliderConfig.textColor is defined and sliderConfig.textColor.value is defined and sliderConfig.textColor.value is not null and sliderConfig.textColor.value is not empty) ? sliderConfig.textColor.value : null %}
-                                                {% set textFontSize = (sliderConfig.textFontSize is defined and sliderConfig.textFontSize.value is defined and sliderConfig.textFontSize.value is not null and sliderConfig.textFontSize.value is not empty) ? sliderConfig.textFontSize.value : null %}
-                                                {% set button1BgColor = (sliderConfig.button1BackgroundColor is defined and sliderConfig.button1BackgroundColor.value is defined and sliderConfig.button1BackgroundColor.value is not null and sliderConfig.button1BackgroundColor.value is not empty) ? sliderConfig.button1BackgroundColor.value : null %}
-                                                {% set button1TextColor = (sliderConfig.button1TextColor is defined and sliderConfig.button1TextColor.value is defined and sliderConfig.button1TextColor.value is not null and sliderConfig.button1TextColor.value is not empty) ? sliderConfig.button1TextColor.value : null %}
-                                                {% set button2BgColor = (sliderConfig.button2BackgroundColor is defined and sliderConfig.button2BackgroundColor.value is defined and sliderConfig.button2BackgroundColor.value is not null and sliderConfig.button2BackgroundColor.value is not empty) ? sliderConfig.button2BackgroundColor.value : null %}
-                                                {% set button2TextColor = (sliderConfig.button2TextColor is defined and sliderConfig.button2TextColor.value is defined and sliderConfig.button2TextColor.value is not null and sliderConfig.button2TextColor.value is not empty) ? sliderConfig.button2TextColor.value : null %}
+                                                {# Per-Slide Styling-Werte - Fallback zu CSS Defaults wenn nicht gesetzt #}
+                                                {% set headlineColor = (slide.headlineColor is defined and slide.headlineColor is not null and slide.headlineColor is not empty) ? slide.headlineColor : null %}
+                                                {% set textColor = (slide.textColor is defined and slide.textColor is not null and slide.textColor is not empty) ? slide.textColor : null %}
+                                                {% set button1BgColor = (slide.button1BgColor is defined and slide.button1BgColor is not null and slide.button1BgColor is not empty) ? slide.button1BgColor : null %}
+                                                {% set button2BgColor = (slide.button2BgColor is defined and slide.button2BgColor is not null and slide.button2BgColor is not empty) ? slide.button2BgColor : null %}
                                                 
                                                 {# Per-Slide oder Global Headline (aus Extension oder Config) - Robuste null/empty Prüfung #}
                                                 {% set slideHeadlineExt = slide.extensions.headline %}
                                                 {% set slideHeadline = (slideHeadlineExt and slideHeadlineExt.value is defined and slideHeadlineExt.value is not null and slideHeadlineExt.value is not empty) ? slideHeadlineExt.value : ((slide.headline is defined and slide.headline is not null and slide.headline is not empty) ? slide.headline : ((sliderConfig.headline is defined and sliderConfig.headline.value is defined and sliderConfig.headline.value is not null and sliderConfig.headline.value is not empty) ? sliderConfig.headline.value : null)) %}
                                                 {% if slideHeadline %}
                                                     {% if loop.first %}
-                                                        <h1 class="hero-slide-headline" itemprop="headline"{% if headlineColor or headlineFontSize %} style="{% if headlineColor %}--hero-headline-color: {{ headlineColor }};{% endif %}{% if headlineFontSize %} --hero-headline-font-size: {{ headlineFontSize }};{% endif %}"{% endif %}>{{ slideHeadline }}</h1>
+                                                        <h1 class="hero-slide-headline" itemprop="headline"{% if headlineColor %} style="color: {{ headlineColor }};"{% endif %}>{{ slideHeadline }}</h1>
                                                     {% else %}
-                                                        <h2 class="hero-slide-headline"{% if headlineColor or headlineFontSize %} style="{% if headlineColor %}--hero-headline-color: {{ headlineColor }};{% endif %}{% if headlineFontSize %} --hero-headline-font-size: {{ headlineFontSize }};{% endif %}"{% endif %}>{{ slideHeadline }}</h2>
+                                                        <h2 class="hero-slide-headline"{% if headlineColor %} style="color: {{ headlineColor }};"{% endif %}>{{ slideHeadline }}</h2>
                                                     {% endif %}
                                                 {% endif %}
                                             
@@ -231,7 +227,7 @@
                                                 {% set slideTextExt = slide.extensions.text %}
                                                 {% set slideText = (slideTextExt and slideTextExt.value is defined and slideTextExt.value is not null and slideTextExt.value is not empty) ? slideTextExt.value : ((slide.text is defined and slide.text is not null and slide.text is not empty) ? slide.text : ((sliderConfig.text is defined and sliderConfig.text.value is defined and sliderConfig.text.value is not null and sliderConfig.text.value is not empty) ? sliderConfig.text.value : null)) %}
                                                 {% if slideText %}
-                                                    <p class="hero-slide-text" itemprop="description"{% if textColor or textFontSize %} style="{% if textColor %}--hero-text-color: {{ textColor }};{% endif %}{% if textFontSize %} --hero-text-font-size: {{ textFontSize }};{% endif %}"{% endif %}>{{ slideText }}</p>
+                                                    <p class="hero-slide-text" itemprop="description"{% if textColor %} style="color: {{ textColor }};"{% endif %}>{{ slideText }}</p>
                                                 {% endif %}
                                                 
                                                 {# Per-Slide oder Global Buttons - Robuste null/empty Prüfung #}
@@ -256,7 +252,7 @@
                                                                 class="btn btn-hero-primary"
                                                                 {% if slideButton1NewTab %}target="_blank" rel="noopener noreferrer"{% endif %}
                                                                 aria-label="{{ slideButton1Text }}"
-                                                                {% if button1BgColor or button1TextColor %} style="{% if button1BgColor %}--hero-button1-bg-color: {{ button1BgColor }};{% endif %}{% if button1TextColor %} --hero-button1-text-color: {{ button1TextColor }};{% endif %}"{% endif %}
+                                                                {% if button1BgColor %} style="background-color: {{ button1BgColor }};"{% endif %}
                                                             >
                                                                 {{ slideButton1Text }}
                                                             </a>
@@ -268,7 +264,7 @@
                                                                 class="btn btn-hero-secondary"
                                                                 {% if slideButton2NewTab %}target="_blank" rel="noopener noreferrer"{% endif %}
                                                                 aria-label="{{ slideButton2Text }}"
-                                                                {% if button2BgColor or button2TextColor %} style="{% if button2BgColor %}--hero-button2-bg-color: {{ button2BgColor }};{% endif %}{% if button2TextColor %} --hero-button2-text-color: {{ button2TextColor }};{% endif %}"{% endif %}
+                                                                {% if button2BgColor %} style="background-color: {{ button2BgColor }};"{% endif %}
                                                             >
                                                                 {{ slideButton2Text }}
                                                             </a>

@@ -6,6 +6,84 @@
                     "label": "Hero Block Slider",
                     "description": "Der flexible Hero-Slider: starke Visuals, klare Botschaften, smarte CTAs. Perfekt für Markenstories und Kampagnen."
                 },
+                "heroInstagramFeed": {
+                    "label": "Hero Instagram Feed",
+                    "placeholder": {
+                        "title": "Instagram Feed Block",
+                        "hint": "Konfigurieren Sie den Instagram Feed in den Block-Einstellungen"
+                    },
+                    "config": {
+                        "info": {
+                            "apiCredentials": "API-Credentials (App ID, App Secret, Access Token) werden aus den Plugin-Einstellungen (Hero Blocks Extension Config) geladen."
+                        },
+                        "postLimit": {
+                            "label": "Anzahl der Posts",
+                            "helpText": "Anzahl der Instagram-Posts, die initial angezeigt werden sollen (max. 12)"
+                        },
+                        "enableLoadMore": {
+                            "label": "Load More Button aktivieren",
+                            "helpText": "Aktiviert einen Button zum Nachladen weiterer Posts"
+                        },
+                        "displayMode": {
+                            "label": "Anzeige-Modus",
+                            "helpText": "Wählen Sie zwischen Grid (Raster) oder Slider (Karussell)",
+                            "options": {
+                                "grid": "Grid (Raster)",
+                                "slider": "Slider (Karussell)"
+                            }
+                        },
+                        "columns": {
+                            "label": "Anzahl Spalten (Grid)",
+                            "helpText": "Anzahl der Spalten im Grid-Modus (1-4)",
+                            "unit": "Spalten"
+                        },
+                        "layoutType": {
+                            "label": "Layout-Typ (Grid)",
+                            "helpText": "Wählen Sie zwischen gleichmäßigem Grid oder Masonry-Layout",
+                            "options": {
+                                "grid": "Grid (gleichmäßig)",
+                                "masonry": "Masonry (wichtige Posts größer)"
+                            }
+                        },
+                        "showCaptions": {
+                            "label": "Captions anzeigen",
+                            "helpText": "Zeigt die Instagram-Post-Beschreibungen an"
+                        },
+                        "showLikes": {
+                            "label": "Likes anzeigen",
+                            "helpText": "Zeigt die Anzahl der Likes für jeden Post an"
+                        },
+                        "showComments": {
+                            "label": "Kommentare anzeigen",
+                            "helpText": "Zeigt die Anzahl der Kommentare für jeden Post an"
+                        },
+                        "navigationArrows": {
+                            "label": "Navigationspfeile (Slider)",
+                            "helpText": "Wählen Sie die Position der Navigationspfeile (none, inside, outside)",
+                            "options": {
+                                "none": "Keine",
+                                "inside": "Innen",
+                                "outside": "Außen"
+                            }
+                        },
+                        "navigationDots": {
+                            "label": "Navigationspunkte (Slider)",
+                            "helpText": "Aktivieren Sie die Anzeige der Navigationspunkte unterhalb des Sliders"
+                        },
+                        "autoSlide": {
+                            "label": "Automatisches Sliden",
+                            "helpText": "Aktivieren Sie das automatische Sliden des Sliders"
+                        },
+                        "autoplayTimeout": {
+                            "label": "Autoplay-Timeout (ms)",
+                            "helpText": "Zeit in Millisekunden zwischen den Slides (1000-30000)"
+                        },
+                        "speed": {
+                            "label": "Slide-Geschwindigkeit (ms)",
+                            "helpText": "Geschwindigkeit der Slide-Animation in Millisekunden (100-1000)"
+                        }
+                    }
+                },
                 "heroTwoColumns": {
                     "label": "Hero Two Columns Image & Text",
                     "description": "Zwei-Spalten Layout mit Bild und Text, Parallax-Scroll-Effekten und flexiblen Hintergrundoptionen.",
@@ -145,7 +223,15 @@
                         "displayModeContain": "Contain"
                     },
                     "slideLabel": "Slide {index}",
+                    "deleteSlide": "Slide löschen",
                     "slidesTitle": "Slide-Inhalte konfigurieren",
+                    "slideColors": {
+                        "title": "Slide-Farben",
+                        "headlineColor": "Überschrift-Farbe",
+                        "textColor": "Text-Farbe",
+                        "button1BgColor": "Button 1 Hintergrundfarbe",
+                        "button2BgColor": "Button 2 Hintergrundfarbe"
+                    },
                     "styling": {
                         "title": "Content-Styling",
                         "headline": {
@@ -212,6 +298,13 @@
                     }
                 }
             },
+            "heroInstagramFeed": {
+                "label": "Hero Instagram Feed",
+                "preview": {
+                    "loading": "Instagram Posts werden geladen...",
+                    "noPosts": "Keine Posts verfügbar"
+                }
+            },
             "categorySlider": {
                 "label": "Hero Block Category Slider",
                 "preview": {
@@ -272,10 +365,12 @@
                     },
                     "imageCount": {
                         "label": "Anzahl der Bilder pro Slide",
-                        "helpText": "Wählen Sie, ob 1 oder 2 Bilder pro Slide angezeigt werden sollen",
+                        "helpText": "Wählen Sie, wie viele Bilder pro Slide angezeigt werden sollen (1-4)",
                         "options": {
                             "one": "1 Bild",
-                            "two": "2 Bilder"
+                            "two": "2 Bilder",
+                            "three": "3 Bilder",
+                            "four": "4 Bilder"
                         }
                     },
                     "imageWidth": {

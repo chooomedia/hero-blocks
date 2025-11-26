@@ -3,15 +3,8 @@
  * 
  * WICHTIG: Block wird nur angezeigt wenn enableHeroInstagramFeed aktiviert ist
  * Gemäß Shopware Best Practices für Custom CMS Blocks
+ * WICHTIG: Snippets werden aus Root-Snippets geladen (app/administration/src/snippet/)
  */
-
-// Note: Import and register snippets for translations
-import deDE from '../../../snippet/de-DE.json';
-import enGB from '../../../snippet/en-GB.json';
-
-// Register snippets
-Shopware.Locale.extend('de-DE', deDE);
-Shopware.Locale.extend('en-GB', enGB);
 
 // WICHTIG: Block-Komponenten immer registrieren (für dynamisches Laden)
 Shopware.Component.register('sw-cms-preview-hero-instagram-feed', () => import('./preview/index.js'));
@@ -53,7 +46,15 @@ const blockConfig = {
         },
         columns: {
             source: 'static',
-            value: 4, // Anzahl Spalten im Grid (1-6)
+            value: 4, // Anzahl Spalten im Grid (1-4)
+        },
+        layoutType: {
+            source: 'static',
+            value: 'grid', // 'grid' oder 'masonry'
+        },
+        enableLoadMore: {
+            source: 'static',
+            value: true, // Load More Button aktivieren
         },
         showCaptions: {
             source: 'static',
@@ -90,8 +91,16 @@ const blockConfig = {
         },
     },
     slots: {
-        // WICHTIG: Instagram Feed Block hat keine Slots - Daten kommen von API
-        // Block rendert direkt Instagram Posts
+        // WICHTIG: Instagram Feed Element (hero-instagram-feed)
+        // TypeDataResolver lädt Instagram Posts in element.data
+        instagramFeed: {
+            type: 'hero-instagram-feed',
+            default: {
+                config: {
+                    // Element-spezifische Config (falls nötig)
+                },
+            },
+        },
     },
     // WICHTIG: Block NICHT mit hidden Flag registrieren
     // Sichtbarkeit wird über sw-cms-sidebar Override gesteuert (basierend auf System-Config)

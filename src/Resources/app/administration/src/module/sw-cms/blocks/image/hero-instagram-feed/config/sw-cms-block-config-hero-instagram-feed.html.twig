@@ -16,9 +16,19 @@
         :label="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.postLimit.label')"
         :help-text="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.postLimit.helpText')"
         :min="1"
-        :max="50"
+        :max="12"
         :step="1"
         @update:model-value="onPostLimitChange"
+    />
+    {% endblock %}
+
+    {# Load More aktivieren #}
+    {% block sw_cms_block_config_hero_instagram_feed_enable_load_more %}
+    <mt-switch
+        :model-value="block.customFields?.enableLoadMore === true"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.enableLoadMore.label')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.enableLoadMore.helpText')"
+        @update:model-value="onEnableLoadMoreChange"
     />
     {% endblock %}
 
@@ -42,6 +52,18 @@
         :help-text="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.columns.helpText')"
         :options="columnsOptions"
         @update:model-value="onColumnsChange"
+    />
+    {% endblock %}
+
+    {# Layout Type (Grid oder Masonry) - nur wenn Display Mode = Grid #}
+    {% block sw_cms_block_config_hero_instagram_feed_layout_type %}
+    <mt-select
+        v-if="block.customFields?.displayMode !== 'slider'"
+        :model-value="block.customFields?.layoutType || 'grid'"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.layoutType.label')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.config.layoutType.helpText')"
+        :options="layoutTypeOptions"
+        @update:model-value="onLayoutTypeChange"
     />
     {% endblock %}
 

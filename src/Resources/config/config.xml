@@ -23,14 +23,13 @@
         </input-field>
         <input-field type="bool">
             <name>enableHeroVideoExtended</name>
-            <label lang="de-DE">Hero Video Extended aktivieren (Coming Soon)</label>
-            <label>Enable Hero Video Extended (Coming Soon)</label>
+            <label lang="de-DE">Hero Video Extended aktivieren</label>
+            <label>Enable Hero Video Extended</label>
             <defaultValue>false</defaultValue>
-            <disabled>true</disabled>
-            <helpText lang="de-DE">Hero Video Extended Block mit Headlines, Text und Buttons. Dieser Block wird in einer zukünftigen Version verfügbar sein.</helpText>
-            <helpText>Hero Video Extended block with headlines, text, and buttons. This block will be available in a future version.</helpText>
-        </input-field>
-        <input-field type="bool">
+            <disabled>false</disabled>
+            <helpText lang="de-DE">Hero Video Extended Block mit Headlines, Text und Buttons. Aktiviert den Hero Video Extended Block in Erlebniswelten.</helpText>
+            <helpText>Hero Video Extended block with headlines, text, and buttons. Enables the Hero Video Extended block in Shopping Experiences.</helpText>
+        </input-field>        <input-field type="bool">
             <name>enableHeroInstagramFeed</name>
             <label lang="de-DE">Hero Instagram Feed Widget aktivieren</label>
             <label>Enable Hero Instagram Feed Widget</label>

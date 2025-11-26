@@ -13,6 +13,13 @@
             "instagramFeed": {
                 "ariaLabel": "Instagram Feed",
                 "viewPost": "View Instagram post",
+                "viewPostOn": "View post on %platform%",
+                "video": "Video",
+                "videoNotSupported": "Your browser does not support the video tag.",
+                "loadMore": "Load more posts",
+                "loading": "Loading...",
+                "likes": "Likes",
+                "comments": "Comments",
                 "empty": {
                     "title": "No Instagram posts available",
                     "description": "Please configure your Instagram API credentials in the plugin settings."
@@ -35,6 +42,17 @@
             "categories": {
                 "ariaLabel": "Categories"
             }
+        },
+        "instagramFeed": {
+            "ariaLabel": "Instagram Feed with %count% posts",
+            "viewPost": "View Instagram post",
+            "viewPostOn": "View post on %platform%",
+            "video": "Video",
+            "videoNotSupported": "Your browser does not support the video tag.",
+            "loadMore": "Load more posts",
+            "loading": "Loading more posts...",
+            "likes": "Likes",
+            "comments": "Comments"
         }
     }
 }

@@ -13,6 +13,13 @@
             "instagramFeed": {
                 "ariaLabel": "Instagram Feed",
                 "viewPost": "Instagram-Beitrag ansehen",
+                "viewPostOn": "Beitrag auf %platform% ansehen",
+                "video": "Video",
+                "videoNotSupported": "Ihr Browser unterstützt das Video-Tag nicht.",
+                "loadMore": "Weitere Posts laden",
+                "loading": "Lädt...",
+                "likes": "Gefällt mir",
+                "comments": "Kommentare",
                 "empty": {
                     "title": "Keine Instagram-Posts verfügbar",
                     "description": "Bitte konfigurieren Sie Ihre Instagram API-Zugangsdaten in den Plugin-Einstellungen."
@@ -35,6 +42,17 @@
             "categories": {
                 "ariaLabel": "Kategorien"
             }
+        },
+        "instagramFeed": {
+            "ariaLabel": "Instagram Feed mit %count% Posts",
+            "viewPost": "Instagram-Beitrag ansehen",
+            "viewPostOn": "Beitrag auf %platform% ansehen",
+            "video": "Video",
+            "videoNotSupported": "Ihr Browser unterstützt das Video-Tag nicht.",
+            "loadMore": "Weitere Posts laden",
+            "loading": "Lädt weitere Posts...",
+            "likes": "Gefällt mir",
+            "comments": "Kommentare"
         }
     }
 }

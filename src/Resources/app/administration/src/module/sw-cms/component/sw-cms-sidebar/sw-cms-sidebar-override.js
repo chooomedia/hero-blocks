@@ -9,6 +9,7 @@ Shopware.Component.override('sw-cms-sidebar', {
                 enableCategorySlider: false,
                 enableMegaMenu: false,
                 enableHeroInstagramFeed: false,
+                enableHeroVideoExtended: false,
             },
         };
     },
@@ -59,6 +60,13 @@ Shopware.Component.override('sw-cms-sidebar', {
                         }
                     }
 
+                    // Hero Video Extended Block
+                    if (name === 'hero-video-extended') {
+                        if (!this.heroBlocksConfig.enableHeroVideoExtended) {
+                            return false;
+                        }
+                    }
+
                     return true;
                 },
             );
@@ -69,26 +77,31 @@ Shopware.Component.override('sw-cms-sidebar', {
 
     methods: {
         async loadHeroBlocksConfig() {
+            console.log('[HeroBlocks] loadHeroBlocksConfig() called');
             try {
                 const systemConfigApi = Shopware.Service('systemConfigApiService');
                 if (!systemConfigApi) {
+                    console.warn('[HeroBlocks] systemConfigApiService not available');
                     return;
                 }
 
                 // WICHTIG: getValues erwartet Domain-String (z.B. 'HeroBlocks.config'), nicht Array von Keys
                 // Die API gibt alle Config-Werte für diese Domain zurück
                 const values = await systemConfigApi.getValues('HeroBlocks.config');
+                console.log('[HeroBlocks] Raw config values:', values);
                 
                 if (values) {
                     this.heroBlocksConfig = {
                         enableCategorySlider: values['HeroBlocks.config.enableCategorySlider'] === true,
                         enableMegaMenu: values['HeroBlocks.config.enableMegaMenu'] === true,
                         enableHeroInstagramFeed: values['HeroBlocks.config.enableHeroInstagramFeed'] === true,
+                        enableHeroVideoExtended: values['HeroBlocks.config.enableHeroVideoExtended'] === true,
                     };
+                    console.log('[HeroBlocks] Config loaded:', this.heroBlocksConfig);
                 }
             } catch (e) {
                 // Config noch nicht verfügbar - verwende Default-Werte (false)
-                console.warn('HeroBlocks: System-Config konnte nicht geladen werden', e);
+                console.warn('[HeroBlocks] System-Config konnte nicht geladen werden:', e);
             }
         },
     },

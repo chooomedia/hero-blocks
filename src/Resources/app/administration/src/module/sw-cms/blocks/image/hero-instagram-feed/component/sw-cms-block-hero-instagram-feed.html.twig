@@ -1,16 +1,9 @@
 {% block sw_cms_block_hero_instagram_feed %}
     <div class="sw-cms-block-hero-instagram-feed">
-        <div class="sw-cms-block-hero-instagram-feed__placeholder">
-            <div class="sw-cms-block-hero-instagram-feed__placeholder-icon">
-                {% sw_icon 'instagram' style { size: '48px' } %}
-            </div>
-            <div class="sw-cms-block-hero-instagram-feed__placeholder-text">
-                <p>{{ $tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.placeholder.title') }}</p>
-                <p class="sw-cms-block-hero-instagram-feed__placeholder-hint">
-                    {{ $tc('sw-cms.blocks.heroBlocks.heroInstagramFeed.placeholder.hint') }}
-                </p>
-            </div>
-        </div>
+        {% block sw_cms_block_hero_instagram_feed_slot %}
+            {# WICHTIG: Slot für Instagram Feed Element #}
+            <slot name="instagramFeed"></slot>
+        {% endblock %}
     </div>
 {% endblock %}
 

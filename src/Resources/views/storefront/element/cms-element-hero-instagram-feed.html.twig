@@ -6,6 +6,8 @@
         postLimit: { value: blockConfig.postLimit|default(elementConfig.postLimit.value|default(12)) },
         displayMode: { value: blockConfig.displayMode|default(elementConfig.displayMode.value|default('grid')) },
         columns: { value: blockConfig.columns|default(elementConfig.columns.value|default(4)) },
+        layoutType: { value: blockConfig.layoutType|default(elementConfig.layoutType.value|default('grid')) },
+        enableLoadMore: { value: blockConfig.enableLoadMore|default(elementConfig.enableLoadMore.value|default(true)) },
         showCaptions: { value: blockConfig.showCaptions|default(elementConfig.showCaptions.value|default(true)) },
         showLikes: { value: blockConfig.showLikes|default(elementConfig.showLikes.value|default(false)) },
         showComments: { value: blockConfig.showComments|default(elementConfig.showComments.value|default(false)) },
@@ -19,15 +21,21 @@
     {% set blockId = block.id %}
     {% set displayMode = feedConfig.displayMode.value %}
     {% set columns = feedConfig.columns.value %}
+    {% set layoutType = feedConfig.layoutType.value %}
+    {% set enableLoadMore = feedConfig.enableLoadMore.value %}
     
     <div class="cms-element-{{ element.type }}" data-hero-instagram-feed>
         {% block element_hero_instagram_feed_wrapper %}
-            <div class="hero-instagram-feed" 
+            <div class="hero-instagram-feed hero-instagram-feed--{{ displayMode }}{% if displayMode == 'grid' %} hero-instagram-feed--{{ layoutType }}{% endif %}" 
                  data-display-mode="{{ displayMode }}"
                  data-columns="{{ columns }}"
+                 data-layout-type="{{ layoutType }}"
+                 data-enable-load-more="{{ enableLoadMore ? 'true' : 'false' }}"
                  data-show-captions="{{ feedConfig.showCaptions.value ? 'true' : 'false' }}"
                  data-show-likes="{{ feedConfig.showLikes.value ? 'true' : 'false' }}"
-                 data-show-comments="{{ feedConfig.showComments.value ? 'true' : 'false' }}">
+                 data-show-comments="{{ feedConfig.showComments.value ? 'true' : 'false' }}"
+                 role="region"
+                 aria-label="{{ 'heroBlocks.instagramFeed.ariaLabel'|trans|striptags }}">
                 
                 {% block element_hero_instagram_feed_title %}
                     {# Optional: Instagram Feed Title #}
@@ -101,18 +109,38 @@
                                 {% endif %}
                             </div>
                         {% else %}
-                            {# GRID MODUS #}
-                            <div class="instagram-grid" 
-                                 data-columns="{{ columns }}"
-                                 style="--instagram-grid-columns: {{ columns }};">
-                                {% for post in element.data.instagramPosts %}
-                                    {% sw_include '@Storefront/storefront/element/cms-element-hero-instagram-feed-item.html.twig' with {
-                                        post: post,
-                                        config: feedConfig
-                                    } %}
-                                {% endfor %}
-                            </div>
+                        {# GRID MODUS #}
+                        <div class="instagram-grid instagram-grid--columns-{{ columns }} instagram-grid--{{ layoutType }}" 
+                             data-instagram-grid
+                             data-columns="{{ columns }}"
+                             data-layout-type="{{ layoutType }}"
+                             style="--instagram-grid-columns: {{ columns }};">
+                            {% for post in element.data.instagramPosts %}
+                                {% sw_include '@Storefront/storefront/element/cms-element-hero-instagram-feed-item.html.twig' with {
+                                    post: post,
+                                    config: feedConfig,
+                                    index: loop.index0
+                                } %}
+                            {% endfor %}
+                        </div>
+                        
+                        {# LOAD MORE BUTTON - Grid Modus #}
+                        {% if enableLoadMore and element.data.instagramPosts|length >= feedConfig.postLimit.value %}
+                            {% block element_hero_instagram_feed_load_more %}
+                                <div class="instagram-grid__load-more">
+                                    <button type="button" 
+                                            class="btn btn-primary instagram-grid__load-more-btn" 
+                                            data-instagram-load-more
+                                            aria-label="{{ 'heroBlocks.instagramFeed.loadMore'|trans|striptags }}">
+                                        <span class="instagram-grid__load-more-text">{{ 'heroBlocks.instagramFeed.loadMore'|trans|sw_sanitize }}</span>
+                                        <span class="instagram-grid__load-more-spinner d-none">
+                                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                        </span>
+                                    </button>
+                                </div>
+                            {% endblock %}
                         {% endif %}
+                    {% endif %}
                     {% else %}
                         {# EMPTY STATE - Placeholder #}
                         {% block element_hero_instagram_feed_empty %}

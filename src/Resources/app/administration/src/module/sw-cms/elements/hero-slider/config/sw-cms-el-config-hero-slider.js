@@ -815,5 +815,24 @@ export default {
       this.updateMediaDataValue();
       this.emitUpdateEl();
     },
+
+    // Per-Slide Color Change Handler
+    onSlideColorChange(slideIndex, colorKey, value) {
+      console.log(
+        `[HeroSlider] Color changed: Slide ${slideIndex}, ${colorKey} = ${value}`
+      );
+
+      if (!this.element.config.sliderItems.value[slideIndex]) {
+        console.warn(
+          `[HeroSlider] Slide ${slideIndex} not found in sliderItems`
+        );
+        return;
+      }
+
+      // Set color value directly on sliderItem
+      this.element.config.sliderItems.value[slideIndex][colorKey] = value;
+
+      this.emitUpdateEl();
+    },
   },
 };

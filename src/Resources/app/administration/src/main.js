@@ -19,6 +19,7 @@ Shopware.Locale.extend("en-GB", enGB);
 // CRITICAL: Must use explicit index.js path for ES modules
 import "./module/sw-cms/elements/hero-slider/index.js";
 import "./module/sw-cms/elements/hero-category-slider/index.js";
+import "./module/sw-cms/elements/hero-instagram-feed/index.js";
 
 // Import License Check settings module
 import "./module/sw-settings-license-check/index.js";
