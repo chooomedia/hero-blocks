@@ -1,58 +1,11 @@
 {
     "component": {
         "cms": {
-            "heroSlider": {
-                "ariaLabel": "Hero slider containing %total% items",
-                "skipHeroSlider": "Skip hero slider"
-            },
             "categorySlider": {
-                "ariaLabel": "Category slider containing %total% items",
-                "noImages": "No images available",
-                "skipCategorySlider": "Skip category slider"
-            },
-            "instagramFeed": {
-                "ariaLabel": "Instagram Feed",
-                "viewPost": "View Instagram post",
-                "viewPostOn": "View post on %platform%",
-                "video": "Video",
-                "videoNotSupported": "Your browser does not support the video tag.",
-                "loadMore": "Load more posts",
-                "loading": "Loading...",
-                "likes": "Likes",
-                "comments": "Comments",
-                "empty": {
-                    "title": "No Instagram posts available",
-                    "description": "Please configure your Instagram API credentials in the plugin settings."
-                }
-            },
-            "imageGallery": {
-                "ariaLabel": "Image gallery containing %total% items",
-                "skipImageGallery": "Skip image gallery"
+                "noImages": "No category images available",
+                "goToCategory": "Go to %name%",
+                "moreInfo": "More Information"
             }
-        }
-    },
-    "heroBlocks": {
-        "megaMenu": {
-            "link": {
-                "ariaLabel": "Open %name%"
-            },
-            "dropdown": {
-                "ariaLabel": "Sub-navigation for %name%"
-            },
-            "categories": {
-                "ariaLabel": "Categories"
-            }
-        },
-        "instagramFeed": {
-            "ariaLabel": "Instagram Feed with %count% posts",
-            "viewPost": "View Instagram post",
-            "viewPostOn": "View post on %platform%",
-            "video": "Video",
-            "videoNotSupported": "Your browser does not support the video tag.",
-            "loadMore": "Load more posts",
-            "loading": "Loading more posts...",
-            "likes": "Likes",
-            "comments": "Comments"
         }
     }
 }

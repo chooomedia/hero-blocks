@@ -84,6 +84,13 @@
                         }
                     }
                 },
+                "categorySlider": {
+                    "label": "Hero Block Category Slider",
+                    "description": "Kategorie-Slider mit Bildern aus ausgewählten Kategorien",
+                    "config": {
+                        "info": "Slider-Einstellungen (Navigation, Auto-Slide, etc.) können auch in den Block-Einstellungen konfiguriert werden."
+                    }
+                },
                 "heroTwoColumns": {
                     "label": "Hero Two Columns Image & Text",
                     "description": "Zwei-Spalten Layout mit Bild und Text, Parallax-Scroll-Effekten und flexiblen Hintergrundoptionen.",
@@ -130,11 +137,77 @@
                         "backgroundImageRight": {
                             "label": "Hintergrundbild rechts"
                         },
+                        "backgroundLeftUseCss": {
+                            "label": "CSS für linken Hintergrund verwenden",
+                            "helpText": "Aktivieren Sie diese Option, um benutzerdefiniertes CSS für den linken Hintergrund zu verwenden"
+                        },
+                        "backgroundLeftCss": {
+                            "label": "CSS für linken Hintergrund",
+                            "placeholder": "z.B. linear-gradient(45deg, #ff0000, #00ff00)",
+                            "helpText": "Benutzerdefiniertes CSS für den linken Hintergrund (z.B. Gradienten, Farben)"
+                        },
+                        "backgroundRightUseCss": {
+                            "label": "CSS für rechten Hintergrund verwenden",
+                            "helpText": "Aktivieren Sie diese Option, um benutzerdefiniertes CSS für den rechten Hintergrund zu verwenden"
+                        },
+                        "backgroundRightCss": {
+                            "label": "CSS für rechten Hintergrund",
+                            "placeholder": "z.B. linear-gradient(45deg, #0000ff, #ff00ff)",
+                            "helpText": "Benutzerdefiniertes CSS für den rechten Hintergrund (z.B. Gradienten, Farben)"
+                        },
+                        "scrollAnimationEnabled": {
+                            "label": "Scroll-Animation aktivieren",
+                            "helpText": "Aktivieren Sie Parallax-Scroll-Effekte für die Hintergrundbilder"
+                        },
+                        "scrollAnimationAngle": {
+                            "label": "Scroll-Animations-Winkel",
+                            "placeholder": "z.B. 45",
+                            "helpText": "Winkel für die Parallax-Animation in Grad (0-360)"
+                        },
+                        "elementLeftTranslateX": {
+                            "label": "Linkes Element - Verschiebung X",
+                            "placeholder": "z.B. 0 oder 20px",
+                            "helpText": "Horizontale Verschiebung für das linke Element"
+                        },
+                        "elementLeftTranslateY": {
+                            "label": "Linkes Element - Verschiebung Y",
+                            "placeholder": "z.B. -20px",
+                            "helpText": "Vertikale Verschiebung für das linke Element"
+                        },
+                        "elementLeftAnimate": {
+                            "label": "Linkes Element animieren",
+                            "helpText": "Aktivieren Sie die Animation für das linke Element beim Scrollen"
+                        },
+                        "elementRightTranslateX": {
+                            "label": "Rechtes Element - Verschiebung X",
+                            "placeholder": "z.B. 0 oder 20px",
+                            "helpText": "Horizontale Verschiebung für das rechte Element"
+                        },
+                        "elementRightTranslateY": {
+                            "label": "Rechtes Element - Verschiebung Y",
+                            "placeholder": "z.B. -20px",
+                            "helpText": "Vertikale Verschiebung für das rechte Element"
+                        },
+                        "elementRightAnimate": {
+                            "label": "Rechtes Element animieren",
+                            "helpText": "Aktivieren Sie die Animation für das rechte Element beim Scrollen"
+                        },
+                        "audioFile": {
+                            "label": "Audio-Datei",
+                            "helpText": "Optional: Audio-Datei für Hintergrundmusik oder Sound-Effekte"
+                        },
                         "minHeight": {
                             "label": "Mindesthöhe",
                             "placeholder": "z.B. 500px oder 80vh",
                             "helpText": "Mindesthöhe für den Block (z.B. 500px oder 80vh)"
                         }
+                    }
+                },
+                "heroShoppingExperience": {
+                    "label": "Advanced Theme Shopping Experience",
+                    "description": "Erweiterte Shopping-Erlebnis-Blöcke mit Produkten und Content (In Entwicklung)",
+                    "config": {
+                        "inDevelopment": "Dieser Block ist aktuell in Entwicklung und wird über die Plugin-Einstellungen aktiviert."
                     }
                 }
             }
@@ -303,6 +376,9 @@
                 "preview": {
                     "loading": "Instagram Posts werden geladen...",
                     "noPosts": "Keine Posts verfügbar"
+                },
+                "config": {
+                    "infoText": "API-Credentials (App ID, App Secret, Access Token) werden aus den Plugin-Einstellungen (Hero Blocks Extension Config) geladen."
                 }
             },
             "categorySlider": {
@@ -318,6 +394,33 @@
                         "helpText": "Wählen Sie eine Kategorie aus, deren Bilder im Slider angezeigt werden sollen"
                     },
                     "info": "Slider-Einstellungen (Navigation, Auto-Slide, etc.) können auch in den Block-Einstellungen konfiguriert werden.",
+                    "addSlide": "Kategorie-Slide hinzufügen",
+                    "slidesTitle": "Kategorie-Slides",
+                    "deleteSlide": "Slide löschen",
+                    "noSlides": "Keine Kategorie-Slides definiert",
+                    "noSlidesHint": "Klicke auf 'Kategorie-Slide hinzufügen' um deinen ersten Slide zu erstellen.",
+                    "customTitle": {
+                        "label": "Eigener Titel (Optional)",
+                        "placeholder": "Kategorie-Namen überschreiben...",
+                        "helpText": "Leer lassen, um den Kategorie-Namen automatisch zu verwenden"
+                    },
+                    "customImage": {
+                        "label": "Eigenes Bild (Optional)",
+                        "helpText": "Kategorie-Bild mit eigenem Bild überschreiben",
+                        "upload": "Eigenes Bild hochladen",
+                        "remove": "Eigenes Bild entfernen",
+                        "modalTitle": "Eigenes Bild auswählen"
+                    },
+                    "customText": {
+                        "label": "Eigener Text (Optional)",
+                        "placeholder": "Zusätzlicher Text für diesen Slide...",
+                        "helpText": "Optionaler beschreibender Text unterhalb des Kategorie-Titels"
+                    },
+                    "customLink": {
+                        "label": "Eigener Link (Optional)",
+                        "placeholder": "https://example.com oder /custom-page",
+                        "helpText": "Standard-Kategorie-Link mit eigener URL überschreiben"
+                    },
                     "settings": {
                         "title": "Slider-Einstellungen"
                     },
@@ -376,10 +479,27 @@
                     "imageWidth": {
                         "label": "Bildbreite",
                         "helpText": "Wählen Sie die Bildbreite (inner-full-width = innerhalb des Containers, full-width = volle Breite)",
+                        "innerFullWidth": "Innerhalb des Containers",
+                        "fullWidth": "Volle Breite",
                         "options": {
                             "innerFullWidth": "Innerhalb des Containers",
                             "fullWidth": "Volle Breite"
                         }
+                    }
+                }
+            },
+            "imageSlider": {
+                "config": {
+                    "label": {
+                        "autoSlide": "Automatisches Abspielen",
+                        "autoplayTimeout": "Autoplay-Intervall (ms)",
+                        "speed": "Animationsgeschwindigkeit (ms)",
+                        "displayMode": "Anzeigemodus",
+                        "displayModeCover": "Cover (Bild füllt Bereich)",
+                        "displayModeContain": "Contain (Bild vollständig sichtbar)",
+                        "displayModeStandard": "Standard",
+                        "minHeight": "Minimale Höhe",
+                        "minHeightHelpText": "Z.B. 400px, 50vh, oder leer lassen"
                     }
                 }
             }

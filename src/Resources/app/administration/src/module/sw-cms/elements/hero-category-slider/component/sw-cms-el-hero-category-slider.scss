@@ -90,17 +90,28 @@
             }
         }
         
-        // Image Count Info
+        // Info Section (Categories + Images Count)
+        &-info {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            align-items: center;
+            padding: 0.5rem;
+            background: var(--color-gray-100);
+            border-top: 1px solid var(--color-gray-300);
+        }
+        
         &-count {
-            position: absolute;
-            bottom: 2.5rem;
-            right: 0.5rem;
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.9);
-            background: rgba(0, 0, 0, 0.4);
+            font-size: 12px;
+            color: var(--color-text-primary-default);
             padding: 0.25rem 0.5rem;
             border-radius: 4px;
-            z-index: 10;
+            background: var(--color-gray-200);
+            
+            strong {
+                font-weight: 600;
+                color: var(--color-shopware-brand-500, #189eff);
+            }
         }
     }
     
@@ -148,6 +159,21 @@
         &-text {
             font-size: 14px;
             color: var(--color-text-secondary-default);
+            margin-bottom: 8px;
         }
+        
+        &-hint {
+            font-size: 12px;
+            color: var(--color-text-tertiary-default);
+            font-style: italic;
+        }
+    }
+    
+    // Placeholder Badge für Preview-Bilder (wenn Fallback)
+    &__preview-slide-title-placeholder {
+        font-size: 10px;
+        font-weight: 400;
+        opacity: 0.7;
+        margin-left: 4px;
     }
 }

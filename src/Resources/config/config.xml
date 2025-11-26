@@ -58,12 +58,12 @@
         </input-field>
         <input-field type="bool">
             <name>enableShoppingExperience</name>
-            <label lang="de-DE">Shopping Experience Blocks aktivieren (In Entwicklung)</label>
-            <label>Enable Shopping Experience Blocks (In Development)</label>
+            <label lang="de-DE">Erweiterte Theme Shopping Experience aktivieren</label>
+            <label>Enable Advanced Theme Shopping Experience</label>
             <defaultValue>false</defaultValue>
             <disabled>true</disabled>
-            <helpText lang="de-DE">Zusätzliche Custom-Blöcke für verbesserte Shopping-Erlebnisse. Diese Blöcke werden in einer zukünftigen Version verfügbar sein.</helpText>
-            <helpText>Additional custom blocks for enhanced shopping experiences. These blocks will be available in a future version.</helpText>
+            <helpText lang="de-DE">Erweiterte Theme-spezifische Shopping-Experience-Blöcke mit Produkten und Content. Diese Funktion befindet sich aktuell in Vorbereitung und wird über das Theme bereitgestellt.</helpText>
+            <helpText>Advanced theme-specific shopping experience blocks with products and content. This feature is currently in preparation and will be provided through the theme.</helpText>
         </input-field>
     </card>
     

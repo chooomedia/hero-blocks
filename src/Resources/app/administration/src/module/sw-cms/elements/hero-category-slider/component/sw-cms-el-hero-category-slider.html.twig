@@ -1,76 +1,57 @@
 {% block sw_cms_el_category_slider %}
 <div class="sw-cms-el-hero-category-slider">
-    {# WICHTIG: Preview für große Ansicht (wie Hero Block Slider) - Mini-Vorschau mit 1-4 Bildern nebeneinander (basierend auf imageCount Config) #}
-    <div class="sw-cms-el-hero-category-slider__preview" v-if="hasCategory || (categoryImages && categoryImages.length > 0)" :class="{ 'is-single-image': imageCount === '1', 'is-double-image': imageCount === '2', 'is-triple-image': imageCount === '3', 'is-quad-image': imageCount === '4' }">
-        {# Slider Preview - Dynamisch 1 oder 2 Elemente nebeneinander (basierend auf imageCount Config) #}
+    {# V3.0 - Reaktive Preview für Slide-Management (1-4 Slides nebeneinander) #}
+    <div class="sw-cms-el-hero-category-slider__preview" v-if="hasSlides" :class="{ 'is-single-image': imageCount === '1', 'is-double-image': imageCount === '2', 'is-triple-image': imageCount === '3', 'is-quad-image': imageCount === '4' }">
+        {# Slider Preview - Dynamisch 1-4 Slides (REAKTIV auf imageCount & categorySlides) #}
         <div class="sw-cms-el-hero-category-slider__preview-slider">
-            {# Slide 1 (immer anzeigen) - mit Titel INNERHALB #}
-            <div class="sw-cms-el-hero-category-slider__preview-slide">
-                {# Category Title INNERHALB des Slide (oben links mit Abstand) #}
-                <div class="sw-cms-el-hero-category-slider__preview-slide-title">{{ categoryName }}</div>
-                <img
-                    :src="previewImageUrl"
-                    :alt="categoryName"
-                    class="sw-cms-el-hero-category-slider__preview-image"
-                >
-            </div>
-            {# Weitere Slides (2-4 abhängig von imageCount) #}
-            <template v-if="imageCount >= '2'">
-                {# Slide 2 #}
+            <template v-for="(previewImg, index) in previewImages" :key="`preview-${index}-${renderCount}`">
                 <div class="sw-cms-el-hero-category-slider__preview-slide">
-                    <div class="sw-cms-el-hero-category-slider__preview-slide-title">{{ categoryName }}</div>
+                    {# Slide Title (Custom Title oder Category Name) #}
+                    <div class="sw-cms-el-hero-category-slider__preview-slide-title">
+                        {{ previewImg.title }}
+                        <span v-if="!previewImg.isReal" class="sw-cms-el-hero-category-slider__preview-slide-badge">(Preview)</span>
+                    </div>
                     <img
-                        :src="categoryImages && categoryImages.length > 1 ? (categoryImages[1]?.media?.url || assetFilter('/administration/administration/static/img/cms/preview_mountain_small.jpg')) : assetFilter('/administration/administration/static/img/cms/preview_mountain_small.jpg')"
-                        :alt="categoryName"
+                        :src="previewImg.url"
+                        :alt="previewImg.title"
                         class="sw-cms-el-hero-category-slider__preview-image"
                     >
-                </div>
-            </template>
-            
-            <template v-if="imageCount >= '3'">
-                {# Slide 3 #}
-                <div class="sw-cms-el-hero-category-slider__preview-slide">
-                    <div class="sw-cms-el-hero-category-slider__preview-slide-title">{{ categoryName }}</div>
-                    <img
-                        :src="categoryImages && categoryImages.length > 2 ? (categoryImages[2]?.media?.url || assetFilter('/administration/administration/static/img/cms/preview_mountain_large.jpg')) : assetFilter('/administration/administration/static/img/cms/preview_mountain_large.jpg')"
-                        :alt="categoryName"
-                        class="sw-cms-el-hero-category-slider__preview-image"
-                    >
-                </div>
-            </template>
-            
-            <template v-if="imageCount >= '4'">
-                {# Slide 4 #}
-                <div class="sw-cms-el-hero-category-slider__preview-slide">
-                    <div class="sw-cms-el-hero-category-slider__preview-slide-title">{{ categoryName }}</div>
-                    <img
-                        :src="categoryImages && categoryImages.length > 3 ? (categoryImages[3]?.media?.url || assetFilter('/administration/administration/static/img/cms/preview_plant_large.jpg')) : assetFilter('/administration/administration/static/img/cms/preview_plant_large.jpg')"
-                        :alt="categoryName"
-                        class="sw-cms-el-hero-category-slider__preview-image"
-                    >
+                    {# Custom Text (wenn vorhanden) #}
+                    <div v-if="previewImg.text" class="sw-cms-el-hero-category-slider__preview-slide-text">
+                        {{ previewImg.text }}
+                    </div>
                 </div>
             </template>
         </div>
         
-        {# Navigation Dots (außerhalb unterhalb) - wie in Sidebar Preview #}
+        {# Navigation Dots #}
         <div class="sw-cms-el-hero-category-slider__preview-dots">
             <span class="sw-cms-el-hero-category-slider__preview-dot sw-cms-el-hero-category-slider__preview-dot--active"></span>
             <span class="sw-cms-el-hero-category-slider__preview-dot"></span>
             <span class="sw-cms-el-hero-category-slider__preview-dot"></span>
         </div>
         
-        {# Image Count Info #}
-        <div class="sw-cms-el-hero-category-slider__preview-count" v-if="categoryImages && categoryImages.length > 0">
-            {{ categoryImages.length }} {{ $tc('sw-cms.elements.categorySlider.preview.images') }}
+        {# Info: Anzahl Slides & Images per View #}
+        <div class="sw-cms-el-hero-category-slider__preview-info">
+            <div class="sw-cms-el-hero-category-slider__preview-info-item" v-if="slides.length > 0">
+                <strong>{{ slides.length }}</strong> {{ slides.length === 1 ? 'Slide' : 'Slides' }} defined
+            </div>
+            <div class="sw-cms-el-hero-category-slider__preview-info-item">
+                <strong>{{ imageCount }}</strong> Image{{ imageCount === '1' ? '' : 's' }} per View
+            </div>
         </div>
     </div>
-    {# WICHTIG: Zeige Placeholder nur wenn KEINE Kategorie ausgewählt #}
+    
+    {# EMPTY STATE - Keine Slides definiert #}
     <div class="sw-cms-el-hero-category-slider__placeholder" v-else>
         <span class="sw-cms-el-hero-category-slider__placeholder-icon">
             <mt-icon name="regular-image" size="24"></mt-icon>
         </span>
         <div class="sw-cms-el-hero-category-slider__placeholder-text">
-            {{ $tc('sw-cms.elements.categorySlider.preview.noCategory', 0, {}) }}
+            {{ $tc('sw-cms.elements.categorySlider.config.noSlides') }}
+        </div>
+        <div class="sw-cms-el-hero-category-slider__placeholder-hint">
+            {{ $tc('sw-cms.elements.categorySlider.config.noSlidesHint') }}
         </div>
     </div>
 </div>

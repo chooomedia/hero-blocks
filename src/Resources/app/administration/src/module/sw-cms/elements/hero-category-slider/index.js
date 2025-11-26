@@ -1,8 +1,13 @@
 /**
- * Category Slider Element Registration
+ * Category Slider Element Registration - V3.0 SLIDE MANAGEMENT
  * 
- * WICHTIG: Eigenes Element für Category Slider (nicht image-gallery)
- * Zeigt Category Slider spezifische Config (Kategorie-Auswahl, Image Count, etc.)
+ * WICHTIG: Slide-basiertes System wie Hero Slider
+ * Jede Kategorie = 1 Slide mit individuellen Settings
+ * 
+ * V3.0 CHANGES:
+ * - categoryIds → categorySlides (Array von Slide-Objekten)
+ * - Pro Slide: Category + Custom Title/Image/Text/Link
+ * - Full Hero-Slider-Style Management UI
  * 
  * WICHTIG: Snippets werden bereits in main.js registriert (VOR diesem Import)
  * Keine doppelte Registrierung hier nötig!
@@ -19,31 +24,38 @@ Shopware.Service('cmsService').registerCmsElement({
     configComponent: 'sw-cms-el-config-hero-category-slider',
     previewComponent: 'sw-cms-el-preview-hero-category-slider',
     defaultConfig: {
-        // WICHTIG: Category Slider verwendet Kategorie-Bilder (nicht manuelle Media-Auswahl)
-        // Bilder werden aus den ausgewählten Kategorien geladen
+        // V3.0 - SLIDE-BASED SYSTEM (wie Hero Slider)
+        // WICHTIG: Jedes Slide = 1 Kategorie + Custom Overrides
+        categorySlides: {
+            source: 'static',
+            value: [], // Array von Slide-Objekten: [{ categoryId, customTitle, customImageId, customText, customLink }, ...]
+        },
+        
+        // DEPRECATED (for backward compatibility - wird zu Slides migriert)
         categoryIds: {
             source: 'static',
             value: [],
-            entity: {
-                name: 'category',
-            },
         },
+        
         // WICHTIG: Subcategory Levels (Feature aus Shopware Store Extension)
         // 0 = keine Subkategorien, 1-5 = Anzahl der Ebenen
         subcategoryLevels: {
             source: 'static',
             value: 0,
         },
-        // WICHTIG: Image Count (1 or 2) - aus Block-Config ins Modal verschoben
+        
+        // WICHTIG: Image Count (1-4) - wie viele Slides pro View
         imageCount: {
             source: 'static',
-            value: '1', // '1' or '2'
+            value: '1', // '1', '2', '3', or '4'
         },
-        // WICHTIG: Image Width - aus Block-Config ins Modal verschoben
+        
+        // WICHTIG: Image Width
         imageWidth: {
             source: 'static',
             value: 'inner-full-width', // 'inner-full-width' or 'full-width'
         },
+        
         // Slider Settings (alle im Modal verfügbar)
         navigationArrows: {
             source: 'static',
@@ -51,7 +63,7 @@ Shopware.Service('cmsService').registerCmsElement({
         },
         navigationDots: {
             source: 'static',
-            value: 'bottom', // WICHTIG: Wie Hero Slider - 'none' oder 'bottom'
+            value: 'bottom',
         },
         autoSlide: {
             source: 'static',
@@ -75,46 +87,65 @@ Shopware.Service('cmsService').registerCmsElement({
         },
     },
     enrich: function enrich(slot, data) {
-        // WICHTIG: Category Slider lädt Bilder aus den ausgewählten Kategorien
-        // Die Bilder werden über TypeDataResolver geladen (siehe CategorySliderTypeDataResolver)
+        // V3.0 - Slides-basiertes Enrichment
         if (!slot || !slot.config || Object.keys(data).length < 1) {
             return;
         }
 
-        // WICHTIG: Sicherstellen, dass categoryIds korrekt initialisiert ist
-        if (!slot.config.categoryIds || typeof slot.config.categoryIds !== 'object') {
-            slot.config.categoryIds = {
+        // MIGRATION: Alte categoryIds zu categorySlides konvertieren (Backward Compatibility)
+        if (slot.config.categoryIds?.value?.length > 0 && (!slot.config.categorySlides?.value || slot.config.categorySlides.value.length === 0)) {
+            console.log('[CategorySlider] Migrating old categoryIds to categorySlides...');
+            slot.config.categorySlides = {
+                source: 'static',
+                value: slot.config.categoryIds.value.map((categoryId) => ({
+                    categoryId: categoryId,
+                    customTitle: null,
+                    customImageId: null,
+                    customText: null,
+                    customLink: null,
+                })),
+            };
+        }
+
+        // Initialize categorySlides wenn nicht vorhanden
+        if (!slot.config.categorySlides) {
+            slot.config.categorySlides = {
                 source: 'static',
                 value: [],
-                entity: {
-                    name: 'category',
-                },
             };
             return;
         }
 
-        // WICHTIG: Sicherstellen, dass entity definiert ist
-        if (!slot.config.categoryIds.entity) {
-            slot.config.categoryIds.entity = {
-                name: 'category',
-            };
+        // Lade Category-Entities für ALLE Slides (für Admin Preview)
+        const slides = slot.config.categorySlides.value;
+        if (!Array.isArray(slides) || slides.length === 0) {
+            slot.data.categorySlides = [];
+            return;
         }
 
-        // Kategorien-Entities laden (wenn categoryIds vorhanden)
-        if (slot.config.categoryIds.value && Array.isArray(slot.config.categoryIds.value) && slot.config.categoryIds.value.length > 0) {
-            const entity = slot.config.categoryIds.entity;
-            const entityKey = `entity-${entity.name}-0`;
-            
-            if (data[entityKey]) {
-                // Multi-Select: Lade alle ausgewählten Kategorien
-                slot.data.categories = [];
-                slot.config.categoryIds.value.forEach((categoryId) => {
-                    const category = data[entityKey].get(categoryId);
-                    if (category) {
-                        slot.data.categories.push(category);
-                    }
-                });
-            }
+        // Sammle alle Category IDs aus Slides
+        const categoryIds = slides
+            .map((slide) => slide.categoryId)
+            .filter((id) => id); // Filter null/undefined
+
+        if (categoryIds.length === 0) {
+            slot.data.categorySlides = [];
+            return;
+        }
+
+        // Lade Categories aus data (kommt vom CMS Service)
+        const entityKey = 'entity-category-0';
+        if (data[entityKey]) {
+            slot.data.categorySlides = slides.map((slide) => {
+                const category = data[entityKey].get(slide.categoryId);
+                return {
+                    ...slide, // Spread slide config (customTitle, customText, customLink, etc.)
+                    category: category || null, // Category-Entity anhängen
+                };
+            });
+            console.log('[CategorySlider V3.0] Enriched slides for preview:', slot.data.categorySlides);
+        } else {
+            slot.data.categorySlides = [];
         }
     },
 });

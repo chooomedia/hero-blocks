@@ -1,25 +1,31 @@
 /**
- * Hero Shopping Experience Block Registration
+ * Hero Shopping Experience Block
  * 
- * WICHTIG: Block ist aktuell disabled (In Development)
- * Wird über System-Config gesteuert: HeroBlocks.config.enableShoppingExperience
+ * WICHTIG: Dieser Block ist aktuell DISABLED (In Vorbereitung)
+ * Plugin-Setting: HeroBlocks.config.enableShoppingExperience (disabled=true)
+ * 
+ * TODO: Block wird in einer zukünftigen Version aktiviert
+ * - Theme-spezifische Shopping Experience Blöcke
+ * - Produkt-Slider + Content Kombinationen
+ * - Erweiterte Layout-Optionen
+ * 
+ * HINWEIS: Da Block aktuell disabled ist (config.xml), wird er NICHT registriert
+ * Um zu aktivieren: disabled="false" in config.xml setzen
  */
 
+// WICHTIG: Block-Registrierung ist auskommentiert da Feature in Vorbereitung ist
+// Uncomment when ready to activate:
+/*
 import './component';
 import './preview';
 import './config';
 
-// Register Component
+// Register Components
 Shopware.Component.register('sw-cms-block-hero-shopping-experience', () => import('./component/index.js'));
 Shopware.Component.register('sw-cms-preview-hero-shopping-experience', () => import('./preview/index.js'));
 Shopware.Component.register('sw-cms-block-config-hero-shopping-experience', () => import('./config/index.js'));
 
-// WICHTIG: Block-Sichtbarkeit basierend auf System-Config
-const configKey = 'HeroBlocks.config.enableShoppingExperience';
-
-/**
- * @private
- */
+// Block Configuration
 const blockConfig = {
     name: 'hero-shopping-experience',
     label: 'sw-cms.blocks.heroBlocks.heroShoppingExperience.label',
@@ -39,7 +45,6 @@ const blockConfig = {
             type: 'product-slider',
             default: {
                 config: {
-                    // Product Slider Settings
                     products: {
                         source: 'static',
                         value: [],
@@ -54,7 +59,7 @@ const blockConfig = {
                 config: {
                     content: {
                         source: 'static',
-                        value: '<h2>Shopping Experience</h2><p>In Development</p>',
+                        value: '<h2>Advanced Theme Shopping Experience</h2><p>In Vorbereitung / In Preparation</p>',
                     },
                 },
                 data: {},
@@ -63,8 +68,10 @@ const blockConfig = {
     },
 };
 
-// Block registrieren
+// Register Block
 Shopware.Service('cmsService').registerCmsBlock(blockConfig);
+console.log('[HeroBlocks] ✓ Hero Shopping Experience Block registered');
+*/
 
-console.log('[HeroBlocks] Hero Shopping Experience Block registered (disabled, in development)');
+console.log('[HeroBlocks] ⚠ Hero Shopping Experience Block NOT registered (feature in preparation)');
 

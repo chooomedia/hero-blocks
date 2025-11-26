@@ -1,138 +1,380 @@
 {% block sw_cms_el_config_hero_category_slider %}
 <div class="sw-cms-el-config-hero-category-slider" v-if="element && element.config">
-    {# WICHTIG: Kategorie-Mehrfachauswahl (aus Element config) - HAUPTFEATURE #}
-    {% block sw_cms_el_config_hero_category_slider_category %}
-    <sw-entity-multi-select
-        entity="category"
-        v-model:ids="selectedCategoryIds"
-        v-model:collection="categoryCollection"
-        :criteria="categoryCriteria"
-        :placeholder="$tc('sw-cms.elements.categorySlider.config.category.placeholder')"
-        :label="$tc('sw-cms.elements.categorySlider.config.category.label')"
-        :help-text="$tc('sw-cms.elements.categorySlider.config.category.helpText')"
-        label-property="name"
-        @update:ids="onCategoryChange"
-    />
-    {% endblock %}
-    
-    {# WICHTIG: Subcategory Levels (Feature aus Shopware Store Extension) #}
-    {% block sw_cms_el_config_hero_category_slider_subcategory_levels %}
-    <mt-number-field
-        v-if="element.config.subcategoryLevels !== undefined"
-        :model-value="element.config.subcategoryLevels.value || 0"
-        :label="$tc('sw-cms.elements.categorySlider.config.subcategoryLevels.label')"
-        :help-text="$tc('sw-cms.elements.categorySlider.config.subcategoryLevels.helpText')"
-        :min="0"
-        :max="5"
-        :step="1"
-        @update:model-value="onChangeSubcategoryLevels"
-    />
-    {% endblock %}
-    
-    {# WICHTIG: Image Count (1 or 2) - aus Block-Config ins Modal verschoben #}
-    {% block sw_cms_el_config_hero_category_slider_image_count %}
-    <mt-select
-        v-if="element.config.imageCount"
-        :model-value="element.config.imageCount.value || '1'"
-        :label="$tc('sw-cms.elements.categorySlider.config.imageCount.label')"
-        :help-text="$tc('sw-cms.elements.categorySlider.config.imageCount.helpText')"
-        :options="imageCountOptions"
-        @update:model-value="onChangeImageCount"
-    />
-    {% endblock %}
-    
-    {# WICHTIG: Image Width (inner-full-width or full-width) - aus Block-Config ins Modal verschoben #}
-    {% block sw_cms_el_config_hero_category_slider_image_width %}
-    <mt-select
-        v-if="element.config.imageWidth"
-        :model-value="element.config.imageWidth.value || 'inner-full-width'"
-        :label="$tc('sw-cms.elements.categorySlider.config.imageWidth.label')"
-        :help-text="$tc('sw-cms.elements.categorySlider.config.imageWidth.helpText')"
-        :options="imageWidthOptions"
-        @update:model-value="onChangeImageWidth"
-    />
-    {% endblock %}
-    
-    {# WICHTIG: Slider Settings - ALLE Settings sind im Element-Modal! #}
-    {% block sw_cms_el_config_hero_category_slider_settings %}
-    <div class="sw-cms-el-config-hero-category-slider__settings">
-        <h3 class="sw-cms-el-hero-category-slider__settings-title">
-            {{ $tc('sw-cms.elements.categorySlider.config.settings.title') }}
-        </h3>
-        
-        {# Navigation Arrows (Standard Shopware Keys wie Hero Slider) #}
-        <mt-select
-            v-if="element.config.navigationArrows"
-            :model-value="element.config.navigationArrows.value"
-            :label="$tc('sw-cms.elements.imageSlider.config.label.navigationArrows')"
-            :help-text="$tc('sw-cms.elements.imageSlider.config.helpText.navigationArrows')"
-            :options="navigationArrowsOptions"
-            @update:model-value="onChangeNavigationArrows"
-        />
-        
-        {# Navigation Dots (Standard Shopware Keys wie Hero Slider) #}
-        <mt-select
-            v-if="element.config.navigationDots !== undefined"
-            :model-value="element.config.navigationDots.value"
-            :label="$tc('sw-cms.elements.imageSlider.config.label.navigationDots')"
-            :help-text="$tc('sw-cms.elements.imageSlider.config.helpText.navigationDots')"
-            :options="navigationDotsOptions"
-            @update:model-value="onChangeNavigationDots"
-        />
-        
-        {# Auto Slide (Standard Shopware Keys wie Hero Slider) #}
-        <mt-switch
-            v-if="element.config.autoSlide"
-            :model-value="element.config.autoSlide.value"
-            :label="$tc('sw-cms.elements.general.config.label.autoSlide')"
-            :help-text="$tc('sw-cms.elements.general.config.helpText.autoSlide')"
-            @update:model-value="onChangeAutoSlide"
-        />
-        
-        {# Autoplay Timeout (Standard Shopware Keys wie Hero Slider) #}
-        <mt-number-field
-            v-if="element.config.autoSlide && element.config.autoSlide.value === true && element.config.autoplayTimeout"
-            :model-value="element.config.autoplayTimeout.value"
-            :label="$tc('sw-cms.elements.general.config.label.autoplayTimeout')"
-            :help-text="$tc('sw-cms.elements.general.config.helpText.autoplayTimeout')"
-            :min="1000"
-            :max="30000"
-            :step="500"
-            @update:model-value="onChangeAutoplayTimeout"
-        />
-        
-        {# Speed (Standard Shopware Keys wie Hero Slider) #}
-        <mt-number-field
-            v-if="element.config.speed"
-            :model-value="element.config.speed.value"
-            :label="$tc('sw-cms.elements.general.config.label.speed')"
-            :help-text="$tc('sw-cms.elements.general.config.helpText.speed')"
-            :min="100"
-            :max="1000"
-            :step="50"
-            @update:model-value="onChangeSpeed"
-        />
-        
-        {# Display Mode (Standard Shopware Keys wie Hero Slider) #}
-        <mt-select
-            v-if="element.config.displayMode"
-            :model-value="element.config.displayMode.value"
-            :label="$tc('sw-cms.elements.general.config.label.displayMode')"
-            :help-text="$tc('sw-cms.elements.imageSlider.config.helpText.displayMode')"
-            :options="displayModeOptions"
-            @update:model-value="onChangeDisplayMode"
-        />
-        
-        {# Min Height (Category Slider spezifisch) #}
-        <mt-text-field
-            v-if="element.config.minHeight"
-            :model-value="element.config.minHeight.value"
-            :label="$tc('sw-cms.elements.categorySlider.config.minHeight.label')"
-            :help-text="$tc('sw-cms.elements.categorySlider.config.minHeight.helpText')"
-            @update:model-value="onChangeMinHeight"
-        />
-    </div>
+    {# V3.0 - TAB SYSTEM (Content + Settings) wie Hero Slider #}
+    {% block sw_cms_el_config_hero_category_slider_tabs %}
+    <sw-tabs 
+        position-identifier="sw-cms-element-config-hero-category-slider"
+        default-item="content"
+    >
+        <template #default="{ active }">
+            {# TAB: Content (Slides) #}
+            {% block sw_cms_el_config_hero_category_slider_tab_content %}
+            <sw-tabs-item 
+                :title="$tc('sw-cms.elements.general.config.tab.content')" 
+                name="content" 
+                :active-tab="active"
+            >
+                {{ $tc('sw-cms.elements.general.config.tab.content') }}
+            </sw-tabs-item>
+            {% endblock %}
+            
+            {# TAB: Settings (Global) #}
+            {% block sw_cms_el_config_hero_category_slider_tab_settings %}
+            <sw-tabs-item 
+                :title="$tc('sw-cms.elements.general.config.tab.settings')" 
+                name="settings" 
+                :active-tab="active"
+            >
+                {{ $tc('sw-cms.elements.general.config.tab.settings') }}
+            </sw-tabs-item>
+            {% endblock %}
+        </template>
+
+        <template #content="{ active }">
+            {# ========================================
+                TAB CONTENT: SLIDE MANAGEMENT
+            ======================================== #}
+            {% block sw_cms_el_config_hero_category_slider_content %}
+            <template v-if="active === 'content'">
+            <sw-container class="sw-cms-el-config-hero-category-slider__tab-content">
+                
+                {# ADD SLIDE BUTTON #}
+                {% block sw_cms_el_config_hero_category_slider_add_slide %}
+                <mt-button
+                    variant="primary"
+                    size="small"
+                    @click="addSlide"
+                    class="sw-cms-el-config-hero-category-slider__add-slide-btn"
+                >
+                    <mt-icon name="regular-plus-s" size="16" />
+                    {{ $tc('sw-cms.elements.categorySlider.config.addSlide') }}
+                </mt-button>
+                {% endblock %}
+                
+                {# SLIDE LIST (wenn vorhanden) #}
+                {% block sw_cms_el_config_hero_category_slider_slides %}
+                <div v-if="slides.length > 0" class="sw-cms-el-config-hero-category-slider__slides-config">
+                    <h4 class="sw-cms-el-config-hero-category-slider__slides-title">
+                        {{ $tc('sw-cms.elements.categorySlider.config.slidesTitle') }}
+                    </h4>
+                    
+                    {# SLIDE NAVIGATION (Pills mit Drag & Drop) #}
+                    {% block sw_cms_el_config_hero_category_slider_slides_nav %}
+                    <ul class="nav nav-pills sw-cms-el-config-hero-category-slider__slides-nav" role="tablist">
+                        <li 
+                            v-for="(slide, index) in slides"
+                            :key="slide.id"
+                            class="nav-item sw-cms-el-config-hero-category-slider__slide-nav-item"
+                            v-draggable="{ 
+                                dragGroup: 'category-slider-slides',
+                                data: { position: index },
+                                disabled: false,
+                                onDragEnter: onSlideDragSort
+                            }"
+                            v-droppable="{ 
+                                dragGroup: 'category-slider-slides',
+                                data: { position: index },
+                                validDragCls: 'is--valid-drag'
+                            }"
+                        >
+                            <button
+                                type="button"
+                                class="nav-link sw-cms-el-config-hero-category-slider__slide-nav-link"
+                                :class="{ 'active': activeSlideIndex === index }"
+                                @click="setActiveSlide(index)"
+                                role="tab"
+                                :aria-selected="activeSlideIndex === index"
+                            >
+                                <span class="sw-cms-el-config-hero-category-slider__slide-nav-drag-handle">
+                                    <mt-icon name="regular-grip-vertical-s" size="16" />
+                                </span>
+                                <span class="sw-cms-el-config-hero-category-slider__slide-nav-number">
+                                    {{ index + 1 }}
+                                </span>
+                                <span class="sw-cms-el-config-hero-category-slider__slide-nav-title">
+                                    {{ slide.customTitle || getCategoryName(slide.categoryId) || 'New Slide' }}
+                                </span>
+                            </button>
+                            <button
+                                type="button"
+                                class="sw-cms-el-config-hero-category-slider__slide-nav-delete"
+                                @click.stop="removeSlide(index)"
+                                :title="$tc('sw-cms.elements.categorySlider.config.deleteSlide')"
+                            >
+                                <mt-icon name="regular-times-s" size="14" />
+                            </button>
+                        </li>
+                    </ul>
+                    {% endblock %}
+                    
+                    {# SLIDE CONTENT SETTINGS (pro Slide) #}
+                    {% block sw_cms_el_config_hero_category_slider_slides_content %}
+                    <div class="sw-cms-el-config-hero-category-slider__slides-content">
+                        <div 
+                            v-for="(slide, index) in slides"
+                            :key="slide.id"
+                            v-show="activeSlideIndex === index"
+                            class="sw-cms-el-config-hero-category-slider__slide-content"
+                        >
+                            {# CATEGORY SELECTION #}
+                            {% block sw_cms_el_config_hero_category_slider_slide_category %}
+                            <mt-select
+                                v-model="slide.categoryId"
+                                :label="$tc('sw-cms.elements.categorySlider.config.category.label')"
+                                :placeholder="$tc('sw-cms.elements.categorySlider.config.category.placeholder')"
+                                :options="categoryOptions"
+                                :disabled="isLoadingCategories"
+                                label-property="label"
+                                value-property="value"
+                                @update:model-value="onCategoryChange(index, $event)"
+                            >
+                            </mt-select>
+                            {% endblock %}
+                            
+                            {# CUSTOM TITLE OVERRIDE #}
+                            {% block sw_cms_el_config_hero_category_slider_slide_custom_title %}
+                            <mt-text-field
+                                v-model="slide.customTitle"
+                                :label="$tc('sw-cms.elements.categorySlider.config.customTitle.label')"
+                                :placeholder="$tc('sw-cms.elements.categorySlider.config.customTitle.placeholder')"
+                                :help-text="$tc('sw-cms.elements.categorySlider.config.customTitle.helpText')"
+                                @update:model-value="onCustomTitleChange(index, $event)"
+                            />
+                            {% endblock %}
+                            
+                            {# CUSTOM IMAGE OVERRIDE #}
+                            {% block sw_cms_el_config_hero_category_slider_slide_custom_image %}
+                            <div class="sw-cms-el-config-hero-category-slider__custom-image-field">
+                                <label class="sw-cms-el-config-hero-category-slider__custom-image-label">
+                                    {{ $tc('sw-cms.elements.categorySlider.config.customImage.label') }}
+                                    <span class="sw-cms-el-config-hero-category-slider__custom-image-help">
+                                        {{ $tc('sw-cms.elements.categorySlider.config.customImage.helpText') }}
+                                    </span>
+                                </label>
+                                
+                                <sw-media-compact-upload-v2
+                                    v-if="!slide.customImageId"
+                                    variant="regular"
+                                    :upload-tag="uploadTag"
+                                    :default-folder="defaultFolderName"
+                                    :source="slide.customImageId"
+                                    :allow-multi-select="false"
+                                    :label="$tc('sw-cms.elements.categorySlider.config.customImage.upload')"
+                                    @media-upload-sidebar-open="openImageModal(index)"
+                                    @media-upload-finish="onImageUpload(index, $event)"
+                                />
+                                
+                                <div v-else class="sw-cms-el-config-hero-category-slider__custom-image-preview">
+                                    <img 
+                                        v-if="getSlideImageMedia(index)?.url"
+                                        :src="getSlideImageMedia(index).url"
+                                        :alt="slide.customTitle || 'Custom Image'"
+                                        class="sw-cms-el-config-hero-category-slider__custom-image-thumb"
+                                    />
+                                    <mt-button
+                                        variant="danger"
+                                        size="small"
+                                        @click="onImageRemove(index)"
+                                    >
+                                        <mt-icon name="regular-times-s" size="14" />
+                                        {{ $tc('sw-cms.elements.categorySlider.config.customImage.remove') }}
+                                    </mt-button>
+                                </div>
+                                
+                                {# Image Selection Modal #}
+                                <sw-media-modal-v2
+                                    v-if="slideImageModals[index]"
+                                    variant="full"
+                                    :caption="$tc('sw-cms.elements.categorySlider.config.customImage.modalTitle')"
+                                    :entity-context="cmsPageState?.entityName || 'cms_page'"
+                                    :allow-multi-select="false"
+                                    :initial-folder-id="cmsPageState?.defaultMediaFolderId || null"
+                                    @media-modal-selection-change="onImageSelectionChange(index, $event)"
+                                    @modal-close="closeImageModal(index)"
+                                />
+                            </div>
+                            {% endblock %}
+                            
+                            {# CUSTOM TEXT #}
+                            {% block sw_cms_el_config_hero_category_slider_slide_custom_text %}
+                            <mt-textarea
+                                v-model="slide.customText"
+                                :label="$tc('sw-cms.elements.categorySlider.config.customText.label')"
+                                :placeholder="$tc('sw-cms.elements.categorySlider.config.customText.placeholder')"
+                                :help-text="$tc('sw-cms.elements.categorySlider.config.customText.helpText')"
+                                @update:model-value="onCustomTextChange(index, $event)"
+                            />
+                            {% endblock %}
+                            
+                            {# CUSTOM LINK #}
+                            {% block sw_cms_el_config_hero_category_slider_slide_custom_link %}
+                            <sw-dynamic-url-field
+                                v-model="slide.customLink"
+                                :label="$tc('sw-cms.elements.categorySlider.config.customLink.label')"
+                                :placeholder="$tc('sw-cms.elements.categorySlider.config.customLink.placeholder')"
+                                :help-text="$tc('sw-cms.elements.categorySlider.config.customLink.helpText')"
+                                @update:model-value="onCustomLinkChange(index, $event)"
+                            />
+                            {% endblock %}
+                        </div>
+                    </div>
+                    {% endblock %}
+                </div>
+                {% endblock %}
+                
+                {# EMPTY STATE (wenn keine Slides) #}
+                <div v-else class="sw-cms-el-config-hero-category-slider__empty-state">
+                    <mt-icon name="regular-image" size="48" />
+                    <p>{{ $tc('sw-cms.elements.categorySlider.config.noSlides') }}</p>
+                    <p class="sw-cms-el-config-hero-category-slider__empty-hint">
+                        {{ $tc('sw-cms.elements.categorySlider.config.noSlidesHint') }}
+                    </p>
+                </div>
+                
+            </sw-container>
+            </template>
+            {% endblock %}
+            
+            {# ========================================
+                TAB SETTINGS: GLOBAL SLIDER SETTINGS
+            ======================================== #}
+            {% block sw_cms_el_config_hero_category_slider_settings %}
+            <template v-if="active === 'settings'">
+            <sw-container class="sw-cms-el-config-hero-category-slider__tab-settings">
+                
+                {# IMAGE COUNT (1-4 Slides per View) #}
+                {% block sw_cms_el_config_hero_category_slider_image_count %}
+                <mt-select
+                    v-if="element.config.imageCount"
+                    v-model="element.config.imageCount.value"
+                    :label="$tc('sw-cms.elements.categorySlider.config.imageCount.label')"
+                    :help-text="$tc('sw-cms.elements.categorySlider.config.imageCount.helpText')"
+                    :options="imageCountOptions"
+                    label-property="label"
+                    value-property="value"
+                    @update:model-value="onChangeImageCount"
+                />
+                {% endblock %}
+                
+                {# IMAGE WIDTH #}
+                {% block sw_cms_el_config_hero_category_slider_image_width %}
+                <mt-select
+                    v-if="element.config.imageWidth"
+                    v-model="element.config.imageWidth.value"
+                    :label="$tc('sw-cms.elements.categorySlider.config.imageWidth.label')"
+                    :help-text="$tc('sw-cms.elements.categorySlider.config.imageWidth.helpText')"
+                    :options="imageWidthOptions"
+                    label-property="label"
+                    value-property="value"
+                    @update:model-value="onChangeImageWidth"
+                />
+                {% endblock %}
+                
+                {# SUBCATEGORY LEVELS #}
+                {% block sw_cms_el_config_hero_category_slider_subcategory_levels %}
+                <mt-number-field
+                    v-if="element.config.subcategoryLevels !== undefined"
+                    :model-value="element.config.subcategoryLevels.value || 0"
+                    :label="$tc('sw-cms.elements.categorySlider.config.subcategoryLevels.label')"
+                    :help-text="$tc('sw-cms.elements.categorySlider.config.subcategoryLevels.helpText')"
+                    :min="0"
+                    :max="5"
+                    :step="1"
+                    @update:model-value="onChangeSubcategoryLevels"
+                />
+                {% endblock %}
+                
+                {# NAVIGATION ARROWS #}
+                {% block sw_cms_el_config_hero_category_slider_navigation_arrows %}
+                <mt-select
+                    v-if="element.config.navigationArrows"
+                    v-model="element.config.navigationArrows.value"
+                    :label="$tc('sw-cms.elements.imageSlider.config.label.navigationArrows')"
+                    :options="navigationArrowsOptions"
+                    label-property="label"
+                    value-property="value"
+                    @update:model-value="onChangeNavigationArrows"
+                />
+                {% endblock %}
+                
+                {# NAVIGATION DOTS #}
+                {% block sw_cms_el_config_hero_category_slider_navigation_dots %}
+                <mt-select
+                    v-if="element.config.navigationDots"
+                    v-model="element.config.navigationDots.value"
+                    :label="$tc('sw-cms.elements.imageSlider.config.label.navigationDots')"
+                    :options="navigationDotsOptions"
+                    label-property="label"
+                    value-property="value"
+                    @update:model-value="onChangeNavigationDots"
+                />
+                {% endblock %}
+                
+                {# AUTO SLIDE #}
+                {% block sw_cms_el_config_hero_category_slider_auto_slide %}
+                <sw-switch-field
+                    v-if="element.config.autoSlide !== undefined"
+                    :model-value="element.config.autoSlide.value"
+                    :label="$tc('sw-cms.elements.imageSlider.config.label.autoSlide')"
+                    @update:model-value="onChangeAutoSlide"
+                />
+                {% endblock %}
+                
+                {# AUTOPLAY TIMEOUT #}
+                {% block sw_cms_el_config_hero_category_slider_autoplay_timeout %}
+                <mt-number-field
+                    v-if="element.config.autoplayTimeout !== undefined"
+                    :model-value="element.config.autoplayTimeout.value"
+                    :label="$tc('sw-cms.elements.imageSlider.config.label.autoplayTimeout')"
+                    :suffix="$tc('sw-cms.elements.imageSlider.config.label.autoplayTimeoutSuffix')"
+                    :min="0"
+                    :step="1000"
+                    @update:model-value="onChangeAutoplayTimeout"
+                />
+                {% endblock %}
+                
+                {# SPEED #}
+                {% block sw_cms_el_config_hero_category_slider_speed %}
+                <mt-number-field
+                    v-if="element.config.speed !== undefined"
+                    :model-value="element.config.speed.value"
+                    :label="$tc('sw-cms.elements.imageSlider.config.label.speed')"
+                    :suffix="$tc('sw-cms.elements.imageSlider.config.label.speedSuffix')"
+                    :min="0"
+                    :step="100"
+                    @update:model-value="onChangeSpeed"
+                />
+                {% endblock %}
+                
+                {# DISPLAY MODE #}
+                {% block sw_cms_el_config_hero_category_slider_display_mode %}
+                <mt-select
+                    v-if="element.config.displayMode"
+                    v-model="element.config.displayMode.value"
+                    :label="$tc('sw-cms.elements.imageSlider.config.label.displayMode')"
+                    :options="displayModeOptions"
+                    label-property="label"
+                    value-property="value"
+                    @update:model-value="onChangeDisplayMode"
+                />
+                {% endblock %}
+                
+                {# MIN HEIGHT #}
+                {% block sw_cms_el_config_hero_category_slider_min_height %}
+                <mt-text-field
+                    v-if="element.config.minHeight"
+                    v-model="element.config.minHeight.value"
+                    :label="$tc('sw-cms.elements.imageSlider.config.label.minHeight')"
+                    :help-text="$tc('sw-cms.elements.imageSlider.config.label.minHeightHelpText')"
+                    @update:model-value="onChangeMinHeight"
+                />
+                {% endblock %}
+                
+            </sw-container>
+            </template>
+            {% endblock %}
+        </template>
+    </sw-tabs>
     {% endblock %}
 </div>
 {% endblock %}
-

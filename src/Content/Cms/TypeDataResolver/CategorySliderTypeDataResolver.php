@@ -28,68 +28,173 @@ class CategorySliderTypeDataResolver extends AbstractCmsElementResolver
 
     public function collect(CmsSlotEntity $slot, ResolverContext $resolverContext): ?CriteriaCollection
     {
-        // WICHTIG: Hole categoryIds aus Element-Config (nicht aus Block customFields)
+        // V3.0 - SLIDE-BASED SYSTEM
         $config = $slot->getConfig();
-        if (!$config || !isset($config['categoryIds']) || !$config['categoryIds']['value']) {
+        if (!$config) {
             return null;
         }
 
-        $categoryIds = $config['categoryIds']['value'];
-        if (!is_array($categoryIds) || empty($categoryIds)) {
+        $categoryIds = [];
+        $customImageIds = [];
+
+        // V3.0: categorySlides (preferred)
+        if (isset($config['categorySlides']) && is_array($config['categorySlides']['value'])) {
+            $slides = $config['categorySlides']['value'];
+            
+            foreach ($slides as $slide) {
+                // Category IDs sammeln
+                if (isset($slide['categoryId']) && !empty($slide['categoryId'])) {
+                    $categoryIds[] = $slide['categoryId'];
+                }
+                
+                // Custom Image IDs sammeln (wenn override definiert)
+                if (isset($slide['customImageId']) && !empty($slide['customImageId'])) {
+                    $customImageIds[] = $slide['customImageId'];
+                }
+            }
+        }
+        // BACKWARD COMPATIBILITY: Alte categoryIds (deprecated)
+        elseif (isset($config['categoryIds']) && is_array($config['categoryIds']['value'])) {
+            $categoryIds = $config['categoryIds']['value'];
+        }
+
+        if (empty($categoryIds) && empty($customImageIds)) {
             return null;
         }
 
-        // Lade Kategorien mit Media und Translations
-        $categoryCriteria = new Criteria($categoryIds);
-        $categoryCriteria->addAssociation('media');
-        $categoryCriteria->addAssociation('translations');
         $criteriaCollection = new CriteriaCollection();
-        $criteriaCollection->add('categories_' . $slot->getUniqueIdentifier(), CategoryDefinition::class, $categoryCriteria);
+
+        // Lade Categories
+        if (!empty($categoryIds)) {
+            $categoryCriteria = new Criteria($categoryIds);
+            $categoryCriteria->addAssociation('media');
+            $categoryCriteria->addAssociation('media.thumbnails');
+            $categoryCriteria->addAssociation('translations');
+            $criteriaCollection->add('categories_' . $slot->getUniqueIdentifier(), CategoryDefinition::class, $categoryCriteria);
+        }
+
+        // Lade Custom Images
+        if (!empty($customImageIds)) {
+            $mediaCriteria = new Criteria($customImageIds);
+            $mediaCriteria->addAssociation('thumbnails');
+            $criteriaCollection->add('custom_images_' . $slot->getUniqueIdentifier(), MediaDefinition::class, $mediaCriteria);
+        }
 
         return $criteriaCollection;
     }
 
     public function enrich(CmsSlotEntity $slot, ResolverContext $resolverContext, ElementDataCollection $result): void
     {
-        // Hole categoryIds aus Element-Config
+        // V3.0 - SLIDE-BASED SYSTEM
         $config = $slot->getConfig();
-        if (!$config || !isset($config['categoryIds']) || !$config['categoryIds']['value']) {
+        if (!$config) {
             return;
         }
 
-        $categoryIds = $config['categoryIds']['value'];
-        if (!is_array($categoryIds) || empty($categoryIds)) {
+        $slides = [];
+        
+        // V3.0: categorySlides (preferred)
+        if (isset($config['categorySlides']) && is_array($config['categorySlides']['value'])) {
+            $slides = $config['categorySlides']['value'];
+        }
+        // BACKWARD COMPATIBILITY: Alte categoryIds konvertieren
+        elseif (isset($config['categoryIds']) && is_array($config['categoryIds']['value'])) {
+            $categoryIds = $config['categoryIds']['value'];
+            foreach ($categoryIds as $categoryId) {
+                $slides[] = [
+                    'categoryId' => $categoryId,
+                    'customTitle' => null,
+                    'customImageId' => null,
+                    'customText' => null,
+                    'customLink' => null,
+                ];
+            }
+        }
+
+        if (empty($slides)) {
             return;
         }
 
-        // Lade Kategorien
+        // Lade Category & Media Results
         $categoriesResult = $result->get('categories_' . $slot->getUniqueIdentifier());
-        if (!$categoriesResult) {
-            return;
-        }
+        $customImagesResult = $result->get('custom_images_' . $slot->getUniqueIdentifier());
 
         // Erstelle ImageSliderStruct
         $imageSlider = new ImageSliderStruct();
         $slot->setData($imageSlider);
 
-        // Erstelle Slider-Items für jede Kategorie (mit Kategorie-Media)
-        foreach ($categoryIds as $categoryId) {
-            $category = $categoriesResult->get($categoryId);
+        // Erstelle Slider-Items für JEDES Slide
+        foreach ($slides as $slide) {
+            $categoryId = $slide['categoryId'] ?? null;
             
-            if (!$category || !$category->getMedia()) {
-                continue; // Skip categories ohne Media
+            if (!$categoryId) {
+                continue; // Skip slides ohne Category
             }
 
-            $sliderItem = new ImageSliderItemStruct();
-            $sliderItem->setMedia($category->getMedia());
+            // Lade Category Entity
+            $category = $categoriesResult ? $categoriesResult->get($categoryId) : null;
             
-            // WICHTIG: Speichere Kategorie-Titel für Overlay (als customFields)
-            $sliderItem->setCustomFields([
-                'categoryTitle' => $category->getTranslated()['name'] ?? $category->getName(),
-                'categoryId' => $categoryId,
+            if (!$category) {
+                continue; // Skip nicht gefundene Kategorien
+            }
+
+            // Erstelle Slider Item
+            $imageSliderItem = new ImageSliderItemStruct();
+            
+            // WICHTIG: Custom Image Override (wenn definiert)
+            $customImageId = $slide['customImageId'] ?? null;
+            if ($customImageId && $customImagesResult) {
+                $customImage = $customImagesResult->get($customImageId);
+                if ($customImage) {
+                    $imageSliderItem->setMedia($customImage);
+                } else {
+                    // Fallback: Category Media
+                    $imageSliderItem->setMedia($category->getMedia());
+                }
+            } else {
+                // Default: Category Media
+                $imageSliderItem->setMedia($category->getMedia());
+            }
+
+            // Skip wenn kein Media vorhanden
+            if (!$imageSliderItem->getMedia()) {
+                continue;
+            }
+            
+            // WICHTIG: Speichere Slide-Daten als Extensions (wie Hero Slider)
+            // ImageSliderItemStruct hat KEINE setCustomFields(), sondern addArrayExtension()!
+            
+            // Category Data
+            $imageSliderItem->addArrayExtension('categoryId', ['value' => $categoryId]);
+            $imageSliderItem->addArrayExtension('categoryTitle', [
+                'value' => $category->getTranslated()['name'] ?? $category->getName()
             ]);
             
-            $imageSlider->addSliderItem($sliderItem);
+            // Category Link (SEO URL wenn vorhanden)
+            $categoryLink = null;
+            if ($category->getSeoUrls() && $category->getSeoUrls()->first()) {
+                $categoryLink = '/' . $category->getSeoUrls()->first()->getSeoPathInfo();
+            }
+            $imageSliderItem->addArrayExtension('categoryLink', ['value' => $categoryLink]);
+            
+            // V3.0 - Custom Overrides (nur wenn definiert)
+            if (!empty($slide['customTitle'])) {
+                $imageSliderItem->addArrayExtension('customTitle', ['value' => $slide['customTitle']]);
+            }
+            
+            if (!empty($slide['customText'])) {
+                $imageSliderItem->addArrayExtension('customText', ['value' => $slide['customText']]);
+            }
+            
+            if (!empty($slide['customLink'])) {
+                $imageSliderItem->addArrayExtension('customLink', ['value' => $slide['customLink']]);
+            }
+            
+            if (!empty($customImageId)) {
+                $imageSliderItem->addArrayExtension('hasCustomImage', ['value' => true]);
+            }
+            
+            $imageSlider->addSliderItem($imageSliderItem);
         }
     }
 }

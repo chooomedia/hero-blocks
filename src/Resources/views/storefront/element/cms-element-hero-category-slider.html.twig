@@ -5,7 +5,7 @@
             display: flex;
             gap: 1rem;
             width: 100%;
-            margin-top: 1rem;
+            margin: 1rem 0;
         }
         
         @media screen and (max-width: 767px) {
@@ -43,6 +43,85 @@
             color: #6B7280;
             text-align: center;
         }
+        
+        {# MOCKUP STYLES - Title oben links, Button oben rechts, Hover-Zoom #}
+        .hero-category-slide-background {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .hero-category-slide-background.is-cover .hero-category-slide-img {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s ease;
+        }
+        
+        .hero-category-slider-item:hover .hero-category-slide-img {
+            transform: scale(1.1);
+        }
+        
+        .hero-category-slide-title-wrapper {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            z-index: 2;
+        }
+        
+        .hero-category-slide-title {
+            color: #fff;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .hero-category-slide-button-wrapper {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            z-index: 2;
+        }
+        
+        .hero-category-slide-button {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 500;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+        }
+        
+        .hero-category-slider-item:hover .hero-category-slide-button {
+            background-color: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .hero-category-slide-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        @media screen and (max-width: 767px) {
+            .hero-category-slide-title {
+                font-size: 1.75rem;
+            }
+            
+            .hero-category-slide-title-wrapper,
+            .hero-category-slide-button-wrapper {
+                top: 1rem;
+                left: 1rem;
+                right: 1rem;
+            }
+        }
     </style>
     
     {# WICHTIG: Config-Zugriff - element.fieldConfig.elements ist die korrekte Quelle für gespeicherte Werte #}
@@ -58,7 +137,7 @@
         displayMode: { value: elementConfig.displayMode.value|default('cover') },
         minHeight: { value: elementConfig.minHeight.value|default(null) },
         verticalAlign: { value: elementConfig.verticalAlign.value|default(null) },
-        imageCount: { value: elementConfig.imageCount.value|default('1') }
+        imageCount: { value: elementConfig.imageCount.value|default('2') }
     } %}
     {% set visibleNavValues = ['inside', 'outside'] %}
     {% set visibleDotsValues = ['bottom'] %}
@@ -77,6 +156,7 @@
     <div class="cms-element-{{ element.type }}{% if displayMode == "standard" and sliderConfig.verticalAlign.value %} has-vertical-alignment{% endif %}">
         {% set baseSliderOptions = {
             slider: {
+                items: sliderConfig.imageCount.value|number_format(0, '', ''),
                 controls: sliderConfig.navigationArrows.value in visibleNavValues,
                 nav: sliderConfig.navigationDots.value in visibleDotsValues,
                 navPosition: 'bottom',
@@ -85,11 +165,22 @@
                 autoplayButtonOutput: false,
                 autoplayTimeout: sliderConfig.autoplayTimeout.value ?: 5000,
                 autoplayHoverPause: true,
-                speed: sliderConfig.speed.value ?: 300,
+                speed: sliderConfig.autoplayTimeout.value|number_format(0, '', ''),
                 ariaLive: sliderConfig.autoSlide.value ? false : true,
                 autoHeight: (displayMode == "standard") ? true : false,
                 loop: false,
-                rewind: true
+                rewind: true,
+                responsive: {
+                    0: {
+                        items: 1
+                    },
+                    768: {
+                        items: (sliderConfig.imageCount.value > 1 ? 2 : 1)
+                    },
+                    1024: {
+                        items: sliderConfig.imageCount.value|number_format(0, '', '')
+                    }
+                }
             }
         } %}
 
@@ -121,67 +212,113 @@
                         {% if element.data.sliderItems is defined and element.data.sliderItems|length > 0 %}
                             {% for image in element.data.sliderItems %}
                                 {% block element_hero_category_slider_item %}
-                                    <div class="hero-category-slider-item-container">
+                                    {# V3.0 - Custom Overrides aus Extensions (NICHT customFields!) #}
+                                    {% set slideTitle = image.extensions.customTitle.value ?? image.extensions.categoryTitle.value ?? 'Category' %}
+                                    {% set slideText = image.extensions.customText.value ?? null %}
+                                    {% set slideLink = image.extensions.customLink.value ?? image.extensions.categoryLink.value ?? null %}
+                                    {% set hasCustomImage = image.extensions.hasCustomImage.value ?? false %}
+                                    
+                                    <div 
+                                        class="hero-category-slider-item-container"
+                                        {% if loop.index > 1 %}aria-hidden="true"{% endif %}
+                                        itemscope
+                                        itemtype="https://schema.org/ImageObject"
+                                    >
                                         <div class="hero-category-slider-item{% if loop.first != true %} is-not-first{% endif %} is-{{ displayMode }}"{% if minHeight and displayMode == "cover" %} style="min-height: {{ minHeight|trim|replace({' ':''}) }}"{% endif %}>
-                                            {% set imageElement %}
-                                                <div class="hero-category-slide-background is-{{ displayMode }}">
-                                                    {% set imageAttributes = {
-                                                        'class': 'hero-category-slide-img img-fluid',
-                                                        'loading': 'lazy',
-                                                        'alt': image.media.translated.alt ?: '',
-                                                        'title': image.media.translated.title ?: '',
-                                                        'tabindex': image.url ? '-1' : '0'
-                                                    } %}
-                                                    
-                                                    {% if displayMode == 'cover' or displayMode == 'contain' %}
-                                                        {% set imageAttributes = imageAttributes|merge({ 'data-object-fit': displayMode }) %}
-                                                    {% endif %}
-                                                    
-                                                    {% sw_thumbnails 'hero-category-slide-thumbnails' with {
-                                                        media: image.media,
-                                                        sizes: {
-                                                            default: '1920px'
-                                                        },
-                                                        attributes: imageAttributes
-                                                    } %}
-                                                </div>
-                                            {% endset %}
-
-                                            {% if image.url %}
-                                                <a href="{{ image.url }}"
-                                                   class="hero-category-slide-link"
-                                                   {% if image.newTab %}target="_blank" rel="noopener"{% endif %}
+                                            
+                                            {# MOCKUP: Background mit Image, Title OBEN LINKS, Button OBEN RECHTS #}
+                                            {% if slideLink %}
+                                                <a 
+                                                    href="{{ slideLink }}"
+                                                    class="hero-category-slide-link"
+                                                    aria-label="{{ 'component.cms.categorySlider.goToCategory'|trans({ '%name%': slideTitle|striptags })|sw_sanitize }}"
+                                                    itemprop="url"
                                                 >
-                                                    {{ imageElement }}
-                                                </a>
-                                            {% else %}
-                                                {{ imageElement }}
                                             {% endif %}
+                                            
+                                            <div class="hero-category-slide-background is-{{ displayMode }}">
+                                                {# IMAGE (mit Zoom-Effekt) #}
+                                                {% set imageAltText = slideTitle %}
+                                                {% if hasCustomImage %}
+                                                    {% set imageAltText = (image.media.translated.alt ?: slideTitle) %}
+                                                {% endif %}
+                                                
+                                                {% set imageAttributes = {
+                                                    'class': 'hero-category-slide-img img-fluid',
+                                                    'loading': loop.first ? 'eager' : 'lazy',
+                                                    'alt': imageAltText|striptags,
+                                                    'title': image.media.translated.title ?: slideTitle|striptags,
+                                                    'tabindex': '-1',
+                                                    'itemprop': 'contentUrl'
+                                                } %}
+                                                
+                                                {% if displayMode == 'cover' or displayMode == 'contain' %}
+                                                    {% set imageAttributes = imageAttributes|merge({ 'data-object-fit': displayMode }) %}
+                                                {% endif %}
+                                                
+                                                {% sw_thumbnails 'hero-category-slide-thumbnails' with {
+                                                    media: image.media,
+                                                    sizes: {
+                                                        'xs': '375px',
+                                                        'sm': '768px',
+                                                        'md': '1024px',
+                                                        'lg': '1440px',
+                                                        'xl': '1920px',
+                                                        'default': '1920px'
+                                                    },
+                                                    attributes: imageAttributes
+                                                } %}
+                                                
+                                                {# TITLE - OBEN LINKS (weiß) #}
+                                                {% if slideTitle %}
+                                                <div class="hero-category-slide-title-wrapper">
+                                                    <h3 
+                                                        class="hero-category-slide-title"
+                                                        itemprop="name"
+                                                    >
+                                                        {{ slideTitle }}
+                                                    </h3>
+                                                </div>
+                                                {% endif %}
+                                                
+                                                {# BUTTON - OBEN RECHTS (halbtransparent weiß, Bootstrap) #}
+                                                <div class="hero-category-slide-button-wrapper">
+                                                    <span class="btn btn-light hero-category-slide-button">
+                                                        {{ 'component.cms.categorySlider.moreInfo'|trans|sw_sanitize }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            
+                                            {% if slideLink %}
+                                                </a>
+                                            {% endif %}
+                                            
+                                            <meta itemprop="position" content="{{ loop.index }}">
                                         </div>
                                     </div>
                                 {% endblock %}
                             {% endfor %}
                         {% endif %}
                     </div>
-                    
+
                     {# WICHTIG: Empty State - Platzhalter AUSSERHALB Slider (nebeneinander) #}
                     {% if not element.data.sliderItems or element.data.sliderItems|length == 0 %}
-                    <div class="hero-category-slider-placeholder-wrapper">
-                        {% set imageCount = sliderConfig.imageCount.value|default('1')|number_format(0, '', '') %}
-                        {% for i in 1..imageCount %}
-                            <div class="hero-category-slider-placeholder-item">
-                                <div class="hero-category-slider-placeholder-content"{% if minHeight %} style="min-height: {{ minHeight|trim|replace({' ':''}) }}"{% endif %}>
-                                    {# WICHTIG: Platzhalter-Bild aus Plugin Assets #}
-                                    <img 
-                                        src="{{ asset('bundles/heroblocks/assets/placeholder.svg') }}" 
-                                        alt="{{ 'component.cms.categorySlider.noImages'|trans|sw_sanitize }}"
-                                        class="hero-category-slider-placeholder-img"
-                                    />
-                                    <p class="hero-category-slider-placeholder-text">{{ 'component.cms.categorySlider.noImages'|trans|sw_sanitize }}</p>
+                        <div class="hero-category-slider-placeholder-wrapper">
+                            {% set imageCountNum = sliderConfig.imageCount.value|number_format(0, '', '') %}
+                            {% for i in 1..imageCountNum %}
+                                <div class="hero-category-slider-placeholder-item">
+                                    <div class="hero-category-slider-placeholder-content"{% if minHeight %} style="min-height: {{ minHeight|trim|replace({' ':''}) }}"{% endif %}>
+                                        {# WICHTIG: Platzhalter-Bild aus Plugin Assets #}
+                                        <img
+                                            src="{{ asset('bundles/heroblocks/assets/placeholder.svg') }}"
+                                            alt="{{ 'component.cms.categorySlider.noImages'|trans|sw_sanitize }}"
+                                            class="hero-category-slider-placeholder-img"
+                                        />
+                                        <p class="hero-category-slider-placeholder-text">{{ 'component.cms.categorySlider.noImages'|trans|sw_sanitize }}</p>
+                                    </div>
                                 </div>
-                            </div>
-                        {% endfor %}
-                    </div>
+                            {% endfor %}
+                        </div>
                     {% endif %}
 
                     {% block element_hero_category_slider_controls %}
@@ -219,4 +356,3 @@
         <div id="content-after-target-{{ blockId }}"></div>
     {% endblock %}
 {% endblock %}
-

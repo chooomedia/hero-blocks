@@ -84,6 +84,13 @@
                         }
                     }
                 },
+                "categorySlider": {
+                    "label": "Hero Block Category Slider",
+                    "description": "Category slider with images from selected categories",
+                    "config": {
+                        "info": "Slider settings (navigation, auto-slide, etc.) can also be configured in the block settings."
+                    }
+                },
                 "heroTwoColumns": {
                     "label": "Hero Two Columns Image & Text",
                     "description": "Two-column layout with image and text, parallax scroll effects and flexible background options.",
@@ -130,11 +137,77 @@
                         "backgroundImageRight": {
                             "label": "Background image right"
                         },
+                        "backgroundLeftUseCss": {
+                            "label": "Use CSS for left background",
+                            "helpText": "Enable this option to use custom CSS for the left background"
+                        },
+                        "backgroundLeftCss": {
+                            "label": "CSS for left background",
+                            "placeholder": "e.g. linear-gradient(45deg, #ff0000, #00ff00)",
+                            "helpText": "Custom CSS for the left background (e.g. gradients, colors)"
+                        },
+                        "backgroundRightUseCss": {
+                            "label": "Use CSS for right background",
+                            "helpText": "Enable this option to use custom CSS for the right background"
+                        },
+                        "backgroundRightCss": {
+                            "label": "CSS for right background",
+                            "placeholder": "e.g. linear-gradient(45deg, #0000ff, #ff00ff)",
+                            "helpText": "Custom CSS for the right background (e.g. gradients, colors)"
+                        },
+                        "scrollAnimationEnabled": {
+                            "label": "Enable scroll animation",
+                            "helpText": "Enable parallax scroll effects for background images"
+                        },
+                        "scrollAnimationAngle": {
+                            "label": "Scroll animation angle",
+                            "placeholder": "e.g. 45",
+                            "helpText": "Angle for parallax animation in degrees (0-360)"
+                        },
+                        "elementLeftTranslateX": {
+                            "label": "Left Element - Translate X",
+                            "placeholder": "e.g. 0 or 20px",
+                            "helpText": "Horizontal translation for the left element"
+                        },
+                        "elementLeftTranslateY": {
+                            "label": "Left Element - Translate Y",
+                            "placeholder": "e.g. -20px",
+                            "helpText": "Vertical translation for the left element"
+                        },
+                        "elementLeftAnimate": {
+                            "label": "Animate left element",
+                            "helpText": "Enable animation for the left element on scroll"
+                        },
+                        "elementRightTranslateX": {
+                            "label": "Right Element - Translate X",
+                            "placeholder": "e.g. 0 or 20px",
+                            "helpText": "Horizontal translation for the right element"
+                        },
+                        "elementRightTranslateY": {
+                            "label": "Right Element - Translate Y",
+                            "placeholder": "e.g. -20px",
+                            "helpText": "Vertical translation for the right element"
+                        },
+                        "elementRightAnimate": {
+                            "label": "Animate right element",
+                            "helpText": "Enable animation for the right element on scroll"
+                        },
+                        "audioFile": {
+                            "label": "Audio file",
+                            "helpText": "Optional: Audio file for background music or sound effects"
+                        },
                         "minHeight": {
                             "label": "Minimum height",
                             "placeholder": "e.g. 500px or 80vh",
                             "helpText": "Minimum height for the block (e.g. 500px or 80vh)"
                         }
+                    }
+                },
+                "heroShoppingExperience": {
+                    "label": "Advanced Theme Shopping Experience",
+                    "description": "Advanced shopping experience blocks with products and content (In Development)",
+                    "config": {
+                        "inDevelopment": "This block is currently in development and can be enabled via plugin settings."
                     }
                 }
             }
@@ -305,6 +378,9 @@
                 "preview": {
                     "loading": "Loading Instagram posts...",
                     "noPosts": "No posts available"
+                },
+                "config": {
+                    "infoText": "API credentials (App ID, App Secret, Access Token) are loaded from plugin settings (Hero Blocks Extension Config)."
                 }
             },
             "categorySlider": {
@@ -320,6 +396,33 @@
                         "helpText": "Select a category whose images should be displayed in the slider"
                     },
                     "info": "Slider settings (navigation, auto-slide, etc.) can also be configured in the block settings.",
+                    "addSlide": "Add Category Slide",
+                    "slidesTitle": "Category Slides",
+                    "deleteSlide": "Delete Slide",
+                    "noSlides": "No category slides defined",
+                    "noSlidesHint": "Click 'Add Category Slide' to create your first slide.",
+                    "customTitle": {
+                        "label": "Custom Title (Optional)",
+                        "placeholder": "Override category name...",
+                        "helpText": "Leave empty to use the category name automatically"
+                    },
+                    "customImage": {
+                        "label": "Custom Image (Optional)",
+                        "helpText": "Override category image with a custom image",
+                        "upload": "Upload Custom Image",
+                        "remove": "Remove Custom Image",
+                        "modalTitle": "Select Custom Image"
+                    },
+                    "customText": {
+                        "label": "Custom Text (Optional)",
+                        "placeholder": "Additional text for this slide...",
+                        "helpText": "Optional descriptive text displayed below the category title"
+                    },
+                    "customLink": {
+                        "label": "Custom Link (Optional)",
+                        "placeholder": "https://example.com or /custom-page",
+                        "helpText": "Override default category link with a custom URL"
+                    },
                     "settings": {
                         "title": "Slider Settings"
                     },
@@ -378,10 +481,27 @@
                     "imageWidth": {
                         "label": "Image Width",
                         "helpText": "Select the image width (inner-full-width = within container, full-width = full width)",
+                        "innerFullWidth": "Within Container",
+                        "fullWidth": "Full Width",
                         "options": {
                             "innerFullWidth": "Within Container",
                             "fullWidth": "Full Width"
                         }
+                    }
+                }
+            },
+            "imageSlider": {
+                "config": {
+                    "label": {
+                        "autoSlide": "Autoplay",
+                        "autoplayTimeout": "Autoplay Interval (ms)",
+                        "speed": "Animation Speed (ms)",
+                        "displayMode": "Display Mode",
+                        "displayModeCover": "Cover (Fill Area)",
+                        "displayModeContain": "Contain (Fully Visible)",
+                        "displayModeStandard": "Standard",
+                        "minHeight": "Minimum Height",
+                        "minHeightHelpText": "E.g. 400px, 50vh, or leave empty"
                     }
                 }
             }

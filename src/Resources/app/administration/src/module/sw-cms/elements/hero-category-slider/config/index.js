@@ -1,11 +1,21 @@
 import template from "./sw-cms-el-config-hero-category-slider.html.twig";
 import "./sw-cms-el-config-hero-category-slider.scss";
 
-// WICHTIG: Snippets werden bereits in elements/hero-category-slider/index.js registriert
-// Keine doppelte Registrierung hier nötig!
-// v1.2 - sw-entity-multi-select with chips support + correct Twig block names
+/**
+ * Category Slider Config Component - V3.0 SLIDE MANAGEMENT
+ * 
+ * Full Hero-Slider-Style UI mit:
+ * - Add/Remove/Sort Slides
+ * - Pro Slide: Category Selection + Custom Overrides
+ * - Tab-Navigation für Slides
+ * - Reaktive Preview
+ */
 
 const { Mixin } = Shopware;
+const {
+  moveItem,
+  object: { cloneDeep },
+} = Shopware.Utils;
 const Criteria = Shopware.Data.Criteria;
 
 export default {
@@ -31,23 +41,19 @@ export default {
 
   data() {
     return {
-      categoryCollection: null,
-      categoryCriteria: null,
+      // V3.0 - Slide Management State
+      categorySlides: [], // Array von Slide-Objekten
+      activeSlideIndex: 0, // Aktuell ausgewählter Slide für Tab-Navigation
+      
+      // Category Loading
+      categoryOptions: [], // Alle verfügbaren Kategorien für Dropdowns
+      isLoadingCategories: false,
+      loadedCategoryEntities: {}, // Cache: categoryId → Category Entity
+      
+      // Custom Image Modals (pro Slide)
+      slideImageModals: {}, // { slideIndex: boolean }
+      slideImageMedia: {}, // { slideIndex: Media Entity }
     };
-  },
-
-  watch: {
-    // WICHTIG: Lade Category Collection neu, wenn categoryIds geändert wird
-    selectedCategoryIds: {
-      handler(newValue) {
-        if (newValue && newValue.length > 0) {
-          this.loadCategories(newValue);
-        } else {
-          this.categoryCollection = this.categoryRepository.create();
-        }
-      },
-      immediate: false,
-    },
   },
 
   computed: {
@@ -55,32 +61,30 @@ export default {
       return this.repositoryFactory.create("category");
     },
 
-    // WICHTIG: Multi-Select Kategorie-Auswahl (aus Element-Config) mit getter/setter für v-model
-    selectedCategoryIds: {
-      get() {
-        return this.element?.config?.categoryIds?.value || [];
-      },
-      set(value) {
-        if (!this.element?.config?.categoryIds) {
-          this.$set(this.element.config, "categoryIds", {
-            source: "static",
-            value: [],
-            entity: {
-              name: "category",
-            },
-          });
-        }
-        this.element.config.categoryIds.value = value || [];
-        console.log("[CategorySlider Config] selectedCategoryIds set:", value);
-        this.emitUpdateEl();
-      },
+    mediaRepository() {
+      return this.repositoryFactory.create("media");
     },
 
-    // Navigation Arrows Options (wie Hero Slider - Standard Shopware Keys)
-    navigationArrowsOptions() {
-      if (!this.$tc) {
+    // V3.0 - Category Slides aus element.config
+    slides() {
+      if (!this.element?.config?.categorySlides?.value) {
         return [];
       }
+      return this.element.config.categorySlides.value;
+    },
+
+    // Current active slide
+    activeSlide() {
+      if (this.slides.length === 0) {
+        return null;
+      }
+      const index = Math.min(this.activeSlideIndex, this.slides.length - 1);
+      return this.slides[index] || null;
+    },
+
+    // Navigation Options (wie Hero Slider)
+    navigationArrowsOptions() {
+      if (!this.$tc) return [];
       return [
         {
           value: "none",
@@ -103,38 +107,8 @@ export default {
       ];
     },
 
-    // Display Mode Options (wie Hero Slider - Standard Shopware Keys)
-    displayModeOptions() {
-      if (!this.$tc) {
-        return [];
-      }
-      return [
-        {
-          value: "standard",
-          label: this.$tc(
-            "sw-cms.elements.image.config.label.displayModeStandard"
-          ),
-        },
-        {
-          value: "cover",
-          label: this.$tc(
-            "sw-cms.elements.image.config.label.displayModeCover"
-          ),
-        },
-        {
-          value: "contain",
-          label: this.$tc(
-            "sw-cms.elements.image.config.label.displayModeContain"
-          ),
-        },
-      ];
-    },
-
-    // Navigation Dots Options (wie Hero Slider - Standard Shopware Keys)
     navigationDotsOptions() {
-      if (!this.$tc) {
-        return [];
-      }
+      if (!this.$tc) return [];
       return [
         {
           value: "none",
@@ -151,217 +125,403 @@ export default {
       ];
     },
 
-    // WICHTIG: Image Count Options (1-4) - aus Block-Config ins Modal verschoben
-    imageCountOptions() {
-      if (!this.$tc) {
-        return [];
-      }
+    displayModeOptions() {
+      if (!this.$tc) return [];
       return [
         {
-          value: "1",
+          value: "standard",
           label: this.$tc(
-            "sw-cms.elements.categorySlider.config.imageCount.options.one"
+            "sw-cms.elements.imageSlider.config.label.displayModeStandard"
           ),
         },
         {
-          value: "2",
+          value: "cover",
           label: this.$tc(
-            "sw-cms.elements.categorySlider.config.imageCount.options.two"
+            "sw-cms.elements.imageSlider.config.label.displayModeCover"
           ),
         },
         {
-          value: "3",
+          value: "contain",
           label: this.$tc(
-            "sw-cms.elements.categorySlider.config.imageCount.options.three"
-          ),
-        },
-        {
-          value: "4",
-          label: this.$tc(
-            "sw-cms.elements.categorySlider.config.imageCount.options.four"
+            "sw-cms.elements.imageSlider.config.label.displayModeContain"
           ),
         },
       ];
     },
 
-    // WICHTIG: Image Width Options - aus Block-Config ins Modal verschoben
+    imageCountOptions() {
+      return [
+        { value: "1", label: "1 Image" },
+        { value: "2", label: "2 Images" },
+        { value: "3", label: "3 Images" },
+        { value: "4", label: "4 Images" },
+      ];
+    },
+
     imageWidthOptions() {
-      if (!this.$tc) {
-        return [];
-      }
+      if (!this.$tc) return [];
       return [
         {
           value: "inner-full-width",
           label: this.$tc(
-            "sw-cms.elements.categorySlider.config.imageWidth.options.innerFullWidth"
+            "sw-cms.elements.categorySlider.config.imageWidth.innerFullWidth"
           ),
         },
         {
           value: "full-width",
           label: this.$tc(
-            "sw-cms.elements.categorySlider.config.imageWidth.options.fullWidth"
+            "sw-cms.elements.categorySlider.config.imageWidth.fullWidth"
           ),
         },
       ];
     },
+
+    uploadTag() {
+      return `cms-element-category-slider-${this.element?.id || "new"}`;
+    },
+
+    defaultFolderName() {
+      return this.cmsPageState?.pageEntityName || "CMS Media";
+    },
   },
 
   created() {
-    // WICHTIG: created() ist der Vue 3 / Shopware 6.5+ Lifecycle Hook
-    console.log(
-      "[CategorySlider Config] created() called - v1.1 with sw-entity-multi-select"
-    );
+    console.log("[CategorySlider Config V3.0] created() - SLIDE MANAGEMENT!");
+
+    // Initialize categorySlides
+    if (!this.element?.config?.categorySlides) {
+      if (!this.element.config) {
+        this.element.config = {};
+      }
+      this.element.config.categorySlides = {
+        source: "static",
+        value: [],
+      };
+    }
+
+    // Initialize defaults
     this.initElementConfig("hero-category-slider");
 
-    // Category Criteria für Kategorie-Auswahl
-    // WICHTIG: Performance-optimiert - mehr Kategorien laden (500 statt 100)
-    // sw-entity-multi-select hat integrierte Suche und Pagination
-    if (!this.categoryCriteria) {
-      this.categoryCriteria = new Criteria(1, 500);
-      this.categoryCriteria.addFilter(Criteria.equals("active", true));
-      this.categoryCriteria.addFilter(
-        Criteria.multi("OR", [
-          Criteria.equals("type", "page"),
-          Criteria.equals("type", "landing_page"),
-        ])
-      );
+    // MIGRATION: Alte categoryIds zu Slides konvertieren
+    this.migrateOldCategoryIds();
 
-      // WICHTIG: Associations für sw-entity-multi-select
-      this.categoryCriteria.addAssociation("translations");
-      this.categoryCriteria.addAssociation("media");
-      this.categoryCriteria.addAssociation("media.thumbnails");
-
-      this.categoryCriteria.addSorting(Criteria.sort("name", "ASC"));
-
-      console.log(
-        "[CategorySlider Config] Criteria created (limit: 500):",
-        this.categoryCriteria
-      );
-    }
-
-    // Category Collection initialisieren
-    if (!this.categoryCollection) {
-      const context = Shopware.Context.api;
-      this.categoryCollection = new Shopware.Data.EntityCollection(
-        "/category",
-        "category",
-        context
-      );
-      console.log("[CategorySlider Config] Empty EntityCollection created");
-    }
-
-    // Wenn Kategorien bereits ausgewählt, lade sie
-    if (this.selectedCategoryIds && this.selectedCategoryIds.length > 0) {
-      this.loadCategories(this.selectedCategoryIds);
-    }
+    // Load all available categories
+    this.loadAllCategories();
   },
 
   mounted() {
-    // WICHTIG: Validierung nach Mount
-    this.$nextTick(() => {
-      if (!this.categoryCollection) {
-        const context = Shopware.Context.api;
-        this.categoryCollection = new Shopware.Data.EntityCollection(
-          "/category",
-          "category",
-          context
-        );
-      }
-
-      console.log("[CategorySlider Config] Mounted:", {
-        categoryCollection: this.categoryCollection,
-        categoryCriteria: this.categoryCriteria,
-        selectedCategoryIds: this.selectedCategoryIds,
-      });
+    console.log("[CategorySlider Config V3.0] Mounted:", {
+      slides: this.slides,
+      categoryOptions: this.categoryOptions.length,
     });
   },
 
   methods: {
-    async loadCategories(categoryIds) {
-      console.log(
-        "[CategorySlider Config] loadCategories called:",
-        categoryIds
-      );
+    // ========================================
+    // MIGRATION & INITIALIZATION
+    // ========================================
 
-      if (!categoryIds || categoryIds.length === 0) {
-        const context = Shopware.Context.api;
-        this.categoryCollection = new Shopware.Data.EntityCollection(
-          "/category",
-          "category",
-          context
+    migrateOldCategoryIds() {
+      const oldIds = this.element?.config?.categoryIds?.value || [];
+      const existingSlides = this.element?.config?.categorySlides?.value || [];
+
+      if (oldIds.length > 0 && existingSlides.length === 0) {
+        console.log(
+          "[CategorySlider Config V3.0] Migrating old categoryIds:",
+          oldIds
         );
-        console.log("[CategorySlider Config] Empty categoryCollection created");
-        return;
-      }
 
-      try {
-        const criteria = new Criteria();
-        criteria.addFilter(Criteria.equalsAny("id", categoryIds));
-        criteria.addAssociation("translations");
-        criteria.addAssociation("media");
-        criteria.addAssociation("media.thumbnails");
+        this.element.config.categorySlides.value = oldIds.map((categoryId) => ({
+          id: this.generateUniqueId(),
+          categoryId: categoryId,
+          customTitle: null,
+          customImageId: null,
+          customText: null,
+          customLink: null,
+        }));
 
-        const categories = await this.categoryRepository.search(
-          criteria,
-          Shopware.Context.api
-        );
-        console.log("[CategorySlider Config] Categories loaded:", categories);
+        // Clear old categoryIds
+        this.element.config.categoryIds.value = [];
 
-        if (categories && categories.length > 0) {
-          this.categoryCollection = categories;
-          console.log(
-            "[CategorySlider Config] Categories added to collection:",
-            this.categoryCollection
-          );
-        } else {
-          const context = Shopware.Context.api;
-          this.categoryCollection = new Shopware.Data.EntityCollection(
-            "/category",
-            "category",
-            context
-          );
-          console.warn(
-            "[CategorySlider Config] Categories not found:",
-            categoryIds
-          );
-        }
-      } catch (error) {
-        console.error(
-          "[CategorySlider Config] Error loading categories:",
-          error
-        );
-        const context = Shopware.Context.api;
-        this.categoryCollection = new Shopware.Data.EntityCollection(
-          "/category",
-          "category",
-          context
+        console.log(
+          "[CategorySlider Config V3.0] Migrated to slides:",
+          this.element.config.categorySlides.value
         );
       }
     },
 
-    async onCategoryChange(categoryIds) {
-      console.log(
-        "[CategorySlider Config] onCategoryChange called:",
-        categoryIds
-      );
+    generateUniqueId() {
+      return `slide-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    },
 
-      // selectedCategoryIds setter wird automatisch aufgerufen
-      this.selectedCategoryIds = categoryIds || [];
+    // ========================================
+    // CATEGORY LOADING
+    // ========================================
 
-      // Category Collection aktualisieren
-      if (categoryIds && categoryIds.length > 0) {
-        await this.loadCategories(categoryIds);
-      } else {
-        const context = Shopware.Context.api;
-        this.categoryCollection = new Shopware.Data.EntityCollection(
-          "/category",
-          "category",
-          context
+    async loadAllCategories() {
+      console.log("[CategorySlider Config V3.0] loadAllCategories() START");
+      this.isLoadingCategories = true;
+
+      try {
+        const criteria = new Criteria(1, 500);
+        criteria.addFilter(Criteria.equals("active", true));
+        criteria.addFilter(
+          Criteria.multi("OR", [
+            Criteria.equals("type", "page"),
+            Criteria.equals("type", "landing_page"),
+          ])
         );
+        criteria.addAssociation("translations");
+        criteria.addAssociation("media");
+        criteria.addAssociation("media.thumbnails");
+        criteria.addSorting(Criteria.sort("name", "ASC"));
+
+        const result = await this.categoryRepository.search(
+          criteria,
+          Shopware.Context.api
+        );
+
+        console.log(
+          "[CategorySlider Config V3.0] Loaded categories:",
+          result.total
+        );
+
+        // Build Options für Dropdowns
+        this.categoryOptions = Array.from(result).map((category) => ({
+          label: category.translated?.name || category.name || "Unknown",
+          value: category.id,
+        }));
+
+        // Cache Entities
+        result.forEach((category) => {
+          this.loadedCategoryEntities[category.id] = category;
+        });
+
+        console.log(
+          "[CategorySlider Config V3.0] categoryOptions built:",
+          this.categoryOptions.length
+        );
+      } catch (error) {
+        console.error(
+          "[CategorySlider Config V3.0] Error loading categories:",
+          error
+        );
+      } finally {
+        this.isLoadingCategories = false;
+      }
+    },
+
+    // ========================================
+    // SLIDE MANAGEMENT
+    // ========================================
+
+    addSlide() {
+      console.log("[CategorySlider Config V3.0] addSlide()");
+
+      const newSlide = {
+        id: this.generateUniqueId(),
+        categoryId: null, // User muss Kategorie wählen
+        customTitle: null,
+        customImageId: null,
+        customText: null,
+        customLink: null,
+      };
+
+      if (!this.element.config.categorySlides) {
+        this.element.config.categorySlides = {
+          source: "static",
+          value: [],
+        };
+      }
+
+      this.element.config.categorySlides.value.push(newSlide);
+
+      // Set active to new slide
+      this.activeSlideIndex = this.slides.length - 1;
+
+      this.emitUpdateEl();
+
+      console.log("[CategorySlider Config V3.0] Slide added:", newSlide);
+    },
+
+    removeSlide(index) {
+      console.log("[CategorySlider Config V3.0] removeSlide:", index);
+
+      if (!this.element.config.categorySlides?.value) {
+        return;
+      }
+
+      this.element.config.categorySlides.value.splice(index, 1);
+
+      // Adjust active index
+      if (this.activeSlideIndex >= this.slides.length) {
+        this.activeSlideIndex = Math.max(0, this.slides.length - 1);
       }
 
       this.emitUpdateEl();
     },
+
+    setActiveSlide(index) {
+      console.log("[CategorySlider Config V3.0] setActiveSlide:", index);
+      this.activeSlideIndex = index;
+    },
+
+    onSlideDragSort(dragData, dropData) {
+      console.log("[CategorySlider Config V3.0] onSlideDragSort:", {
+        from: dragData.position,
+        to: dropData.position,
+      });
+
+      if (!this.element.config.categorySlides?.value) {
+        return;
+      }
+
+      const slides = this.element.config.categorySlides.value;
+      moveItem(slides, dragData.position, dropData.position);
+
+      this.emitUpdateEl();
+    },
+
+    // ========================================
+    // PER-SLIDE SETTINGS
+    // ========================================
+
+    onCategoryChange(slideIndex, categoryId) {
+      console.log("[CategorySlider Config V3.0] onCategoryChange:", {
+        slideIndex,
+        categoryId,
+      });
+
+      if (!this.slides[slideIndex]) {
+        return;
+      }
+
+      this.slides[slideIndex].categoryId = categoryId;
+
+      this.emitUpdateEl();
+    },
+
+    onCustomTitleChange(slideIndex, value) {
+      if (!this.slides[slideIndex]) return;
+      this.slides[slideIndex].customTitle = value;
+      this.emitUpdateEl();
+    },
+
+    onCustomTextChange(slideIndex, value) {
+      if (!this.slides[slideIndex]) return;
+      this.slides[slideIndex].customText = value;
+      this.emitUpdateEl();
+    },
+
+    onCustomLinkChange(slideIndex, value) {
+      if (!this.slides[slideIndex]) return;
+      this.slides[slideIndex].customLink = value;
+      this.emitUpdateEl();
+    },
+
+    // ========================================
+    // CUSTOM IMAGE UPLOAD (PRO SLIDE)
+    // ========================================
+
+    openImageModal(slideIndex) {
+      console.log("[CategorySlider Config V3.0] openImageModal:", slideIndex);
+      this.$set(this.slideImageModals, slideIndex, true);
+    },
+
+    closeImageModal(slideIndex) {
+      this.$set(this.slideImageModals, slideIndex, false);
+    },
+
+    async onImageUpload(slideIndex, { targetId }) {
+      console.log("[CategorySlider Config V3.0] onImageUpload:", {
+        slideIndex,
+        targetId,
+      });
+
+      if (!this.slides[slideIndex]) return;
+
+      // Load media entity
+      try {
+        const media = await this.mediaRepository.get(
+          targetId,
+          Shopware.Context.api
+        );
+        
+        // Cache media entity
+        this.$set(this.slideImageMedia, slideIndex, media);
+        
+        // Save mediaId to slide
+        this.slides[slideIndex].customImageId = targetId;
+
+        this.emitUpdateEl();
+
+        console.log("[CategorySlider Config V3.0] Image uploaded:", media);
+      } catch (error) {
+        console.error(
+          "[CategorySlider Config V3.0] Error loading media:",
+          error
+        );
+      }
+    },
+
+    onImageRemove(slideIndex) {
+      console.log("[CategorySlider Config V3.0] onImageRemove:", slideIndex);
+
+      if (!this.slides[slideIndex]) return;
+
+      this.slides[slideIndex].customImageId = null;
+      this.$delete(this.slideImageMedia, slideIndex);
+
+      this.emitUpdateEl();
+    },
+
+    onImageSelectionChange(slideIndex, selection) {
+      console.log("[CategorySlider Config V3.0] onImageSelectionChange:", {
+        slideIndex,
+        selection,
+      });
+
+      if (selection && selection.length > 0) {
+        const mediaId = selection[0].id;
+        this.onImageUpload(slideIndex, { targetId: mediaId });
+      }
+
+      this.closeImageModal(slideIndex);
+    },
+
+    // Get media entity for slide (from cache or slide config)
+    getSlideImageMedia(slideIndex) {
+      if (this.slideImageMedia[slideIndex]) {
+        return this.slideImageMedia[slideIndex];
+      }
+
+      const slide = this.slides[slideIndex];
+      if (slide?.customImageId) {
+        // Load async (will be cached)
+        this.loadSlideImage(slideIndex, slide.customImageId);
+      }
+
+      return null;
+    },
+
+    async loadSlideImage(slideIndex, mediaId) {
+      try {
+        const media = await this.mediaRepository.get(
+          mediaId,
+          Shopware.Context.api
+        );
+        this.$set(this.slideImageMedia, slideIndex, media);
+      } catch (error) {
+        console.error(
+          "[CategorySlider Config V3.0] Error loading slide image:",
+          error
+        );
+      }
+    },
+
+    // ========================================
+    // GLOBAL SETTINGS (NON-SLIDE-SPECIFIC)
+    // ========================================
 
     onChangeNavigationArrows(value) {
       if (!this.element?.config?.navigationArrows) return;
@@ -371,7 +531,6 @@ export default {
 
     onChangeNavigationDots(value) {
       if (!this.element?.config?.navigationDots) return;
-      // WICHTIG: navigationDots kann 'none' oder 'bottom' sein (wie Hero Slider)
       this.element.config.navigationDots.value = value;
       this.emitUpdateEl();
     },
@@ -406,30 +565,35 @@ export default {
       this.emitUpdateEl();
     },
 
-    // WICHTIG: Subcategory Levels Handler (Feature aus Shopware Store Extension)
-    onChangeSubcategoryLevels(value) {
-      if (!this.element?.config?.subcategoryLevels) return;
-      this.element.config.subcategoryLevels.value = parseInt(value, 10) || 0;
-      this.emitUpdateEl();
-    },
-
-    // WICHTIG: Image Count Handler (aus Block-Config ins Modal verschoben)
     onChangeImageCount(value) {
       if (!this.element?.config?.imageCount) return;
       this.element.config.imageCount.value = value;
       this.emitUpdateEl();
     },
 
-    // WICHTIG: Image Width Handler (aus Block-Config ins Modal verschoben)
     onChangeImageWidth(value) {
       if (!this.element?.config?.imageWidth) return;
       this.element.config.imageWidth.value = value;
       this.emitUpdateEl();
     },
 
+    onChangeSubcategoryLevels(value) {
+      if (!this.element?.config?.subcategoryLevels) return;
+      this.element.config.subcategoryLevels.value = value;
+      this.emitUpdateEl();
+    },
+
+    // ========================================
+    // HELPER
+    // ========================================
+
     emitUpdateEl() {
-      if (!this.element) return;
       this.$emit("element-update", this.element);
+    },
+
+    getCategoryName(categoryId) {
+      const category = this.loadedCategoryEntities[categoryId];
+      return category?.translated?.name || category?.name || "Unknown Category";
     },
   },
 };
