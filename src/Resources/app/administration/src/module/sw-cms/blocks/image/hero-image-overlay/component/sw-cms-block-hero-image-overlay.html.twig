@@ -14,21 +14,26 @@
         :style="overlayStyles"
     >
         <div class="sw-cms-block-hero-image-overlay__overlay-content">
-            {# Headline - reaktiv #}
-            <h3 v-if="overlayHeadline" class="sw-cms-block-hero-image-overlay__headline">
+            {# Headline - reaktiv mit expliziter Textfarbe #}
+            <h3 v-if="overlayHeadline" 
+                class="sw-cms-block-hero-image-overlay__headline"
+                :style="{ color: overlayTextColor }">
                 {{ overlayHeadline }}
             </h3>
             {# Text - WICHTIG: v-html für HTML-Rendering (aus sw-text-editor) #}
             <div v-if="overlayText" 
                  class="sw-cms-block-hero-image-overlay__text"
+                 :style="{ color: overlayTextColor }"
                  v-html="overlayText">
             </div>
             {# Placeholder wenn kein Content #}
             <template v-if="!overlayHeadline && !overlayText">
-                <h3 class="sw-cms-block-hero-image-overlay__headline sw-cms-block-hero-image-overlay__headline--placeholder">
+                <h3 class="sw-cms-block-hero-image-overlay__headline sw-cms-block-hero-image-overlay__headline--placeholder"
+                    :style="{ color: overlayTextColor }">
                     {{ $tc('sw-cms.blocks.heroBlocks.heroImageOverlay.placeholder.headline') }}
                 </h3>
-                <p class="sw-cms-block-hero-image-overlay__text sw-cms-block-hero-image-overlay__text--placeholder">
+                <p class="sw-cms-block-hero-image-overlay__text sw-cms-block-hero-image-overlay__text--placeholder"
+                   :style="{ color: overlayTextColor }">
                     {{ $tc('sw-cms.blocks.heroBlocks.heroImageOverlay.placeholder.text') }}
                 </p>
             </template>

@@ -9,12 +9,13 @@
             {{ $tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.sectionPosition') }}
         </h4>
         
-        {# Overlay Position (6 Positionen) #}
+        {# Overlay Position (6 Positionen) - WICHTIG: :value + @update:value für korrektes Speichern #}
         <sw-select-field
-            v-model="overlayPosition"
+            :value="overlayPosition"
             :label="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.overlayPosition')"
             :options="positionOptions"
             :helpText="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.overlayPositionHelp')"
+            @update:value="(value) => updateCustomField('overlayPosition', value)"
         />
     </div>
     
@@ -26,11 +27,12 @@
             {{ $tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.sectionContent') }}
         </h4>
         
-        {# Overlay Headline #}
+        {# Overlay Headline - WICHTIG: :value + @update:value für korrektes Speichern #}
         <sw-text-field
-            v-model="overlayHeadline"
+            :value="overlayHeadline"
             :label="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.overlayHeadline')"
             :placeholder="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.overlayHeadlinePlaceholder')"
+            @update:value="(value) => updateCustomField('overlayHeadline', value)"
         />
         
         {# Overlay Text - HTML Editor für Rich Content #}
@@ -55,28 +57,31 @@
             {{ $tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.sectionStyle') }}
         </h4>
         
-        {# Overlay Background Color #}
+        {# Overlay Background Color - WICHTIG: :value + @update:value für korrektes Speichern #}
         <sw-colorpicker
-            v-model="overlayBackgroundColor"
+            :value="overlayBackgroundColor"
             :label="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.overlayBackgroundColor')"
             :helpText="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.overlayBackgroundColorHelp')"
             :colorOutput="'hex'"
+            @update:value="(value) => updateCustomField('overlayBackgroundColor', value)"
         />
         
-        {# Overlay Text Color (Default: white) #}
+        {# Overlay Text Color (Default: white) - WICHTIG: :value + @update:value für korrektes Speichern #}
         <sw-colorpicker
-            v-model="overlayTextColor"
+            :value="overlayTextColor"
             :label="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.overlayTextColor')"
             :helpText="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.overlayTextColorHelp')"
             :colorOutput="'hex'"
+            @update:value="(value) => updateCustomField('overlayTextColor', value)"
         />
         
-        {# Minimum Height #}
+        {# Minimum Height - WICHTIG: :value + @update:value für korrektes Speichern #}
         <sw-text-field
-            v-model="minHeight"
+            :value="minHeight"
             :label="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.minHeight')"
             :placeholder="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.minHeightPlaceholder')"
             :helpText="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.minHeightHelp')"
+            @update:value="(value) => updateCustomField('minHeight', value)"
         />
     </div>
     
@@ -88,11 +93,12 @@
             {{ $tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.sectionAnimation') }}
         </h4>
         
-        {# Enable Scroll Animation #}
+        {# Enable Scroll Animation - WICHTIG: :value + @update:value für korrektes Speichern #}
         <sw-switch-field
-            v-model="enableScrollAnimation"
+            :value="enableScrollAnimation"
             :label="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.enableScrollAnimation')"
             :helpText="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.enableScrollAnimationHelp')"
+            @update:value="(value) => updateCustomField('enableScrollAnimation', value)"
         />
     </div>
     
