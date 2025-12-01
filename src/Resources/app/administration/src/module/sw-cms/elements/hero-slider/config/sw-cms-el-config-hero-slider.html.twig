@@ -532,7 +532,11 @@
                             <mt-select
                                 v-model="element.config.contentVerticalAlign.value"
                                 :label="$tc('sw-cms.elements.heroSlider.config.contentVerticalAlign')"
-                                :options="contentVerticalAlignValueOptions"
+                                :options="[
+                                    { value: 'top', label: $tc('sw-cms.elements.heroSlider.config.contentVerticalAlignTop') },
+                                    { value: 'center', label: $tc('sw-cms.elements.heroSlider.config.contentVerticalAlignCenter') },
+                                    { value: 'bottom', label: $tc('sw-cms.elements.heroSlider.config.contentVerticalAlignBottom') }
+                                ]"
                                 @update:model-value="emitUpdateEl"
                             />
                             {% endblock %}
@@ -541,7 +545,11 @@
                             <mt-select
                                 v-model="element.config.contentHorizontalAlign.value"
                                 :label="$tc('sw-cms.elements.heroSlider.config.contentHorizontalAlign')"
-                                :options="contentHorizontalAlignValueOptions"
+                                :options="[
+                                    { value: 'left', label: $tc('sw-cms.elements.heroSlider.config.contentHorizontalAlignLeft') },
+                                    { value: 'center', label: $tc('sw-cms.elements.heroSlider.config.contentHorizontalAlignCenter') },
+                                    { value: 'right', label: $tc('sw-cms.elements.heroSlider.config.contentHorizontalAlignRight') }
+                                ]"
                                 @update:model-value="emitUpdateEl"
                             />
                             {% endblock %}

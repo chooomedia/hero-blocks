@@ -666,10 +666,12 @@ export default {
       // Wenn fullHeight deaktiviert, behalte die Werte (Felder bleiben editierbar)
       if (value) {
         if (this.element?.config?.minHeight) {
-          this.element.config.minHeight.value = "calc(100vh - var(--header-height, 80px))";
+          this.element.config.minHeight.value =
+            "calc(100vh - var(--header-height, 80px))";
         }
         if (this.element?.config?.maxHeight) {
-          this.element.config.maxHeight.value = "calc(100vh - var(--header-height, 80px))";
+          this.element.config.maxHeight.value =
+            "calc(100vh - var(--header-height, 80px))";
         }
       }
       // Emit update für Reaktivität
@@ -755,16 +757,16 @@ export default {
       const dragIndex = dragData.position;
       const dropIndex = dropData.position;
 
-      if (dragIndex === dropIndex || dragIndex === undefined || dropIndex === undefined) {
+      if (
+        dragIndex === dropIndex ||
+        dragIndex === undefined ||
+        dropIndex === undefined
+      ) {
         return;
       }
 
       // Verschiebe in items (sliderItems.value)
-      moveItem(
-        this.element.config.sliderItems.value,
-        dragIndex,
-        dropIndex
-      );
+      moveItem(this.element.config.sliderItems.value, dragIndex, dropIndex);
 
       // Verschiebe in mediaItems
       moveItem(this.mediaItems, dragIndex, dropIndex);
@@ -772,15 +774,9 @@ export default {
       // Aktualisiere activeSlideIndex
       if (this.activeSlideIndex === dragIndex) {
         this.activeSlideIndex = dropIndex;
-      } else if (
-        this.activeSlideIndex === dropIndex &&
-        dragIndex < dropIndex
-      ) {
+      } else if (this.activeSlideIndex === dropIndex && dragIndex < dropIndex) {
         this.activeSlideIndex = dropIndex - 1;
-      } else if (
-        this.activeSlideIndex === dropIndex &&
-        dragIndex > dropIndex
-      ) {
+      } else if (this.activeSlideIndex === dropIndex && dragIndex > dropIndex) {
         this.activeSlideIndex = dropIndex + 1;
       } else if (
         this.activeSlideIndex > dragIndex &&
