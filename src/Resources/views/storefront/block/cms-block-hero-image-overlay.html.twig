@@ -48,6 +48,7 @@
         </div>
         
         {# Text Overlay Panel - Always render, even without content (for visual design) #}
+        {# WICHTIG: overlayTextStyle wird auf das Overlay angewendet, Headline/Text erben die Farbe #}
         <div class="cms-block-hero-image-overlay__overlay cms-block-hero-image-overlay__overlay--{{ overlayPosition }}"
              style="{{ overlayBgStyle }} {{ overlayTextStyle }}"
              {% if enableScrollAnimation %}
@@ -55,15 +56,17 @@
              {% endif %}>
             <div class="cms-block-hero-image-overlay__overlay-content">
                 {% if overlayHeadline %}
-                    <h2 class="cms-block-hero-image-overlay__headline">{{ overlayHeadline }}</h2>
+                    {# Headline mit expliziter Text-Farbe aus Admin-Settings #}
+                    <h2 class="cms-block-hero-image-overlay__headline" style="{{ overlayTextStyle }}">{{ overlayHeadline }}</h2>
                 {% endif %}
                 {% if overlayText %}
-                    <div class="cms-block-hero-image-overlay__text">{{ overlayText|raw }}</div>
+                    {# Text mit expliziter Text-Farbe aus Admin-Settings #}
+                    <div class="cms-block-hero-image-overlay__text" style="{{ overlayTextStyle }}">{{ overlayText|raw }}</div>
                 {% endif %}
                 {# Fallback: Show placeholder if no content is defined #}
                 {% if not overlayHeadline and not overlayText %}
-                    <h2 class="cms-block-hero-image-overlay__headline">Your Headline</h2>
-                    <p class="cms-block-hero-image-overlay__text">Your description text here</p>
+                    <h2 class="cms-block-hero-image-overlay__headline" style="{{ overlayTextStyle }}">Your Headline</h2>
+                    <p class="cms-block-hero-image-overlay__text" style="{{ overlayTextStyle }}">Your description text here</p>
                 {% endif %}
             </div>
         </div>
