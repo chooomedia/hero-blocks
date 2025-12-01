@@ -128,7 +128,7 @@
                                     
                                     {# BOOTSTRAP RESPONSIVE CLASSES - col für static mode #}
                                     <div 
-                                        class="hero-category-slider-item-container{% if not needsSlider %} col-12 col-md-{{ 12 / imageCountInt }}{% endif %}"
+                                        class="hero-category-slider-item-container mt-0{% if not needsSlider %} col-12 col-md-{{ 12 / imageCountInt }}{% endif %}"
                                         {% if loop.index > imageCountInt %}aria-hidden="true"{% endif %}
                                         itemscope
                                         itemtype="https://schema.org/ImageObject"
@@ -279,6 +279,7 @@
         
         .hero-category-slider-container--static {
             display: flex !important;
+            flex-wrap: wrap !important; /* Bootstrap row flex-wrap */
         }
         
         {# ITEM WRAPPER - Minimales CSS für Tiny Slider! #}
@@ -286,9 +287,10 @@
             /* Tiny Slider setzt: position, width, left via inline-styles */
         }
         
-        {# WICHTIG: Im Static-Modus flex #}
+        {# WICHTIG: Im Static-Modus flex mit voller Höhe #}
         .hero-category-slider-container--static .hero-category-slider-item-container {
             display: flex;
+            flex-direction: column;
         }
         
         .hero-category-slider-item {
@@ -296,32 +298,46 @@
             overflow: hidden;
             border-radius: 8px;
             background: #000;
-            min-height: 200px;
+            min-height: 240px; /* Standard min-height */
             display: block;
+            width: 100%;
         }
         
-        {# LINK um Wrapper #}
+        {# KRITISCH: Static Mode braucht flex-grow! #}
+        .hero-category-slider-container--static .hero-category-slider-item {
+            flex: 1;
+        }
+        
+        {# LINK um Wrapper - KRITISCH: Muss 100% Höhe haben! #}
         .hero-category-slide-link {
             display: block;
             text-decoration: none;
             color: inherit;
             transition: transform 0.3s ease;
+            height: 100%;
+            width: 100%;
         }
         
         .hero-category-slide-link:hover {
             transform: translateY(-4px);
         }
         
-        {# BACKGROUND #}
+        {# KRITISCH: Static Mode Link braucht flex! #}
+        .hero-category-slider-container--static .hero-category-slide-link {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        {# BACKGROUND - KRITISCH: Muss Höhe von Parent erben! #}
         .hero-category-slide-background {
-            position: relative;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             overflow: hidden;
             width: 100%;
             height: 100%;
-        }
-        
-        .hero-category-slide-background.is-cover {
-            min-height: 400px; /* Wichtig für cover mode! */
         }
         
         {# IMAGE mit Zoom-Effekt #}
@@ -333,11 +349,12 @@
             height: 100%;
             transition: transform 0.6s ease;
             z-index: 1;
-        }
-        
-        .hero-category-slide-background.is-cover .hero-category-slide-img {
             object-fit: cover;
             object-position: center;
+        }
+        
+        .hero-category-slide-background.is-contain .hero-category-slide-img {
+            object-fit: contain;
         }
         
         .hero-category-slide-link:hover .hero-category-slide-img {

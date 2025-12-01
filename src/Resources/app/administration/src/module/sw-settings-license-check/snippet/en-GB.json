@@ -1,19 +1,51 @@
 {
     "sw-settings-license-check": {
-        "description": "The versatile hero slider: bold visuals, clear messaging, smart CTAs. Built for brand stories and campaigns.",
+        "description": "Professional CMS blocks for Shopware Shopping Experiences. Hero Slider, Two Columns layouts, scroll animations and more – built according to Shopware best practices.",
         "features": {
-            "heroSlider": "Hero Slider - Multi-slide hero blocks with headlines, text, buttons, and images",
-            "heroTwoColumns": "Hero Two Columns Image & Text - Two-column layout with flexible background options (Parallax scroll: coming soon)",
-            "heroVideoExtended": "Hero Video Extended - Video hero blocks with headlines, text, and buttons (Coming soon)",
-            "heroInstagramFeed": "Hero Instagram Feed Widget - Instagram feed integration for mega menu and custom blocks (Coming soon)",
-            "megaMenu": "Mega Menu Block - Advanced navigation block with products, widgets, and Instagram feed support (Coming soon)",
-            "shoppingExperience": "Shopping Experience Blocks - Additional custom blocks for enhanced shopping experiences (In development)"
+            "heroSlider": "Hero Slider – Multi-slide hero blocks with headlines, text, buttons, and images",
+            "heroTwoColumns": "Hero Two Columns – Two-column layout with flexible background options and audio player",
+            "heroVideoExtended": "Hero Video Extended – Video hero blocks with headlines, text, and buttons (Coming soon)",
+            "heroInstagramFeed": "Hero Instagram Feed – Instagram feed integration for mega menu and custom blocks (Coming soon)",
+            "megaMenu": "Mega Menu Block – Advanced navigation block with products, widgets, and Instagram feed (Coming soon)",
+            "shoppingExperience": "Shopping Experience Blocks – Additional custom blocks for enhanced shopping experiences (In development)"
+        },
+        "featureStatus": {
+            "active": "Active",
+            "comingSoon": "Coming soon",
+            "inDevelopment": "In development"
+        },
+        "animations": {
+            "title": "CSS Animation Classes for CMS Blocks",
+            "description": "Add these classes in CMS Admin under Block Settings → CSS Classes:",
+            "scrollSlide": {
+                "name": "scroll-slide-animation",
+                "description": "Slide-in animation (left/right) when scrolling into visible area"
+            },
+            "countUp": {
+                "name": "count-up-animation",
+                "description": "Count-up animation (0 → target value) when scrolling into visible area"
+            },
+            "usage": {
+                "title": "Usage",
+                "step1": "Open CMS Editor → Select block",
+                "step2": "Block Settings (gear icon) → Advanced",
+                "step3": "CSS Classes field → Enter class (e.g. scroll-slide-animation)",
+                "step4": "Save and check preview"
+            },
+            "countUpOptions": {
+                "title": "Count-Up Options",
+                "dataTarget": "data-count-target=\"163\" – Target value (required for non-numeric text)",
+                "dataSuffix": "data-count-suffix=\" HP\" – Suffix after the number (optional)",
+                "dataPrefix": "data-count-prefix=\"$\" – Prefix before the number (optional)",
+                "dataDuration": "data-count-duration=\"2000\" – Animation duration in ms (default: 2000)",
+                "dataDecimals": "data-count-decimals=\"2\" – Decimal places (default: 0)"
+            }
         },
         "button": {
             "checkLicense": "Check License",
             "checking": "Checking...",
             "licenseExpiredTitle": "License Expired",
-            "licenseExpiredMessage": "⚠️ Your license has expired. Please renew your license to continue using Hero Blocks."
+            "licenseExpiredMessage": "Your license has expired. Please renew your license to continue using Hero Blocks."
         },
         "status": {
             "active": "License Active",
@@ -49,7 +81,7 @@
             "checkFailed": "Update check failed",
             "checking": "Checking for updates...",
             "licenseExpired": "License expired",
-            "licenseExpiredMessage": "⚠️ Your license has expired. Updates can no longer be loaded. Please renew your license.",
+            "licenseExpiredMessage": "Your license has expired. Updates can no longer be loaded. Please renew your license.",
             "downloadUpdate": "Download & Install Update",
             "downloading": "Downloading and installing...",
             "downloadSuccess": "Update installed successfully",
@@ -57,7 +89,7 @@
             "downloadFailed": "Update download failed"
         },
         "instagram": {
-            "licenseExpiredMessage": "⚠️ Your license has expired. Instagram Feed API requests are no longer possible. Please renew your license.",
+            "licenseExpiredMessage": "Your license has expired. Instagram Feed API requests are no longer possible. Please renew your license.",
             "checkToken": "Check Instagram Token",
             "checking": "Checking token...",
             "validationSuccess": "Instagram Token Validation Successful",
@@ -85,7 +117,7 @@
             }
         },
         "instagramFeed": {
-            "licenseExpiredMessage": "⚠️ Your license has expired. Instagram Feed API requests are no longer possible. Please renew your license.",
+            "licenseExpiredMessage": "Your license has expired. Instagram Feed API requests are no longer possible. Please renew your license.",
             "bestPractices": {
                 "title": "Instagram Basic Display API - Best Practices",
                 "appId": "Create an Instagram App in Facebook Developer Console (developers.facebook.com)",
@@ -96,9 +128,9 @@
         },
         "featureValidation": {
             "running": "Validation running for {feature}...",
-            "success": "✅ {feature} successfully activated",
-            "warning": "⚠️ {feature} - Validation with warnings",
-            "error": "❌ {feature} - Validation error"
+            "success": "{feature} successfully activated",
+            "warning": "{feature} - Validation with warnings",
+            "error": "{feature} - Validation error"
         },
         "languageSwitcher": {
             "loading": "Loading available languages...",
@@ -107,7 +139,7 @@
             "noLanguages": "No languages found. Please check your language configuration."
         },
         "renewal": {
-            "title": "⚡ Reactivate License & Level Up",
+            "title": "Reactivate License & Level Up",
             "message": "Your license has expired – but no worries! With just one click, reactivate all premium features and take your store to the next level. <strong>Special benefits when renewing:</strong> Exclusive updates, priority support, and early access to new features. Invest in your success!",
             "button": "Renew License Now",
             "features": {

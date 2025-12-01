@@ -16,37 +16,125 @@
         <p class="sw-system-config__hero-blocks-description-text">
             {{ $tc('sw-settings-license-check.description') }}
         </p>
+        
+        {# Feature Grid - Aktive Blocks #}
         <div class="sw-system-config__hero-blocks-features">
-            <div class="sw-system-config__hero-blocks-feature-item">
+            <div class="sw-system-config__hero-blocks-feature-item sw-system-config__hero-blocks-feature-item--active">
                 <div class="sw-system-config__hero-blocks-feature-content">
+                    <div class="sw-system-config__hero-blocks-feature-icon">
+                        <mt-icon name="solid-check-circle" size="16" color="#10b981" />
+                    </div>
                     <div class="sw-system-config__hero-blocks-feature-title">{{ $tc('sw-settings-license-check.features.heroSlider') }}</div>
                 </div>
             </div>
-            <div class="sw-system-config__hero-blocks-feature-item">
+            <div class="sw-system-config__hero-blocks-feature-item sw-system-config__hero-blocks-feature-item--active">
                 <div class="sw-system-config__hero-blocks-feature-content">
+                    <div class="sw-system-config__hero-blocks-feature-icon">
+                        <mt-icon name="solid-check-circle" size="16" color="#10b981" />
+                    </div>
                     <div class="sw-system-config__hero-blocks-feature-title">{{ $tc('sw-settings-license-check.features.heroTwoColumns') }}</div>
                 </div>
             </div>
-            <div class="sw-system-config__hero-blocks-feature-item">
+            <div class="sw-system-config__hero-blocks-feature-item sw-system-config__hero-blocks-feature-item--inactive">
                 <div class="sw-system-config__hero-blocks-feature-content">
+                    <div class="sw-system-config__hero-blocks-feature-icon">
+                        <mt-icon name="regular-clock" size="16" color="#6b7280" />
+                    </div>
                     <div class="sw-system-config__hero-blocks-feature-title">{{ $tc('sw-settings-license-check.features.heroVideoExtended') }}</div>
                 </div>
             </div>
-            <div class="sw-system-config__hero-blocks-feature-item">
+            <div class="sw-system-config__hero-blocks-feature-item sw-system-config__hero-blocks-feature-item--inactive">
                 <div class="sw-system-config__hero-blocks-feature-content">
+                    <div class="sw-system-config__hero-blocks-feature-icon">
+                        <mt-icon name="regular-clock" size="16" color="#6b7280" />
+                    </div>
                     <div class="sw-system-config__hero-blocks-feature-title">{{ $tc('sw-settings-license-check.features.heroInstagramFeed') }}</div>
                 </div>
             </div>
-            <div class="sw-system-config__hero-blocks-feature-item">
+            <div class="sw-system-config__hero-blocks-feature-item sw-system-config__hero-blocks-feature-item--inactive">
                 <div class="sw-system-config__hero-blocks-feature-content">
+                    <div class="sw-system-config__hero-blocks-feature-icon">
+                        <mt-icon name="regular-clock" size="16" color="#6b7280" />
+                    </div>
                     <div class="sw-system-config__hero-blocks-feature-title">{{ $tc('sw-settings-license-check.features.megaMenu') }}</div>
                 </div>
             </div>
-            <div class="sw-system-config__hero-blocks-feature-item">
+            <div class="sw-system-config__hero-blocks-feature-item sw-system-config__hero-blocks-feature-item--inactive">
                 <div class="sw-system-config__hero-blocks-feature-content">
+                    <div class="sw-system-config__hero-blocks-feature-icon">
+                        <mt-icon name="regular-tools" size="16" color="#6b7280" />
+                    </div>
                     <div class="sw-system-config__hero-blocks-feature-title">{{ $tc('sw-settings-license-check.features.shoppingExperience') }}</div>
                 </div>
             </div>
+        </div>
+        
+        {# Animations Section - CSS Klassen Hinweise #}
+        <div class="sw-system-config__hero-blocks-animations">
+            <h4 class="sw-system-config__hero-blocks-animations-title">
+                <mt-icon name="regular-play-circle" size="18" />
+                {{ $tc('sw-settings-license-check.animations.title') }}
+            </h4>
+            <p class="sw-system-config__hero-blocks-animations-description">
+                {{ $tc('sw-settings-license-check.animations.description') }}
+            </p>
+            
+            <div class="sw-system-config__hero-blocks-animations-grid">
+                {# Scroll Slide Animation #}
+                <div class="sw-system-config__hero-blocks-animation-card">
+                    <div class="sw-system-config__hero-blocks-animation-header">
+                        <code class="sw-system-config__hero-blocks-animation-class">{{ $tc('sw-settings-license-check.animations.scrollSlide.name') }}</code>
+                    </div>
+                    <p class="sw-system-config__hero-blocks-animation-desc">
+                        {{ $tc('sw-settings-license-check.animations.scrollSlide.description') }}
+                    </p>
+                </div>
+                
+                {# Count Up Animation #}
+                <div class="sw-system-config__hero-blocks-animation-card">
+                    <div class="sw-system-config__hero-blocks-animation-header">
+                        <code class="sw-system-config__hero-blocks-animation-class">{{ $tc('sw-settings-license-check.animations.countUp.name') }}</code>
+                    </div>
+                    <p class="sw-system-config__hero-blocks-animation-desc">
+                        {{ $tc('sw-settings-license-check.animations.countUp.description') }}
+                    </p>
+                </div>
+            </div>
+            
+            {# Usage Steps #}
+            <div class="sw-system-config__hero-blocks-animations-usage">
+                <h5 class="sw-system-config__hero-blocks-animations-usage-title">
+                    {{ $tc('sw-settings-license-check.animations.usage.title') }}
+                </h5>
+                <ol class="sw-system-config__hero-blocks-animations-usage-steps">
+                    <li>{{ $tc('sw-settings-license-check.animations.usage.step1') }}</li>
+                    <li>{{ $tc('sw-settings-license-check.animations.usage.step2') }}</li>
+                    <li>{{ $tc('sw-settings-license-check.animations.usage.step3') }}</li>
+                    <li>{{ $tc('sw-settings-license-check.animations.usage.step4') }}</li>
+                </ol>
+            </div>
+            
+            {# Count-Up Options (Collapsible) #}
+            <sw-collapse :expand-on-loading="false" class="sw-system-config__hero-blocks-animations-options">
+                <template #header="{ expanded }">
+                    <div class="sw-system-config__hero-blocks-animations-options-header">
+                        <span>{{ $tc('sw-settings-license-check.animations.countUpOptions.title') }}</span>
+                        <mt-icon 
+                            :name="expanded ? 'regular-chevron-up-xs' : 'regular-chevron-down-xs'" 
+                            size="14"
+                        />
+                    </div>
+                </template>
+                <template #content>
+                    <ul class="sw-system-config__hero-blocks-animations-options-list">
+                        <li><code>{{ $tc('sw-settings-license-check.animations.countUpOptions.dataTarget') }}</code></li>
+                        <li><code>{{ $tc('sw-settings-license-check.animations.countUpOptions.dataSuffix') }}</code></li>
+                        <li><code>{{ $tc('sw-settings-license-check.animations.countUpOptions.dataPrefix') }}</code></li>
+                        <li><code>{{ $tc('sw-settings-license-check.animations.countUpOptions.dataDuration') }}</code></li>
+                        <li><code>{{ $tc('sw-settings-license-check.animations.countUpOptions.dataDecimals') }}</code></li>
+                    </ul>
+                </template>
+            </sw-collapse>
         </div>
     </div>
     

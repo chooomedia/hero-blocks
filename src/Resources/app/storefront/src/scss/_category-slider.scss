@@ -24,6 +24,10 @@
 .hero-category-slider-item-container {
     // Tiny Slider setzt: position, width, left via inline-styles!
     // KEIN display, width, oder position hier setzen!
+    
+    // WICHTIG: Bootstrap's .g-3 setzt margin-top auf alle Kinder außer :first-child
+    // Das wollen wir nicht - alle Items sollen gleich sein (kein vertikaler Abstand)
+    margin-top: 0 !important;
 }
 
 .hero-category-slider-container--static .hero-category-slider-item-container {

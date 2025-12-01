@@ -75,10 +75,28 @@
             }
         }
         
-        // WICHTIG: Feature Content - Flex Layout (ohne Icon)
+        // WICHTIG: Feature Content - Flex Layout mit Icon
         &-content {
             flex: 1;
             min-width: 0; // WICHTIG: Verhindert Overflow
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        // WICHTIG: Feature Icon - Shopware Icons
+        &-icon {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            margin-top: 1px;
+            
+            .mt-icon {
+                display: block;
+            }
         }
         
         // WICHTIG: Feature Title - Sauber typographiert
@@ -90,15 +108,27 @@
             margin: 0;
             word-wrap: break-word;
         }
-
+        
         // WICHTIG: Aktive/Inaktive Blocks
         &-item {
             &--active {
                 opacity: 1;
+                background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0.02) 100%);
+                border-color: rgba(16, 185, 129, 0.2);
+                
+                &:hover {
+                    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.04) 100%);
+                    border-color: rgba(16, 185, 129, 0.3);
+                }
             }
 
             &--inactive {
-                opacity: 0.6;
+                opacity: 0.8;
+                background: var(--color-gray-50);
+                
+                .sw-system-config__hero-blocks-feature-title {
+                    color: var(--color-text-secondary-default);
+                }
             }
         }
     }
@@ -109,6 +139,167 @@
         background-color: var(--color-border-200, #e5e8ec);
         margin: 1rem 0;
         width: 100%;
+    }
+    
+    // ============================================================================
+    // Animations Section - CSS Klassen Hinweise
+    // ============================================================================
+    &-animations {
+        margin-top: 24px;
+        padding-top: 24px;
+        border-top: 1px solid var(--color-gray-300);
+        
+        &-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: $font-size-m;
+            font-weight: $font-weight-bold;
+            color: var(--color-text-primary-default);
+            margin: 0 0 8px 0;
+            
+            .mt-icon {
+                color: var(--color-brand-primary);
+            }
+        }
+        
+        &-description {
+            font-size: $font-size-s;
+            color: var(--color-text-secondary-default);
+            margin: 0 0 16px 0;
+            line-height: 1.5;
+        }
+        
+        // Animation Cards Grid
+        &-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+            
+            @media (max-width: 768px) {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        // Animation Card (einzelne Klasse)
+        &-card {
+            padding: 16px;
+            background: linear-gradient(135deg, var(--color-gray-50) 0%, var(--color-white) 100%);
+            border: 1px solid var(--color-gray-300);
+            border-radius: $border-radius-default;
+            transition: all 0.2s ease;
+            
+            &:hover {
+                border-color: var(--color-brand-primary);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            }
+        }
+        
+        &-header {
+            margin-bottom: 8px;
+        }
+        
+        &-class {
+            display: inline-block;
+            padding: 4px 10px;
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+            color: #fff;
+            border-radius: 4px;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: $font-size-xs;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+        
+        &-desc {
+            font-size: $font-size-xs;
+            color: var(--color-text-secondary-default);
+            margin: 0;
+            line-height: 1.5;
+        }
+        
+        // Usage Steps
+        &-usage {
+            background: var(--color-gray-50);
+            border: 1px solid var(--color-gray-200);
+            border-radius: $border-radius-default;
+            padding: 16px;
+            margin-bottom: 16px;
+            
+            &-title {
+                font-size: $font-size-s;
+                font-weight: $font-weight-semi-bold;
+                color: var(--color-text-primary-default);
+                margin: 0 0 12px 0;
+            }
+            
+            &-steps {
+                margin: 0;
+                padding-left: 20px;
+                
+                li {
+                    font-size: $font-size-xs;
+                    color: var(--color-text-primary-default);
+                    line-height: 1.6;
+                    margin-bottom: 6px;
+                    
+                    &:last-child {
+                        margin-bottom: 0;
+                    }
+                }
+            }
+        }
+        
+        // Options Collapse
+        &-options {
+            margin-top: 12px;
+            
+            &-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 10px 14px;
+                background: var(--color-gray-100);
+                border: 1px solid var(--color-gray-300);
+                border-radius: $border-radius-default;
+                cursor: pointer;
+                font-size: $font-size-xs;
+                font-weight: $font-weight-medium;
+                color: var(--color-text-secondary-default);
+                transition: all 0.2s ease;
+                
+                &:hover {
+                    background: var(--color-gray-200);
+                    color: var(--color-text-primary-default);
+                }
+            }
+            
+            &-list {
+                margin: 12px 0 0 0;
+                padding: 0;
+                list-style: none;
+                
+                li {
+                    padding: 8px 12px;
+                    background: var(--color-gray-50);
+                    border: 1px solid var(--color-gray-200);
+                    border-radius: 4px;
+                    margin-bottom: 6px;
+                    
+                    &:last-child {
+                        margin-bottom: 0;
+                    }
+                    
+                    code {
+                        font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+                        font-size: $font-size-xxs;
+                        color: var(--color-text-primary-default);
+                        word-break: break-word;
+                    }
+                }
+            }
+        }
     }
 }
 

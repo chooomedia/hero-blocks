@@ -61,12 +61,14 @@ Das Plugin nutzt ein optimiertes Build-Script für Administration und Storefront
 #### Wichtige Erkenntnisse zum Build
 
 **Problem: Vite erkennt Twig-Template-Änderungen nicht**
+
 - Twig-Templates werden zur Build-Zeit in JavaScript kompiliert
 - Änderungen erzeugen **keinen neuen Asset-Hash**
 - **Lösung**: `--force` Flag verwenden oder Cache vor Build löschen
 
 **Browser-Cache Problem:**
 Nach Build werden alte Assets geladen:
+
 1. **F12** drücken (DevTools öffnen)
 2. **Rechtsklick** auf Reload-Button
 3. **"Leeren und harter Reload"** auswählen
@@ -95,12 +97,14 @@ docker exec horex-shopware php bin/console cache:clear
 #### JavaScript Plugins
 
 **Komponenten MIT eigenem Plugin:**
+
 - **Hero Two Columns Parallax** - Scroll-basierte Parallax-Animationen
 - **Hero Video Extended** - Intersection Observer für Play/Pause
 - **Hero Mega Menu** - Legacy-Code mit eigenem Event-System
 - **Hero FAQ** - Akkordeon-Funktionalität
 
 **Komponenten OHNE Plugin (nutzen Shopware's base-slider):**
+
 - **Hero Slider** - Standard Slider mit Navigation
 - **Hero Category Slider** - Category Slider
 - **Hero Instagram Feed** - Instagram Feed Slider
@@ -125,12 +129,14 @@ docker exec horex-shopware php bin/console cache:clear
 Das Plugin unterstützt individuelle Farb-Settings pro Slide:
 
 **Admin UI (pro Slide):**
+
 - Headline Color
 - Text Color
 - Button 1 Background Color
 - Button 2 Background Color
 
 **Config-Struktur:**
+
 ```javascript
 element.config.sliderItems.value = [
   {
@@ -147,6 +153,7 @@ element.config.sliderItems.value = [
 ### Testing Workflow
 
 **Step-by-step Testing:**
+
 1. Frontend → Admin Settings → Browser Console → Cache Clear → Hard Refresh
 2. Dockware-Umgebung: `docker exec horex-shopware php bin/console ...`
 3. Build-Reihenfolge: 1) bundle:dump, 2) npm run build, 3) assets:install, 4) cache:clear
@@ -191,6 +198,7 @@ cd /Users/chooom/dev/horex/HorexShopTheme/dockware/shopware/custom/plugins/HeroB
 ### GitHub Actions Workflow
 
 Der Workflow wird automatisch bei Tag-Push ausgelöst:
+
 - Erstellt automatisch GitHub Release
 - Generiert Release Notes
 - Lädt ZIP-Asset hoch
@@ -214,6 +222,7 @@ Der Workflow wird automatisch bei Tag-Push ausgelöst:
 5. Klicke auf **Save**
 
 **Wichtig:** GitHub Credentials sind erforderlich für:
+
 - ✅ Höhere Rate Limits (5000 statt 60 Requests/Stunde)
 - ✅ Besseres Error-Handling
 - ✅ Zugriff auf private Repositories (falls nötig)
@@ -221,17 +230,20 @@ Der Workflow wird automatisch bei Tag-Push ausgelöst:
 ### Slack Integration (Optional)
 
 **Anti-Spam Features:**
+
 - Interactive Delete Button für jede wichtige Nachricht
 - Ephemeral Messages für Routine-Updates
 - Vote/Reaction Buttons für Feedback
 - Rich Context Blocks mit Metadaten
 
 **Erforderliche OAuth Scopes:**
+
 - `chat:write` - Nachrichten senden
 - `chat:write.public` - In öffentlichen Channels posten
 - `channels:read` - Channel-Informationen lesen
 
 **Interactive Components aktivieren:**
+
 1. Slack App → **Features** → **Interactivity & Shortcuts**
 2. **Enable Interactivity**: ✅ Aktivieren
 3. **Request URL**: `https://your-n8n-instance.com/webhook/slack-interactive-hero-blocks`
@@ -250,12 +262,14 @@ Der Workflow wird automatisch bei Tag-Push ausgelöst:
 #### Frontend: Dismissible Notice
 
 **Test-Setup:**
+
 ```bash
 # Lizenz-Status auf 'expired' setzen
 docker exec horex-shopware bash -c "cd /var/www/html && php bin/console system:config:set HeroBlocks.config.licenseStatus expired && php bin/console cache:clear"
 ```
 
 **Test-Ablauf:**
+
 1. Öffne Frontend: `http://localhost/de/`
 2. Erwarte: License-Hinweis fixed unten rechts
 3. Klicke X-Button → Notice verschwindet (Fade-Out)
@@ -263,6 +277,7 @@ docker exec horex-shopware bash -c "cd /var/www/html && php bin/console system:c
 5. Seite neu laden → Notice wird NICHT angezeigt (24h TTL)
 
 **LocalStorage Reset:**
+
 ```javascript
 // Browser Console
 Object.keys(localStorage)
@@ -273,6 +288,7 @@ Object.keys(localStorage)
 #### Admin: Silent Check mit Cache
 
 **Test-Ablauf:**
+
 1. Öffne Admin Config: `http://localhost/admin#/sw/extension/config/HeroBlocks`
 2. Browser Console prüfen (F12):
    - Erste Öffnung: `cached: false` (Webhook wird aufgerufen)
@@ -280,6 +296,7 @@ Object.keys(localStorage)
 3. Klicke "Lizenz prüfen" Button → Force-Refresh (immer Webhook-Call)
 
 **Cache-Alter prüfen:**
+
 ```bash
 docker exec horex-shopware bash -c "cd /var/www/html && php bin/console system:config:get HeroBlocks.config.lastLicenseCheck"
 ```
@@ -287,6 +304,7 @@ docker exec horex-shopware bash -c "cd /var/www/html && php bin/console system:c
 #### Performance-Test
 
 **Kein Webhook-Call bei Storefront-Requests:**
+
 ```bash
 # Terminal 1: Live-Log überwachen
 docker exec horex-shopware tail -f /var/www/html/var/log/dev.log | grep -i "license check"
@@ -298,6 +316,7 @@ docker exec horex-shopware tail -f /var/www/html/var/log/dev.log | grep -i "lice
 ### Manuelle API-Tests
 
 **License Check:**
+
 ```bash
 curl -X POST "https://n8n.chooomedia.com/webhook/license/hero-blocks?checkType=license&plugin=hero-blocks&version=1.0.0&shopwareVersion=6.7.0&timestamp=$(date -u +%Y-%m-%dT%H:%M:%S+00:00)" \
   -H "Content-Type: application/json" \
@@ -305,6 +324,7 @@ curl -X POST "https://n8n.chooomedia.com/webhook/license/hero-blocks?checkType=l
 ```
 
 **Update Check:**
+
 ```bash
 curl -X POST "https://n8n.chooomedia.com/webhook/license/hero-blocks?checkType=update&plugin=hero-blocks&currentVersion=1.0.0&shopwareVersion=6.7.0&timestamp=$(date -u +%Y-%m-%dT%H:%M:%S+00:00)" \
   -H "Content-Type: application/json" \
@@ -314,6 +334,7 @@ curl -X POST "https://n8n.chooomedia.com/webhook/license/hero-blocks?checkType=u
 ### CMS Blocks Testing
 
 **Hero Slider:**
+
 - Navigation Arrows (none/inside/outside)
 - Navigation Dots (none/bottom/top)
 - Auto-Slide + Timing
@@ -321,12 +342,14 @@ curl -X POST "https://n8n.chooomedia.com/webhook/license/hero-blocks?checkType=u
 - Responsive Design
 
 **Hero Two Columns Parallax:**
+
 - Background Images laden
 - Parallax-Effekt beim Scrollen
 - Pattern Overlay sichtbar
 - Console: "[HeroBlocks] Plugin 'HeroTwoColumnsParallax' registered"
 
 **Hero FAQ:**
+
 - Akkordeon öffnen/schließen
 - Smooth Transitions
 - Mobile/Desktop Layout
@@ -334,16 +357,19 @@ curl -X POST "https://n8n.chooomedia.com/webhook/license/hero-blocks?checkType=u
 ### Debugging Commands
 
 **Live-Log überwachen:**
+
 ```bash
 docker exec horex-shopware tail -f /var/www/html/var/log/dev.log | grep -iE "license|hero.*blocks"
 ```
 
 **Reset License Status:**
+
 ```bash
 docker exec horex-shopware bash -c "cd /var/www/html && php bin/console system:config:set HeroBlocks.config.licenseStatus active && php bin/console cache:clear"
 ```
 
 **Scheduled Task manuell ausführen:**
+
 ```bash
 docker exec horex-shopware bash -c "cd /var/www/html && php bin/console scheduled-task:run hero_blocks.license_expiry_reminder"
 ```
@@ -375,11 +401,13 @@ src/Resources/
 ### Problem: Release-ID ist `null`
 
 **Ursachen:**
+
 - Kein Release im GitHub Repository
 - GitHub API Rate Limit erreicht
 - GitHub Credentials fehlen oder sind falsch
 
 **Lösung:**
+
 1. Prüfe GitHub Releases: https://github.com/chooomedia/hero-blocks/releases
 2. Erstelle Release falls nötig
 3. Prüfe GitHub Credentials in n8n
@@ -388,11 +416,13 @@ src/Resources/
 ### Problem: Build schlägt fehl
 
 **Ursachen:**
+
 - Docker Container läuft nicht
 - Node Modules fehlen
 - Cache-Probleme
 
 **Lösung:**
+
 ```bash
 # 1. Docker Container prüfen
 docker ps | grep horex-shopware
@@ -412,6 +442,7 @@ docker exec horex-shopware bash -c \
 **Ursache:** Styles liegen im Child-Theme, nicht im Plugin
 
 **Lösung:**
+
 ```bash
 # Theme neu kompilieren
 docker exec horex-shopware php bin/console theme:compile
@@ -423,26 +454,30 @@ docker exec horex-shopware php bin/console cache:clear
 **Ursache:** PluginManager nicht verfügbar
 
 **Lösung:** Safety Check in `main.js` prüft automatisch:
+
 ```javascript
 if (window.PluginManager) {
-    // Plugin registrieren
+  // Plugin registrieren
 }
 ```
 
 ## 📚 Best Practices
 
 ### Entwicklung
+
 - Immer `--force` verwenden bei Twig-Änderungen
 - Browser-Cache nach jedem Build leeren
 - Theme neu kompilieren nach SCSS-Änderungen
 - Console-Logs für Debugging nutzen
 
 ### Testing
+
 - Step-by-step: Frontend → Admin → Console → Cache → Hard Refresh
 - Dockware-Befehle: `docker exec horex-shopware php bin/console ...`
 - Browser DevTools: F12 → Console → Network → Elements
 
 ### Releases
+
 - Tag-Format: `v1.0.0` (mit `v` Prefix!)
 - Asset-Name: `hero-blocks-1.0.0.zip` (ohne `v`)
 - Semantic Versioning: `MAJOR.MINOR.PATCH`
@@ -458,4 +493,4 @@ if (window.PluginManager) {
 
 ## 📝 License
 
-Proprietary - HOREX Motorcycles
+Proprietary - Matt Interfaces (CHOOOMEDIA)

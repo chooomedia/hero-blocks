@@ -1,19 +1,51 @@
 {
     "sw-settings-license-check": {
-        "description": "Der flexible Hero-Slider: starke Visuals, klare Botschaften, smarte CTAs. Perfekt für Markenstories und Kampagnen.",
+        "description": "Professionelle CMS-Blöcke für Shopware Shopping Experiences. Hero Slider, Two Columns Layouts, Scroll-Animationen und mehr – entwickelt nach Shopware Best Practices.",
         "features": {
-            "heroSlider": "Hero Slider - Mehrere Hero-Blöcke mit Headlines, Texten, Buttons und Bildern",
-            "heroTwoColumns": "Hero Two Columns Image & Text - Zwei-Spalten-Layout mit flexiblen Hintergrundoptionen (Parallax-Scroll: demnächst)",
-            "heroVideoExtended": "Hero Video Extended - Video-Hero-Blöcke mit Headlines, Texten und Buttons (Demnächst)",
-            "heroInstagramFeed": "Hero Instagram Feed Widget - Instagram-Feed-Integration für Mega-Menü und benutzerdefinierte Blöcke (Demnächst)",
-            "megaMenu": "Mega Menu Block - Erweiterter Navigationsblock mit Produkten, Widgets und Instagram-Feed-Unterstützung (Demnächst)",
-            "shoppingExperience": "Shopping Experience Blocks - Zusätzliche benutzerdefinierte Blöcke für erweiterte Shopping-Erlebnisse (In Entwicklung)"
+            "heroSlider": "Hero Slider – Multi-Slide Hero-Blöcke mit Headlines, Texten, Buttons und Bildern",
+            "heroTwoColumns": "Hero Two Columns – Zwei-Spalten-Layout mit flexiblen Hintergrund-Optionen und Audio-Player",
+            "heroVideoExtended": "Hero Video Extended – Video-Hero-Blöcke mit Headlines, Texten und Buttons (Demnächst)",
+            "heroInstagramFeed": "Hero Instagram Feed – Instagram-Feed-Integration für Mega-Menü und Custom Blocks (Demnächst)",
+            "megaMenu": "Mega Menu Block – Erweiterter Navigationsblock mit Produkten, Widgets und Instagram-Feed (Demnächst)",
+            "shoppingExperience": "Shopping Experience Blocks – Zusätzliche Custom Blocks für erweiterte Shopping-Erlebnisse (In Entwicklung)"
+        },
+        "featureStatus": {
+            "active": "Aktiv",
+            "comingSoon": "Demnächst",
+            "inDevelopment": "In Entwicklung"
+        },
+        "animations": {
+            "title": "CSS-Animationsklassen für CMS-Blöcke",
+            "description": "Fügen Sie diese Klassen im CMS-Admin unter Block-Einstellungen → CSS-Klassen hinzu:",
+            "scrollSlide": {
+                "name": "scroll-slide-animation",
+                "description": "Slide-In Animation (links/rechts) beim Scrollen in den sichtbaren Bereich"
+            },
+            "countUp": {
+                "name": "count-up-animation",
+                "description": "Zahlen hochzählen Animation (0 → Zielwert) beim Scrollen in den sichtbaren Bereich"
+            },
+            "usage": {
+                "title": "Verwendung",
+                "step1": "CMS-Editor öffnen → Block auswählen",
+                "step2": "Block-Einstellungen (Zahnrad-Icon) → Erweitert",
+                "step3": "CSS-Klassen Feld → Klasse eintragen (z.B. scroll-slide-animation)",
+                "step4": "Speichern und Vorschau prüfen"
+            },
+            "countUpOptions": {
+                "title": "Count-Up Optionen",
+                "dataTarget": "data-count-target=\"163\" – Zielwert (Pflicht bei nicht-numerischem Text)",
+                "dataSuffix": "data-count-suffix=\" PS\" – Suffix nach der Zahl (optional)",
+                "dataPrefix": "data-count-prefix=\"€\" – Prefix vor der Zahl (optional)",
+                "dataDuration": "data-count-duration=\"2000\" – Animationsdauer in ms (Standard: 2000)",
+                "dataDecimals": "data-count-decimals=\"2\" – Nachkommastellen (Standard: 0)"
+            }
         },
         "button": {
             "checkLicense": "Lizenz prüfen",
             "checking": "Prüfe...",
             "licenseExpiredTitle": "Lizenz abgelaufen",
-            "licenseExpiredMessage": "⚠️ Ihre Lizenz ist abgelaufen. Bitte verlängern Sie Ihre Lizenz, um Hero Blocks weiterhin nutzen zu können."
+            "licenseExpiredMessage": "Ihre Lizenz ist abgelaufen. Bitte verlängern Sie Ihre Lizenz, um Hero Blocks weiterhin nutzen zu können."
         },
         "status": {
             "active": "Lizenz aktiv",
@@ -49,7 +81,7 @@
             "checkFailed": "Update-Prüfung fehlgeschlagen",
             "checking": "Prüfe auf Updates...",
             "licenseExpired": "Lizenz abgelaufen",
-            "licenseExpiredMessage": "⚠️ Ihre Lizenz ist abgelaufen. Updates können nicht mehr geladen werden. Bitte verlängern Sie Ihre Lizenz.",
+            "licenseExpiredMessage": "Ihre Lizenz ist abgelaufen. Updates können nicht mehr geladen werden. Bitte verlängern Sie Ihre Lizenz.",
             "downloadUpdate": "Update herunterladen & installieren",
             "downloading": "Lade Update herunter und installiere...",
             "downloadSuccess": "Update erfolgreich installiert",
@@ -57,7 +89,7 @@
             "downloadFailed": "Update-Download fehlgeschlagen"
         },
         "instagram": {
-            "licenseExpiredMessage": "⚠️ Ihre Lizenz ist abgelaufen. Instagram Feed API-Anfragen sind nicht mehr möglich. Bitte verlängern Sie Ihre Lizenz.",
+            "licenseExpiredMessage": "Ihre Lizenz ist abgelaufen. Instagram Feed API-Anfragen sind nicht mehr möglich. Bitte verlängern Sie Ihre Lizenz.",
             "checkToken": "Instagram Token prüfen",
             "checking": "Prüfe Token...",
             "validationSuccess": "Instagram Token Validierung erfolgreich",
@@ -85,7 +117,7 @@
             }
         },
         "instagramFeed": {
-            "licenseExpiredMessage": "⚠️ Ihre Lizenz ist abgelaufen. Instagram Feed API-Anfragen sind nicht mehr möglich. Bitte verlängern Sie Ihre Lizenz.",
+            "licenseExpiredMessage": "Ihre Lizenz ist abgelaufen. Instagram Feed API-Anfragen sind nicht mehr möglich. Bitte verlängern Sie Ihre Lizenz.",
             "bestPractices": {
                 "title": "Instagram Basic Display API - Best Practices",
                 "appId": "Erstellen Sie eine Instagram App in der Facebook Developer Console (developers.facebook.com)",
@@ -96,9 +128,9 @@
         },
         "featureValidation": {
             "running": "Validierung läuft für {feature}...",
-            "success": "✅ {feature} erfolgreich aktiviert",
-            "warning": "⚠️ {feature} - Validierung mit Warnungen",
-            "error": "❌ {feature} - Validierungsfehler"
+            "success": "{feature} erfolgreich aktiviert",
+            "warning": "{feature} - Validierung mit Warnungen",
+            "error": "{feature} - Validierungsfehler"
         },
         "languageSwitcher": {
             "loading": "Lade verfügbare Sprachen...",
@@ -107,7 +139,7 @@
             "noLanguages": "Keine Sprachen gefunden. Bitte prüfen Sie die Sprach-Konfiguration."
         },
         "renewal": {
-            "title": "⚡ Lizenz reaktivieren & durchstarten",
+            "title": "Lizenz reaktivieren & durchstarten",
             "message": "Ihre Lizenz ist abgelaufen – aber kein Problem! Mit nur einem Klick reaktivieren Sie alle Premium-Features und heben Ihren Shop auf das nächste Level. <strong>Besondere Vorteile bei Verlängerung:</strong> Exklusive Updates, Priority-Support und neue Features zuerst. Investieren Sie in Ihren Erfolg!",
             "button": "Jetzt Lizenz verlängern",
             "features": {

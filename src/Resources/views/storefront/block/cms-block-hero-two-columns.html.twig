@@ -191,128 +191,15 @@
         </div> {# container #}
     {% endif %}
     
-    {# WICHTIG: Parallax JavaScript - inline für garantierte Verfügbarkeit #}
-    <script>
-    (function() {
-        'use strict';
-        
-        // Prüfen ob bereits initialisiert
-        if (window.HeroTwoColumnsParallaxInitialized) return;
-        window.HeroTwoColumnsParallaxInitialized = true;
-        
-        console.log('[HeroTwoColumns] Parallax Script loaded');
-        
-        function initParallax() {
-            const sections = document.querySelectorAll('[data-hero-two-columns-parallax]');
-            console.log('[HeroTwoColumns] Found sections:', sections.length);
-            
-            if (sections.length === 0) return;
-            
-            sections.forEach(section => {
-                const backgrounds = section.querySelectorAll('[data-parallax-background]');
-                const elements = section.querySelectorAll('[data-scroll-animate="true"]');
-                
-                console.log('[HeroTwoColumns] Section:', section, 'Backgrounds:', backgrounds.length, 'Elements:', elements.length);
-                
-                // Initial-Positionierung: Von außen (links/rechts), im 33° Winkel
-                // WICHTIG: Erst animieren wenn KOMPLETTE Section im Viewport!
-                backgrounds.forEach(bg => {
-                    const direction = bg.getAttribute('data-parallax-background');
-                    const angle = parseFloat(bg.getAttribute('data-scroll-animation-angle') || '33');
-                    const enabled = bg.getAttribute('data-scroll-animation-enabled') !== 'false';
-                    
-                    if (enabled) {
-                        // Initial von außen: Links -100vw, Rechts +100vw
-                        if (direction === 'left') {
-                            bg.style.transform = 'translateX(-100vw) rotate(' + angle + 'deg)';
-                        } else {
-                            bg.style.transform = 'translateX(100vw) rotate(' + angle + 'deg)';
-                        }
-                        bg.style.transition = 'transform 1200ms cubic-bezier(0.4, 0, 0.2, 1)';
-                        console.log('[HeroTwoColumns] Initial positioning:', direction, 'from outside ±100vw');
-                    }
-                });
-                
-                // Element initial positioning
-                // WICHTIG: Elemente IMMER sichtbar (opacity: 1)!
-                // Nur Position ändert sich wenn Animation aktiviert
-                elements.forEach(el => {
-                    const x = el.getAttribute('data-translate-x') || '0';
-                    const y = el.getAttribute('data-translate-y') || '0';
-                    
-                    // WICHTIG: Immer sichtbar!
-                    el.style.opacity = '1';
-                    el.style.transform = `translate(${x}px, ${y}px)`;
-                    el.style.transition = 'transform 1000ms cubic-bezier(0.4, 0, 0.2, 1)';
-                });
-                
-                // Scroll-Handler
-                let ticking = false;
-                function onScroll() {
-                    if (!ticking) {
-                        window.requestAnimationFrame(() => {
-                            updateParallax(section, backgrounds, elements);
-                            ticking = false;
-                        });
-                        ticking = true;
-                    }
-                }
-                
-                window.addEventListener('scroll', onScroll, { passive: true });
-                window.addEventListener('resize', onScroll);
-                
-                // Initial update
-                updateParallax(section, backgrounds, elements);
-            });
-        }
-        
-        function updateParallax(section, backgrounds, elements) {
-            const rect = section.getBoundingClientRect();
-            const viewportHeight = window.innerHeight;
-            
-            // WICHTIG: Nur animieren wenn Section teilweise sichtbar
-            if (rect.top > viewportHeight || rect.bottom < 0) return;
-            
-            // WICHTIG: Komplette Section muss im Viewport sein für Background-Animation
-            const sectionFullyVisible = rect.top <= 0 && rect.bottom >= viewportHeight;
-            const sectionEnteredViewport = rect.top < viewportHeight;
-            
-            // Background slide-in: Von außen (±100vw) nach innen (0vw)
-            backgrounds.forEach(bg => {
-                const direction = bg.getAttribute('data-parallax-background');
-                const angle = parseFloat(bg.getAttribute('data-scroll-animation-angle') || '33');
-                const enabled = bg.getAttribute('data-scroll-animation-enabled') !== 'false';
-                
-                if (enabled && !bg.classList.contains('is--slided-in')) {
-                    // Slide-in wenn Section im Viewport
-                    if (sectionEnteredViewport) {
-                        bg.style.transform = 'translateX(0) rotate(' + angle + 'deg)';
-                        bg.classList.add('is--slided-in');
-                        console.log('[HeroTwoColumns] Background slided in:', direction);
-                    }
-                }
-            });
-            
-            // Element animations (nur Position, keine opacity!)
-            elements.forEach(el => {
-                if (el.classList.contains('is--animated')) return;
-                
-                const elRect = el.getBoundingClientRect();
-                if (elRect.top < viewportHeight - 150) {
-                    // Smooth slide-in to center (opacity bleibt 1!)
-                    el.style.transform = 'translate(0, 0)';
-                    el.classList.add('is--animated');
-                    console.log('[HeroTwoColumns] Element animated');
-                }
-            });
-        }
-        
-        // Init on DOMContentLoaded oder sofort wenn DOM bereits geladen
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initParallax);
-        } else {
-            initParallax();
-        }
-    })();
-    </script>
+    {# ============================================================================
+       ANIMATION HINWEIS:
+       Die Animation wird vom HeroTwoColumnsScrollAnimationPlugin übernommen
+       (registriert in HorexShopTheme/src/Resources/app/storefront/src/main.js)
+       
+       ANIMATION LOGIK:
+       - Links: Startet von UNTEN-LINKS (außerhalb), endet OBEN-LINKS (mit Überstand)
+       - Rechts: Startet von OBEN-RECHTS (außerhalb), endet UNTEN-RECHTS (mit Überstand)
+       - Bewegung: Diagonal im 33° Winkel (90° - 33° = 57° von horizontal)
+       - KEINE Rotation des Elements selbst - die Streifen sind bereits diagonal (via CSS)
+       ============================================================================ #}
 {% endblock %}
