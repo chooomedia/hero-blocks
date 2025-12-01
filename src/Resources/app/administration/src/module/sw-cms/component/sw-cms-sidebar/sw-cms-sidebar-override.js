@@ -11,6 +11,7 @@ Shopware.Component.override("sw-cms-sidebar", {
         enableHeroInstagramFeed: false,
         enableHeroVideoExtended: false,
         enableFaqBlock: false,
+        enableHeroImageOverlay: false,
       },
     };
   },
@@ -83,6 +84,13 @@ Shopware.Component.override("sw-cms-sidebar", {
           console.warn("[HeroBlocks] ✅ FAQ block is visible");
         }
 
+        // Hero Image Overlay Block
+        if (name === "hero-image-overlay") {
+          if (!this.heroBlocksConfig.enableHeroImageOverlay) {
+            return false;
+          }
+        }
+
         return true;
       });
 
@@ -116,6 +124,8 @@ Shopware.Component.override("sw-cms-sidebar", {
               values["HeroBlocks.config.enableHeroVideoExtended"] === true,
             enableFaqBlock:
               values["HeroBlocks.config.enableFaqBlock"] === true,
+            enableHeroImageOverlay:
+              values["HeroBlocks.config.enableHeroImageOverlay"] === true,
           };
           console.warn("[HeroBlocks] ✅ Config loaded:", this.heroBlocksConfig);
           console.warn("[HeroBlocks] 🔄 Forcing cmsBlocks recomputation");

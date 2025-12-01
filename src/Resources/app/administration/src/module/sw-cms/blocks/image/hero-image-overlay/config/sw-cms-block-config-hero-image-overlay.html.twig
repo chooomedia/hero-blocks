@@ -1,0 +1,101 @@
+{% block sw_cms_block_config_hero_image_overlay %}
+<div class="sw-cms-block-config-hero-image-overlay" v-if="block && block.customFields">
+    
+    {# ============================================================================ #}
+    {# POSITION SETTINGS #}
+    {# ============================================================================ #}
+    <div class="sw-cms-block-config-hero-image-overlay__section">
+        <h4 class="sw-cms-block-config-hero-image-overlay__section-title">
+            {{ $tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.sectionPosition') }}
+        </h4>
+        
+        {# Overlay Position (6 Positionen) #}
+        <sw-select-field
+            v-model="overlayPosition"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.overlayPosition')"
+            :options="positionOptions"
+            :helpText="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.overlayPositionHelp')"
+        />
+    </div>
+    
+    {# ============================================================================ #}
+    {# CONTENT SETTINGS #}
+    {# ============================================================================ #}
+    <div class="sw-cms-block-config-hero-image-overlay__section">
+        <h4 class="sw-cms-block-config-hero-image-overlay__section-title">
+            {{ $tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.sectionContent') }}
+        </h4>
+        
+        {# Overlay Headline #}
+        <sw-text-field
+            v-model="overlayHeadline"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.overlayHeadline')"
+            :placeholder="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.overlayHeadlinePlaceholder')"
+        />
+        
+        {# Overlay Text - HTML Editor für Rich Content #}
+        {# WICHTIG: sw-text-editor verwendet :value und @update:value statt v-model #}
+        <sw-text-editor
+            :value="overlayText"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.overlayText')"
+            :placeholder="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.overlayTextPlaceholder')"
+            :sanitize-input="false"
+            :sanitize-field-value="false"
+            :allow-inline-data-mapping="false"
+            :is-inline-edit="false"
+            @update:value="onOverlayTextChange"
+        />
+    </div>
+    
+    {# ============================================================================ #}
+    {# STYLE SETTINGS #}
+    {# ============================================================================ #}
+    <div class="sw-cms-block-config-hero-image-overlay__section">
+        <h4 class="sw-cms-block-config-hero-image-overlay__section-title">
+            {{ $tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.sectionStyle') }}
+        </h4>
+        
+        {# Overlay Background Color #}
+        <sw-colorpicker
+            v-model="overlayBackgroundColor"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.overlayBackgroundColor')"
+            :helpText="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.overlayBackgroundColorHelp')"
+            :colorOutput="'hex'"
+        />
+        
+        {# Overlay Text Color (Default: white) #}
+        <sw-colorpicker
+            v-model="overlayTextColor"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.overlayTextColor')"
+            :helpText="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.overlayTextColorHelp')"
+            :colorOutput="'hex'"
+        />
+        
+        {# Minimum Height #}
+        <sw-text-field
+            v-model="minHeight"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.minHeight')"
+            :placeholder="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.minHeightPlaceholder')"
+            :helpText="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.minHeightHelp')"
+        />
+    </div>
+    
+    {# ============================================================================ #}
+    {# ANIMATION SETTINGS #}
+    {# ============================================================================ #}
+    <div class="sw-cms-block-config-hero-image-overlay__section">
+        <h4 class="sw-cms-block-config-hero-image-overlay__section-title">
+            {{ $tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.sectionAnimation') }}
+        </h4>
+        
+        {# Enable Scroll Animation #}
+        <sw-switch-field
+            v-model="enableScrollAnimation"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.enableScrollAnimation')"
+            :helpText="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.enableScrollAnimationHelp')"
+        />
+    </div>
+    
+</div>
+{% endblock %}
+

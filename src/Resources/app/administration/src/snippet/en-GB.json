@@ -247,6 +247,43 @@
                 "heroMegaMenu": {
                     "label": "Hero Mega Menu",
                     "description": "Advanced mega menu navigation with categories, products and widgets"
+                },
+                "heroImageOverlay": {
+                    "label": "Hero Image Overlay",
+                    "description": "Full-width image with angled text overlay panel",
+                    "placeholder": {
+                        "headline": "Your Headline",
+                        "text": "Your description text here"
+                    },
+                    "config": {
+                        "sectionPosition": "Position",
+                        "sectionContent": "Content",
+                        "sectionStyle": "Style",
+                        "sectionAnimation": "Animation",
+                        "overlayPosition": "Overlay Position",
+                        "overlayPositionHelp": "Choose where the overlay panel appears on the image",
+                        "position": {
+                            "topLeft": "Top Left",
+                            "middleLeft": "Middle Left",
+                            "bottomLeft": "Bottom Left",
+                            "topRight": "Top Right",
+                            "middleRight": "Middle Right",
+                            "bottomRight": "Bottom Right"
+                        },
+                        "overlayHeadline": "Headline",
+                        "overlayHeadlinePlaceholder": "Enter headline...",
+                        "overlayText": "Description Text (HTML)",
+                        "overlayTextPlaceholder": "Enter description text or HTML...",
+                        "overlayBackgroundColor": "Background Color",
+                        "overlayBackgroundColorHelp": "Leave empty to use theme accent color",
+                        "overlayTextColor": "Text Color",
+                        "overlayTextColorHelp": "Default is white (#ffffff)",
+                        "minHeight": "Minimum Height",
+                        "minHeightPlaceholder": "e.g. 500px or 60vh",
+                        "minHeightHelp": "Minimum height for the block",
+                        "enableScrollAnimation": "Enable Scroll Animation",
+                        "enableScrollAnimationHelp": "Animates the overlay panel sliding in from outside when scrolling into view"
+                    }
                 }
             }
         },

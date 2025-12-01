@@ -66,6 +66,15 @@
             <helpText>Enables the Hero FAQ Block with accordion functionality and Schema.org rich snippets for SEO.</helpText>
         </input-field>
         <input-field type="bool">
+            <name>enableHeroImageOverlay</name>
+            <label lang="de-DE">Hero Image Overlay Block aktivieren</label>
+            <label>Enable Hero Image Overlay Block</label>
+            <defaultValue>false</defaultValue>
+            <disabled>false</disabled>
+            <helpText lang="de-DE">Aktiviert den Hero Image Overlay Block mit schrägem Text-Overlay-Panel über einem Vollbild-Bild.</helpText>
+            <helpText>Enables the Hero Image Overlay Block with angled text overlay panel over a full-width image.</helpText>
+        </input-field>
+        <input-field type="bool">
             <name>enableShoppingExperience</name>
             <label lang="de-DE">Erweiterte Theme Shopping Experience aktivieren</label>
             <label>Enable Advanced Theme Shopping Experience</label>

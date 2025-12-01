@@ -11,11 +11,15 @@ export default {
     Mixin.getByName('cms-state'),
   ],
 
-  computed: {
-    block() {
-      return this.cmsPageState.currentBlock;
+  // Block wird als Prop übergeben (von sw-cms-block Wrapper)
+  props: {
+    block: {
+      type: Object,
+      required: true,
     },
+  },
 
+  computed: {
     faqItems() {
       // FAQ Items aus Block customFields auslesen
       if (!this.block || !this.block.customFields || !this.block.customFields.faqItems) {

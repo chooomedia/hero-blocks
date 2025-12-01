@@ -60,3 +60,5 @@ import "./module/sw-cms/blocks/video/hero-video-extended/index.js";
 import "./module/sw-cms/blocks/commerce/hero-shopping-experience/index.js";
 // WICHTIG: Hero FAQ Block - wird nur angezeigt wenn enableFaqBlock aktiviert ist
 import "./module/sw-cms/blocks/text/hero-faq/index.js";
+// WICHTIG: Hero Image Overlay Block - wird nur angezeigt wenn enableHeroImageOverlay aktiviert ist
+import "./module/sw-cms/blocks/image/hero-image-overlay/index.js";

@@ -1,0 +1,72 @@
+{#
+    Hero Image Overlay Block
+    
+    Features:
+    - Full-width background image
+    - Angled text overlay panel (33° angle)
+    - Position: top-left, middle-left, bottom-left, top-right, middle-right, bottom-right
+    - Scroll animation from outside
+    - Uses theme accent color for overlay background
+    - Responsive design
+#}
+
+{% block block_hero_image_overlay %}
+    {# Read block configuration from customFields #}
+    {% set overlayPosition = block.customFields.overlayPosition|default('top-left') %}
+    {% set overlayBackgroundColor = block.customFields.overlayBackgroundColor|default('') %}
+    {% set overlayTextColor = block.customFields.overlayTextColor|default('#ffffff') %}
+    {% set overlayHeadline = block.customFields.overlayHeadline|default('') %}
+    {% set overlayText = block.customFields.overlayText|default('') %}
+    {% set enableScrollAnimation = block.customFields.enableScrollAnimation|default(true) %}
+    {% set minHeight = block.customFields.minHeight|default('500px') %}
+    
+    {# Determine position classes #}
+    {% set isLeftPosition = 'left' in overlayPosition %}
+    {% set isRightPosition = 'right' in overlayPosition %}
+    {% set isTopPosition = 'top' in overlayPosition %}
+    {% set isMiddlePosition = 'middle' in overlayPosition %}
+    {% set isBottomPosition = 'bottom' in overlayPosition %}
+    
+    {# Build overlay styles - nur setzen wenn explizit definiert #}
+    {# Wenn leer, wird CSS var(--sw-color-brand-accent) verwendet #}
+    {% set overlayBgStyle = overlayBackgroundColor ? 'background-color: ' ~ overlayBackgroundColor ~ ';' : '' %}
+    {% set overlayTextStyle = overlayTextColor ? 'color: ' ~ overlayTextColor ~ ';' : '' %}
+    
+    <div class="cms-block-hero-image-overlay"
+         style="min-height: {{ minHeight }};"
+         {% if enableScrollAnimation %}
+             data-hero-image-overlay="true"
+             data-overlay-position="{{ overlayPosition }}"
+         {% endif %}>
+        
+        {# Background Image (from slot) #}
+        <div class="cms-block-hero-image-overlay__image">
+            {% set element = block.slots.getSlot('image') %}
+            {% if element and element.type %}
+                {% sw_include '@Storefront/storefront/element/cms-element-' ~ element.type ~ '.html.twig' ignore missing %}
+            {% endif %}
+        </div>
+        
+        {# Text Overlay Panel - Always render, even without content (for visual design) #}
+        <div class="cms-block-hero-image-overlay__overlay cms-block-hero-image-overlay__overlay--{{ overlayPosition }}"
+             style="{{ overlayBgStyle }} {{ overlayTextStyle }}"
+             {% if enableScrollAnimation %}
+                 data-overlay-animate="true"
+             {% endif %}>
+            <div class="cms-block-hero-image-overlay__overlay-content">
+                {% if overlayHeadline %}
+                    <h2 class="cms-block-hero-image-overlay__headline">{{ overlayHeadline }}</h2>
+                {% endif %}
+                {% if overlayText %}
+                    <div class="cms-block-hero-image-overlay__text">{{ overlayText|raw }}</div>
+                {% endif %}
+                {# Fallback: Show placeholder if no content is defined #}
+                {% if not overlayHeadline and not overlayText %}
+                    <h2 class="cms-block-hero-image-overlay__headline">Your Headline</h2>
+                    <p class="cms-block-hero-image-overlay__text">Your description text here</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

@@ -1,0 +1,45 @@
+/**
+ * Hero Image Overlay Block - Config Styles
+ * 
+ * Organized into sections for better UX
+ */
+.sw-cms-block-config-hero-image-overlay {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    // Section wrapper
+    &__section {
+        padding: 16px;
+        background: var(--color-gray-50);
+        border: 1px solid var(--color-gray-200);
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    // Section title
+    &__section-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--color-text-primary-default);
+        margin: 0 0 4px 0;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--color-gray-200);
+    }
+
+    .sw-field {
+        margin-bottom: 0;
+    }
+
+    // Text editor adjustments
+    .sw-text-editor {
+        min-height: 120px;
+        
+        .sw-text-editor__content {
+            min-height: 100px;
+        }
+    }
+}
+

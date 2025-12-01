@@ -1,0 +1,39 @@
+{% block sw_cms_block_hero_image_overlay %}
+<div class="sw-cms-block-hero-image-overlay">
+    {# Background Image Slot #}
+    <div class="sw-cms-block-hero-image-overlay__image">
+        <slot name="image">
+            <sw-cms-slot name="image" :block="block" />
+        </slot>
+    </div>
+    
+    {# Text Overlay Panel with angled edge - REAKTIV: Styles und Position werden live aktualisiert #}
+    <div 
+        class="sw-cms-block-hero-image-overlay__overlay"
+        :class="overlayClasses"
+        :style="overlayStyles"
+    >
+        <div class="sw-cms-block-hero-image-overlay__overlay-content">
+            {# Headline - reaktiv #}
+            <h3 v-if="overlayHeadline" class="sw-cms-block-hero-image-overlay__headline">
+                {{ overlayHeadline }}
+            </h3>
+            {# Text - WICHTIG: v-html für HTML-Rendering (aus sw-text-editor) #}
+            <div v-if="overlayText" 
+                 class="sw-cms-block-hero-image-overlay__text"
+                 v-html="overlayText">
+            </div>
+            {# Placeholder wenn kein Content #}
+            <template v-if="!overlayHeadline && !overlayText">
+                <h3 class="sw-cms-block-hero-image-overlay__headline sw-cms-block-hero-image-overlay__headline--placeholder">
+                    {{ $tc('sw-cms.blocks.heroBlocks.heroImageOverlay.placeholder.headline') }}
+                </h3>
+                <p class="sw-cms-block-hero-image-overlay__text sw-cms-block-hero-image-overlay__text--placeholder">
+                    {{ $tc('sw-cms.blocks.heroBlocks.heroImageOverlay.placeholder.text') }}
+                </p>
+            </template>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

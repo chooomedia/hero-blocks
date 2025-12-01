@@ -26,109 +26,123 @@
     color: var(--color-text-primary-default);
 
     &-text {
-        font-size: $font-size-m;
-        line-height: 1.6;
-        color: var(--color-text-primary-default);
+        font-size: 14px;
+        line-height: 1.7;
+        color: var(--color-text-secondary-default);
         margin: 0 0 20px 0;
-        font-weight: $font-weight-medium;
+        font-weight: 400;
+        letter-spacing: 0.01em;
     }
 
-    // WICHTIG: Modern Grid Layout - Responsive von Desktop bis Mobile
+    // ============================================================================
+    // Feature Grid - Modern, Elegant, Minimalist Design (ohne Icons)
+    // ============================================================================
     &-features {
         margin: 0;
         padding: 0;
         list-style: none;
         display: grid;
-        // WICHTIG: Fancy Grid - 3 Spalten auf Desktop, 2 auf Tablet, 1 auf Mobile
+        // Responsive Grid: 3 Spalten Desktop, 2 Tablet, 1 Mobile
         grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
+        gap: 12px;
         
-        // Tablet (max-width: 1200px) - 2 Spalten
         @media (max-width: 1200px) {
             grid-template-columns: repeat(2, 1fr);
-            gap: 14px;
-        }
-        
-        // Mobile (max-width: 768px) - 1 Spalte
-        @media (max-width: 768px) {
-            grid-template-columns: 1fr;
-            gap: 12px;
-        }
-        
-        // WICHTIG: Feature Item ohne Icon - Modern minimalistisch
-        &-item {
-            display: flex;
-            align-items: center;
-            padding: 16px;
-            background: var(--color-white);
-            border: 1px solid var(--color-gray-300);
-            border-radius: $border-radius-default;
-            transition: all 0.2s ease;
-            box-sizing: border-box;
-            
-            // Hover Effect (subtle, modern)
-            &:hover {
-                background: var(--color-gray-50);
-                border-color: var(--color-gray-400);
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-                transform: translateY(-1px);
-            }
-        }
-        
-        // WICHTIG: Feature Content - Flex Layout mit Icon
-        &-content {
-            flex: 1;
-            min-width: 0; // WICHTIG: Verhindert Overflow
-            display: flex;
-            align-items: flex-start;
             gap: 10px;
         }
         
-        // WICHTIG: Feature Icon - Shopware Icons
-        &-icon {
-            flex-shrink: 0;
+        @media (max-width: 768px) {
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+        
+        // Feature Item - Clean, minimal, modern
+        &-item {
             display: flex;
             align-items: center;
-            justify-content: center;
-            width: 20px;
-            height: 20px;
-            margin-top: 1px;
+            padding: 12px 16px;
+            background: var(--color-white);
+            border: 1px solid var(--color-gray-200);
+            border-radius: 8px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
             
-            .mt-icon {
-                display: block;
+            // Subtle left accent border
+            &::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 3px;
+                background: transparent;
+                transition: background 0.25s ease;
+            }
+            
+            // Hover Effect - Smooth, elegant
+            &:hover {
+                background: var(--color-gray-50);
+                border-color: var(--color-gray-300);
+                transform: translateX(2px);
             }
         }
         
-        // WICHTIG: Feature Title - Sauber typographiert
+        // Feature Content - Simple flex layout
+        &-content {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        // Feature Title - Clean typography
         &-title {
-            font-size: $font-size-xs;
-            line-height: 1.5;
+            font-size: 13px;
+            line-height: 1.4;
             color: var(--color-text-primary-default);
-            font-weight: $font-weight-medium;
+            font-weight: 500;
             margin: 0;
             word-wrap: break-word;
+            letter-spacing: -0.01em;
         }
         
-        // WICHTIG: Aktive/Inaktive Blocks
-        &-item {
-            &--active {
-                opacity: 1;
-                background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0.02) 100%);
-                border-color: rgba(16, 185, 129, 0.2);
-                
-                &:hover {
-                    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.04) 100%);
-                    border-color: rgba(16, 185, 129, 0.3);
-                }
+        // Active Blocks - Subtle green accent
+        &-item--active {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.04) 0%, var(--color-white) 100%);
+            border-color: rgba(16, 185, 129, 0.15);
+            
+            &::before {
+                background: #10b981;
             }
+            
+            &:hover {
+                background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, var(--color-gray-50) 100%);
+                border-color: rgba(16, 185, 129, 0.25);
+            }
+            
+            .sw-system-config__hero-blocks-feature-title {
+                color: var(--color-text-primary-default);
+            }
+        }
 
-            &--inactive {
-                opacity: 0.8;
-                background: var(--color-gray-50);
-                
-                .sw-system-config__hero-blocks-feature-title {
-                    color: var(--color-text-secondary-default);
-                }
+        // Inactive Blocks - Muted, coming soon style
+        &-item--inactive {
+            background: var(--color-gray-50);
+            border-color: var(--color-gray-200);
+            
+            &::before {
+                background: var(--color-gray-300);
+            }
+            
+            &:hover {
+                background: var(--color-gray-100);
+            }
+            
+            .sw-system-config__hero-blocks-feature-title {
+                color: var(--color-text-secondary-default);
+                font-weight: 400;
             }
         }
     }
