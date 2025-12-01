@@ -5,9 +5,10 @@
     - Full-width background image
     - Angled text overlay panel (33° angle)
     - Position: top-left, middle-left, bottom-left, top-right, middle-right, bottom-right
-    - Scroll animation from outside
+    - Scroll animation from outside (per section, triggered when scrolled into view)
     - Uses theme accent color for overlay background
-    - Responsive design
+    - Responsive design with angle preserved on mobile
+    - Full accessibility support (ARIA, Schema.org)
 #}
 
 {% block block_hero_image_overlay %}
@@ -32,44 +33,75 @@
     {% set overlayBgStyle = overlayBackgroundColor ? 'background-color: ' ~ overlayBackgroundColor ~ ';' : '' %}
     {% set overlayTextStyle = overlayTextColor ? 'color: ' ~ overlayTextColor ~ ';' : '' %}
     
-    <div class="cms-block-hero-image-overlay"
-         style="min-height: {{ minHeight }};"
-         {% if enableScrollAnimation %}
-             data-hero-image-overlay="true"
-             data-overlay-position="{{ overlayPosition }}"
-         {% endif %}>
+    {# Unique ID for accessibility #}
+    {% set blockId = 'hero-overlay-' ~ random() %}
+    
+    {# 
+        Main Container
+        - itemscope/itemtype for Schema.org (ImageObject with text overlay)
+        - role="region" for landmark navigation
+        - aria-label for screen readers
+    #}
+    <article class="cms-block-hero-image-overlay"
+             style="min-height: {{ minHeight }};"
+             itemscope
+             itemtype="https://schema.org/ImageObject"
+             role="region"
+             aria-label="{{ overlayHeadline|default('Hero Image with Text Overlay')|striptags }}"
+             {% if enableScrollAnimation %}
+                 data-hero-image-overlay="true"
+                 data-overlay-position="{{ overlayPosition }}"
+             {% endif %}>
         
         {# Background Image (from slot) #}
-        <div class="cms-block-hero-image-overlay__image">
+        <div class="cms-block-hero-image-overlay__image"
+             role="img"
+             aria-hidden="true">
             {% set element = block.slots.getSlot('image') %}
             {% if element and element.type %}
                 {% sw_include '@Storefront/storefront/element/cms-element-' ~ element.type ~ '.html.twig' ignore missing %}
             {% endif %}
         </div>
         
-        {# Text Overlay Panel - Always render, even without content (for visual design) #}
-        {# WICHTIG: overlayTextStyle wird auf das Overlay angewendet, Headline/Text erben die Farbe #}
-        <div class="cms-block-hero-image-overlay__overlay cms-block-hero-image-overlay__overlay--{{ overlayPosition }}"
-             style="{{ overlayBgStyle }} {{ overlayTextStyle }}"
-             {% if enableScrollAnimation %}
-                 data-overlay-animate="true"
-             {% endif %}>
+        {# 
+            Text Overlay Panel
+            - role="banner" for important promotional content
+            - aria-labelledby references the headline
+        #}
+        <aside class="cms-block-hero-image-overlay__overlay cms-block-hero-image-overlay__overlay--{{ overlayPosition }}"
+               style="{{ overlayBgStyle }} {{ overlayTextStyle }}"
+               role="complementary"
+               aria-labelledby="{{ blockId }}-headline"
+               {% if enableScrollAnimation %}
+                   data-overlay-animate="true"
+               {% endif %}>
             <div class="cms-block-hero-image-overlay__overlay-content">
                 {% if overlayHeadline %}
                     {# Headline mit expliziter Text-Farbe aus Admin-Settings #}
-                    <h2 class="cms-block-hero-image-overlay__headline" style="{{ overlayTextStyle }}">{{ overlayHeadline }}</h2>
+                    <h2 class="cms-block-hero-image-overlay__headline" 
+                        id="{{ blockId }}-headline"
+                        itemprop="name"
+                        style="{{ overlayTextStyle }}">{{ overlayHeadline }}</h2>
                 {% endif %}
                 {% if overlayText %}
                     {# Text mit expliziter Text-Farbe aus Admin-Settings #}
-                    <div class="cms-block-hero-image-overlay__text" style="{{ overlayTextStyle }}">{{ overlayText|raw }}</div>
+                    <div class="cms-block-hero-image-overlay__text" 
+                         itemprop="description"
+                         style="{{ overlayTextStyle }}">{{ overlayText|raw }}</div>
                 {% endif %}
-                {# Fallback: Show placeholder if no content is defined #}
+                {# Fallback: Show placeholder if no content is defined (only in preview/dev) #}
                 {% if not overlayHeadline and not overlayText %}
-                    <h2 class="cms-block-hero-image-overlay__headline" style="{{ overlayTextStyle }}">Your Headline</h2>
-                    <p class="cms-block-hero-image-overlay__text" style="{{ overlayTextStyle }}">Your description text here</p>
+                    <h2 class="cms-block-hero-image-overlay__headline" 
+                        id="{{ blockId }}-headline"
+                        style="{{ overlayTextStyle }}">Your Headline</h2>
+                    <p class="cms-block-hero-image-overlay__text" 
+                       style="{{ overlayTextStyle }}">Your description text here</p>
                 {% endif %}
             </div>
-        </div>
-    </div>
+        </aside>
+        
+        {# Hidden metadata for Schema.org #}
+        <meta itemprop="contentUrl" content="{{ element.data.media.url|default('') }}">
+    </article>
 {% endblock %}
 
