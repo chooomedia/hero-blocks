@@ -1,6 +1,36 @@
-@import "~scss/variables";
+/**
+ * Hero Video Extended Block - Config Styles
+ */
 
 .sw-cms-block-config-hero-video-extended {
-    // Placeholder styles
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    
+    &__section {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 16px;
+        background-color: var(--color-gray-50);
+        border-radius: 8px;
+    }
+    
+    &__section-title {
+        margin: 0 0 8px 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--color-darkgray-200);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    &__warning-hint {
+        margin-top: 12px;
+        padding: 12px;
+        background-color: var(--color-pumpkin-spice-50);
+        border-radius: 4px;
+        font-size: 13px;
+        color: var(--color-pumpkin-spice-700);
+    }
 }
-

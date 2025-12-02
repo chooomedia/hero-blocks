@@ -219,7 +219,56 @@
         },
                 "heroVideoExtended": {
                     "label": "Hero Video Extended",
-                    "description": "Video-Hero-Block mit Overlay-Content und Call-to-Actions"
+                    "description": "Video-Hero-Block mit schrägem Text-Overlay und Scroll-Animation",
+                    "placeholder": {
+                        "selectVideo": "Wählen Sie ein Video in den Block-Einstellungen",
+                        "headline": "Ihre Überschrift",
+                        "text": "Ihr Beschreibungstext hier"
+                    },
+                    "videoNotSupported": "Ihr Browser unterstützt das Video-Tag nicht.",
+                    "noVideo": "Kein Video ausgewählt",
+                    "config": {
+                        "videoSection": "Video",
+                        "video": "Video-Datei",
+                        "videoHelp": "Wählen oder laden Sie eine Video-Datei hoch (MP4 empfohlen, max. 2-5MB)",
+                        "poster": "Poster-Bild",
+                        "posterHelp": "Bild, das vor dem Laden des Videos angezeigt wird",
+                        "autoplay": "Automatisch abspielen",
+                        "autoplayHelp": "Video automatisch abspielen wenn sichtbar (stummgeschaltet erforderlich)",
+                        "loop": "Endlosschleife",
+                        "loopHelp": "Video kontinuierlich wiederholen",
+                        "muted": "Stummgeschaltet",
+                        "mutedHelp": "Video ohne Ton abspielen (erforderlich für Autoplay)",
+                        "minHeight": "Mindesthöhe",
+                        "minHeightHelp": "Mindesthöhe für den Block (z.B. 500px oder 60vh)",
+                        "overlaySection": "Overlay-Inhalt",
+                        "overlayPosition": "Overlay-Position",
+                        "position": {
+                            "topLeft": "Oben Links",
+                            "middleLeft": "Mitte Links",
+                            "bottomLeft": "Unten Links",
+                            "topRight": "Oben Rechts",
+                            "middleRight": "Mitte Rechts",
+                            "bottomRight": "Unten Rechts"
+                        },
+                        "overlayHeadline": "Überschrift",
+                        "overlayHeadlinePlaceholder": "Überschrift eingeben...",
+                        "overlayText": "Beschreibungstext (HTML)",
+                        "overlayTextPlaceholder": "Beschreibungstext oder HTML eingeben...",
+                        "styleSection": "Stil",
+                        "overlayBackgroundColor": "Overlay-Hintergrundfarbe",
+                        "overlayBackgroundColorHelp": "Leer lassen für Theme-Akzentfarbe",
+                        "overlayTextColor": "Textfarbe",
+                        "animationSection": "Animation",
+                        "enableScrollAnimation": "Scroll-Animation aktivieren",
+                        "enableScrollAnimationHelp": "Animiert das Overlay-Panel beim Scrollen von außen herein",
+                        "fileSizeWarning": {
+                            "title": "Große Video-Datei",
+                            "message": "Die ausgewählte Video-Datei ist größer als 2MB. Große Video-Dateien können die Seitenladezeit und das Benutzererlebnis beeinträchtigen.",
+                            "hint": "Für optimale Performance empfehlen wir Video-Dateien zwischen 2-5MB. Erwägen Sie, Ihr Video zu komprimieren oder einen kürzeren Clip zu verwenden.",
+                            "understand": "Verstanden"
+                        }
+                    }
                 },
                 "heroFaq": {
                     "label": "Hero FAQ Block",

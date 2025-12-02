@@ -1,29 +1,37 @@
 /**
  * Hero Video Extended Block Registration
  * 
- * WICHTIG: Block ist aktuell disabled (Coming Soon)
- * Wird über System-Config gesteuert: HeroBlocks.config.enableHeroVideoExtended
+ * Features:
+ * - Video upload via Media Manager (max 2-5MB recommended)
+ * - Autoplay loop (infinite)
+ * - Angled text overlay (like Hero Image Overlay)
+ * - Scroll animation
+ * - Async on-scroll loading in storefront
+ * 
+ * Controlled via System-Config: HeroBlocks.config.enableHeroVideoExtended
  */
 
-import './component';
-import './preview';
-import './config';
+// CMS constant for preview image
+const CMS = {
+    MEDIA: {
+        previewMountain: 'bundles/administration/administration/static/img/cms/preview_mountain_large.jpg',
+    },
+};
 
-// Register Component
+console.log('[HeroBlocks] 🎬 Registering Hero Video Extended Block...');
+
+// Register Components
 Shopware.Component.register('sw-cms-block-hero-video-extended', () => import('./component/index.js'));
 Shopware.Component.register('sw-cms-preview-hero-video-extended', () => import('./preview/index.js'));
 Shopware.Component.register('sw-cms-block-config-hero-video-extended', () => import('./config/index.js'));
 
-// WICHTIG: Block-Sichtbarkeit basierend auf System-Config
-const configKey = 'HeroBlocks.config.enableHeroVideoExtended';
-
 /**
  * @private
  */
-const blockConfig = {
+Shopware.Service('cmsService').registerCmsBlock({
     name: 'hero-video-extended',
     label: 'sw-cms.blocks.heroBlocks.heroVideoExtended.label',
-    category: 'video', // WICHTIG: Video Category für Sidebar-Auswahl
+    category: 'video',
     component: 'sw-cms-block-hero-video-extended',
     previewComponent: 'sw-cms-preview-hero-video-extended',
     configComponent: 'sw-cms-block-config-hero-video-extended',
@@ -32,51 +40,69 @@ const blockConfig = {
         marginTop: '0',
         marginLeft: null,
         marginRight: null,
-        sizingMode: 'full_width',
+        sizingMode: 'full-width',
+        // Video settings
+        autoplay: {
+            source: 'static',
+            value: true,
+        },
+        loop: {
+            source: 'static',
+            value: true,
+        },
+        muted: {
+            source: 'static',
+            value: true,
+        },
+        // Overlay position: top-left, middle-left, bottom-left, top-right, middle-right, bottom-right
+        overlayPosition: {
+            source: 'static',
+            value: 'bottom-right',
+        },
+        // Overlay background color (accent color by default)
+        overlayBackgroundColor: {
+            source: 'static',
+            value: '', // Empty = use CSS variable --sw-color-accent
+        },
+        // Overlay text color (white by default)
+        overlayTextColor: {
+            source: 'static',
+            value: '#ffffff',
+        },
+        // Overlay headline
+        overlayHeadline: {
+            source: 'static',
+            value: '',
+        },
+        // Overlay text (HTML)
+        overlayText: {
+            source: 'static',
+            value: '',
+        },
+        // Enable scroll animation
+        enableScrollAnimation: {
+            source: 'static',
+            value: true,
+        },
+        // Minimum height
+        minHeight: {
+            source: 'static',
+            value: '500px',
+        },
+        // Video media ID (stored in customFields)
+        videoMediaId: {
+            source: 'static',
+            value: null,
+        },
+        // Poster image media ID (stored in customFields)
+        posterMediaId: {
+            source: 'static',
+            value: null,
+        },
     },
     slots: {
-        video: {
-            type: 'video', // WICHTIG: Verwendet Shopware Standard Video Element
-            default: {
-                config: {
-                    // Video Settings
-                    autoplay: {
-                        source: 'static',
-                        value: true,
-                    },
-                    loop: {
-                        source: 'static',
-                        value: true,
-                    },
-                    muted: {
-                        source: 'static',
-                        value: true,
-                    },
-                    controls: {
-                        source: 'static',
-                        value: false,
-                    },
-                },
-                data: {},
-            },
-        },
-        content: {
-            type: 'text',
-            default: {
-                config: {
-                    content: {
-                        source: 'static',
-                        value: '<h2>Hero Video</h2><p>Your message here</p>',
-                    },
-                },
-                data: {},
-            },
-        },
+        // No slots - video is configured via block settings
     },
-};
+});
 
-// Block registrieren
-Shopware.Service('cmsService').registerCmsBlock(blockConfig);
-
-console.log('[HeroBlocks] Hero Video Extended Block registered (disabled, coming soon)');
-
+console.log('[HeroBlocks] ✅ Hero Video Extended Block registered successfully');

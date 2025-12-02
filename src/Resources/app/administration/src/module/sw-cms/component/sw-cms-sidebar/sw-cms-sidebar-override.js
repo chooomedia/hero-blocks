@@ -66,9 +66,15 @@ Shopware.Component.override("sw-cms-sidebar", {
 
         // Hero Video Extended Block
         if (name === "hero-video-extended") {
+          console.warn(
+            "[HeroBlocks] Checking hero-video-extended block - enableHeroVideoExtended:",
+            this.heroBlocksConfig.enableHeroVideoExtended
+          );
           if (!this.heroBlocksConfig.enableHeroVideoExtended) {
+            console.warn("[HeroBlocks] ❌ Hero Video Extended block filtered out");
             return false;
           }
+          console.warn("[HeroBlocks] ✅ Hero Video Extended block is visible");
         }
 
         // Hero FAQ Block
@@ -86,9 +92,15 @@ Shopware.Component.override("sw-cms-sidebar", {
 
         // Hero Image Overlay Block
         if (name === "hero-image-overlay") {
+          console.warn(
+            "[HeroBlocks] Checking hero-image-overlay block - enableHeroImageOverlay:",
+            this.heroBlocksConfig.enableHeroImageOverlay
+          );
           if (!this.heroBlocksConfig.enableHeroImageOverlay) {
+            console.warn("[HeroBlocks] ❌ Hero Image Overlay block filtered out");
             return false;
           }
+          console.warn("[HeroBlocks] ✅ Hero Image Overlay block is visible");
         }
 
         return true;

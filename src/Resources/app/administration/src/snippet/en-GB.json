@@ -219,7 +219,56 @@
         },
                 "heroVideoExtended": {
                     "label": "Hero Video Extended",
-                    "description": "Video hero block with overlay content and call-to-actions"
+                    "description": "Video hero block with angled text overlay and scroll animation",
+                    "placeholder": {
+                        "selectVideo": "Select a video in the block settings",
+                        "headline": "Your Headline",
+                        "text": "Your description text here"
+                    },
+                    "videoNotSupported": "Your browser does not support the video tag.",
+                    "noVideo": "No video selected",
+                    "config": {
+                        "videoSection": "Video",
+                        "video": "Video File",
+                        "videoHelp": "Select or upload a video file (MP4 recommended, max. 2-5MB)",
+                        "poster": "Poster Image",
+                        "posterHelp": "Image displayed before video loads or if video fails",
+                        "autoplay": "Autoplay",
+                        "autoplayHelp": "Automatically play video when visible (muted required)",
+                        "loop": "Loop (Infinite)",
+                        "loopHelp": "Continuously repeat the video",
+                        "muted": "Muted",
+                        "mutedHelp": "Play video without sound (required for autoplay)",
+                        "minHeight": "Minimum Height",
+                        "minHeightHelp": "Minimum height for the block (e.g. 500px or 60vh)",
+                        "overlaySection": "Overlay Content",
+                        "overlayPosition": "Overlay Position",
+                        "position": {
+                            "topLeft": "Top Left",
+                            "middleLeft": "Middle Left",
+                            "bottomLeft": "Bottom Left",
+                            "topRight": "Top Right",
+                            "middleRight": "Middle Right",
+                            "bottomRight": "Bottom Right"
+                        },
+                        "overlayHeadline": "Headline",
+                        "overlayHeadlinePlaceholder": "Enter headline...",
+                        "overlayText": "Description Text (HTML)",
+                        "overlayTextPlaceholder": "Enter description text or HTML...",
+                        "styleSection": "Style",
+                        "overlayBackgroundColor": "Overlay Background Color",
+                        "overlayBackgroundColorHelp": "Leave empty to use theme accent color",
+                        "overlayTextColor": "Text Color",
+                        "animationSection": "Animation",
+                        "enableScrollAnimation": "Enable Scroll Animation",
+                        "enableScrollAnimationHelp": "Animates the overlay panel sliding in when scrolling into view",
+                        "fileSizeWarning": {
+                            "title": "Large Video File",
+                            "message": "The selected video file is larger than 2MB. Large video files may impact page load times and user experience.",
+                            "hint": "For best performance, we recommend video files between 2-5MB. Consider compressing your video or using a shorter clip.",
+                            "understand": "I Understand"
+                        }
+                    }
                 },
                 "heroFaq": {
                     "label": "Hero FAQ Block",

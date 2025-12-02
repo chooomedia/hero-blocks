@@ -33,6 +33,8 @@ Shopware.Component.register('sw-cms-block-config-hero-image-overlay', () => impo
 /**
  * @private
  */
+console.log('[HeroBlocks] 🖼️ Registering Hero Image Overlay Block...');
+
 Shopware.Service('cmsService').registerCmsBlock({
     name: 'hero-image-overlay',
     label: 'sw-cms.blocks.heroBlocks.heroImageOverlay.label',
@@ -99,4 +101,6 @@ Shopware.Service('cmsService').registerCmsBlock({
         },
     },
 });
+
+console.log('[HeroBlocks] ✅ Hero Image Overlay Block registered successfully');
 

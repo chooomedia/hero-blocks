@@ -1,11 +1,163 @@
 {% block sw_cms_block_config_hero_video_extended %}
-<div class="sw-cms-block-config-hero-video-extended">
-    {# WICHTIG: Coming Soon Banner #}
-    <mt-banner variant="info">
-        {{ $tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.comingSoon') }}
-    </mt-banner>
+<div class="sw-cms-block-config-hero-video-extended" v-if="block && block.customFields">
     
-    {# TODO: Video Settings werden hier später konfiguriert #}
+    {# File Size Warning Modal #}
+    <mt-modal 
+        v-if="showFileSizeWarning"
+        :title="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.fileSizeWarning.title')"
+        variant="small"
+        @modal-close="dismissFileSizeWarning"
+    >
+        <p>{{ $tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.fileSizeWarning.message') }}</p>
+        <p class="sw-cms-block-config-hero-video-extended__warning-hint">
+            {{ $tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.fileSizeWarning.hint') }}
+        </p>
+        <template #modal-footer>
+            <mt-button variant="primary" @click="dismissFileSizeWarning">
+                {{ $tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.fileSizeWarning.understand') }}
+            </mt-button>
+        </template>
+    </mt-modal>
+
+    {# ========== VIDEO SETTINGS ========== #}
+    <div class="sw-cms-block-config-hero-video-extended__section">
+        <h4 class="sw-cms-block-config-hero-video-extended__section-title">
+            {{ $tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.videoSection') }}
+        </h4>
+        
+        {# Video Upload #}
+        <sw-media-compact-upload-v2
+            :source="videoMedia"
+            :upload-tag="uploadTag + '-video'"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.video')"
+            :help-text="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.videoHelp')"
+            :default-folder="cmsPageState?.pageEntityName || 'cms_page'"
+            :file-accept="'video/*'"
+            @media-upload-remove-image="onRemoveVideo"
+            @selection-change="onVideoSelectionChange"
+            @media-upload-finish="onVideoUploadFinish"
+        />
+        
+        {# Poster Image Upload #}
+        <sw-media-compact-upload-v2
+            :source="posterMedia"
+            :upload-tag="uploadTag + '-poster'"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.poster')"
+            :help-text="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.posterHelp')"
+            :default-folder="cmsPageState?.pageEntityName || 'cms_page'"
+            :file-accept="'image/*'"
+            @media-upload-remove-image="onRemovePoster"
+            @selection-change="onPosterSelectionChange"
+            @media-upload-finish="onPosterUploadFinish"
+        />
+        
+        {# Autoplay #}
+        <sw-switch-field
+            :value="autoplay"
+            @update:value="(value) => updateCustomField('autoplay', value)"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.autoplay')"
+            :helpText="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.autoplayHelp')"
+        />
+        
+        {# Loop #}
+        <sw-switch-field
+            :value="loop"
+            @update:value="(value) => updateCustomField('loop', value)"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.loop')"
+            :helpText="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.loopHelp')"
+        />
+        
+        {# Muted #}
+        <sw-switch-field
+            :value="muted"
+            @update:value="(value) => updateCustomField('muted', value)"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.muted')"
+            :helpText="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.mutedHelp')"
+        />
+        
+        {# Min Height #}
+        <sw-text-field
+            :value="minHeight"
+            @update:value="(value) => updateCustomField('minHeight', value)"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.minHeight')"
+            :helpText="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.minHeightHelp')"
+            :placeholder="'500px'"
+        />
+    </div>
+    
+    {# ========== OVERLAY SETTINGS ========== #}
+    <div class="sw-cms-block-config-hero-video-extended__section">
+        <h4 class="sw-cms-block-config-hero-video-extended__section-title">
+            {{ $tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlaySection') }}
+        </h4>
+        
+        {# Overlay Position #}
+        <sw-select-field
+            :value="overlayPosition"
+            @update:value="(value) => updateCustomField('overlayPosition', value)"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlayPosition')"
+            :options="positionOptions"
+        />
+        
+        {# Overlay Headline #}
+        <sw-text-field
+            :value="overlayHeadline"
+            @update:value="(value) => updateCustomField('overlayHeadline', value)"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlayHeadline')"
+            :placeholder="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlayHeadlinePlaceholder')"
+        />
+        
+        {# Overlay Text (HTML Editor) #}
+        <sw-text-editor
+            :value="overlayText"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlayText')"
+            :placeholder="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlayTextPlaceholder')"
+            :sanitize-input="false"
+            :sanitize-field-value="false"
+            :allow-inline-data-mapping="false"
+            :is-inline-edit="false"
+            @update:value="onOverlayTextChange"
+        />
+    </div>
+    
+    {# ========== STYLE SETTINGS ========== #}
+    <div class="sw-cms-block-config-hero-video-extended__section">
+        <h4 class="sw-cms-block-config-hero-video-extended__section-title">
+            {{ $tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.styleSection') }}
+        </h4>
+        
+        {# Overlay Background Color #}
+        <sw-colorpicker
+            :value="overlayBackgroundColor"
+            @update:value="(value) => updateCustomField('overlayBackgroundColor', value)"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlayBackgroundColor')"
+            :helpText="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlayBackgroundColorHelp')"
+            :colorOutput="'hex'"
+        />
+        
+        {# Overlay Text Color #}
+        <sw-colorpicker
+            :value="overlayTextColor"
+            @update:value="(value) => updateCustomField('overlayTextColor', value)"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlayTextColor')"
+            :colorOutput="'hex'"
+        />
+    </div>
+    
+    {# ========== ANIMATION SETTINGS ========== #}
+    <div class="sw-cms-block-config-hero-video-extended__section">
+        <h4 class="sw-cms-block-config-hero-video-extended__section-title">
+            {{ $tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.animationSection') }}
+        </h4>
+        
+        {# Enable Scroll Animation #}
+        <sw-switch-field
+            :value="enableScrollAnimation"
+            @update:value="(value) => updateCustomField('enableScrollAnimation', value)"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.enableScrollAnimation')"
+            :helpText="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.enableScrollAnimationHelp')"
+        />
+    </div>
+    
 </div>
 {% endblock %}
-

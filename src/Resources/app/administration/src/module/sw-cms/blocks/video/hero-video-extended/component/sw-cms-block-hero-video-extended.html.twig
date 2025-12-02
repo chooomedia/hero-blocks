@@ -1,14 +1,55 @@
 {% block sw_cms_block_hero_video_extended %}
-    <div class="sw-cms-block-hero-video-extended">
-        {# Video Slot #}
-        <div class="sw-cms-block-hero-video-extended__video">
-            <slot name="video"></slot>
-        </div>
-        
-        {# Content Overlay #}
-        <div class="sw-cms-block-hero-video-extended__content">
-            <slot name="content"></slot>
+<div class="sw-cms-block-hero-video-extended">
+    {# Video Background #}
+    <div class="sw-cms-block-hero-video-extended__video-wrapper">
+        <template v-if="videoUrl">
+            <video 
+                class="sw-cms-block-hero-video-extended__video"
+                :src="videoUrl"
+                :poster="posterUrl"
+                autoplay
+                loop
+                muted
+                playsinline
+            ></video>
+        </template>
+        <template v-else>
+            {# Placeholder when no video selected #}
+            <div class="sw-cms-block-hero-video-extended__placeholder">
+                <mt-icon name="regular-video" size="48"></mt-icon>
+                <span>{{ $tc('sw-cms.blocks.heroBlocks.heroVideoExtended.placeholder.selectVideo') }}</span>
+            </div>
+        </template>
+    </div>
+    
+    {# Text Overlay Panel with angled edge (like Hero Image Overlay) #}
+    <div 
+        class="sw-cms-block-hero-video-extended__overlay"
+        :class="overlayClasses"
+        :style="overlayStyles"
+    >
+        <div class="sw-cms-block-hero-video-extended__overlay-content">
+            <h3 v-if="overlayHeadline" 
+                class="sw-cms-block-hero-video-extended__headline"
+                :style="{ color: overlayTextColor }">
+                {{ overlayHeadline }}
+            </h3>
+            <p v-if="overlayText" 
+               class="sw-cms-block-hero-video-extended__text" 
+               v-html="overlayText"
+               :style="{ color: overlayTextColor }">
+            </p>
+            <template v-if="!overlayHeadline && !overlayText">
+                <h3 class="sw-cms-block-hero-video-extended__headline sw-cms-block-hero-video-extended__headline--placeholder"
+                    :style="{ color: overlayTextColor }">
+                    {{ $tc('sw-cms.blocks.heroBlocks.heroVideoExtended.placeholder.headline') }}
+                </h3>
+                <p class="sw-cms-block-hero-video-extended__text sw-cms-block-hero-video-extended__text--placeholder"
+                   :style="{ color: overlayTextColor }">
+                    {{ $tc('sw-cms.blocks.heroBlocks.heroVideoExtended.placeholder.text') }}
+                </p>
+            </template>
         </div>
     </div>
+</div>
 {% endblock %}
-
