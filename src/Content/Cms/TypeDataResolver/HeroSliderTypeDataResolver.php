@@ -122,7 +122,19 @@ class HeroSliderTypeDataResolver extends AbstractCmsElementResolver
         }
         
         // Per-Slide Content als Extension hinzufügen (nutzt addArrayExtension für einfache Werte)
-        $contentFields = ['headline', 'text', 'button1Text', 'button1Url', 'button1NewTab', 'button2Text', 'button2Url', 'button2NewTab', 'logoImageId'];
+        // WICHTIG: Alle Felder die im Admin-Config gespeichert werden müssen hier aufgelistet sein!
+        $contentFields = [
+            // Text Content
+            'headline', 'text', 
+            // Button 1
+            'button1Text', 'button1Url', 'button1NewTab', 'button1BgColor',
+            // Button 2
+            'button2Text', 'button2Url', 'button2NewTab', 'button2BgColor',
+            // Colors
+            'headlineColor', 'textColor',
+            // Logo
+            'logoImageId'
+        ];
         foreach ($contentFields as $field) {
             if (isset($config[$field])) {
                 $imageSliderItem->addArrayExtension($field, ['value' => $config[$field]]);

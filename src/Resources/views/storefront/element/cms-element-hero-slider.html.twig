@@ -206,11 +206,16 @@
                                                     </div>
                                                 {% endif %}
                                                 
-                                                {# Per-Slide Styling-Werte - Fallback zu CSS Defaults wenn nicht gesetzt #}
-                                                {% set headlineColor = (slide.headlineColor is defined and slide.headlineColor is not null and slide.headlineColor is not empty) ? slide.headlineColor : null %}
-                                                {% set textColor = (slide.textColor is defined and slide.textColor is not null and slide.textColor is not empty) ? slide.textColor : null %}
-                                                {% set button1BgColor = (slide.button1BgColor is defined and slide.button1BgColor is not null and slide.button1BgColor is not empty) ? slide.button1BgColor : null %}
-                                                {% set button2BgColor = (slide.button2BgColor is defined and slide.button2BgColor is not null and slide.button2BgColor is not empty) ? slide.button2BgColor : null %}
+                                                {# Per-Slide Styling-Werte aus Extensions - Fallback zu CSS Defaults wenn nicht gesetzt #}
+                                                {# WICHTIG: Farben werden vom TypeDataResolver als Extensions hinzugefügt #}
+                                                {% set headlineColorExt = slide.extensions.headlineColor %}
+                                                {% set headlineColor = (headlineColorExt and headlineColorExt.value is defined and headlineColorExt.value is not null and headlineColorExt.value is not empty) ? headlineColorExt.value : null %}
+                                                {% set textColorExt = slide.extensions.textColor %}
+                                                {% set textColor = (textColorExt and textColorExt.value is defined and textColorExt.value is not null and textColorExt.value is not empty) ? textColorExt.value : null %}
+                                                {% set button1BgColorExt = slide.extensions.button1BgColor %}
+                                                {% set button1BgColor = (button1BgColorExt and button1BgColorExt.value is defined and button1BgColorExt.value is not null and button1BgColorExt.value is not empty) ? button1BgColorExt.value : null %}
+                                                {% set button2BgColorExt = slide.extensions.button2BgColor %}
+                                                {% set button2BgColor = (button2BgColorExt and button2BgColorExt.value is defined and button2BgColorExt.value is not null and button2BgColorExt.value is not empty) ? button2BgColorExt.value : null %}
                                                 
                                                 {# Per-Slide oder Global Headline (aus Extension oder Config) - Robuste null/empty Prüfung #}
                                                 {% set slideHeadlineExt = slide.extensions.headline %}

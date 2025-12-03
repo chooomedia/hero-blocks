@@ -2,24 +2,27 @@
  * Hero Video Extended Block - Config Component
  * 
  * Settings:
- * - Video upload via Media Manager
+ * - Video upload via Media Manager (MP4, WebM)
  * - Poster image
  * - Autoplay, Loop, Muted
  * - Overlay position, colors, text
  * - Scroll animation
+ * 
+ * WICHTIG: Folgt EXAKT dem gleichen Pattern wie Hero Two Columns für customFields Persistenz
+ * - Direktes Setzen von customFields (KEIN Helper-Funktion)
+ * - Kein $emit('block-update')
  */
 import template from './sw-cms-block-config-hero-video-extended.html.twig';
 import './sw-cms-block-config-hero-video-extended.scss';
 
-const { Mixin } = Shopware;
-
 export default {
     template,
 
-    inject: ['repositoryFactory'],
+    inject: ['repositoryFactory', 'cmsService'],
 
+    // WICHTIG: cms-state Mixin hinzufügen (wie Standard sw-cms-block-config)
     mixins: [
-        Mixin.getByName('cms-state'),
+        Shopware.Mixin.getByName('cms-state'),
     ],
 
     props: {
@@ -46,114 +49,54 @@ export default {
             return `hero-video-extended-${this.block?.id || 'new'}`;
         },
 
-        // Video Settings
-        videoMediaId: {
-            get() {
-                return this.block?.customFields?.videoMediaId || null;
-            },
-            set(value) {
-                this.updateCustomField('videoMediaId', value);
-            },
+        // Video Settings - Direkte Getter ohne Setter (Pattern wie Hero Two Columns)
+        videoMediaId() {
+            return this.block?.customFields?.videoMediaId || null;
         },
 
-        posterMediaId: {
-            get() {
-                return this.block?.customFields?.posterMediaId || null;
-            },
-            set(value) {
-                this.updateCustomField('posterMediaId', value);
-            },
+        posterMediaId() {
+            return this.block?.customFields?.posterMediaId || null;
         },
 
-        autoplay: {
-            get() {
-                return this.block?.customFields?.autoplay !== false;
-            },
-            set(value) {
-                this.updateCustomField('autoplay', value);
-            },
+        autoplay() {
+            return this.block?.customFields?.autoplay !== false;
         },
 
-        loop: {
-            get() {
-                return this.block?.customFields?.loop !== false;
-            },
-            set(value) {
-                this.updateCustomField('loop', value);
-            },
+        loop() {
+            return this.block?.customFields?.loop !== false;
         },
 
-        muted: {
-            get() {
-                return this.block?.customFields?.muted !== false;
-            },
-            set(value) {
-                this.updateCustomField('muted', value);
-            },
+        muted() {
+            return this.block?.customFields?.muted !== false;
         },
 
         // Overlay Settings
-        overlayPosition: {
-            get() {
-                return this.block?.customFields?.overlayPosition || 'bottom-right';
-            },
-            set(value) {
-                this.updateCustomField('overlayPosition', value);
-            },
+        overlayPosition() {
+            return this.block?.customFields?.overlayPosition || 'bottom-right';
         },
 
-        overlayBackgroundColor: {
-            get() {
-                return this.block?.customFields?.overlayBackgroundColor || '';
-            },
-            set(value) {
-                this.updateCustomField('overlayBackgroundColor', value);
-            },
+        overlayBackgroundColor() {
+            return this.block?.customFields?.overlayBackgroundColor || '';
         },
 
-        overlayTextColor: {
-            get() {
-                return this.block?.customFields?.overlayTextColor || '#ffffff';
-            },
-            set(value) {
-                this.updateCustomField('overlayTextColor', value);
-            },
+        overlayTextColor() {
+            return this.block?.customFields?.overlayTextColor || '#ffffff';
         },
 
-        overlayHeadline: {
-            get() {
-                return this.block?.customFields?.overlayHeadline || '';
-            },
-            set(value) {
-                this.updateCustomField('overlayHeadline', value);
-            },
+        overlayHeadline() {
+            return this.block?.customFields?.overlayHeadline || '';
         },
 
-        overlayText: {
-            get() {
-                return this.block?.customFields?.overlayText || '';
-            },
-            set(value) {
-                this.updateCustomField('overlayText', value);
-            },
+        overlayText() {
+            return this.block?.customFields?.overlayText || '';
         },
 
-        enableScrollAnimation: {
-            get() {
-                return this.block?.customFields?.enableScrollAnimation !== false;
-            },
-            set(value) {
-                this.updateCustomField('enableScrollAnimation', value);
-            },
+        enableScrollAnimation() {
+            return this.block?.customFields?.enableScrollAnimation !== false;
         },
 
-        minHeight: {
-            get() {
-                return this.block?.customFields?.minHeight || '500px';
-            },
-            set(value) {
-                this.updateCustomField('minHeight', value);
-            },
+        minHeight() {
+            return this.block?.customFields?.minHeight || '500px';
         },
 
         positionOptions() {
@@ -166,6 +109,11 @@ export default {
                 { value: 'bottom-right', label: this.$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.position.bottomRight') },
             ];
         },
+        
+        // Akzeptierte Video-Formate
+        videoAccept() {
+            return 'video/mp4,video/webm';
+        },
     },
 
     watch: {
@@ -175,8 +123,10 @@ export default {
             },
             immediate: true,
         },
-        videoMediaId: {
+        // Lade Video-Media wenn ID sich ändert
+        'block.customFields.videoMediaId': {
             handler(newValue) {
+                console.log('[Hero Video Extended Config] videoMediaId changed:', newValue);
                 if (newValue) {
                     this.loadVideoMedia(newValue);
                 } else {
@@ -185,8 +135,10 @@ export default {
             },
             immediate: true,
         },
-        posterMediaId: {
+        // Lade Poster-Media wenn ID sich ändert
+        'block.customFields.posterMediaId': {
             handler(newValue) {
+                console.log('[Hero Video Extended Config] posterMediaId changed:', newValue);
                 if (newValue) {
                     this.loadPosterMedia(newValue);
                 } else {
@@ -202,13 +154,23 @@ export default {
     },
 
     methods: {
+        /**
+         * Initialisiert Block-Config-Werte
+         * WICHTIG: Folgt EXAKT dem gleichen Pattern wie Hero Two Columns
+         */
         initializeBlockConfig() {
             if (!this.block) {
                 return;
             }
 
+            // WICHTIG: Block-Config wird in block.customFields gespeichert (NICHT block.config!)
+            // Stelle sicher, dass block.customFields existiert (reaktiv)
             if (!this.block.customFields) {
-                this.block.customFields = {};
+                if (this.$set) {
+                    this.$set(this.block, 'customFields', {});
+                } else {
+                    this.block.customFields = {};
+                }
             }
 
             const defaults = {
@@ -226,24 +188,18 @@ export default {
                 minHeight: '500px',
             };
 
+            // Initialisiere fehlende Werte (wie Hero Two Columns)
             Object.keys(defaults).forEach((key) => {
-                if (this.block.customFields[key] === undefined) {
-                    this.block.customFields[key] = defaults[key];
+                if (this.block.customFields[key] === undefined || this.block.customFields[key] === null) {
+                    if (this.$set) {
+                        this.$set(this.block.customFields, key, defaults[key]);
+                    } else {
+                        this.block.customFields[key] = defaults[key];
+                    }
                 }
             });
-        },
-
-        updateCustomField(key, value) {
-            if (!this.block) {
-                return;
-            }
-
-            if (!this.block.customFields) {
-                this.block.customFields = {};
-            }
-
-            this.block.customFields[key] = value;
-            this.$emit('block-update');
+            
+            console.log('[Hero Video Extended Config] initializeBlockConfig - customFields:', JSON.stringify(this.block.customFields));
         },
 
         async loadVideoMedia(mediaId) {
@@ -254,6 +210,7 @@ export default {
 
             try {
                 this.videoMedia = await this.mediaRepository.get(mediaId, Shopware.Context.api);
+                console.log('[Hero Video Extended Config] Video media loaded:', this.videoMedia?.fileName);
             } catch (e) {
                 console.warn('[Hero Video Extended Config] Could not load video media:', e);
                 this.videoMedia = null;
@@ -268,58 +225,177 @@ export default {
 
             try {
                 this.posterMedia = await this.mediaRepository.get(mediaId, Shopware.Context.api);
+                console.log('[Hero Video Extended Config] Poster media loaded:', this.posterMedia?.fileName);
             } catch (e) {
                 console.warn('[Hero Video Extended Config] Could not load poster media:', e);
                 this.posterMedia = null;
             }
         },
 
-        onVideoSelectionChange(selection) {
-            if (selection && selection.length > 0) {
-                const media = selection[0];
+        // ========== VIDEO HANDLERS (wie Hero Two Columns onSetBackgroundImage) ==========
+        
+        onVideoSelectionChange([mediaItem]) {
+            console.log('[Hero Video Extended Config] onVideoSelectionChange called:', mediaItem);
+            
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            
+            const mediaId = (mediaItem && mediaItem.id) ? mediaItem.id : null;
+            this.block.customFields.videoMediaId = mediaId;
+            
+            if (mediaItem) {
+                this.videoMedia = mediaItem;
                 
                 // Check file size (warn if > 2MB)
-                if (media.fileSize && media.fileSize > 2 * 1024 * 1024) {
+                if (mediaItem.fileSize && mediaItem.fileSize > 2 * 1024 * 1024) {
                     this.showFileSizeWarning = true;
                 } else {
                     this.showFileSizeWarning = false;
                 }
-                
-                this.videoMediaId = media.id;
-                this.videoMedia = media;
+            }
+            
+            console.log('[Hero Video Extended Config] Video selected, mediaId:', mediaId);
+        },
+
+        async onVideoUploadFinish(uploadedMedia) {
+            console.log('[Hero Video Extended Config] onVideoUploadFinish called:', uploadedMedia);
+            
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            
+            if (uploadedMedia && uploadedMedia.targetId) {
+                this.block.customFields.videoMediaId = uploadedMedia.targetId;
+                this.loadVideoMedia(uploadedMedia.targetId);
             }
         },
 
-        onVideoUploadFinish({ targetId }) {
-            this.videoMediaId = targetId;
-            this.loadVideoMedia(targetId);
-        },
-
         onRemoveVideo() {
-            this.videoMediaId = null;
+            console.log('[Hero Video Extended Config] onRemoveVideo called');
+            
+            if (!this.block || !this.block.customFields) {
+                return;
+            }
+            
+            this.block.customFields.videoMediaId = null;
             this.videoMedia = null;
             this.showFileSizeWarning = false;
         },
 
-        onPosterSelectionChange(selection) {
-            if (selection && selection.length > 0) {
-                this.posterMediaId = selection[0].id;
-                this.posterMedia = selection[0];
+        // ========== POSTER HANDLERS ==========
+        
+        onPosterSelectionChange([mediaItem]) {
+            console.log('[Hero Video Extended Config] onPosterSelectionChange called:', mediaItem);
+            
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            
+            const mediaId = (mediaItem && mediaItem.id) ? mediaItem.id : null;
+            this.block.customFields.posterMediaId = mediaId;
+            
+            if (mediaItem) {
+                this.posterMedia = mediaItem;
             }
         },
 
-        onPosterUploadFinish({ targetId }) {
-            this.posterMediaId = targetId;
-            this.loadPosterMedia(targetId);
+        async onPosterUploadFinish(uploadedMedia) {
+            console.log('[Hero Video Extended Config] onPosterUploadFinish called:', uploadedMedia);
+            
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            
+            if (uploadedMedia && uploadedMedia.targetId) {
+                this.block.customFields.posterMediaId = uploadedMedia.targetId;
+                this.loadPosterMedia(uploadedMedia.targetId);
+            }
         },
 
         onRemovePoster() {
-            this.posterMediaId = null;
+            console.log('[Hero Video Extended Config] onRemovePoster called');
+            
+            if (!this.block || !this.block.customFields) {
+                return;
+            }
+            
+            this.block.customFields.posterMediaId = null;
             this.posterMedia = null;
         },
 
+        // ========== OTHER SETTINGS HANDLERS (direkt setzen wie Hero Two Columns) ==========
+
+        onAutoplayChange(value) {
+            if (!this.block) return;
+            if (!this.block.customFields) this.block.customFields = {};
+            this.block.customFields.autoplay = value;
+        },
+
+        onLoopChange(value) {
+            if (!this.block) return;
+            if (!this.block.customFields) this.block.customFields = {};
+            this.block.customFields.loop = value;
+        },
+
+        onMutedChange(value) {
+            if (!this.block) return;
+            if (!this.block.customFields) this.block.customFields = {};
+            this.block.customFields.muted = value;
+        },
+
+        onMinHeightChange(value) {
+            if (!this.block) return;
+            if (!this.block.customFields) this.block.customFields = {};
+            this.block.customFields.minHeight = value;
+        },
+
+        onOverlayPositionChange(value) {
+            if (!this.block) return;
+            if (!this.block.customFields) this.block.customFields = {};
+            this.block.customFields.overlayPosition = value;
+        },
+
+        onOverlayHeadlineChange(value) {
+            if (!this.block) return;
+            if (!this.block.customFields) this.block.customFields = {};
+            this.block.customFields.overlayHeadline = value;
+        },
+
         onOverlayTextChange(value) {
-            this.updateCustomField('overlayText', value);
+            if (!this.block) return;
+            if (!this.block.customFields) this.block.customFields = {};
+            this.block.customFields.overlayText = value;
+        },
+
+        onOverlayBackgroundColorChange(value) {
+            if (!this.block) return;
+            if (!this.block.customFields) this.block.customFields = {};
+            this.block.customFields.overlayBackgroundColor = value;
+        },
+
+        onOverlayTextColorChange(value) {
+            if (!this.block) return;
+            if (!this.block.customFields) this.block.customFields = {};
+            this.block.customFields.overlayTextColor = value;
+        },
+
+        onEnableScrollAnimationChange(value) {
+            if (!this.block) return;
+            if (!this.block.customFields) this.block.customFields = {};
+            this.block.customFields.enableScrollAnimation = value;
         },
 
         dismissFileSizeWarning() {

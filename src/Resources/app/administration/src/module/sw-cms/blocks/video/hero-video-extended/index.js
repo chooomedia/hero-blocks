@@ -27,6 +27,10 @@ Shopware.Component.register('sw-cms-block-config-hero-video-extended', () => imp
 
 /**
  * @private
+ * 
+ * WICHTIG: Block-Config wird in block.customFields gespeichert (NICHT in block.config)
+ * Das defaultConfig hier definiert nur Standard-Werte für margin/sizing.
+ * Alle anderen Einstellungen werden über customFields verwaltet.
  */
 Shopware.Service('cmsService').registerCmsBlock({
     name: 'hero-video-extended',
@@ -36,69 +40,14 @@ Shopware.Service('cmsService').registerCmsBlock({
     previewComponent: 'sw-cms-preview-hero-video-extended',
     configComponent: 'sw-cms-block-config-hero-video-extended',
     defaultConfig: {
+        // Standard Shopware Block-Config (margin, sizing)
         marginBottom: '0',
         marginTop: '0',
         marginLeft: null,
         marginRight: null,
         sizingMode: 'full-width',
-        // Video settings
-        autoplay: {
-            source: 'static',
-            value: true,
-        },
-        loop: {
-            source: 'static',
-            value: true,
-        },
-        muted: {
-            source: 'static',
-            value: true,
-        },
-        // Overlay position: top-left, middle-left, bottom-left, top-right, middle-right, bottom-right
-        overlayPosition: {
-            source: 'static',
-            value: 'bottom-right',
-        },
-        // Overlay background color (accent color by default)
-        overlayBackgroundColor: {
-            source: 'static',
-            value: '', // Empty = use CSS variable --sw-color-accent
-        },
-        // Overlay text color (white by default)
-        overlayTextColor: {
-            source: 'static',
-            value: '#ffffff',
-        },
-        // Overlay headline
-        overlayHeadline: {
-            source: 'static',
-            value: '',
-        },
-        // Overlay text (HTML)
-        overlayText: {
-            source: 'static',
-            value: '',
-        },
-        // Enable scroll animation
-        enableScrollAnimation: {
-            source: 'static',
-            value: true,
-        },
-        // Minimum height
-        minHeight: {
-            source: 'static',
-            value: '500px',
-        },
-        // Video media ID (stored in customFields)
-        videoMediaId: {
-            source: 'static',
-            value: null,
-        },
-        // Poster image media ID (stored in customFields)
-        posterMediaId: {
-            source: 'static',
-            value: null,
-        },
+        // WICHTIG: Keine Block-spezifischen Einstellungen hier!
+        // Diese werden in block.customFields gespeichert (siehe config/index.js)
     },
     slots: {
         // No slots - video is configured via block settings

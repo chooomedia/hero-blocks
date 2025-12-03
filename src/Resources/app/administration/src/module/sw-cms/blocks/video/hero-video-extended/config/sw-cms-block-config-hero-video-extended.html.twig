@@ -25,36 +25,49 @@
             {{ $tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.videoSection') }}
         </h4>
         
-        {# Video Upload #}
+        {# Video Upload - MP4 und WebM unterstützt #}
+        {# WICHTIG: Gleiches Pattern wie Hero Two Columns - source mit { id: ... } Objekt #}
         <sw-media-compact-upload-v2
-            :source="videoMedia"
+            :source="block.customFields?.videoMediaId ? { id: block.customFields.videoMediaId } : null"
             :upload-tag="uploadTag + '-video'"
             :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.video')"
             :help-text="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.videoHelp')"
             :default-folder="cmsPageState?.pageEntityName || 'cms_page'"
-            :file-accept="'video/*'"
+            :file-accept="videoAccept"
+            :allow-multi-select="false"
             @media-upload-remove-image="onRemoveVideo"
             @selection-change="onVideoSelectionChange"
+        />
+        {# WICHTIG: Separater Upload-Listener wie Hero Two Columns #}
+        <sw-upload-listener
+            :upload-tag="uploadTag + '-video'"
+            auto-upload
             @media-upload-finish="onVideoUploadFinish"
         />
         
         {# Poster Image Upload #}
         <sw-media-compact-upload-v2
-            :source="posterMedia"
+            :source="block.customFields?.posterMediaId ? { id: block.customFields.posterMediaId } : null"
             :upload-tag="uploadTag + '-poster'"
             :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.poster')"
             :help-text="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.posterHelp')"
             :default-folder="cmsPageState?.pageEntityName || 'cms_page'"
             :file-accept="'image/*'"
+            :allow-multi-select="false"
             @media-upload-remove-image="onRemovePoster"
             @selection-change="onPosterSelectionChange"
+        />
+        {# WICHTIG: Separater Upload-Listener wie Hero Two Columns #}
+        <sw-upload-listener
+            :upload-tag="uploadTag + '-poster'"
+            auto-upload
             @media-upload-finish="onPosterUploadFinish"
         />
         
         {# Autoplay #}
         <sw-switch-field
             :value="autoplay"
-            @update:value="(value) => updateCustomField('autoplay', value)"
+            @update:value="onAutoplayChange"
             :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.autoplay')"
             :helpText="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.autoplayHelp')"
         />
@@ -62,7 +75,7 @@
         {# Loop #}
         <sw-switch-field
             :value="loop"
-            @update:value="(value) => updateCustomField('loop', value)"
+            @update:value="onLoopChange"
             :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.loop')"
             :helpText="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.loopHelp')"
         />
@@ -70,7 +83,7 @@
         {# Muted #}
         <sw-switch-field
             :value="muted"
-            @update:value="(value) => updateCustomField('muted', value)"
+            @update:value="onMutedChange"
             :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.muted')"
             :helpText="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.mutedHelp')"
         />
@@ -78,7 +91,7 @@
         {# Min Height #}
         <sw-text-field
             :value="minHeight"
-            @update:value="(value) => updateCustomField('minHeight', value)"
+            @update:value="onMinHeightChange"
             :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.minHeight')"
             :helpText="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.minHeightHelp')"
             :placeholder="'500px'"
@@ -91,18 +104,19 @@
             {{ $tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlaySection') }}
         </h4>
         
-        {# Overlay Position #}
-        <sw-select-field
-            :value="overlayPosition"
-            @update:value="(value) => updateCustomField('overlayPosition', value)"
+        {# Overlay Position - WICHTIG: mt-select für Shopware 6.7+ #}
+        <mt-select
+            :model-value="overlayPosition"
+            @update:model-value="onOverlayPositionChange"
             :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlayPosition')"
             :options="positionOptions"
+            :help-text="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlayPositionHelp')"
         />
         
         {# Overlay Headline #}
         <sw-text-field
             :value="overlayHeadline"
-            @update:value="(value) => updateCustomField('overlayHeadline', value)"
+            @update:value="onOverlayHeadlineChange"
             :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlayHeadline')"
             :placeholder="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlayHeadlinePlaceholder')"
         />
@@ -129,7 +143,7 @@
         {# Overlay Background Color #}
         <sw-colorpicker
             :value="overlayBackgroundColor"
-            @update:value="(value) => updateCustomField('overlayBackgroundColor', value)"
+            @update:value="onOverlayBackgroundColorChange"
             :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlayBackgroundColor')"
             :helpText="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlayBackgroundColorHelp')"
             :colorOutput="'hex'"
@@ -138,7 +152,7 @@
         {# Overlay Text Color #}
         <sw-colorpicker
             :value="overlayTextColor"
-            @update:value="(value) => updateCustomField('overlayTextColor', value)"
+            @update:value="onOverlayTextColorChange"
             :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlayTextColor')"
             :colorOutput="'hex'"
         />
@@ -153,7 +167,7 @@
         {# Enable Scroll Animation #}
         <sw-switch-field
             :value="enableScrollAnimation"
-            @update:value="(value) => updateCustomField('enableScrollAnimation', value)"
+            @update:value="onEnableScrollAnimationChange"
             :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.enableScrollAnimation')"
             :helpText="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.enableScrollAnimationHelp')"
         />

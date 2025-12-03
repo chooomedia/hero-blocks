@@ -1,22 +1,35 @@
 {% block sw_cms_preview_hero_video_extended %}
-{# Sidebar Preview - Video Background with angled text overlay (bottom-right) #}
+{# Sidebar Preview - Video Background with angled text overlay (reaktiv) #}
 <div class="sw-cms-preview-hero-video-extended">
-    {# Background Video Preview (simulated with gradient) #}
+    {# Background Video Preview #}
     <div class="sw-cms-preview-hero-video-extended__background">
-        {# Simulated video pattern #}
-        <div class="sw-cms-preview-hero-video-extended__video-pattern"></div>
+        {# Poster Image wenn vorhanden #}
+        <img 
+            v-if="posterUrl" 
+            :src="posterUrl" 
+            alt="Video Poster"
+            class="sw-cms-preview-hero-video-extended__poster"
+        >
+        
+        {# Simulated video pattern (Fallback) #}
+        <div v-else class="sw-cms-preview-hero-video-extended__video-pattern"></div>
         
         {# Play Icon (centered) #}
         <div class="sw-cms-preview-hero-video-extended__play-icon">
             <mt-icon name="solid-play-circle-s" size="24"></mt-icon>
         </div>
+        
+        {# Video Status Indicator #}
+        <div v-if="hasVideo" class="sw-cms-preview-hero-video-extended__status sw-cms-preview-hero-video-extended__status--has-video">
+            <mt-icon name="solid-check-circle-s" size="12"></mt-icon>
+        </div>
     </div>
     
-    {# Angled Text Overlay (bottom-right, like Hero Image Overlay) #}
-    <div class="sw-cms-preview-hero-video-extended__overlay">
+    {# Angled Text Overlay (reaktiv basierend auf Position) #}
+    <div class="sw-cms-preview-hero-video-extended__overlay" :class="overlayClasses">
         <div class="sw-cms-preview-hero-video-extended__overlay-content">
-            <div class="sw-cms-preview-hero-video-extended__headline">Hero Video</div>
-            <div class="sw-cms-preview-hero-video-extended__text">Extended</div>
+            <div class="sw-cms-preview-hero-video-extended__headline">{% verbatim %}{{ overlayHeadline || 'Hero Video' }}{% endverbatim %}</div>
+            <div class="sw-cms-preview-hero-video-extended__text" v-html="overlayText || 'Extended'"></div>
         </div>
     </div>
     

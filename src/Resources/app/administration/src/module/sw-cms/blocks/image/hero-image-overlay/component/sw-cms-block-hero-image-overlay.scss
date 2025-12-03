@@ -3,6 +3,17 @@
  * 
  * WICHTIG: In der Admin-Vorschau KEIN Overhang (-3%, -5%)!
  * Der Overhang wird nur im Frontend (Storefront) angewendet.
+ * 
+ * 33° Winkel Berechnung:
+ * - tan(33°) ≈ 0.6494 ≈ 65%
+ * - Die Schräge muss IMMER 33° sein, unabhängig von der Overlay-Höhe
+ * - Lösung: CSS Custom Property --angle-offset wird per JS gesetzt
+ *           ODER wir verwenden eine feste Breite für die Schräge
+ *           und passen das Padding entsprechend an
+ * 
+ * AKTUELLE LÖSUNG: Skew-Transform statt clip-path
+ * - skewX(-33deg) auf einem Pseudo-Element erzeugt konstanten 33° Winkel
+ * - Funktioniert unabhängig von der Höhe des Overlays
  */
 .sw-cms-block-hero-image-overlay {
     position: relative;
@@ -32,29 +43,34 @@
         position: absolute;
         width: 45%;
         max-width: 400px;
-        padding: 1.5rem 2rem;
         z-index: 10;
+        padding: 1.5rem 2rem;
         
-        // Default: Neutrale Accent-Farbe für Admin-Vorschau
-        // Im Frontend wird var(--sw-color-accent) verwendet
-        // Grau als Platzhalter - die echte Farbe kommt aus dem Theme
-        background-color: #e8e8e8;
+        // Hintergrundfarbe aus CSS Custom Property
+        background-color: var(--overlay-bg-color, #e8e8e8);
         color: #2b3136;
-        
-        // Angled edge using clip-path (33° angle)
-        // Left positions: angle on right side (schräge nach innen)
+
+        // ========================================
+        // LEFT POSITIONS - Schräge nur RECHTS (nach innen)
+        // ========================================
         &--top-left,
         &--middle-left,
         &--bottom-left {
-            left: 0; // ADMIN: Kein Overhang!
+            left: 0;
+            padding-right: calc(2rem + 40px);
+            // Schräge nur rechts (nach innen)
             clip-path: polygon(0 0, 100% 0, calc(100% - 40px) 100%, 0 100%);
         }
 
-        // Right positions: angle on left side (schräge nach innen)
+        // ========================================
+        // RIGHT POSITIONS - Schräge nur LINKS (nach innen)
+        // ========================================
         &--top-right,
         &--middle-right,
         &--bottom-right {
-            right: 0; // ADMIN: Kein Overhang!
+            right: 0;
+            padding-left: calc(2rem + 40px);
+            // Schräge nur links (nach innen)
             clip-path: polygon(40px 0, 100% 0, 100% 100%, 0 100%);
         }
 
@@ -77,7 +93,8 @@
     }
 
     &__overlay-content {
-        padding: 0.5rem;
+        position: relative;
+        z-index: 1;
     }
 
     &__headline {

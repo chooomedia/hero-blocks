@@ -19,13 +19,17 @@
                 </div>
             </div>
             
-            {# Content Overlay (zentriert) - Headline, Text, Buttons #}
-            <div class="sw-cms-el-hero-slider__content">
-                <h3 v-if="headline">{{ headline }}</h3>
-                <p v-if="text">{{ text }}</p>
+            {# Content Overlay (zentriert) - Headline, Text, Buttons mit reaktiven Farben #}
+            <div class="sw-cms-el-hero-slider__content" :style="contentStyles">
+                <h3 v-if="headline" :style="headlineStyles">{{ headline }}</h3>
+                <p v-if="text" :style="textStyles">{{ text }}</p>
                 <div v-if="button1Text || button2Text" class="sw-cms-el-hero-slider__buttons">
-                    <button v-if="button1Text" class="sw-cms-el-hero-slider__button sw-cms-el-hero-slider__button--primary">{{ button1Text }}</button>
-                    <button v-if="button2Text" class="sw-cms-el-hero-slider__button sw-cms-el-hero-slider__button--secondary">{{ button2Text }}</button>
+                    <button v-if="button1Text" 
+                            class="sw-cms-el-hero-slider__button sw-cms-el-hero-slider__button--primary"
+                            :style="button1Styles">{{ button1Text }}</button>
+                    <button v-if="button2Text" 
+                            class="sw-cms-el-hero-slider__button sw-cms-el-hero-slider__button--secondary"
+                            :style="button2Styles">{{ button2Text }}</button>
                 </div>
             </div>
         </div>

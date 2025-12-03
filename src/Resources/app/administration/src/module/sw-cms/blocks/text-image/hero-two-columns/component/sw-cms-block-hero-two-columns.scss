@@ -1,12 +1,12 @@
 /**
  * HOREX Theme - Hero Two Columns Block Component Styles
  * 
- * WICHTIG: Block-Component Styles für Administration
+ * WICHTIG: Block-Component Styles für Administration (große Vorschau)
  * Der Settings-Button wird automatisch vom Parent sw-cms-block Component bereitgestellt
- * Wir müssen nur sicherstellen, dass unsere Custom Block-Component den Overlay nicht blockiert
  * 
- * WICHTIG: Slot-Settings-Buttons werden automatisch von sw-cms-slot Component bereitgestellt
- * Diese werden beim Hover über den Slot angezeigt (sw-cms-slot__overlay)
+ * FEATURES:
+ * - Background-Elemente (Image oder CSS) werden reaktiv angezeigt
+ * - Slot-Settings-Buttons werden automatisch von sw-cms-slot Component bereitgestellt
  */
 
 .sw-cms-block-hero-two-columns {
@@ -14,40 +14,62 @@
     width: 100%;
     height: 100%;
     
-    // WICHTIG: Stelle sicher, dass der Parent sw-cms-block__config-overlay sichtbar ist
-    // Der Overlay wird vom Parent sw-cms-block Component bereitgestellt
-    // Wir müssen nur sicherstellen, dass unsere Custom Block-Component den Hover nicht stört
-    // WICHTIG: Der Parent sw-cms-block hat bereits den Hover-Mechanismus für sw-cms-block__config-overlay
-    // Unser Custom Block sollte den Hover nicht blockieren
-    
     // WICHTIG: Slots nebeneinander anzeigen (wie Frontend)
     display: flex;
     flex-direction: row;
-    gap: 20px; // WICHTIG: Spacing zwischen Slots (wie Standard text-image Block)
+    gap: 20px;
     width: 100%;
     height: 100%;
+    min-height: 200px; // WICHTIG: Mindesthöhe für Background-Elemente
     
-    // WICHTIG: Stelle sicher, dass Slot-Overlays (Settings-Buttons) sichtbar sind
-    // Die sw-cms-slot Component hat bereits den Hover-Mechanismus für sw-cms-slot__overlay
-    // Wir müssen nur sicherstellen, dass unsere Custom Block-Component den Hover nicht blockiert
-    // WICHTIG: Slots müssen position: relative haben, damit Overlays korrekt positioniert werden
-    > * {
-        position: relative;
-        flex: 1;
-        min-width: 0; // WICHTIG: Verhindert Overflow-Probleme
-    }
+    // WICHTIG: Overflow visible für Background-Elemente die überstehen
+    overflow: visible;
     
     // WICHTIG: Stelle sicher, dass Slot-Overlays nicht blockiert werden
-    // Die sw-cms-slot Component hat z-index: 210 für Overlays
-    // Wir müssen sicherstellen, dass unsere Block-Component keinen höheren z-index hat
     z-index: 0;
+    
+    // ========================================
+    // Background-Elemente (Image oder CSS)
+    // ========================================
+    &__background {
+        position: absolute;
+        width: 50%;
+        height: 120%; // WICHTIG: Überstehend wie im Frontend
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.7; // WICHTIG: Leicht transparent in Admin-Vorschau
+        
+        &--left {
+            left: -8%;
+            top: -6%;
+            transform-origin: top left;
+        }
+        
+        &--right {
+            right: -8%;
+            bottom: -6%;
+            top: auto;
+            transform-origin: bottom right;
+        }
+    }
+    
+    // WICHTIG: Slots über Background-Elementen
+    > *:not(.sw-cms-block-hero-two-columns__background) {
+        position: relative;
+        flex: 1;
+        min-width: 0;
+        z-index: 1;
+    }
     
     // WICHTIG: Layout-Wechsel für Block-Component (text-left)
     &.is--layout-text-left {
-        flex-direction: row-reverse; // Text zuerst, dann Bild
+        flex-direction: row-reverse;
     }
     
     &.is--layout-image-left {
-        flex-direction: row; // Bild zuerst, dann Text (Standard)
+        flex-direction: row;
     }
 }

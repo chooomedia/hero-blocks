@@ -159,5 +159,76 @@ export default {
     showNavigation() {
       return this.slidesCount > 1;
     },
+    
+    // ========================================
+    // REAKTIVE FARBEN FÜR PREVIEW
+    // ========================================
+    
+    // Headline Color (aus erster Slide)
+    headlineColor() {
+      if (this.firstSlide?.headlineColor) {
+        return this.firstSlide.headlineColor;
+      }
+      return '#ffffff'; // Default white
+    },
+    
+    // Text Color (aus erster Slide)
+    textColor() {
+      if (this.firstSlide?.textColor) {
+        return this.firstSlide.textColor;
+      }
+      return '#ffffff'; // Default white
+    },
+    
+    // Button 1 Background Color (aus erster Slide)
+    button1BgColor() {
+      if (this.firstSlide?.button1BgColor) {
+        return this.firstSlide.button1BgColor;
+      }
+      return '#007bff'; // Default blue
+    },
+    
+    // Button 2 Background Color (aus erster Slide)
+    button2BgColor() {
+      if (this.firstSlide?.button2BgColor) {
+        return this.firstSlide.button2BgColor;
+      }
+      return 'transparent'; // Default transparent
+    },
+    
+    // Computed Styles für reaktive Farben
+    contentStyles() {
+      return {};
+    },
+    
+    headlineStyles() {
+      return {
+        color: this.headlineColor,
+      };
+    },
+    
+    textStyles() {
+      return {
+        color: this.textColor,
+      };
+    },
+    
+    button1Styles() {
+      return {
+        backgroundColor: this.button1BgColor,
+        borderColor: this.button1BgColor,
+        color: '#ffffff',
+      };
+    },
+    
+    button2Styles() {
+      const bgColor = this.button2BgColor;
+      const isTransparent = !bgColor || bgColor === 'transparent';
+      return {
+        backgroundColor: isTransparent ? 'transparent' : bgColor,
+        borderColor: isTransparent ? '#ffffff' : bgColor,
+        color: isTransparent ? '#ffffff' : '#ffffff',
+      };
+    },
   },
 };

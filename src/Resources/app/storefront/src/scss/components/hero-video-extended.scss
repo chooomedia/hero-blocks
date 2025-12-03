@@ -3,15 +3,30 @@
  * 
  * Styled nach Shopware Best Practices:
  * - Mobile First (Base → Tablet → Desktop)
- * - BEM Naming Convention
+ * - BEM Naming Convention (mit cms-block- Prefix wie im Template!)
  * - CSS Custom Properties für Theme-Integration
+ * 
+ * WICHTIG: Klassennamen müssen mit cms-block-hero-video-extended.html.twig übereinstimmen!
+ * 
+ * 33° Winkel Lösung (wie Hero Image Overlay):
+ * - Außen GERADE, innen ABGESCHRÄGT mit 33°
+ * - Verwendet clip-path mit 80px Offset (tan(33°) ≈ 0.65)
+ * - Konsistent mit Hero Image Overlay Block
  */
+
+// ============================================================================
+// SECTION OVERRIDE - Verhindert Abschneiden des überstehenden Overlays
+// ============================================================================
+.cms-section:has(.cms-block-hero-video-extended) {
+    overflow: visible !important;
+}
 
 .cms-block-hero-video-extended {
     position: relative;
     width: 100%;
     min-height: 60vh;
-    overflow: hidden;
+    overflow: visible; // Allow overlay to extend beyond
+    padding: 0;
     
     @media screen and (min-width: 768px) {
         min-height: 70vh;
@@ -19,11 +34,12 @@
     
     @media screen and (min-width: 1024px) {
         min-height: 80vh;
-    }
 }
 
+    // ========================================
 // Video Wrapper (Background)
-.hero-video-extended__video-wrapper {
+    // ========================================
+    &__video-wrapper {
     position: absolute;
     top: 0;
     left: 0;
@@ -33,7 +49,8 @@
     overflow: hidden;
 }
 
-.hero-video-extended__video-container {
+    // Video Element
+    &__video {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -42,114 +59,248 @@
     min-height: 100%;
     width: auto;
     height: auto;
-    
-    // Video Element (vom CMS Video Element)
-    video {
-        width: 100%;
-        height: 100%;
         object-fit: cover;
-    }
 }
 
-// Overlay für bessere Lesbarkeit
-.hero-video-extended__overlay {
+    // Placeholder (wenn kein Video ausgewählt)
+    &__placeholder {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0.2) 0%,
-        rgba(0, 0, 0, 0.5) 100%
-    );
-    z-index: 1;
-}
-
-// Content Wrapper (Overlay)
-.hero-video-extended__content-wrapper {
-    position: relative;
-    z-index: 2;
     display: flex;
-    justify-content: center;
-    min-height: inherit;
-    padding: 3rem 1rem;
-    
-    @media screen and (min-width: 768px) {
-        padding: 4rem 2rem;
-    }
-    
-    // Alignment Options
-    &.align-items-top {
-        align-items: flex-start;
-    }
-    
-    &.align-items-center {
         align-items: center;
+    justify-content: center;
+        background-color: #1a1a1a;
+        color: #666;
+        font-size: 1.25rem;
     }
     
-    &.align-items-bottom {
-        align-items: flex-end;
-    }
-}
+    // ========================================
+    // Overlay Panel (Angled Text Box)
+    // ========================================
+    // SCHRÄGE KANTE - FESTER 50px OFFSET
+    // Außen GERADE, innen ABGESCHRÄGT
+    // ========================================
+    &__overlay {
+        position: absolute;
+        z-index: 10;
+        width: 50%;
+        max-width: 450px;
+        min-width: 280px;
+        padding: 2rem 2.5rem;
+        
+        // Default background (falls nicht per inline style gesetzt)
+        background-color: var(--sw-color-accent, #d6ab60);
+        color: #fff;
+        
+        // Transitions für Scroll-Animation
+        transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+                    opacity 0.8s ease-in-out;
 
-// Content Container
-.hero-video-extended__content {
-    width: 100%;
-    max-width: 800px;
-    color: var(--color-white, #fff);
-    text-align: center;
-    
-    // Text Shadow für bessere Lesbarkeit
-    h1, h2, h3, h4, h5, h6 {
-        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-        color: var(--color-white, #fff);
-        margin-bottom: 1rem;
+        // ========================================
+        // LEFT POSITIONS - Schräge nur RECHTS (nach innen zeigend)
+        // Außen (links) gerade!
+        // ========================================
+        &--top-left,
+        &--middle-left,
+        &--bottom-left {
+            left: 0;
+            text-align: left;
+            padding-right: calc(2.5rem + 50px);
+            clip-path: polygon(0 0, 100% 0, calc(100% - 50px) 100%, 0 100%);
+        }
+
+        &--top-left {
+            top: -2rem;
+        }
+
+        &--middle-left {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        &--bottom-left {
+            bottom: -2rem;
+        }
+
+        // ========================================
+        // RIGHT POSITIONS - Schräge nur LINKS (nach innen zeigend)
+        // Außen (rechts) gerade!
+        // ========================================
+        &--top-right,
+        &--middle-right,
+        &--bottom-right {
+            right: 0;
+            left: auto;
+            text-align: left;
+            padding-left: calc(2.5rem + 50px);
+            clip-path: polygon(50px 0, 100% 0, 100% 100%, 0 100%);
+        }
+
+        &--top-right {
+            top: -2rem;
+        }
+
+        &--middle-right {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        &--bottom-right {
+            bottom: -2rem;
+        }
+
+        // ========================================
+        // Scroll Animation Initial States
+        // HINWEIS: JS-Plugin HeroVideoExtended fügt .is-animated hinzu
+        // Das Overlay fährt von außen nach innen
+        // ========================================
+
+        // Left positions: Start from left (outside)
+        &--top-left[data-overlay-animate="true"]:not(.is-animated),
+        &--bottom-left[data-overlay-animate="true"]:not(.is-animated) {
+            opacity: 0;
+            transform: translateX(-120%);
+        }
+        
+        &--middle-left[data-overlay-animate="true"]:not(.is-animated) {
+            opacity: 0;
+            transform: translateX(-120%) translateY(-50%);
+        }
+
+        // Right positions: Start from right (outside)
+        &--top-right[data-overlay-animate="true"]:not(.is-animated),
+        &--bottom-right[data-overlay-animate="true"]:not(.is-animated) {
+            opacity: 0;
+            transform: translateX(120%);
+        }
+        
+        &--middle-right[data-overlay-animate="true"]:not(.is-animated) {
+            opacity: 0;
+            transform: translateX(120%) translateY(-50%);
+        }
+
+        // ========================================
+        // Animated State (visible - nach Animation)
+        // translateX(0%) - Element an finaler Position
+        // ========================================
+        &--top-left[data-overlay-animate="true"].is-animated,
+        &--bottom-left[data-overlay-animate="true"].is-animated,
+        &--top-right[data-overlay-animate="true"].is-animated,
+        &--bottom-right[data-overlay-animate="true"].is-animated {
+            opacity: 1;
+            transform: translateX(0%)!important;
+        }
+        
+        &--middle-left[data-overlay-animate="true"].is-animated,
+        &--middle-right[data-overlay-animate="true"].is-animated {
+            opacity: 1;
+            transform: translateX(0%) translateY(-50%)!important;
+        }
+        
+        // Fallback: Ohne data-overlay-animate Attribut immer sichtbar
+        &:not([data-overlay-animate]) {
+            opacity: 1;
+        }
+        
+        // ========================================
+        // Mobile: Kleinere Padding, volle Breite
+        // ========================================
+        @media screen and (max-width: 767px) {
+            width: 85%;
+            max-width: 100%;
+            padding: 1.5rem;
+            
+            // Kleinerer Schräg-Offset auf Mobile (50px statt 80px)
+            &--top-left,
+            &--middle-left,
+            &--bottom-left {
+                padding-right: calc(1.5rem + 50px);
+                clip-path: polygon(0 0, 100% 0, calc(100% - 50px) 100%, 0 100%);
+            }
+            
+            &--top-right,
+            &--middle-right,
+            &--bottom-right {
+                padding-left: calc(1.5rem + 50px);
+                clip-path: polygon(50px 0, 100% 0, 100% 100%, 0 100%);
+            }
+        }
     }
     
-    p {
-        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
-        font-size: 1.125rem;
-        line-height: 1.6;
-        margin-bottom: 1.5rem;
+    // ========================================
+    // Overlay Content
+    // ========================================
+    &__overlay-content {
+        position: relative;
+        z-index: 1;
+    }
+    
+    &__headline {
+        font-family: 'Oswald', sans-serif;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: inherit;
         
         @media screen and (min-width: 768px) {
-            font-size: 1.25rem;
+            font-size: 1.75rem;
         }
     }
     
-    // Buttons
-    .btn {
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        transition: all 0.3s ease;
+    &__text {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: inherit;
         
-        &:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        p {
+            margin: 0;
+            color: inherit;
+        }
+        
+        @media screen and (min-width: 768px) {
+            font-size: 1rem;
         }
     }
 }
 
+// ========================================
 // Accessibility: Reduced Motion
+// ========================================
 @media (prefers-reduced-motion: reduce) {
-    .hero-video-extended__content .btn {
-        &:hover {
-            transform: none;
+    .cms-block-hero-video-extended {
+        &__overlay {
+            transition: none;
+        }
+        
+        &__video {
+            // Pause video for reduced motion preference
+            animation-play-state: paused !important;
         }
     }
 }
 
+// ========================================
 // Print Styles
+// ========================================
 @media print {
     .cms-block-hero-video-extended {
         min-height: 400px;
         
-        video {
+        &__video {
             display: none;
         }
         
-        .hero-video-extended__overlay {
-            opacity: 0.1 !important;
+        &__overlay {
+            opacity: 1 !important;
+            transform: none !important;
+            position: relative;
+            max-width: 100%;
+            clip-path: none;
         }
     }
 }

@@ -29,7 +29,7 @@
     {% set isBottomPosition = 'bottom' in overlayPosition %}
     
     {# Build overlay styles - nur setzen wenn explizit definiert #}
-    {# Wenn leer, wird CSS var(--sw-color-brand-accent) verwendet #}
+    {# Wenn leer, wird CSS var(--sw-color-accent) als Fallback verwendet #}
     {% set overlayBgStyle = overlayBackgroundColor ? 'background-color: ' ~ overlayBackgroundColor ~ ';' : '' %}
     {% set overlayTextStyle = overlayTextColor ? 'color: ' ~ overlayTextColor ~ ';' : '' %}
     

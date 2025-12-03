@@ -9,13 +9,13 @@
             {{ $tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.sectionPosition') }}
         </h4>
         
-        {# Overlay Position (6 Positionen) - WICHTIG: :value + @update:value für korrektes Speichern #}
-        <sw-select-field
-            :value="overlayPosition"
+        {# Overlay Position (6 Positionen) - WICHTIG: mt-select für Shopware 6.7+ #}
+        <mt-select
+            :model-value="overlayPosition"
             :label="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.overlayPosition')"
             :options="positionOptions"
-            :helpText="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.overlayPositionHelp')"
-            @update:value="(value) => updateCustomField('overlayPosition', value)"
+            :help-text="$tc('sw-cms.blocks.heroBlocks.heroImageOverlay.config.overlayPositionHelp')"
+            @update:model-value="(value) => updateCustomField('overlayPosition', value)"
         />
     </div>
     

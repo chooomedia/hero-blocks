@@ -3,8 +3,9 @@
        Hero Video Extended Block
        
        Features:
-       - Async on-scroll video loading
+       - Video upload (MP4, WebM)
        - Autoplay loop (infinite)
+       - Play/Pause on scroll visibility
        - Angled text overlay (like Hero Image Overlay)
        - Scroll animation for overlay
        ======================================== #}
@@ -29,17 +30,18 @@
     {% set overlayBgStyle = overlayBackgroundColor ? 'background-color: ' ~ overlayBackgroundColor ~ ';' : '' %}
     {% set overlayTextStyle = overlayTextColor ? 'color: ' ~ overlayTextColor ~ ';' : '' %}
     
-    {# Get video URL from media entity #}
-    {% set videoUrl = null %}
-    {% set posterUrl = null %}
+    {# Get video URL from media entity using hero_media_url Twig function #}
+    {% set videoUrl = hero_media_url(videoMediaId) %}
+    {% set posterUrl = hero_media_url(posterMediaId) %}
     
-    {# Try to get video media from data (enriched by TypeDataResolver) #}
-    {% if block.data.videoMedia is defined and block.data.videoMedia %}
-        {% set videoUrl = block.data.videoMedia.url %}
-    {% endif %}
-    
-    {% if block.data.posterMedia is defined and block.data.posterMedia %}
-        {% set posterUrl = block.data.posterMedia.url %}
+    {# Determine video type from URL extension #}
+    {% set videoType = 'video/mp4' %}
+    {% if videoUrl %}
+        {% if '.webm' in videoUrl|lower %}
+            {% set videoType = 'video/webm' %}
+        {% elseif '.mp4' in videoUrl|lower %}
+            {% set videoType = 'video/mp4' %}
+        {% endif %}
     {% endif %}
     
     <article class="cms-block-hero-video-extended"
@@ -48,9 +50,10 @@
              data-autoplay="{{ autoplay ? 'true' : 'false' }}"
              data-loop="{{ loop ? 'true' : 'false' }}"
              data-muted="{{ muted ? 'true' : 'false' }}"
-             {% if enableScrollAnimation %}
-                 data-overlay-position="{{ overlayPosition }}"
-             {% endif %}
+            data-pause-on-scroll="true"
+            {% if enableScrollAnimation and (overlayHeadline or overlayText) %}
+                data-enable-scroll-animation="true"
+            {% endif %}
              itemscope
              itemtype="https://schema.org/VideoObject"
              role="region"
@@ -59,7 +62,7 @@
         {# Video Background #}
         <div class="cms-block-hero-video-extended__video-wrapper">
             {% if videoUrl %}
-                {# Video element with lazy loading #}
+                {# Video element with lazy loading - MP4 und WebM Support #}
                 <video 
                     class="cms-block-hero-video-extended__video"
                     {% if posterUrl %}poster="{{ posterUrl }}"{% endif %}
@@ -70,13 +73,14 @@
                     preload="metadata"
                     data-src="{{ videoUrl }}"
                     itemprop="contentUrl">
-                    <source src="{{ videoUrl }}" type="video/mp4">
-                    {{ "sw-cms.blocks.heroBlocks.heroVideoExtended.videoNotSupported"|trans|sw_sanitize }}
+                    <source src="{{ videoUrl }}" type="{{ videoType }}">
+                    {# Fallback für ältere Browser #}
+                    Ihr Browser unterstützt das Video-Tag nicht.
                 </video>
             {% else %}
                 {# Placeholder when no video #}
                 <div class="cms-block-hero-video-extended__placeholder">
-                    <span>{{ "sw-cms.blocks.heroBlocks.heroVideoExtended.noVideo"|trans|sw_sanitize }}</span>
+                    <span>Kein Video ausgewählt</span>
                 </div>
             {% endif %}
         </div>

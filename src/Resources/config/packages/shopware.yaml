@@ -1,0 +1,35 @@
+# HeroBlocks Plugin - HTML Sanitizer Configuration
+# 
+# Erlaubt data-count-* Attribute für die CountUpAnimation
+# Diese Attribute werden im CMS Text-Editor verwendet
+#
+# WICHTIG: Diese Konfiguration erweitert die Standard-Shopware-Konfiguration
+
+shopware:
+    html_sanitizer:
+        sets:
+            # Custom Set für Hero Blocks - data-count-* Attribute
+            - name: hero_blocks_count
+              tags: ["span", "div", "p", "h1", "h2", "h3", "h4", "h5", "h6", "strong", "b", "td"]
+              attributes: ["data-count-target", "data-count-suffix", "data-count-prefix", "data-count-duration", "data-count-decimals"]
+              custom_attributes:
+                  - tags: ["span", "div", "p", "h1", "h2", "h3", "h4", "h5", "h6", "strong", "b", "td"]
+                    attributes: ["data-count-target", "data-count-suffix", "data-count-prefix", "data-count-duration", "data-count-decimals"]
+            
+            # Custom Set für Hero Video Extended - data-* Attribute
+            - name: hero_blocks_video
+              tags: ["video", "source", "article", "div"]
+              attributes: ["data-hero-video-extended", "data-autoplay", "data-loop", "data-muted", "data-pause-on-scroll", "data-overlay-position", "data-enable-scroll-animation", "data-overlay-animate", "data-src"]
+              custom_attributes:
+                  - tags: ["video", "source", "article", "div"]
+                    attributes: ["data-hero-video-extended", "data-autoplay", "data-loop", "data-muted", "data-pause-on-scroll", "data-overlay-position", "data-enable-scroll-animation", "data-overlay-animate", "data-src"]
+
+        fields:
+            # CMS Text Element - erlaubt data-count-* Attribute
+            - name: cms_text_translation.content
+              sets: ["basic", "media", "HTML5", "hero_blocks_count"]
+            
+            # CMS Slot Translation - erlaubt data-count-* Attribute  
+            - name: cms_slot_translation.config
+              sets: ["basic", "media", "HTML5", "hero_blocks_count"]
+

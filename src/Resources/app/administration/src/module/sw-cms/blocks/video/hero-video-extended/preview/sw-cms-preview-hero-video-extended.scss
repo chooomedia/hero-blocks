@@ -1,7 +1,8 @@
 /**
  * Hero Video Extended Block - Preview Styles
  * 
- * Sidebar preview with angled text overlay (bottom-right)
+ * Sidebar preview with angled text overlay (alle Positionen)
+ * WICHTIG: Reaktive Preview wie große Vorschau
  */
 
 .sw-cms-preview-hero-video-extended {
@@ -21,7 +22,17 @@
         height: 100%;
     }
     
-    // Simulated video scan lines
+    // Poster Image
+    &__poster {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    // Simulated video scan lines (Fallback)
     &__video-pattern {
         position: absolute;
         top: 0;
@@ -47,20 +58,80 @@
         z-index: 5;
     }
     
-    // Angled overlay (bottom-right)
+    // Video Status Indicator
+    &__status {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        z-index: 15;
+        
+        &--has-video {
+            color: #4caf50;
+        }
+    }
+    
+    // ========================================
+    // Angled Overlay - Base Styles
+    // ========================================
     &__overlay {
         position: absolute;
-        bottom: 0;
-        right: 0;
         width: 55%;
         padding: 8px 10px;
         background-color: var(--sw-color-accent, #007bff);
         color: #ffffff;
         z-index: 10;
         
-        // 33° angle on left side (pointing inward)
-        clip-path: polygon(25px 0, 100% 0, 100% 100%, 0 100%);
-        padding-left: calc(25px + 6px);
+        // ========================================
+        // RIGHT POSITIONS - Schräge links (pointing inward)
+        // ========================================
+        &--bottom-right,
+        &--middle-right,
+        &--top-right {
+            right: 0;
+            left: auto;
+            clip-path: polygon(25px 0, 100% 0, 100% 100%, 0 100%);
+            padding-left: calc(25px + 6px);
+            text-align: left;
+        }
+        
+        &--bottom-right {
+            bottom: 0;
+        }
+        
+        &--middle-right {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        &--top-right {
+            top: 0;
+        }
+        
+        // ========================================
+        // LEFT POSITIONS - Schräge rechts (pointing inward)
+        // ========================================
+        &--bottom-left,
+        &--middle-left,
+        &--top-left {
+            left: 0;
+            right: auto;
+            clip-path: polygon(0 0, 100% 0, calc(100% - 25px) 100%, 0 100%);
+            padding-right: calc(25px + 6px);
+            text-align: left;
+        }
+        
+        &--bottom-left {
+            bottom: 0;
+        }
+        
+        &--middle-left {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        &--top-left {
+            top: 0;
+        }
     }
     
     &__overlay-content {
@@ -71,7 +142,7 @@
     
     &__headline {
         font-size: 10px;
-        font-weight: 600;
+        font-weight: 500;
         line-height: 1.2;
         margin: 0;
     }
@@ -81,34 +152,13 @@
         line-height: 1.3;
         opacity: 0.9;
         margin: 0;
+        
+        // Strip HTML tags in preview
+        p {
+            margin: 0;
+        }
     }
     
-    // Matt Interfaces Branding
-    .hero-blocks-matt-interfaces-branding {
-        position: absolute;
-        top: 4px;
-        left: 4px;
-        z-index: 20;
-        
-        .hero-blocks-branding-link {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 18px;
-            height: 18px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 3px;
-            transition: background-color 0.2s ease;
-            
-            &:hover {
-                background: #ffffff;
-            }
-        }
-        
-        .hero-blocks-branding-logo {
-            width: 12px;
-            height: 12px;
-            color: #007bff;
-        }
-    }
+    // Matt Interfaces Branding - Verwendet globale Styles aus _matt-interfaces-branding.scss
+    // Position: bottom-left wie bei allen anderen Hero Blocks
 }

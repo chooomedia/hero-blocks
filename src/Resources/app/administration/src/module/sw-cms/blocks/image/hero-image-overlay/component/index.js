@@ -68,8 +68,7 @@ export default {
                 color: this.overlayTextColor,
             };
             
-            // Nur backgroundColor setzen wenn explizit definiert
-            // Sonst wird CSS var(--sw-color-brand-accent) verwendet
+            // Hintergrundfarbe direkt setzen (clip-path schneidet ab)
             if (this.overlayBackgroundColor) {
                 styles.backgroundColor = this.overlayBackgroundColor;
             }
