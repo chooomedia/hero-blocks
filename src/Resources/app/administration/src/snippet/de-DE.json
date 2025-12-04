@@ -1,4 +1,15 @@
 {
+    "component": {
+        "cms": {
+            "categorySlider": {
+                "moreInfo": "Mehr Infos"
+            },
+            "imageGallery": {
+                "ariaLabel": "Galerie mit %total% Bildern",
+                "skipImageGallery": "Bildergalerie überspringen"
+            }
+        }
+    },
     "sw-cms": {
         "blocks": {
             "heroBlocks": {
