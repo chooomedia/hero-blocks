@@ -208,9 +208,12 @@
     white-space: nowrap !important;
 }
 
+// Hover: Use primary brand color (red) from theme, not accent
+// Falls back to #d01720 if CSS variable not available
 .hero-category-slide-link-wrapper:hover .hero-category-slide-button,
 .hero-category-slide-link:hover .hero-category-slide-button {
-    background-color: rgba(255, 255, 255, 1);
+    background-color: var(--sw-color-brand-primary, #d01720);
+    color: #fff !important;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
