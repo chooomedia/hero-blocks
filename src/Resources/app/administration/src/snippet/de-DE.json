@@ -268,8 +268,9 @@
                         "mutedHelp": "Video ohne Ton abspielen (erforderlich für Autoplay)",
                         "minHeight": "Mindesthöhe",
                         "minHeightHelp": "Mindesthöhe für den Block (z.B. 500px oder 60vh)",
-                        "overlaySection": "Overlay-Inhalt",
-                        "overlayPosition": "Overlay-Position",
+                        "overlaySection": "Overlay-Position",
+                        "overlayPosition": "Position",
+                        "overlayPositionHelp": "Wählen Sie, wo das Overlay-Panel auf dem Video erscheint",
                         "position": {
                             "topLeft": "Oben Links",
                             "middleLeft": "Mitte Links",
@@ -278,10 +279,9 @@
                             "middleRight": "Mitte Rechts",
                             "bottomRight": "Unten Rechts"
                         },
-                        "overlayHeadline": "Überschrift",
-                        "overlayHeadlinePlaceholder": "Überschrift eingeben...",
-                        "overlayText": "Beschreibungstext (HTML)",
-                        "overlayTextPlaceholder": "Beschreibungstext oder HTML eingeben...",
+                        "contentSection": "Inhalt (Sprachabhängig)",
+                        "overlayContent": "Overlay Inhalt (HTML)",
+                        "overlayContentPlaceholder": "Geben Sie hier Ihre Überschrift und Ihren Beschreibungstext ein (HTML erlaubt)...",
                         "styleSection": "Stil",
                         "overlayBackgroundColor": "Overlay-Hintergrundfarbe",
                         "overlayBackgroundColorHelp": "Leer lassen für Theme-Akzentfarbe",
@@ -333,9 +333,10 @@
                     },
                     "config": {
                         "sectionPosition": "Position",
-                        "sectionContent": "Inhalt",
+                        "sectionContent": "Inhalt (Sprachabhängig)",
                         "sectionStyle": "Stil",
                         "sectionAnimation": "Animation",
+                        "languageInfo": "Die Inhalte werden pro Sprache gespeichert. Wechseln Sie die Sprache oben rechts um Übersetzungen einzugeben.",
                         "overlayPosition": "Overlay-Position",
                         "overlayPositionHelp": "Wählen Sie, wo das Overlay-Panel auf dem Bild erscheint",
                         "position": {
@@ -346,10 +347,8 @@
                             "middleRight": "Mitte Rechts",
                             "bottomRight": "Unten Rechts"
                         },
-                        "overlayHeadline": "Überschrift",
-                        "overlayHeadlinePlaceholder": "Überschrift eingeben...",
-                        "overlayText": "Beschreibungstext (HTML)",
-                        "overlayTextPlaceholder": "Beschreibungstext oder HTML eingeben...",
+                        "overlayContent": "Overlay-Inhalt (HTML)",
+                        "overlayContentPlaceholder": "<h2>Überschrift</h2><p>Beschreibungstext hier eingeben...</p>",
                         "overlayBackgroundColor": "Hintergrundfarbe",
                         "overlayBackgroundColorHelp": "Leer lassen für Theme-Akzentfarbe",
                         "overlayTextColor": "Textfarbe",
@@ -358,12 +357,51 @@
                         "minHeightPlaceholder": "z.B. 500px oder 60vh",
                         "minHeightHelp": "Mindesthöhe für den Block",
                         "enableScrollAnimation": "Scroll-Animation aktivieren",
-                        "enableScrollAnimationHelp": "Animiert das Overlay-Panel beim Scrollen von außen herein"
+                        "enableScrollAnimationHelp": "Animiert das Overlay-Panel beim Scrollen von außen herein",
+                        "sectionImageAlign": "Bildausrichtung (nur bei Cover)",
+                        "imageAlignInfo": "Diese Einstellungen werden nur angewendet, wenn das Bild-Element im 'Cover'-Modus ist.",
+                        "imageVerticalAlign": "Vertikale Ausrichtung",
+                        "imageHorizontalAlign": "Horizontale Ausrichtung",
+                        "imageAlign": {
+                            "top": "Oben",
+                            "center": "Zentriert",
+                            "bottom": "Unten",
+                            "left": "Links",
+                            "right": "Rechts"
+                        }
                     }
                 }
             }
         },
         "elements": {
+            "heroBlocks": {
+                "heroTextOverlay": {
+                    "label": "Hero Text Overlay",
+                    "placeholder": "Klicken Sie hier um Text hinzuzufügen...",
+                    "config": {
+                        "sectionContent": "Inhalt",
+                        "sectionStyling": "Styling",
+                        "languageDependent": "sprachabhängig",
+                        "headline": "Überschrift",
+                        "headlinePlaceholder": "Überschrift eingeben...",
+                        "content": "Beschreibungstext (HTML)",
+                        "contentPlaceholder": "Beschreibungstext oder HTML eingeben...",
+                        "position": {
+                            "label": "Overlay-Position",
+                            "topLeft": "Oben Links",
+                            "middleLeft": "Mitte Links",
+                            "bottomLeft": "Unten Links",
+                            "topRight": "Oben Rechts",
+                            "middleRight": "Mitte Rechts",
+                            "bottomRight": "Unten Rechts"
+                        },
+                        "backgroundColor": "Hintergrundfarbe",
+                        "backgroundColorHelpText": "Leer lassen für Theme-Akzentfarbe",
+                        "textColor": "Textfarbe",
+                        "enableScrollAnimation": "Scroll-Animation aktivieren"
+                    }
+                }
+            },
             "general": {
                 "config": {
                     "tab": {
@@ -460,6 +498,11 @@
                     "slideLabel": "Slide {index}",
                     "deleteSlide": "Slide löschen",
                     "slidesTitle": "Slide-Inhalte konfigurieren",
+                    "imageVerticalAlign": "Bildausrichtung (vertikal)",
+                    "imageVerticalAlignHelpText": "Vertikale Ausrichtung des Hintergrundbildes für diesen Slide. Wirkt nur im Cover-Modus.",
+                    "imageVerticalAlignTop": "Oben",
+                    "imageVerticalAlignCenter": "Zentriert",
+                    "imageVerticalAlignBottom": "Unten",
                     "slideColors": {
                         "title": "Slide-Farben",
                         "headlineColor": "Überschrift-Farbe",

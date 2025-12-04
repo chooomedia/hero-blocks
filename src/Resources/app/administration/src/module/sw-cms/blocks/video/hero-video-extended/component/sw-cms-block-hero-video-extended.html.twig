@@ -29,17 +29,29 @@
         :style="overlayStyles"
     >
         <div class="sw-cms-block-hero-video-extended__overlay-content">
-            <h3 v-if="overlayHeadline" 
-                class="sw-cms-block-hero-video-extended__headline"
-                :style="{ color: overlayTextColor }">
-                {{ overlayHeadline }}
-            </h3>
-            <p v-if="overlayText" 
-               class="sw-cms-block-hero-video-extended__text" 
-               v-html="overlayText"
-               :style="{ color: overlayTextColor }">
-            </p>
-            <template v-if="!overlayHeadline && !overlayText">
+            {# NEU: Content aus content Slot (sprachabhängig!) #}
+            <div v-if="overlayContent" 
+                 class="sw-cms-block-hero-video-extended__content-wrapper"
+                 :style="{ color: overlayTextColor }"
+                 v-html="overlayContent">
+            </div>
+            
+            {# FALLBACK: Alte customFields Daten (für Migration) #}
+            <template v-else-if="overlayHeadline || overlayText">
+                <h3 v-if="overlayHeadline" 
+                    class="sw-cms-block-hero-video-extended__headline"
+                    :style="{ color: overlayTextColor }">
+                    {{ overlayHeadline }}
+                </h3>
+                <p v-if="overlayText" 
+                   class="sw-cms-block-hero-video-extended__text" 
+                   v-html="overlayText"
+                   :style="{ color: overlayTextColor }">
+                </p>
+            </template>
+            
+            {# Placeholder wenn kein Content #}
+            <template v-if="!hasOverlayContent">
                 <h3 class="sw-cms-block-hero-video-extended__headline sw-cms-block-hero-video-extended__headline--placeholder"
                     :style="{ color: overlayTextColor }">
                     {{ $tc('sw-cms.blocks.heroBlocks.heroVideoExtended.placeholder.headline') }}

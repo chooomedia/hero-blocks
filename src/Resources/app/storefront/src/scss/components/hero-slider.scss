@@ -344,13 +344,8 @@
     // Dadurch blendet Logo smooth ein beim Slide-Wechsel, hat aber keine separate Fade-Animation
 
     &-img {
-        max-width: 200px;
+        width: 100%;
         height: auto;
-        filter: brightness(1.1);
-
-        @media screen and (min-width: 768px) {
-            max-width: 300px;
-        }
     }
 
     .hero-slide-content--horizontal-left & {
@@ -408,18 +403,9 @@
     }
     
     .hero-slide-logo-img {
-        max-width: 150px;
+        width: 100%;
         height: auto;
-        filter: brightness(1.1);
         pointer-events: auto;
-        
-        @media screen and (min-width: 768px) {
-            max-width: 200px;
-        }
-        
-        @media screen and (min-width: 1200px) {
-            max-width: 250px;
-        }
     }
 }
 

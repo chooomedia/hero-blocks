@@ -9,17 +9,51 @@
     - Uses theme accent color for overlay background
     - Responsive design with angle preserved on mobile
     - Full accessibility support (ARIA, Schema.org)
+    
+    WICHTIG: SPRACHABHÄNGIGE TEXTE
+    Der Content wird aus dem 'textOverlay' Slot (Standard "text" Element) gelesen.
+    CMS-Elemente haben eine cms_slot_translation Tabelle, daher ist der Content SPRACHABHÄNGIG!
+    
+    Der Content wird als HTML gespeichert - die Headline kann als <h2> im HTML definiert werden.
+    
+    Nicht-übersetzbare Einstellungen (Position, Farben, Animation, Höhe) werden aus block.customFields gelesen.
 #}
 
 {% block block_hero_image_overlay %}
-    {# Read block configuration from customFields #}
+    {# Read NON-TRANSLATABLE settings from block.customFields #}
     {% set overlayPosition = block.customFields.overlayPosition|default('top-left') %}
     {% set overlayBackgroundColor = block.customFields.overlayBackgroundColor|default('') %}
     {% set overlayTextColor = block.customFields.overlayTextColor|default('#ffffff') %}
-    {% set overlayHeadline = block.customFields.overlayHeadline|default('') %}
-    {% set overlayText = block.customFields.overlayText|default('') %}
     {% set enableScrollAnimation = block.customFields.enableScrollAnimation|default(true) %}
     {% set minHeight = block.customFields.minHeight|default('500px') %}
+    
+    {# Bild-Ausrichtung (nur bei Cover-Modus relevant) #}
+    {% set imageVerticalAlign = block.customFields.imageVerticalAlign|default('center') %}
+    {% set imageHorizontalAlign = block.customFields.imageHorizontalAlign|default('center') %}
+    {% set imageObjectPosition = imageHorizontalAlign ~ ' ' ~ imageVerticalAlign %}
+    
+    {# Read TRANSLATABLE content from textOverlay element slot (Standard "text" Element) #}
+    {% set textOverlayElement = block.slots.getSlot('textOverlay') %}
+    {% set textOverlayConfig = textOverlayElement.config|default({}) %}
+    
+    {# SPRACHABHÄNGIG: Content aus dem Element-Slot (HTML, kann <h2> für Headline enthalten) #}
+    {% set overlayContent = textOverlayConfig.content.value|default('') %}
+    
+    {# Fallback: Wenn textOverlay nicht existiert, versuche alte customFields (Migration) #}
+    {% if not overlayContent %}
+        {# Alte Datenstruktur: Separate headline und text Felder #}
+        {% set oldHeadline = block.customFields.overlayHeadline|default('') %}
+        {% set oldText = block.customFields.overlayText|default('') %}
+        {% if oldHeadline or oldText %}
+            {% set overlayContent = '' %}
+            {% if oldHeadline %}
+                {% set overlayContent = overlayContent ~ '<h2>' ~ oldHeadline ~ '</h2>' %}
+            {% endif %}
+            {% if oldText %}
+                {% set overlayContent = overlayContent ~ oldText %}
+            {% endif %}
+        {% endif %}
+    {% endif %}
     
     {# Determine position classes #}
     {% set isLeftPosition = 'left' in overlayPosition %}
@@ -47,16 +81,17 @@
              itemscope
              itemtype="https://schema.org/ImageObject"
              role="region"
-             aria-label="{{ overlayHeadline|default('Hero Image with Text Overlay')|striptags }}"
+             aria-label="{{ overlayContent|striptags|default('Hero Image with Text Overlay') }}"
              {% if enableScrollAnimation %}
                  data-hero-image-overlay="true"
                  data-overlay-position="{{ overlayPosition }}"
              {% endif %}>
         
-        {# Background Image (from slot) #}
+        {# Background Image (from slot) - mit reaktiver object-position #}
         <div class="cms-block-hero-image-overlay__image"
              role="img"
-             aria-hidden="true">
+             aria-hidden="true"
+             style="--image-object-position: {{ imageObjectPosition }};">
             {% set element = block.slots.getSlot('image') %}
             {% if element and element.type %}
                 {% sw_include '@Storefront/storefront/element/cms-element-' ~ element.type ~ '.html.twig' ignore missing %}
@@ -71,31 +106,22 @@
         <aside class="cms-block-hero-image-overlay__overlay cms-block-hero-image-overlay__overlay--{{ overlayPosition }}"
                style="{{ overlayBgStyle }} {{ overlayTextStyle }}"
                role="complementary"
-               aria-labelledby="{{ blockId }}-headline"
+               aria-labelledby="{{ blockId }}-content"
                {% if enableScrollAnimation %}
                    data-overlay-animate="true"
                {% endif %}>
-            <div class="cms-block-hero-image-overlay__overlay-content">
-                {% if overlayHeadline %}
-                    {# Headline mit expliziter Text-Farbe aus Admin-Settings #}
-                    <h2 class="cms-block-hero-image-overlay__headline" 
-                        id="{{ blockId }}-headline"
-                        itemprop="name"
-                        style="{{ overlayTextStyle }}">{{ overlayHeadline }}</h2>
-                {% endif %}
-                {% if overlayText %}
-                    {# Text mit expliziter Text-Farbe aus Admin-Settings #}
-                    <div class="cms-block-hero-image-overlay__text" 
-                         itemprop="description"
-                         style="{{ overlayTextStyle }}">{{ overlayText|raw }}</div>
-                {% endif %}
-                {# Fallback: Show placeholder if no content is defined (only in preview/dev) #}
-                {% if not overlayHeadline and not overlayText %}
-                    <h2 class="cms-block-hero-image-overlay__headline" 
-                        id="{{ blockId }}-headline"
-                        style="{{ overlayTextStyle }}">Your Headline</h2>
-                    <p class="cms-block-hero-image-overlay__text" 
-                       style="{{ overlayTextStyle }}">Your description text here</p>
+            <div class="cms-block-hero-image-overlay__overlay-content"
+                 id="{{ blockId }}-content"
+                 itemprop="description"
+                 style="{{ overlayTextStyle }}">
+                {% if overlayContent %}
+                    {# SPRACHABHÄNGIGER Content (HTML) aus Element-Slot #}
+                    {# Kann <h2>, <p>, etc. enthalten - wird als HTML gerendert #}
+                    {{ overlayContent|raw }}
+                {% else %}
+                    {# Fallback: Show placeholder if no content is defined (only in preview/dev) #}
+                    <h2 class="hero-overlay-headline" style="color: {{ overlayTextColor }}; margin-bottom: 0;">Your Headline</h2>
+                    <p class="hero-overlay-text" style="color: {{ overlayTextColor }};">Your description text here</p>
                 {% endif %}
             </div>
         </aside>
@@ -104,4 +130,3 @@
         <meta itemprop="contentUrl" content="{{ element.data.media.url|default('') }}">
     </article>
 {% endblock %}
-

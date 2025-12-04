@@ -2,6 +2,9 @@
  * Hero Video Extended Block - Admin Component
  * 
  * Reactive preview in CMS Editor with overlay positioning
+ * 
+ * WICHTIG: Der Text-Inhalt wird aus dem content Slot gelesen (sprachabhängig!)
+ * Die Daten werden in cms_slot_translation.config gespeichert.
  */
 import template from './sw-cms-block-hero-video-extended.html.twig';
 import './sw-cms-block-hero-video-extended.scss';
@@ -36,6 +39,33 @@ export default {
             return this.repositoryFactory.create('media');
         },
 
+        /**
+         * Zugriff auf den content Slot
+         * WICHTIG: Hier werden die sprachabhängigen Texte gespeichert!
+         */
+        contentSlot() {
+            if (!this.block?.slots) {
+                return null;
+            }
+            // slots kann ein Array oder eine Collection sein
+            if (Array.isArray(this.block.slots)) {
+                return this.block.slots.find((slot) => slot.slot === 'content');
+            }
+            // Falls es eine Collection ist
+            if (this.block.slots.getSlot) {
+                return this.block.slots.getSlot('content');
+            }
+            return null;
+        },
+
+        /**
+         * Der gesamte HTML-Inhalt aus dem content Slot
+         * Enthält Headline und Text als HTML
+         */
+        overlayContent() {
+            return this.contentSlot?.config?.content?.value || '';
+        },
+
         overlayPosition() {
             return this.block?.customFields?.overlayPosition || 'bottom-right';
         },
@@ -48,10 +78,18 @@ export default {
             return this.block?.customFields?.overlayTextColor || '#ffffff';
         },
 
+        /**
+         * Fallback für alte Daten: overlayHeadline aus customFields
+         * @deprecated - Verwende overlayContent stattdessen
+         */
         overlayHeadline() {
             return this.block?.customFields?.overlayHeadline || '';
         },
 
+        /**
+         * Fallback für alte Daten: overlayText aus customFields
+         * @deprecated - Verwende overlayContent stattdessen
+         */
         overlayText() {
             return this.block?.customFields?.overlayText || '';
         },
@@ -89,8 +127,11 @@ export default {
             return styles;
         },
 
+        /**
+         * Prüft ob Inhalt vorhanden ist (entweder aus Slot oder Legacy customFields)
+         */
         hasOverlayContent() {
-            return this.overlayHeadline || this.overlayText;
+            return !!(this.overlayContent || this.overlayHeadline || this.overlayText);
         },
     },
 

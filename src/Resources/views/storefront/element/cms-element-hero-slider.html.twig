@@ -142,6 +142,18 @@
                                         {% set slideHeadlineForAlt = (slide.extensions.headline is defined and slide.extensions.headline.value is defined and slide.extensions.headline.value is not null and slide.extensions.headline.value is not empty) ? slide.extensions.headline.value : ((slide.headline is defined and slide.headline is not null and slide.headline is not empty) ? slide.headline : ((sliderConfig.headline is defined and sliderConfig.headline.value is defined and sliderConfig.headline.value is not null and sliderConfig.headline.value is not empty) ? sliderConfig.headline.value : null)) %}
                                         {% set imageAltText = isDecorative ? ' ' : (slide.media.translated.alt ?: (slideHeadlineForAlt ?: 'Hero Slide')) %}
                                         
+                                        {# Per-Slide Image Vertical Alignment (top, center, bottom) - aus Extension #}
+                                        {% set imageVerticalAlignExt = slide.extensions.imageVerticalAlign %}
+                                        {% set imageVerticalAlign = (imageVerticalAlignExt and imageVerticalAlignExt.value is defined and imageVerticalAlignExt.value is not null and imageVerticalAlignExt.value is not empty) ? imageVerticalAlignExt.value : 'center' %}
+                                        
+                                        {# Object-Position für das Bild basierend auf imageVerticalAlign #}
+                                        {% set imageObjectPosition = 'center center' %}
+                                        {% if imageVerticalAlign == 'top' %}
+                                            {% set imageObjectPosition = 'top center' %}
+                                        {% elseif imageVerticalAlign == 'bottom' %}
+                                            {% set imageObjectPosition = 'bottom center' %}
+                                        {% endif %}
+                                        
                                         {# Background Image - WIE STANDARD SLIDER STRUCTURE #}
                                         {% set imageElement %}
                                             <div class="hero-slide-background is-{{ displayMode }}">
@@ -155,6 +167,8 @@
                                                 
                                                 {% if displayMode == 'cover' or displayMode == 'contain' %}
                                                     {% set imageAttributes = imageAttributes|merge({ 'data-object-fit': displayMode }) %}
+                                                    {# WICHTIG: object-position für vertikale Bildausrichtung pro Slide #}
+                                                    {% set imageAttributes = imageAttributes|merge({ 'style': 'object-position: ' ~ imageObjectPosition ~ ';' }) %}
                                                 {% endif %}
                                                 
                                                 {% sw_thumbnails 'hero-slide-thumbnails' with {

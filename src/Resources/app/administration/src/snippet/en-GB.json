@@ -268,8 +268,9 @@
                         "mutedHelp": "Play video without sound (required for autoplay)",
                         "minHeight": "Minimum Height",
                         "minHeightHelp": "Minimum height for the block (e.g. 500px or 60vh)",
-                        "overlaySection": "Overlay Content",
-                        "overlayPosition": "Overlay Position",
+                        "overlaySection": "Overlay Position",
+                        "overlayPosition": "Position",
+                        "overlayPositionHelp": "Choose where the overlay panel appears on the video",
                         "position": {
                             "topLeft": "Top Left",
                             "middleLeft": "Middle Left",
@@ -278,10 +279,9 @@
                             "middleRight": "Middle Right",
                             "bottomRight": "Bottom Right"
                         },
-                        "overlayHeadline": "Headline",
-                        "overlayHeadlinePlaceholder": "Enter headline...",
-                        "overlayText": "Description Text (HTML)",
-                        "overlayTextPlaceholder": "Enter description text or HTML...",
+                        "contentSection": "Content (Language-Specific)",
+                        "overlayContent": "Overlay Content (HTML)",
+                        "overlayContentPlaceholder": "Enter your headline and description text here (HTML allowed)...",
                         "styleSection": "Style",
                         "overlayBackgroundColor": "Overlay Background Color",
                         "overlayBackgroundColorHelp": "Leave empty to use theme accent color",
@@ -333,9 +333,10 @@
                     },
                     "config": {
                         "sectionPosition": "Position",
-                        "sectionContent": "Content",
+                        "sectionContent": "Content (Language-Specific)",
                         "sectionStyle": "Style",
                         "sectionAnimation": "Animation",
+                        "languageInfo": "Content is saved per language. Switch the language in the top right to enter translations.",
                         "overlayPosition": "Overlay Position",
                         "overlayPositionHelp": "Choose where the overlay panel appears on the image",
                         "position": {
@@ -346,10 +347,8 @@
                             "middleRight": "Middle Right",
                             "bottomRight": "Bottom Right"
                         },
-                        "overlayHeadline": "Headline",
-                        "overlayHeadlinePlaceholder": "Enter headline...",
-                        "overlayText": "Description Text (HTML)",
-                        "overlayTextPlaceholder": "Enter description text or HTML...",
+                        "overlayContent": "Overlay Content (HTML)",
+                        "overlayContentPlaceholder": "<h2>Headline</h2><p>Enter your description text here...</p>",
                         "overlayBackgroundColor": "Background Color",
                         "overlayBackgroundColorHelp": "Leave empty to use theme accent color",
                         "overlayTextColor": "Text Color",
@@ -358,12 +357,51 @@
                         "minHeightPlaceholder": "e.g. 500px or 60vh",
                         "minHeightHelp": "Minimum height for the block",
                         "enableScrollAnimation": "Enable Scroll Animation",
-                        "enableScrollAnimationHelp": "Animates the overlay panel sliding in from outside when scrolling into view"
+                        "enableScrollAnimationHelp": "Animates the overlay panel sliding in from outside when scrolling into view",
+                        "sectionImageAlign": "Image Alignment (Cover mode only)",
+                        "imageAlignInfo": "These settings are only applied when the image element is in 'Cover' mode.",
+                        "imageVerticalAlign": "Vertical Alignment",
+                        "imageHorizontalAlign": "Horizontal Alignment",
+                        "imageAlign": {
+                            "top": "Top",
+                            "center": "Center",
+                            "bottom": "Bottom",
+                            "left": "Left",
+                            "right": "Right"
+                        }
                     }
                 }
             }
         },
         "elements": {
+            "heroBlocks": {
+                "heroTextOverlay": {
+                    "label": "Hero Text Overlay",
+                    "placeholder": "Click here to add text...",
+                    "config": {
+                        "sectionContent": "Content",
+                        "sectionStyling": "Styling",
+                        "languageDependent": "language-dependent",
+                        "headline": "Headline",
+                        "headlinePlaceholder": "Enter headline...",
+                        "content": "Description Text (HTML)",
+                        "contentPlaceholder": "Enter description text or HTML...",
+                        "position": {
+                            "label": "Overlay Position",
+                            "topLeft": "Top Left",
+                            "middleLeft": "Middle Left",
+                            "bottomLeft": "Bottom Left",
+                            "topRight": "Top Right",
+                            "middleRight": "Middle Right",
+                            "bottomRight": "Bottom Right"
+                        },
+                        "backgroundColor": "Background Color",
+                        "backgroundColorHelpText": "Leave empty for theme accent color",
+                        "textColor": "Text Color",
+                        "enableScrollAnimation": "Enable Scroll Animation"
+                    }
+                }
+            },
             "general": {
                 "config": {
                     "tab": {
@@ -460,6 +498,11 @@
                     "slideLabel": "Slide {index}",
                     "deleteSlide": "Delete slide",
                     "slidesTitle": "Configure slide content",
+                    "imageVerticalAlign": "Image alignment (vertical)",
+                    "imageVerticalAlignHelpText": "Vertical alignment of the background image for this slide. Only applies in cover mode.",
+                    "imageVerticalAlignTop": "Top",
+                    "imageVerticalAlignCenter": "Center",
+                    "imageVerticalAlignBottom": "Bottom",
                     "slideColors": {
                         "title": "Slide Colors",
                         "headlineColor": "Headline Color",

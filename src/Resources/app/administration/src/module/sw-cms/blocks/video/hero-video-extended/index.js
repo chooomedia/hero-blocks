@@ -9,6 +9,12 @@
  * - Async on-scroll loading in storefront
  * 
  * Controlled via System-Config: HeroBlocks.config.enableHeroVideoExtended
+ * 
+ * WICHTIG: SPRACHABHÄNGIGE TEXTE
+ * Die Texte (Headline, Content) werden im 'textOverlay' Slot (text Element) gespeichert.
+ * CMS-Elemente haben eine cms_slot_translation Tabelle, daher sind die Texte SPRACHABHÄNGIG!
+ * 
+ * Nicht-übersetzbare Einstellungen (Video, Position, Farben, Animation) werden in block.customFields gespeichert.
  */
 
 // CMS constant for preview image
@@ -28,9 +34,9 @@ Shopware.Component.register('sw-cms-block-config-hero-video-extended', () => imp
 /**
  * @private
  * 
- * WICHTIG: Block-Config wird in block.customFields gespeichert (NICHT in block.config)
- * Das defaultConfig hier definiert nur Standard-Werte für margin/sizing.
- * Alle anderen Einstellungen werden über customFields verwaltet.
+ * WICHTIG: 
+ * - Block-Config (Video, Position, Farben) wird in block.customFields gespeichert (NICHT übersetzbar)
+ * - Text-Content wird im textOverlay Slot gespeichert (ÜBERSETZBAR via cms_slot_translation)
  */
 Shopware.Service('cmsService').registerCmsBlock({
     name: 'hero-video-extended',
@@ -50,7 +56,21 @@ Shopware.Service('cmsService').registerCmsBlock({
         // Diese werden in block.customFields gespeichert (siehe config/index.js)
     },
     slots: {
-        // No slots - video is configured via block settings
+        // WICHTIG: Text Element für SPRACHABHÄNGIGE Texte
+        // Die Config wird in cms_slot_translation.config gespeichert und ist somit übersetzbar!
+        // Wir verwenden den Standard "text" Element-Typ, da dieser bereits übersetzbar ist
+        // Slot-Name: "content" (für Kompatibilität mit bestehenden Blocks)
+        content: {
+            type: 'text',
+            default: {
+                config: {
+                    content: {
+                        source: 'static',
+                        value: '<h2 class="hero-overlay-headline">Ihre Überschrift</h2><p class="hero-overlay-text">Ihr Beschreibungstext hier eingeben...</p>',
+                    },
+                },
+            },
+        },
     },
 });
 

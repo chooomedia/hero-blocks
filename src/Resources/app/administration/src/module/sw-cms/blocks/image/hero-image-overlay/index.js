@@ -8,6 +8,12 @@
  * - Scroll animation from outside
  * - Accent color background
  * - Responsive design
+ * 
+ * WICHTIG: SPRACHABHÄNGIGE TEXTE
+ * Die Texte (Headline, Content) werden im 'textOverlay' Slot (hero-text-overlay Element) gespeichert.
+ * CMS-Elemente haben eine cms_slot_translation Tabelle, daher sind die Texte SPRACHABHÄNGIG!
+ * 
+ * Nicht-übersetzbare Einstellungen (Position, Farben, Animation, Höhe) werden in block.customFields gespeichert.
  */
 
 // CMS constant import removed - using direct values instead
@@ -48,6 +54,7 @@ Shopware.Service('cmsService').registerCmsBlock({
         marginLeft: null,
         marginRight: null,
         sizingMode: 'full-width',
+        // NICHT-ÜBERSETZBARE EINSTELLUNGEN (werden in block.customFields gespeichert)
         // Overlay position: top-left, middle-left, bottom-left, top-right, middle-right, bottom-right
         overlayPosition: {
             source: 'static',
@@ -56,22 +63,12 @@ Shopware.Service('cmsService').registerCmsBlock({
         // Overlay background color (accent color by default)
         overlayBackgroundColor: {
             source: 'static',
-            value: '#007bff', // Accent color
+            value: '', // Leer = Theme Accent Color
         },
         // Overlay text color (white by default)
         overlayTextColor: {
             source: 'static',
             value: '#ffffff', // White
-        },
-        // Overlay headline
-        overlayHeadline: {
-            source: 'static',
-            value: '',
-        },
-        // Overlay text
-        overlayText: {
-            source: 'static',
-            value: '',
         },
         // Enable scroll animation
         enableScrollAnimation: {
@@ -85,17 +82,38 @@ Shopware.Service('cmsService').registerCmsBlock({
         },
     },
     slots: {
+        // Hintergrundbild
         image: {
             type: 'image',
             default: {
                 config: {
                     displayMode: { source: 'static', value: 'cover' },
+                    minHeight: { source: 'static', value: '' },
+                    url: { source: 'static', value: null },
+                    newTab: { source: 'static', value: false },
                 },
                 data: {
                     media: {
                         value: CMS.MEDIA.previewMountain,
                         source: 'default',
                     },
+                },
+            },
+        },
+        // WICHTIG: Text Element für SPRACHABHÄNGIGE Texte
+        // Die Config wird in cms_slot_translation.config gespeichert und ist somit übersetzbar!
+        // Wir verwenden den Standard "text" Element-Typ, da dieser bereits übersetzbar ist
+        // Initial HTML-Struktur für einfache Anpassung durch Nicht-Programmierer
+        textOverlay: {
+            type: 'text',
+            default: {
+                config: {
+                    content: {
+                        source: 'static',
+                        value: '<h2 class="hero-overlay-headline" style="color: #ffffff; margin-bottom: 0;">Ihre Überschrift</h2><p class="hero-overlay-text" style="color: #ffffff;">Ihr Beschreibungstext hier eingeben...</p>',
+                    },
+                    // WICHTIG: Zusätzliche Config-Felder für Shopware's checkRequiredSlotConfigField
+                    verticalAlign: { source: 'static', value: 'center' },
                 },
             },
         },

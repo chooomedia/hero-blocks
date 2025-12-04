@@ -28,6 +28,7 @@ export default class HeroTwoColumnsParallaxPlugin extends Plugin {
         backgroundLeftSelector: '.hero-two-columns-background--left',
         backgroundRightSelector: '.hero-two-columns-background--right',
         elementWrapperSelector: '.hero-two-columns-element-wrapper',
+        imageContainerSelector: '.cms-image-container',
         
         // Data Attributes
         dataParallaxBackground: 'data-parallax-background',
@@ -36,6 +37,8 @@ export default class HeroTwoColumnsParallaxPlugin extends Plugin {
         dataScrollAnimationEnabled: 'data-scroll-animation-enabled',
         dataTranslateX: 'data-translate-x',
         dataTranslateY: 'data-translate-y',
+        dataImageContainerCss: 'data-image-container-css',
+        dataCustomCss: 'data-custom-css',
     };
     
     init() {
@@ -69,6 +72,7 @@ export default class HeroTwoColumnsParallaxPlugin extends Plugin {
         
         // Bind Event Handlers
         this._onScroll = this._onScroll.bind(this);
+        this._onResize = this._onResize.bind(this);
         
         // Initialize
         if (this.parallaxEnabled || this.elementAnimationsEnabled) {
@@ -76,27 +80,182 @@ export default class HeroTwoColumnsParallaxPlugin extends Plugin {
             // Initial scroll check (in case block is already visible)
             this._onScroll();
         }
+        
+        // WICHTIG: Custom CSS auf Element-Wrapper und Image-Container anwenden
+        this._applyCustomCss();
     }
     
     /**
-     * Register Scroll Event
+     * Apply Custom CSS from data attributes
+     * - data-custom-css: CSS für den Element-Wrapper (nur Desktop)
+     * - data-image-container-css: CSS für den .cms-image-container (nur Desktop)
+     * 
+     * WICHTIG: Diese Methode wird sowohl bei init() als auch bei resize() aufgerufen
+     */
+    _applyCustomCss() {
+        if (!this.elementWrappers || this.elementWrappers.length === 0) {
+            return;
+        }
+        
+        // Prüfe ob Desktop (nicht Mobile/Tablet)
+        const isMobile = this._isMobileViewport();
+        
+        for (const wrapper of this.elementWrappers) {
+            // Custom CSS für Element-Wrapper (nur Desktop)
+            if (!isMobile) {
+                const customCss = wrapper.getAttribute(this.options.dataCustomCss);
+                if (customCss) {
+                    this._applyCssString(wrapper, customCss);
+                }
+            }
+            
+            // Custom CSS für Image-Container (nur Desktop)
+            // WICHTIG: data-image-container-css wird auf den .cms-image-container angewendet
+            const imageContainerCss = wrapper.getAttribute(this.options.dataImageContainerCss);
+            if (imageContainerCss) {
+                // Suche nach allen möglichen Image-Container Selektoren
+                const imageContainers = wrapper.querySelectorAll(
+                    '.cms-image-container, .cms-element-image .cms-image-container'
+                );
+                
+                if (imageContainers.length > 0) {
+                    for (const imageContainer of imageContainers) {
+                        if (!isMobile) {
+                            this._applyCssString(imageContainer, imageContainerCss);
+                            // Markiere als CSS-angewendet für Debugging
+                            imageContainer.setAttribute('data-custom-css-applied', 'true');
+                        }
+                    }
+                } else {
+                    // Fallback: Suche nach dem ersten Image-Container im Wrapper
+                    const imageContainer = wrapper.querySelector(this.options.imageContainerSelector);
+                    if (imageContainer && !isMobile) {
+                        this._applyCssString(imageContainer, imageContainerCss);
+                        imageContainer.setAttribute('data-custom-css-applied', 'true');
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Apply CSS string to element
+     * Parses "property: value; property2: value2;" format
+     */
+    _applyCssString(element, cssString) {
+        if (!element || !cssString) {
+            return;
+        }
+        
+        // Parse CSS string
+        const declarations = cssString.split(';').filter(d => d.trim());
+        
+        for (const declaration of declarations) {
+            const [property, value] = declaration.split(':').map(s => s.trim());
+            if (property && value) {
+                // Convert kebab-case to camelCase for style property
+                const camelProperty = property.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+                element.style[camelProperty] = value;
+            }
+        }
+    }
+    
+    /**
+     * Check if current viewport is mobile
+     */
+    _isMobileViewport() {
+        // Viewport Detection: md breakpoint = 768px
+        return window.innerWidth < 768;
+    }
+    
+    /**
+     * Register Scroll and Resize Events
      */
     _registerEvents() {
         // WICHTIG: Throttle scroll event für Performance
-        let ticking = false;
+        let scrollTicking = false;
         
         window.addEventListener('scroll', () => {
-            if (!ticking) {
+            if (!scrollTicking) {
                 window.requestAnimationFrame(() => {
                     this._onScroll();
-                    ticking = false;
+                    scrollTicking = false;
                 });
-                ticking = true;
+                scrollTicking = true;
+            }
+        });
+        
+        // WICHTIG: Resize Event für responsive CSS-Anwendung
+        let resizeTicking = false;
+        
+        window.addEventListener('resize', () => {
+            if (!resizeTicking) {
+                window.requestAnimationFrame(() => {
+                    this._onResize();
+                    resizeTicking = false;
+                });
+                resizeTicking = true;
             }
         });
         
         // Initial call
         this._onScroll();
+    }
+    
+    /**
+     * Handle Resize Event
+     * Aktualisiert Custom CSS basierend auf Viewport-Größe
+     */
+    _onResize() {
+        // Re-apply Custom CSS (entfernt/setzt CSS basierend auf Viewport)
+        this._resetCustomCss();
+        this._applyCustomCss();
+    }
+    
+    /**
+     * Reset Custom CSS (für Viewport-Wechsel)
+     */
+    _resetCustomCss() {
+        if (!this.elementWrappers || this.elementWrappers.length === 0) {
+            return;
+        }
+        
+        for (const wrapper of this.elementWrappers) {
+            // Reset Image Container CSS
+            const imageContainer = wrapper.querySelector(this.options.imageContainerSelector);
+            if (imageContainer) {
+                // Entferne nur die dynamisch gesetzten Styles
+                const imageContainerCss = wrapper.getAttribute(this.options.dataImageContainerCss);
+                if (imageContainerCss) {
+                    this._removeCssProperties(imageContainer, imageContainerCss);
+                }
+            }
+            
+            // Reset Wrapper CSS
+            const customCss = wrapper.getAttribute(this.options.dataCustomCss);
+            if (customCss) {
+                this._removeCssProperties(wrapper, customCss);
+            }
+        }
+    }
+    
+    /**
+     * Remove CSS properties from element
+     */
+    _removeCssProperties(element, cssString) {
+        if (!element || !cssString) {
+            return;
+        }
+        
+        const declarations = cssString.split(';').filter(d => d.trim());
+        
+        for (const declaration of declarations) {
+            const [property] = declaration.split(':').map(s => s.trim());
+            if (property) {
+                const camelProperty = property.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+                element.style[camelProperty] = '';
+            }
+        }
     }
     
     /**

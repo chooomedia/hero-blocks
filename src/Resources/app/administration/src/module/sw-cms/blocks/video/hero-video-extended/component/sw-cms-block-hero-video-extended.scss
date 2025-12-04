@@ -125,6 +125,23 @@
         flex-direction: column;
         gap: 0.5rem;
     }
+
+    // NEU: Content Wrapper für HTML aus dem Slot
+    &__content-wrapper {
+        // Styles für HTML-Inhalt aus dem Slot
+        h2, .hero-overlay-headline {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        p, .hero-overlay-text {
+            margin: 0;
+            font-size: 0.875rem;
+            line-height: 1.3;
+        }
+    }
     
     &__headline {
         margin: 0;

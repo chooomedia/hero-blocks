@@ -98,7 +98,7 @@
         />
     </div>
     
-    {# ========== OVERLAY SETTINGS ========== #}
+    {# ========== OVERLAY POSITION (NICHT übersetzbar) ========== #}
     <div class="sw-cms-block-config-hero-video-extended__section">
         <h4 class="sw-cms-block-config-hero-video-extended__section-title">
             {{ $tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlaySection') }}
@@ -112,25 +112,27 @@
             :options="positionOptions"
             :help-text="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlayPositionHelp')"
         />
+    </div>
+    
+    {# ========== OVERLAY CONTENT (SPRACHABHÄNGIG) ========== #}
+    <div class="sw-cms-block-config-hero-video-extended__section">
+        <h4 class="sw-cms-block-config-hero-video-extended__section-title">
+            {{ $tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.contentSection') }}
+            <span class="sw-cms-block-config-hero-video-extended__language-hint">
+                ({{ $tc('sw-cms.elements.general.config.tab.languageDependent') }})
+            </span>
+        </h4>
         
-        {# Overlay Headline #}
-        <sw-text-field
-            :value="overlayHeadline"
-            @update:value="onOverlayHeadlineChange"
-            :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlayHeadline')"
-            :placeholder="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlayHeadlinePlaceholder')"
-        />
-        
-        {# Overlay Text (HTML Editor) #}
+        {# Overlay Content (HTML) - SPRACHABHÄNGIG (wird im Element-Slot gespeichert) #}
         <sw-text-editor
-            :value="overlayText"
-            :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlayText')"
-            :placeholder="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlayTextPlaceholder')"
+            :value="overlayContent"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlayContent')"
+            :placeholder="$tc('sw-cms.blocks.heroBlocks.heroVideoExtended.config.overlayContentPlaceholder')"
             :sanitize-input="false"
             :sanitize-field-value="false"
             :allow-inline-data-mapping="false"
             :is-inline-edit="false"
-            @update:value="onOverlayTextChange"
+            @update:value="onOverlayContentChange"
         />
     </div>
     

@@ -69,7 +69,16 @@
     &__image {
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        
+        // Bild-Ausrichtung via CSS Custom Property (aus Admin Settings)
+        // Wird im Twig-Template via style="--image-object-position: ..." gesetzt
+        .cms-image-container,
+        .cms-image-container img,
+        .cms-element-image img,
+        img {
+            object-fit: cover;
+            object-position: var(--image-object-position, center center);
+        }
     }
     
     // ========================================
@@ -287,10 +296,50 @@
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
+        
+        // ========================================
+        // HEADLINE STYLES (via HTML class)
+        // Für sprachabhängigen Content aus Element-Slot
+        // ========================================
+        h2,
+        .hero-overlay-headline {
+            margin: 0 0 0.25rem 0;
+            font-family: 'Oswald', var(--sw-font-family-headline, sans-serif);
+            font-size: 1.25rem;
+            font-weight: 500;
+            line-height: 1.3;
+            text-transform: uppercase;
+            color: inherit; // Erbt Farbe vom Overlay (weiß)
+            
+            @media (min-width: 768px) {
+                font-size: 1.5rem;
+            }
+            
+            @media (min-width: 1200px) {
+                font-size: 1.65rem;
+            }
+        }
+        
+        // ========================================
+        // TEXT STYLES (via HTML class)
+        // ========================================
+        p,
+        .hero-overlay-text {
+            margin: 0;
+            font-size: 0.9rem;
+            font-weight: 400;
+            line-height: 1.4;
+            color: inherit; // Erbt Farbe vom Overlay (weiß)
+            
+            @media (min-width: 768px) {
+                font-size: 1.25rem;
+            }
+        }
     }
     
+    // Legacy: Alte BEM-Klassen (für Rückwärtskompatibilität)
     &__headline {
-        margin: 0;
+        margin: 0 0 0.25rem 0;
         font-family: 'Oswald', var(--sw-font-family-headline, sans-serif);
         font-size: 1.25rem;
         font-weight: 500;
@@ -310,7 +359,7 @@
     &__text {
         margin: 0;
         font-size: 0.9rem;
-        line-height: 1.3;
+        line-height: 1.4;
         color: inherit;
         
         p {
@@ -323,7 +372,7 @@
         }
         
         @media (min-width: 768px) {
-            font-size: 1.25rem;
+            font-size: 1rem;
         }
     }
 }

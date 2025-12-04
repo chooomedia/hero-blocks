@@ -132,6 +132,21 @@
                             role="tabpanel"
                         >
                             <div class="sw-cms-el-config-hero-slider__slide-settings">
+                                {# Image Vertical Alignment (Bildausrichtung pro Slide) #}
+                                {% block sw_cms_el_config_hero_slider_slide_image_align %}
+                                <mt-select
+                                    v-model="sliderItem.imageVerticalAlign"
+                                    :label="$tc('sw-cms.elements.heroSlider.config.imageVerticalAlign')"
+                                    :help-text="$tc('sw-cms.elements.heroSlider.config.imageVerticalAlignHelpText')"
+                                    :options="[
+                                        { value: 'top', label: $tc('sw-cms.elements.heroSlider.config.imageVerticalAlignTop') },
+                                        { value: 'center', label: $tc('sw-cms.elements.heroSlider.config.imageVerticalAlignCenter') },
+                                        { value: 'bottom', label: $tc('sw-cms.elements.heroSlider.config.imageVerticalAlignBottom') }
+                                    ]"
+                                    @update:model-value="emitUpdateEl"
+                                />
+                                {% endblock %}
+                                
                                 {# Logo/Image VOR Headline (wie Banner Block) #}
                                 {% block sw_cms_el_config_hero_slider_slide_logo %}
                                 <div class="sw-cms-el-config-hero-slider__slide-logo">
@@ -569,16 +584,8 @@
                             />
                             {% endblock %}
 
-                            {% block sw_cms_el_config_hero_slider_settings_vertical_align %}
-                            <mt-select
-                                v-model="element.config.verticalAlign.value"
-                                :label="$t('sw-cms.elements.general.config.label.verticalAlign')"
-                                :placeholder="$t('sw-cms.elements.general.config.label.verticalAlign')"
-                                :disabled="element.config.displayMode.value !== 'cover'"
-                                :options="verticalAlignValueOptions"
-                                @update:model-value="emitUpdateEl"
-                            />
-                            {% endblock %}
+                            {# ENTFERNT: Globales Vertical Align - jetzt pro Slide im Content Tab #}
+                            {# {% block sw_cms_el_config_hero_slider_settings_vertical_align %}{% endblock %} #}
 
                             {# Content Alignment Settings #}
                             {% block sw_cms_el_config_hero_slider_settings_content_vertical_align %}

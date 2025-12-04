@@ -8,9 +8,9 @@
  * - Overlay position, colors, text
  * - Scroll animation
  * 
- * WICHTIG: Folgt EXAKT dem gleichen Pattern wie Hero Two Columns für customFields Persistenz
- * - Direktes Setzen von customFields (KEIN Helper-Funktion)
- * - Kein $emit('block-update')
+ * WICHTIG: SPRACHABHÄNGIGE TEXTE
+ * - Texte (Headline, Content) werden im 'textOverlay' Slot gespeichert (ÜBERSETZBAR)
+ * - Andere Einstellungen (Video, Position, Farben) werden in block.customFields gespeichert (NICHT übersetzbar)
  */
 import template from './sw-cms-block-config-hero-video-extended.html.twig';
 import './sw-cms-block-config-hero-video-extended.scss';
@@ -49,6 +49,11 @@ export default {
             return `hero-video-extended-${this.block?.id || 'new'}`;
         },
 
+        // Content Slot (SPRACHABHÄNGIG) - Slot-Name: "content" für Kompatibilität
+        contentSlot() {
+            return this.block?.slots?.find(slot => slot.slot === 'content') || null;
+        },
+
         // Video Settings - Direkte Getter ohne Setter (Pattern wie Hero Two Columns)
         videoMediaId() {
             return this.block?.customFields?.videoMediaId || null;
@@ -70,7 +75,7 @@ export default {
             return this.block?.customFields?.muted !== false;
         },
 
-        // Overlay Settings
+        // Overlay Settings (NICHT übersetzbar - in customFields)
         overlayPosition() {
             return this.block?.customFields?.overlayPosition || 'bottom-right';
         },
@@ -83,12 +88,14 @@ export default {
             return this.block?.customFields?.overlayTextColor || '#ffffff';
         },
 
-        overlayHeadline() {
-            return this.block?.customFields?.overlayHeadline || '';
-        },
-
-        overlayText() {
-            return this.block?.customFields?.overlayText || '';
+        // SPRACHABHÄNGIG: Overlay Content aus content Slot
+        overlayContent: {
+            get() {
+                return this.contentSlot?.config?.content?.value || '';
+            },
+            set(value) {
+                this.updateElementConfig('content', value);
+            },
         },
 
         enableScrollAnimation() {
@@ -156,7 +163,9 @@ export default {
     methods: {
         /**
          * Initialisiert Block-Config-Werte
-         * WICHTIG: Folgt EXAKT dem gleichen Pattern wie Hero Two Columns
+         * WICHTIG: 
+         * - customFields für NICHT-übersetzbare Einstellungen (Video, Position, Farben)
+         * - textOverlay Slot für ÜBERSETZBARE Texte
          */
         initializeBlockConfig() {
             if (!this.block) {
@@ -173,6 +182,7 @@ export default {
                 }
             }
 
+            // NICHT-übersetzbare Einstellungen (Video, Position, Farben, Animation)
             const defaults = {
                 videoMediaId: null,
                 posterMediaId: null,
@@ -182,10 +192,9 @@ export default {
                 overlayPosition: 'bottom-right',
                 overlayBackgroundColor: '',
                 overlayTextColor: '#ffffff',
-                overlayHeadline: '',
-                overlayText: '',
                 enableScrollAnimation: true,
                 minHeight: '500px',
+                // ENTFERNT: overlayHeadline, overlayText - jetzt im textOverlay Slot (SPRACHABHÄNGIG)
             };
 
             // Initialisiere fehlende Werte (wie Hero Two Columns)
@@ -198,8 +207,61 @@ export default {
                     }
                 }
             });
+
+            // Initialisiere textOverlay Slot Config
+            this.initializeElementConfig();
             
             console.log('[Hero Video Extended Config] initializeBlockConfig - customFields:', JSON.stringify(this.block.customFields));
+        },
+
+        /**
+         * Initialisiert Element-Config für content Slot (SPRACHABHÄNGIG)
+         */
+        initializeElementConfig() {
+            const slot = this.contentSlot;
+            if (!slot) {
+                console.log('[Hero Video Extended Config] content slot not found');
+                return;
+            }
+
+            if (!slot.config) {
+                slot.config = {};
+            }
+
+            const elementDefaults = {
+                content: { 
+                    source: 'static', 
+                    value: '<h2 class="hero-overlay-headline">Ihre Überschrift</h2><p class="hero-overlay-text">Ihr Beschreibungstext hier eingeben...</p>' 
+                },
+            };
+
+            Object.keys(elementDefaults).forEach((key) => {
+                if (!slot.config[key]) {
+                    slot.config[key] = elementDefaults[key];
+                }
+            });
+        },
+
+        /**
+         * Aktualisiert Element-Config (SPRACHABHÄNGIG)
+         */
+        updateElementConfig(key, value) {
+            const slot = this.contentSlot;
+            if (!slot) {
+                console.warn('[Hero Video Extended Config] content slot not found');
+                return;
+            }
+
+            if (!slot.config) {
+                slot.config = {};
+            }
+
+            if (!slot.config[key]) {
+                slot.config[key] = { source: 'static', value: null };
+            }
+
+            slot.config[key].value = value;
+            this.$emit('block-update');
         },
 
         async loadVideoMedia(mediaId) {
@@ -368,16 +430,9 @@ export default {
             this.block.customFields.overlayPosition = value;
         },
 
-        onOverlayHeadlineChange(value) {
-            if (!this.block) return;
-            if (!this.block.customFields) this.block.customFields = {};
-            this.block.customFields.overlayHeadline = value;
-        },
-
-        onOverlayTextChange(value) {
-            if (!this.block) return;
-            if (!this.block.customFields) this.block.customFields = {};
-            this.block.customFields.overlayText = value;
+        // SPRACHABHÄNGIG: Overlay Content wird im textOverlay Slot gespeichert
+        onOverlayContentChange(value) {
+            this.updateElementConfig('content', value);
         },
 
         onOverlayBackgroundColorChange(value) {

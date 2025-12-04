@@ -25,6 +25,15 @@
         letter-spacing: 0.5px;
     }
     
+    &__language-hint {
+        font-size: 11px;
+        font-weight: 400;
+        color: var(--color-text-tertiary-default);
+        font-style: italic;
+        margin-left: 4px;
+        text-transform: none;
+    }
+    
     &__warning-hint {
         margin-top: 12px;
         padding: 12px;

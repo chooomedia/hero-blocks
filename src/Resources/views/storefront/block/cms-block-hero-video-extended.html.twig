@@ -8,9 +8,13 @@
        - Play/Pause on scroll visibility
        - Angled text overlay (like Hero Image Overlay)
        - Scroll animation for overlay
+       
+       WICHTIG: SPRACHABHÄNGIGE TEXTE
+       Die Texte werden im 'textOverlay' Slot gespeichert (ÜBERSETZBAR via cms_slot_translation)
+       Nicht-übersetzbare Einstellungen werden in block.customFields gespeichert
        ======================================== #}
     
-    {# Config values from block.customFields #}
+    {# Config values from block.customFields (NICHT übersetzbar) #}
     {% set videoMediaId = block.customFields.videoMediaId|default(null) %}
     {% set posterMediaId = block.customFields.posterMediaId|default(null) %}
     {% set autoplay = block.customFields.autoplay|default(true) %}
@@ -18,13 +22,25 @@
     {% set muted = block.customFields.muted|default(true) %}
     {% set minHeight = block.customFields.minHeight|default('500px') %}
     
-    {# Overlay settings #}
+    {# Overlay settings (NICHT übersetzbar) #}
     {% set overlayPosition = block.customFields.overlayPosition|default('bottom-right') %}
     {% set overlayBackgroundColor = block.customFields.overlayBackgroundColor|default('') %}
     {% set overlayTextColor = block.customFields.overlayTextColor|default('#ffffff') %}
-    {% set overlayHeadline = block.customFields.overlayHeadline|default('') %}
-    {% set overlayText = block.customFields.overlayText|default('') %}
     {% set enableScrollAnimation = block.customFields.enableScrollAnimation|default(true) %}
+    
+    {# SPRACHABHÄNGIG: Overlay Content aus content Slot #}
+    {% set contentElement = block.slots.getSlot('content') %}
+    {% set contentConfig = contentElement.config|default({}) %}
+    {% set overlayContent = contentConfig.content.value|default('') %}
+    
+    {# Fallback: Wenn textOverlay nicht existiert, versuche alte customFields (für Migration) #}
+    {% if not overlayContent and block.customFields.overlayHeadline is defined and block.customFields.overlayText is defined %}
+        {% set overlayContent = '<h2 class="hero-overlay-headline">' ~ block.customFields.overlayHeadline ~ '</h2><p class="hero-overlay-text">' ~ block.customFields.overlayText ~ '</p>' %}
+    {% elseif not overlayContent and block.customFields.overlayHeadline is defined %}
+        {% set overlayContent = '<h2 class="hero-overlay-headline">' ~ block.customFields.overlayHeadline ~ '</h2>' %}
+    {% elseif not overlayContent and block.customFields.overlayText is defined %}
+        {% set overlayContent = '<p class="hero-overlay-text">' ~ block.customFields.overlayText ~ '</p>' %}
+    {% endif %}
     
     {# Build overlay styles #}
     {% set overlayBgStyle = overlayBackgroundColor ? 'background-color: ' ~ overlayBackgroundColor ~ ';' : '' %}
@@ -50,14 +66,14 @@
              data-autoplay="{{ autoplay ? 'true' : 'false' }}"
              data-loop="{{ loop ? 'true' : 'false' }}"
              data-muted="{{ muted ? 'true' : 'false' }}"
-            data-pause-on-scroll="true"
-            {% if enableScrollAnimation and (overlayHeadline or overlayText) %}
-                data-enable-scroll-animation="true"
-            {% endif %}
+             data-pause-on-scroll="true"
+             {% if enableScrollAnimation and overlayContent %}
+                 data-enable-scroll-animation="true"
+             {% endif %}
              itemscope
              itemtype="https://schema.org/VideoObject"
              role="region"
-             aria-label="{{ overlayHeadline|striptags|default('Video') }}">
+             aria-label="{{ overlayContent|striptags|slice(0, 50)|default('Video') }}">
         
         {# Video Background #}
         <div class="cms-block-hero-video-extended__video-wrapper">
@@ -85,8 +101,8 @@
             {% endif %}
         </div>
         
-        {# Text Overlay Panel with angled edge #}
-        {% if overlayHeadline or overlayText %}
+        {# Text Overlay Panel with angled edge - SPRACHABHÄNGIG #}
+        {% if overlayContent %}
             <aside class="cms-block-hero-video-extended__overlay cms-block-hero-video-extended__overlay--{{ overlayPosition }}"
                    style="{{ overlayBgStyle }} {{ overlayTextStyle }}"
                    {% if enableScrollAnimation %}
@@ -95,17 +111,7 @@
                    role="complementary"
                    aria-labelledby="{{ block.id }}-headline">
                 <div class="cms-block-hero-video-extended__overlay-content">
-                    {% if overlayHeadline %}
-                        <h2 class="cms-block-hero-video-extended__headline" 
-                            id="{{ block.id }}-headline" 
-                            itemprop="name" 
-                            style="{{ overlayTextStyle }}">{{ overlayHeadline }}</h2>
-                    {% endif %}
-                    {% if overlayText %}
-                        <div class="cms-block-hero-video-extended__text" 
-                             itemprop="description" 
-                             style="{{ overlayTextStyle }}">{{ overlayText|raw }}</div>
-                    {% endif %}
+                    {{ overlayContent|raw }}
                 </div>
             </aside>
         {% endif %}

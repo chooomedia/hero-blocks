@@ -1,7 +1,7 @@
 {% block sw_cms_block_hero_image_overlay %}
 <div class="sw-cms-block-hero-image-overlay">
-    {# Background Image Slot #}
-    <div class="sw-cms-block-hero-image-overlay__image">
+    {# Background Image Slot - mit reaktiver object-position #}
+    <div class="sw-cms-block-hero-image-overlay__image" :style="{ '--image-object-position': imageHorizontalAlign + ' ' + imageVerticalAlign }">
         <slot name="image">
             <sw-cms-slot name="image" :block="block" />
         </slot>
@@ -14,20 +14,29 @@
         :style="overlayStyles"
     >
         <div class="sw-cms-block-hero-image-overlay__overlay-content">
-            {# Headline - reaktiv mit expliziter Textfarbe #}
-            <h3 v-if="overlayHeadline" 
-                class="sw-cms-block-hero-image-overlay__headline"
-                :style="{ color: overlayTextColor }">
-                {{ overlayHeadline }}
-            </h3>
-            {# Text - WICHTIG: v-html für HTML-Rendering (aus sw-text-editor) #}
-            <div v-if="overlayText" 
-                 class="sw-cms-block-hero-image-overlay__text"
+            {# NEU: Content aus textOverlay Slot (sprachabhängig!) #}
+            <div v-if="overlayContent" 
+                 class="sw-cms-block-hero-image-overlay__content-wrapper"
                  :style="{ color: overlayTextColor }"
-                 v-html="overlayText">
+                 v-html="overlayContent">
             </div>
+            
+            {# FALLBACK: Alte customFields Daten (für Migration) #}
+            <template v-else-if="overlayHeadline || overlayText">
+                <h3 v-if="overlayHeadline" 
+                    class="sw-cms-block-hero-image-overlay__headline"
+                    :style="{ color: overlayTextColor }">
+                    {{ overlayHeadline }}
+                </h3>
+                <div v-if="overlayText" 
+                     class="sw-cms-block-hero-image-overlay__text"
+                     :style="{ color: overlayTextColor }"
+                     v-html="overlayText">
+                </div>
+            </template>
+            
             {# Placeholder wenn kein Content #}
-            <template v-if="!overlayHeadline && !overlayText">
+            <template v-if="!hasContent">
                 <h3 class="sw-cms-block-hero-image-overlay__headline sw-cms-block-hero-image-overlay__headline--placeholder"
                     :style="{ color: overlayTextColor }">
                     {{ $tc('sw-cms.blocks.heroBlocks.heroImageOverlay.placeholder.headline') }}

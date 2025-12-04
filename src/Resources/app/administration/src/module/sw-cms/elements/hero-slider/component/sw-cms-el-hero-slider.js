@@ -292,9 +292,54 @@ export default {
       return 'transparent'; // Default transparent
     },
     
-    // Computed Styles für reaktive Farben
+    // ========================================
+    // CONTENT ALIGNMENT (REAKTIV)
+    // ========================================
+    
+    // Content Vertical Align (aus config)
+    contentVerticalAlign() {
+      return this.element?.config?.contentVerticalAlign?.value || 'center';
+    },
+    
+    // Content Horizontal Align (aus config)
+    contentHorizontalAlign() {
+      return this.element?.config?.contentHorizontalAlign?.value || 'center';
+    },
+    
+    // Computed Styles für Content-Ausrichtung
     contentStyles() {
-      return {};
+      const styles = {};
+      
+      // Vertikale Ausrichtung
+      switch (this.contentVerticalAlign) {
+        case 'top':
+          styles.justifyContent = 'flex-start';
+          styles.paddingTop = '2rem';
+          break;
+        case 'bottom':
+          styles.justifyContent = 'flex-end';
+          styles.paddingBottom = '2rem';
+          break;
+        default: // center
+          styles.justifyContent = 'center';
+      }
+      
+      // Horizontale Ausrichtung
+      switch (this.contentHorizontalAlign) {
+        case 'left':
+          styles.alignItems = 'flex-start';
+          styles.textAlign = 'left';
+          break;
+        case 'right':
+          styles.alignItems = 'flex-end';
+          styles.textAlign = 'right';
+          break;
+        default: // center
+          styles.alignItems = 'center';
+          styles.textAlign = 'center';
+      }
+      
+      return styles;
     },
     
     headlineStyles() {

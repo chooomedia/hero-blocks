@@ -20,6 +20,8 @@ Shopware.Locale.extend("en-GB", enGB);
 import "./module/sw-cms/elements/hero-slider/index.js";
 import "./module/sw-cms/elements/hero-category-slider/index.js";
 import "./module/sw-cms/elements/hero-instagram-feed/index.js";
+// HINWEIS: Für sprachabhängige Texte in Overlay-Blöcken verwenden wir den
+// Standard "text" Element-Typ, dessen Config in cms_slot_translation gespeichert wird.
 
 // Import License Check settings module
 import "./module/sw-settings-license-check/index.js";

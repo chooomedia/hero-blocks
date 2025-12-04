@@ -29,16 +29,36 @@
         border-bottom: 1px solid var(--color-gray-200);
     }
 
+    // Language info box (for translatable fields)
+    &__language-info {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 12px;
+        background: var(--color-shopware-blue-50);
+        border: 1px solid var(--color-shopware-blue-200);
+        border-radius: 4px;
+        font-size: 12px;
+        color: var(--color-shopware-blue-800);
+        line-height: 1.4;
+
+        .sw-icon {
+            flex-shrink: 0;
+            margin-top: 2px;
+            color: var(--color-shopware-blue-500);
+        }
+    }
+
     .sw-field {
         margin-bottom: 0;
     }
 
     // Text editor adjustments
     .sw-text-editor {
-        min-height: 120px;
+        min-height: 180px;
         
         .sw-text-editor__content {
-            min-height: 100px;
+            min-height: 150px;
         }
     }
 }

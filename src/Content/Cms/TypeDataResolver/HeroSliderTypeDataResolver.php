@@ -124,6 +124,8 @@ class HeroSliderTypeDataResolver extends AbstractCmsElementResolver
         // Per-Slide Content als Extension hinzufügen (nutzt addArrayExtension für einfache Werte)
         // WICHTIG: Alle Felder die im Admin-Config gespeichert werden müssen hier aufgelistet sein!
         $contentFields = [
+            // Image Settings
+            'imageVerticalAlign',
             // Text Content
             'headline', 'text', 
             // Button 1

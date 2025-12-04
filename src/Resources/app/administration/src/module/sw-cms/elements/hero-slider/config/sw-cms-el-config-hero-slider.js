@@ -112,6 +112,33 @@ export default {
       ];
     },
 
+    // Optionen für vertikale Bildausrichtung pro Slide
+    imageVerticalAlignOptions() {
+      if (!this.$tc) {
+        return [];
+      }
+      return [
+        {
+          value: "top",
+          label: this.$tc(
+            "sw-cms.elements.heroSlider.config.imageVerticalAlignTop"
+          ),
+        },
+        {
+          value: "center",
+          label: this.$tc(
+            "sw-cms.elements.heroSlider.config.imageVerticalAlignCenter"
+          ),
+        },
+        {
+          value: "bottom",
+          label: this.$tc(
+            "sw-cms.elements.heroSlider.config.imageVerticalAlignBottom"
+          ),
+        },
+      ];
+    },
+
     displayModeValueOptions() {
       if (!this.$tc) {
         return [];
@@ -394,6 +421,8 @@ z-index: 10;`;
         mediaId: mediaItem.id,
         url: null,
         newTab: false,
+        // Per-Slide Image Settings
+        imageVerticalAlign: 'center', // Bildausrichtung: 'top', 'center', 'bottom'
         // Per-Slide Content Fields
         logoImageId: null, // Logo Image pro Slide
         logoPosition: 'inside', // Logo Position: 'inside' (default) oder 'outside'
@@ -482,6 +511,8 @@ z-index: 10;`;
           mediaId: item.id,
           url: null,
           newTab: false,
+          // Per-Slide Image Settings
+          imageVerticalAlign: 'center', // Bildausrichtung: 'top', 'center', 'bottom'
           // Per-Slide Content Fields
           logoImageId: null,
           logoPosition: 'inside', // Logo Position: 'inside' (default) oder 'outside'

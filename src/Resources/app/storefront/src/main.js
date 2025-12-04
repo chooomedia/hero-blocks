@@ -22,17 +22,14 @@
 // Hero-Slider, Category-Slider, Instagram nutzen Shopware's base-slider System
 
 // ============================================================================
-// DEAKTIVIERT: Parallax Plugin (konfligiert mit HorexShopTheme)
+// Hero Two Columns Parallax Plugin
 // ============================================================================
-// WICHTIG: Das HeroTwoColumnsParallaxPlugin wurde DEAKTIVIERT, da es mit dem
-// HeroTwoColumnsScrollAnimationPlugin aus HorexShopTheme konfligiert.
+// WICHTIG: Dieses Plugin verarbeitet:
+// - Parallax-Effekte für Background-Bilder
+// - Element-Animationen (Scroll-Trigger)
+// - Custom CSS via data-Attribute (data-custom-css, data-image-container-css)
 //
-// Das Plugin aus HorexShopTheme ist korrekt implementiert:
-// - Keine Rotation (rotate) - nur translate
-// - Diagonal-Animation im 33° Winkel
-// - Intersection Observer für Scroll-Trigger
-//
-// import HeroTwoColumnsParallaxPlugin from "./hero-two-columns-parallax/hero-two-columns-parallax.plugin";
+import HeroTwoColumnsParallaxPlugin from "./hero-two-columns-parallax/hero-two-columns-parallax.plugin";
 
 // Video Plugin (Play/Pause Control für Hero Video Extended)
 import HeroVideoExtendedPlugin from "./hero-video-extended/hero-video-extended.plugin";
@@ -52,19 +49,21 @@ import "./hero-mega-menu/hero-mega-menu";
 // Safety Check: Prüfe ob PluginManager existiert
 if (typeof window.PluginManager !== "undefined" && window.PluginManager) {
   // ========================================================================
-  // DEAKTIVIERT: Hero Two Columns Parallax Plugin
+  // Hero Two Columns Parallax Plugin
   // ========================================================================
-  // Konfligiert mit HeroTwoColumnsScrollAnimationPlugin aus HorexShopTheme
-  // Das Plugin aus HorexShopTheme ist korrekt implementiert (ohne rotate)
+  // Verarbeitet:
+  // - Parallax-Effekte für Background-Bilder
+  // - Element-Animationen (Scroll-Trigger)
+  // - Custom CSS via data-Attribute (data-custom-css, data-image-container-css)
   //
-  // window.PluginManager.register(
-  //   "HeroTwoColumnsParallax",
-  //   HeroTwoColumnsParallaxPlugin,
-  //   "[data-hero-two-columns-parallax]"
-  // );
-  // console.log(
-  //   '[HeroBlocks] Plugin "HeroTwoColumnsParallax" registered successfully'
-  // );
+  window.PluginManager.register(
+    "HeroTwoColumnsParallax",
+    HeroTwoColumnsParallaxPlugin,
+    ".cms-block-hero-two-columns"
+  );
+  console.log(
+    '[HeroBlocks] Plugin "HeroTwoColumnsParallax" registered successfully'
+  );
 
   // ========================================================================
   // Hero Video Extended Plugin
