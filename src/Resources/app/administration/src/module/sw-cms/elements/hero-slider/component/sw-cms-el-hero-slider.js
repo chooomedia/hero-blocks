@@ -14,6 +14,29 @@ export default {
     },
   },
 
+  methods: {
+    // Parse CSS String zu Object für :style binding
+    parseCssString(cssString) {
+      if (!cssString || typeof cssString !== 'string') {
+        return {};
+      }
+      
+      const styles = {};
+      const declarations = cssString.split(';').filter(d => d.trim());
+      
+      declarations.forEach(declaration => {
+        const [property, value] = declaration.split(':').map(s => s.trim());
+        if (property && value) {
+          // Convert kebab-case to camelCase
+          const camelProperty = property.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+          styles[camelProperty] = value;
+        }
+      });
+      
+      return styles;
+    },
+  },
+  
   computed: {
     assetFilter() {
       return Shopware.Filter.getByName("asset");
@@ -158,6 +181,79 @@ export default {
     // Navigation anzeigen?
     showNavigation() {
       return this.slidesCount > 1;
+    },
+    
+    // ========================================
+    // LOGO SETTINGS (REAKTIV)
+    // ========================================
+    
+    // Logo URL (aus erster Slide)
+    logoUrl() {
+      if (!this.firstSlide) {
+        return null;
+      }
+      
+      // Prüfe ob Logo Media vorhanden ist
+      if (this.firstSlide.logoMedia && this.firstSlide.logoMedia.url) {
+        return this.firstSlide.logoMedia.url;
+      }
+      
+      // Prüfe logoMediaUrl (config)
+      if (this.firstSlide.logoMediaUrl) {
+        return this.firstSlide.logoMediaUrl;
+      }
+      
+      // Prüfe logoMediaId und lade Media
+      if (this.firstSlide.logoMediaId) {
+        // Media ist möglicherweise noch nicht geladen
+        return null;
+      }
+      
+      return null;
+    },
+    
+    // Logo Position (aus erster Slide)
+    logoPosition() {
+      if (this.firstSlide?.logoPosition) {
+        return this.firstSlide.logoPosition;
+      }
+      return 'inside'; // Default: im Content-Bereich
+    },
+    
+    // Logo Custom CSS (aus erster Slide)
+    logoCustomCss() {
+      if (this.firstSlide?.logoCustomCss) {
+        return this.firstSlide.logoCustomCss;
+      }
+      return '';
+    },
+    
+    // Styles für Logo Outside
+    logoOutsideStyles() {
+      const styles = {
+        position: 'absolute',
+        top: '1rem',
+        left: '1rem',
+        right: 'auto',
+        zIndex: 10,
+        maxWidth: '150px',
+      };
+      
+      // Parse custom CSS und überschreibe
+      if (this.logoCustomCss) {
+        const cssProps = this.parseCssString(this.logoCustomCss);
+        Object.assign(styles, cssProps);
+      }
+      
+      return styles;
+    },
+    
+    // Styles für Logo Inside
+    logoInsideStyles() {
+      return {
+        marginBottom: '1rem',
+        maxWidth: '200px',
+      };
     },
     
     // ========================================

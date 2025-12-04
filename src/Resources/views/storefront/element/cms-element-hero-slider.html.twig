@@ -133,6 +133,10 @@
                                         {% set logoMediaExt = slide.extensions.logoImage %}
                                         {% set logoMedia = (logoMediaExt and logoMediaExt.value is defined and logoMediaExt.value is not null) ? logoMediaExt.value : null %}
                                         
+                                        {# Logo Position (translateX, translateY) - aus sliderItem direkt #}
+                                        {% set logoTranslateX = slide.logoTranslateX|default(0) %}
+                                        {% set logoTranslateY = slide.logoTranslateY|default(0) %}
+                                        
                                         {# Slide URL - Robuste null/empty Prüfung #}
                                         {% set slideUrl = (slide.url is defined and slide.url is not null and slide.url is not empty) ? slide.url : null %}
                                         {% set slideNewTab = (slide.newTab is defined) ? (slide.newTab is same as(true) or slide.newTab == '1' or slide.newTab == 1) : false %}
@@ -164,8 +168,6 @@
                                                     attributes: imageAttributes
                                                 } %}
                                                 
-                                                {# Gradient Overlay für bessere Lesbarkeit #}
-                                                <div class="hero-slide-overlay"></div>
                                             </div>
                                         {% endset %}
                                         
@@ -185,11 +187,90 @@
                                         {# WICHTIG: Alignment aus Admin Settings, Fallback zu 'center' wenn nicht gesetzt #}
                                         {% set contentVerticalAlign = sliderConfig.contentVerticalAlign.value ?: 'center' %}
                                         {% set contentHorizontalAlign = sliderConfig.contentHorizontalAlign.value ?: 'center' %}
+                                        
+                                        {# Logo Position Mode: 'inside' (default) oder 'outside' - aus Extension oder direkt #}
+                                        {% set logoPositionExt = slide.extensions.logoPosition %}
+                                        {% set logoPosition = (logoPositionExt and logoPositionExt.value is defined and logoPositionExt.value is not null) ? logoPositionExt.value : (slide.logoPosition|default('inside')) %}
+                                        {% set logoCustomCssExt = slide.extensions.logoCustomCss %}
+                                        {% set logoCustomCss = (logoCustomCssExt and logoCustomCssExt.value is defined and logoCustomCssExt.value is not null) ? logoCustomCssExt.value : (slide.logoCustomCss|default('')) %}
+                                        
+                                        {# LOGO OUTSIDE: Absolut positioniert, außerhalb des Content-Bereichs #}
+                                        {% if logoMedia and logoPosition == 'outside' %}
+                                            <div class="hero-slide-logo-outside container"{% if logoCustomCss %} style="{{ logoCustomCss|e('html_attr') }}"{% endif %}>
+                                                {% sw_thumbnails 'hero-slide-logo-thumbnails' with {
+                                                    loadOriginalImage: false,
+                                                    autoColumnSizes: false,
+                                                    media: logoMedia,
+                                                    sizes: {
+                                                        default: '300px'
+                                                    },
+                                                    attributes: {
+                                                        'class': 'hero-slide-logo-img',
+                                                        'loading': 'lazy',
+                                                        'alt': logoMedia.translated.alt ?: ''
+                                                    }
+                                                } %}
+                                            </div>
+                                        {% endif %}
+                                        
+                                        {# WICHTIG: Alle Content-Variablen VOR dem Content-Wrapper definieren #}
+                                        {# So können wir prüfen, ob überhaupt Content vorhanden ist #}
+                                        
+                                        {# Per-Slide Styling-Werte aus Extensions #}
+                                        {% set headlineColorExt = slide.extensions.headlineColor %}
+                                        {% set headlineColor = (headlineColorExt and headlineColorExt.value is defined and headlineColorExt.value is not null and headlineColorExt.value is not empty) ? headlineColorExt.value : null %}
+                                        {% set textColorExt = slide.extensions.textColor %}
+                                        {% set textColor = (textColorExt and textColorExt.value is defined and textColorExt.value is not null and textColorExt.value is not empty) ? textColorExt.value : null %}
+                                        {% set button1BgColorExt = slide.extensions.button1BgColor %}
+                                        {% set button1BgColor = (button1BgColorExt and button1BgColorExt.value is defined and button1BgColorExt.value is not null and button1BgColorExt.value is not empty) ? button1BgColorExt.value : null %}
+                                        {% set button2BgColorExt = slide.extensions.button2BgColor %}
+                                        {% set button2BgColor = (button2BgColorExt and button2BgColorExt.value is defined and button2BgColorExt.value is not null and button2BgColorExt.value is not empty) ? button2BgColorExt.value : null %}
+                                        
+                                        {# Per-Slide oder Global Headline #}
+                                        {% set slideHeadlineExt = slide.extensions.headline %}
+                                        {% set slideHeadline = (slideHeadlineExt and slideHeadlineExt.value is defined and slideHeadlineExt.value is not null and slideHeadlineExt.value is not empty) ? slideHeadlineExt.value : ((slide.headline is defined and slide.headline is not null and slide.headline is not empty) ? slide.headline : ((sliderConfig.headline is defined and sliderConfig.headline.value is defined and sliderConfig.headline.value is not null and sliderConfig.headline.value is not empty) ? sliderConfig.headline.value : null)) %}
+                                        {% set hasHeadline = slideHeadline is not null and slideHeadline is not empty and slideHeadline|trim != '' %}
+                                        
+                                        {# Per-Slide oder Global Text #}
+                                        {% set slideTextExt = slide.extensions.text %}
+                                        {% set slideText = (slideTextExt and slideTextExt.value is defined and slideTextExt.value is not null and slideTextExt.value is not empty) ? slideTextExt.value : ((slide.text is defined and slide.text is not null and slide.text is not empty) ? slide.text : ((sliderConfig.text is defined and sliderConfig.text.value is defined and sliderConfig.text.value is not null and sliderConfig.text.value is not empty) ? sliderConfig.text.value : null)) %}
+                                        {% set hasText = slideText is not null and slideText is not empty and slideText|trim != '' %}
+                                        
+                                        {# Per-Slide oder Global Buttons #}
+                                        {% set slideButton1TextExt = slide.extensions.button1Text %}
+                                        {% set slideButton1Text = (slideButton1TextExt and slideButton1TextExt.value is defined and slideButton1TextExt.value is not null and slideButton1TextExt.value is not empty) ? slideButton1TextExt.value : ((slide.button1Text is defined and slide.button1Text is not null and slide.button1Text is not empty) ? slide.button1Text : ((sliderConfig.button1Text is defined and sliderConfig.button1Text.value is defined and sliderConfig.button1Text.value is not null and sliderConfig.button1Text.value is not empty) ? sliderConfig.button1Text.value : null)) %}
+                                        {% set slideButton1UrlExt = slide.extensions.button1Url %}
+                                        {% set slideButton1Url = (slideButton1UrlExt and slideButton1UrlExt.value is defined and slideButton1UrlExt.value is not null and slideButton1UrlExt.value is not empty) ? slideButton1UrlExt.value : ((slide.button1Url is defined and slide.button1Url is not null and slide.button1Url is not empty) ? slide.button1Url : ((sliderConfig.button1Url is defined and sliderConfig.button1Url.value is defined and sliderConfig.button1Url.value is not null and sliderConfig.button1Url.value is not empty) ? sliderConfig.button1Url.value : null)) %}
+                                        {% set slideButton1NewTabExt = slide.extensions.button1NewTab %}
+                                        {% set slideButton1NewTab = (slideButton1NewTabExt and slideButton1NewTabExt.value is defined) ? (slideButton1NewTabExt.value is same as(true) or slideButton1NewTabExt.value == '1' or slideButton1NewTabExt.value == 1) : ((slide.button1NewTab is defined) ? (slide.button1NewTab is same as(true) or slide.button1NewTab == '1' or slide.button1NewTab == 1) : ((sliderConfig.button1NewTab is defined and sliderConfig.button1NewTab.value is defined) ? (sliderConfig.button1NewTab.value is same as(true) or sliderConfig.button1NewTab.value == '1' or sliderConfig.button1NewTab.value == 1) : false)) %}
+                                        {% set hasButton1 = slideButton1Text is not null and slideButton1Text is not empty and slideButton1Text|trim != '' and slideButton1Url is not null and slideButton1Url is not empty and slideButton1Url|trim != '' %}
+                                        
+                                        {% set slideButton2TextExt = slide.extensions.button2Text %}
+                                        {% set slideButton2Text = (slideButton2TextExt and slideButton2TextExt.value is defined and slideButton2TextExt.value is not null and slideButton2TextExt.value is not empty) ? slideButton2TextExt.value : ((slide.button2Text is defined and slide.button2Text is not null and slide.button2Text is not empty) ? slide.button2Text : ((sliderConfig.button2Text is defined and sliderConfig.button2Text.value is defined and sliderConfig.button2Text.value is not null and sliderConfig.button2Text.value is not empty) ? sliderConfig.button2Text.value : null)) %}
+                                        {% set slideButton2UrlExt = slide.extensions.button2Url %}
+                                        {% set slideButton2Url = (slideButton2UrlExt and slideButton2UrlExt.value is defined and slideButton2UrlExt.value is not null and slideButton2UrlExt.value is not empty) ? slideButton2UrlExt.value : ((slide.button2Url is defined and slide.button2Url is not null and slide.button2Url is not empty) ? slide.button2Url : ((sliderConfig.button2Url is defined and sliderConfig.button2Url.value is defined and sliderConfig.button2Url.value is not null and sliderConfig.button2Url.value is not empty) ? sliderConfig.button2Url.value : null)) %}
+                                        {% set slideButton2NewTabExt = slide.extensions.button2NewTab %}
+                                        {% set slideButton2NewTab = (slideButton2NewTabExt and slideButton2NewTabExt.value is defined) ? (slideButton2NewTabExt.value is same as(true) or slideButton2NewTabExt.value == '1' or slideButton2NewTabExt.value == 1) : ((slide.button2NewTab is defined) ? (slide.button2NewTab is same as(true) or slide.button2NewTab == '1' or slide.button2NewTab == 1) : ((sliderConfig.button2NewTab is defined and sliderConfig.button2NewTab.value is defined) ? (sliderConfig.button2NewTab.value is same as(true) or sliderConfig.button2NewTab.value == '1' or sliderConfig.button2NewTab.value == 1) : false)) %}
+                                        {% set hasButton2 = slideButton2Text is not null and slideButton2Text is not empty and slideButton2Text|trim != '' and slideButton2Url is not null and slideButton2Url is not empty and slideButton2Url|trim != '' %}
+                                        
+                                        {# Logo inside position check #}
+                                        {% set hasLogoInside = logoMedia and logoPosition != 'outside' %}
+                                        
+                                        {# WICHTIG: Prüfen ob überhaupt Content vorhanden ist #}
+                                        {% set hasAnyContent = hasLogoInside or hasHeadline or hasText or hasButton1 or hasButton2 %}
+                                        
+                                        {# WICHTIG: Content-Wrapper NUR rendern wenn Content vorhanden ist #}
+                                        {% if hasAnyContent %}
                                         <div class="hero-slide-content hero-slide-content--vertical-{{ contentVerticalAlign }} hero-slide-content--horizontal-{{ contentHorizontalAlign }}">
                                             <div class="hero-slide-content-inner">
-                                                {# Logo/Image VOR Headline (pro Slide) #}
-                                                {% if logoMedia %}
-                                                    <div class="hero-slide-logo">
+                                                {# Logo/Image VOR Headline (pro Slide) - NUR wenn 'inside' Position #}
+                                                {% if hasLogoInside %}
+                                                    {# Logo Position Style - nur wenn translateX oder translateY != 0 #}
+                                                    {% set logoPositionStyle = '' %}
+                                                    {% if logoTranslateX != 0 or logoTranslateY != 0 %}
+                                                        {% set logoPositionStyle = 'transform: translate(' ~ logoTranslateX ~ 'px, ' ~ logoTranslateY ~ 'px);' %}
+                                                    {% endif %}
+                                                    <div class="hero-slide-logo"{% if logoPositionStyle %} style="{{ logoPositionStyle }}"{% endif %}>
                                                         {% sw_thumbnails 'hero-slide-logo-thumbnails' with {
                                                             loadOriginalImage: false,
                                                             autoColumnSizes: false,
@@ -206,52 +287,35 @@
                                                     </div>
                                                 {% endif %}
                                                 
-                                                {# Per-Slide Styling-Werte aus Extensions - Fallback zu CSS Defaults wenn nicht gesetzt #}
-                                                {# WICHTIG: Farben werden vom TypeDataResolver als Extensions hinzugefügt #}
-                                                {% set headlineColorExt = slide.extensions.headlineColor %}
-                                                {% set headlineColor = (headlineColorExt and headlineColorExt.value is defined and headlineColorExt.value is not null and headlineColorExt.value is not empty) ? headlineColorExt.value : null %}
-                                                {% set textColorExt = slide.extensions.textColor %}
-                                                {% set textColor = (textColorExt and textColorExt.value is defined and textColorExt.value is not null and textColorExt.value is not empty) ? textColorExt.value : null %}
-                                                {% set button1BgColorExt = slide.extensions.button1BgColor %}
-                                                {% set button1BgColor = (button1BgColorExt and button1BgColorExt.value is defined and button1BgColorExt.value is not null and button1BgColorExt.value is not empty) ? button1BgColorExt.value : null %}
-                                                {% set button2BgColorExt = slide.extensions.button2BgColor %}
-                                                {% set button2BgColor = (button2BgColorExt and button2BgColorExt.value is defined and button2BgColorExt.value is not null and button2BgColorExt.value is not empty) ? button2BgColorExt.value : null %}
-                                                
-                                                {# Per-Slide oder Global Headline (aus Extension oder Config) - Robuste null/empty Prüfung #}
-                                                {% set slideHeadlineExt = slide.extensions.headline %}
-                                                {% set slideHeadline = (slideHeadlineExt and slideHeadlineExt.value is defined and slideHeadlineExt.value is not null and slideHeadlineExt.value is not empty) ? slideHeadlineExt.value : ((slide.headline is defined and slide.headline is not null and slide.headline is not empty) ? slide.headline : ((sliderConfig.headline is defined and sliderConfig.headline.value is defined and sliderConfig.headline.value is not null and sliderConfig.headline.value is not empty) ? sliderConfig.headline.value : null)) %}
-                                                {% if slideHeadline %}
+                                                {# Headline nur ausgeben wenn nicht leer #}
+                                                {% if hasHeadline %}
                                                     {% if loop.first %}
                                                         <h1 class="hero-slide-headline" itemprop="headline"{% if headlineColor %} style="color: {{ headlineColor }};"{% endif %}>{{ slideHeadline }}</h1>
                                                     {% else %}
                                                         <h2 class="hero-slide-headline"{% if headlineColor %} style="color: {{ headlineColor }};"{% endif %}>{{ slideHeadline }}</h2>
                                                     {% endif %}
+                                                {% elseif logoMedia and loop.first %}
+                                                    {# SEO H1: Wenn Logo vorhanden aber keine Headline, verstecktes H1 für SEO/Accessibility #}
+                                                    {% set seoTitle = '' %}
+                                                    {% if page is defined and page.metaInformation is defined and page.metaInformation.metaTitle is defined and page.metaInformation.metaTitle is not empty %}
+                                                        {% set seoTitle = page.metaInformation.metaTitle %}
+                                                    {% elseif config('core.basicInformation.shopName') is defined %}
+                                                        {% set seoTitle = config('core.basicInformation.shopName') %}
+                                                    {% endif %}
+                                                    {% if seoTitle is not empty %}
+                                                        <h1 class="hero-slide-headline visually-hidden" itemprop="headline">{{ seoTitle }}</h1>
+                                                    {% endif %}
                                                 {% endif %}
                                             
-                                                {# Per-Slide oder Global Text - Robuste null/empty Prüfung #}
-                                                {% set slideTextExt = slide.extensions.text %}
-                                                {% set slideText = (slideTextExt and slideTextExt.value is defined and slideTextExt.value is not null and slideTextExt.value is not empty) ? slideTextExt.value : ((slide.text is defined and slide.text is not null and slide.text is not empty) ? slide.text : ((sliderConfig.text is defined and sliderConfig.text.value is defined and sliderConfig.text.value is not null and sliderConfig.text.value is not empty) ? sliderConfig.text.value : null)) %}
-                                                {% if slideText %}
+                                                {# Text nur ausgeben wenn nicht leer #}
+                                                {% if hasText %}
                                                     <p class="hero-slide-text" itemprop="description"{% if textColor %} style="color: {{ textColor }};"{% endif %}>{{ slideText }}</p>
                                                 {% endif %}
                                                 
-                                                {# Per-Slide oder Global Buttons - Robuste null/empty Prüfung #}
-                                                {% set slideButton1TextExt = slide.extensions.button1Text %}
-                                                {% set slideButton1Text = (slideButton1TextExt and slideButton1TextExt.value is defined and slideButton1TextExt.value is not null and slideButton1TextExt.value is not empty) ? slideButton1TextExt.value : ((slide.button1Text is defined and slide.button1Text is not null and slide.button1Text is not empty) ? slide.button1Text : ((sliderConfig.button1Text is defined and sliderConfig.button1Text.value is defined and sliderConfig.button1Text.value is not null and sliderConfig.button1Text.value is not empty) ? sliderConfig.button1Text.value : null)) %}
-                                                {% set slideButton1UrlExt = slide.extensions.button1Url %}
-                                                {% set slideButton1Url = (slideButton1UrlExt and slideButton1UrlExt.value is defined and slideButton1UrlExt.value is not null and slideButton1UrlExt.value is not empty) ? slideButton1UrlExt.value : ((slide.button1Url is defined and slide.button1Url is not null and slide.button1Url is not empty) ? slide.button1Url : ((sliderConfig.button1Url is defined and sliderConfig.button1Url.value is defined and sliderConfig.button1Url.value is not null and sliderConfig.button1Url.value is not empty) ? sliderConfig.button1Url.value : null)) %}
-                                                {% set slideButton1NewTabExt = slide.extensions.button1NewTab %}
-                                                {% set slideButton1NewTab = (slideButton1NewTabExt and slideButton1NewTabExt.value is defined) ? (slideButton1NewTabExt.value is same as(true) or slideButton1NewTabExt.value == '1' or slideButton1NewTabExt.value == 1) : ((slide.button1NewTab is defined) ? (slide.button1NewTab is same as(true) or slide.button1NewTab == '1' or slide.button1NewTab == 1) : ((sliderConfig.button1NewTab is defined and sliderConfig.button1NewTab.value is defined) ? (sliderConfig.button1NewTab.value is same as(true) or sliderConfig.button1NewTab.value == '1' or sliderConfig.button1NewTab.value == 1) : false)) %}
-                                                {% set slideButton2TextExt = slide.extensions.button2Text %}
-                                                {% set slideButton2Text = (slideButton2TextExt and slideButton2TextExt.value is defined and slideButton2TextExt.value is not null and slideButton2TextExt.value is not empty) ? slideButton2TextExt.value : ((slide.button2Text is defined and slide.button2Text is not null and slide.button2Text is not empty) ? slide.button2Text : ((sliderConfig.button2Text is defined and sliderConfig.button2Text.value is defined and sliderConfig.button2Text.value is not null and sliderConfig.button2Text.value is not empty) ? sliderConfig.button2Text.value : null)) %}
-                                                {% set slideButton2UrlExt = slide.extensions.button2Url %}
-                                                {% set slideButton2Url = (slideButton2UrlExt and slideButton2UrlExt.value is defined and slideButton2UrlExt.value is not null and slideButton2UrlExt.value is not empty) ? slideButton2UrlExt.value : ((slide.button2Url is defined and slide.button2Url is not null and slide.button2Url is not empty) ? slide.button2Url : ((sliderConfig.button2Url is defined and sliderConfig.button2Url.value is defined and sliderConfig.button2Url.value is not null and sliderConfig.button2Url.value is not empty) ? sliderConfig.button2Url.value : null)) %}
-                                                {% set slideButton2NewTabExt = slide.extensions.button2NewTab %}
-                                                {% set slideButton2NewTab = (slideButton2NewTabExt and slideButton2NewTabExt.value is defined) ? (slideButton2NewTabExt.value is same as(true) or slideButton2NewTabExt.value == '1' or slideButton2NewTabExt.value == 1) : ((slide.button2NewTab is defined) ? (slide.button2NewTab is same as(true) or slide.button2NewTab == '1' or slide.button2NewTab == 1) : ((sliderConfig.button2NewTab is defined and sliderConfig.button2NewTab.value is defined) ? (sliderConfig.button2NewTab.value is same as(true) or sliderConfig.button2NewTab.value == '1' or sliderConfig.button2NewTab.value == 1) : false)) %}
-                                                
-                                                {% if (slideButton1Text and slideButton1Url) or (slideButton2Text and slideButton2Url) %}
+                                                {# Buttons nur ausgeben wenn Text UND URL vorhanden #}
+                                                {% if hasButton1 or hasButton2 %}
                                                     <div class="hero-slide-buttons">
-                                                        {% if slideButton1Text and slideButton1Url %}
+                                                        {% if hasButton1 %}
                                                             <a 
                                                                 href="{{ slideButton1Url }}" 
                                                                 class="btn btn-hero-primary"
@@ -263,7 +327,7 @@
                                                             </a>
                                                         {% endif %}
                                                         
-                                                        {% if slideButton2Text and slideButton2Url %}
+                                                        {% if hasButton2 %}
                                                             <a 
                                                                 href="{{ slideButton2Url }}" 
                                                                 class="btn btn-hero-secondary"
@@ -278,6 +342,7 @@
                                                 {% endif %}
                                             </div>
                                         </div>
+                                        {% endif %}
                                     {% endif %}
                                 </div>
                             </div>
@@ -285,21 +350,26 @@
                     {% endfor %}
                     {% else %}
                         {# Empty State - Fallback wenn keine Slides #}
+                        {# WICHTIG: Nur rendern wenn Headline oder Text definiert ist #}
+                        {% set hasEmptyStateHeadline = sliderConfig.headline is defined and sliderConfig.headline.value is defined and sliderConfig.headline.value is not null and sliderConfig.headline.value is not empty and sliderConfig.headline.value|trim != '' %}
+                        {% set hasEmptyStateText = sliderConfig.text is defined and sliderConfig.text.value is defined and sliderConfig.text.value is not null and sliderConfig.text.value is not empty and sliderConfig.text.value|trim != '' %}
                         <div class="hero-slider-item-container">
                             <div class="hero-slider-item is-{{ displayMode }}">
                                 <div class="hero-slide-background is-{{ displayMode }}">
-                                    <div class="hero-slide-overlay"></div>
                                 </div>
+                                {# Content-Wrapper nur wenn Content vorhanden #}
+                                {% if hasEmptyStateHeadline or hasEmptyStateText %}
                                 <div class="hero-slide-content hero-slide-content--vertical-center hero-slide-content--horizontal-center">
                                     <div class="hero-slide-content-inner">
-                                        {% if sliderConfig.headline.value %}
-                                            <h1 class="hero-slide-headline">{{ sliderConfig.headline.value }}</h1>
+                                        {% if hasEmptyStateHeadline %}
+                                            <h1 class="hero-slide-headline no-content">{{ sliderConfig.headline.value }}</h1>
                                         {% endif %}
-                                        {% if sliderConfig.text.value %}
-                                            <p class="hero-slide-text">{{ sliderConfig.text.value }}</p>
+                                        {% if hasEmptyStateText %}
+                                            <p class="hero-slide-text no-content">{{ sliderConfig.text.value }}</p>
                                         {% endif %}
                                     </div>
                                 </div>
+                                {% endif %}
                             </div>
                         </div>
                     {% endif %}

@@ -132,8 +132,8 @@ class HeroSliderTypeDataResolver extends AbstractCmsElementResolver
             'button2Text', 'button2Url', 'button2NewTab', 'button2BgColor',
             // Colors
             'headlineColor', 'textColor',
-            // Logo
-            'logoImageId'
+            // Logo Settings
+            'logoImageId', 'logoPosition', 'logoTranslateX', 'logoTranslateY', 'logoCustomCss'
         ];
         foreach ($contentFields as $field) {
             if (isset($config[$field])) {

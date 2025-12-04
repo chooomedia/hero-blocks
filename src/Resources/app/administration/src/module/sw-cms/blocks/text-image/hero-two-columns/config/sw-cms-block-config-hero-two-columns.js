@@ -97,8 +97,16 @@ export default {
         },
 
         // WICHTIG: Default CSS Code für Background Images
-        defaultBackgroundCss() {
-            return 'background: repeating-linear-gradient(123deg, #46494A 0px, #46494A 6px, transparent 6px, transparent 12px);';
+        // Gradient endet mit Farbe statt transparent (verhindert dunklen Rand am Ende)
+        defaultBackgroundLeftCss() {
+            return `clip-path: polygon(0px 0px, 100% 0%, 16% 100%, 0% 100%);
+background: repeating-linear-gradient(123deg, rgba(214, 171, 96, 0.5) 0px, rgba(214, 171, 96, 0.5) 6px, transparent 6px, transparent 12px, rgba(214, 171, 96, 0.5) 12px, rgba(214, 171, 96, 0.5) 13px);
+max-width: 30vw;`;
+        },
+        defaultBackgroundRightCss() {
+            return `clip-path: polygon(84% 0%, 100% 0%, 100% 100%, 0% 100%);
+background: repeating-linear-gradient(123deg, rgba(214, 171, 96, 0.5) 0px, rgba(214, 171, 96, 0.5) 6px, transparent 6px, transparent 12px, rgba(214, 171, 96, 0.5) 12px, rgba(214, 171, 96, 0.5) 13px);
+max-width: 30vw;`;
         },
     },
 
@@ -176,9 +184,9 @@ export default {
                 if (this.block.customFields.backgroundLeftUseCss === true) {
                     if (!this.block.customFields.backgroundLeftCss || this.block.customFields.backgroundLeftCss === '') {
                         if (this.$set) {
-                            this.$set(this.block.customFields, 'backgroundLeftCss', this.defaultBackgroundCss);
+                            this.$set(this.block.customFields, 'backgroundLeftCss', this.defaultBackgroundLeftCss);
                         } else {
-                            this.block.customFields.backgroundLeftCss = this.defaultBackgroundCss;
+                            this.block.customFields.backgroundLeftCss = this.defaultBackgroundLeftCss;
                         }
                     }
                 }
@@ -187,9 +195,9 @@ export default {
                 if (this.block.customFields.backgroundRightUseCss === true) {
                     if (!this.block.customFields.backgroundRightCss || this.block.customFields.backgroundRightCss === '') {
                         if (this.$set) {
-                            this.$set(this.block.customFields, 'backgroundRightCss', this.defaultBackgroundCss);
+                            this.$set(this.block.customFields, 'backgroundRightCss', this.defaultBackgroundRightCss);
                         } else {
-                            this.block.customFields.backgroundRightCss = this.defaultBackgroundCss;
+                            this.block.customFields.backgroundRightCss = this.defaultBackgroundRightCss;
                         }
                     }
                 }
@@ -352,7 +360,7 @@ export default {
             
             // WICHTIG: Initialisiere CSS Code wenn aktiviert
             if (value === true && !this.block.customFields.backgroundLeftCss) {
-                this.block.customFields.backgroundLeftCss = this.defaultBackgroundCss;
+                this.block.customFields.backgroundLeftCss = this.defaultBackgroundLeftCss;
             }
         },
 
@@ -363,7 +371,7 @@ export default {
             if (!this.block.customFields) {
                 this.block.customFields = {};
             }
-            this.block.customFields.backgroundLeftCss = value || this.defaultBackgroundCss;
+            this.block.customFields.backgroundLeftCss = value || this.defaultBackgroundLeftCss;
         },
 
         onBackgroundRightUseCssChange(value) {
@@ -377,7 +385,7 @@ export default {
             
             // WICHTIG: Initialisiere CSS Code wenn aktiviert
             if (value === true && !this.block.customFields.backgroundRightCss) {
-                this.block.customFields.backgroundRightCss = this.defaultBackgroundCss;
+                this.block.customFields.backgroundRightCss = this.defaultBackgroundRightCss;
             }
         },
 
@@ -388,7 +396,7 @@ export default {
             if (!this.block.customFields) {
                 this.block.customFields = {};
             }
-            this.block.customFields.backgroundRightCss = value || this.defaultBackgroundCss;
+            this.block.customFields.backgroundRightCss = value || this.defaultBackgroundRightCss;
         },
 
         onScrollAnimationAngleChange(value) {
@@ -499,6 +507,46 @@ export default {
                 this.block.customFields = {};
             }
             this.block.customFields.elementRightAnimate = value === true;
+        },
+
+        onElementLeftCssChange(value) {
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            this.block.customFields.elementLeftCss = value || '';
+        },
+
+        onElementRightCssChange(value) {
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            this.block.customFields.elementRightCss = value || '';
+        },
+
+        onImageContainerLeftCssChange(value) {
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            this.block.customFields.imageContainerLeftCss = value || '';
+        },
+
+        onImageContainerRightCssChange(value) {
+            if (!this.block) {
+                return;
+            }
+            if (!this.block.customFields) {
+                this.block.customFields = {};
+            }
+            this.block.customFields.imageContainerRightCss = value || '';
         },
 
         onMinHeightChange(value) {

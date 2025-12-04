@@ -100,7 +100,7 @@
     {% block sw_cms_block_config_hero_two_columns_background_css_left %}
     <sw-code-editor
         v-if="(block.customFields?.backgroundMode || 'none') === 'two-images' && block.customFields?.backgroundLeftUseCss"
-        :value="block.customFields?.backgroundLeftCss || defaultBackgroundCss"
+        :value="block.customFields?.backgroundLeftCss || defaultBackgroundLeftCss"
         :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.backgroundLeftCss.label')"
         :editor-config="{ mode: 'css' }"
         @update:value="onBackgroundLeftCssChange"
@@ -143,7 +143,7 @@
     {% block sw_cms_block_config_hero_two_columns_background_css_right %}
     <sw-code-editor
         v-if="(block.customFields?.backgroundMode || 'none') === 'two-images' && block.customFields?.backgroundRightUseCss"
-        :value="block.customFields?.backgroundRightCss || defaultBackgroundCss"
+        :value="block.customFields?.backgroundRightCss || defaultBackgroundRightCss"
         :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.backgroundRightCss.label')"
         :editor-config="{ mode: 'css' }"
         @update:value="onBackgroundRightCssChange"
@@ -242,6 +242,24 @@
         :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.elementLeftAnimate.helpText')"
         @update:model-value="onElementLeftAnimateChange"
     />
+    {# Custom CSS für Left Element Wrapper #}
+    <sw-code-editor
+        :value="block.customFields?.elementLeftCss || ''"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.elementLeftCss.label')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.elementLeftCss.helpText')"
+        :editor-config="{ mode: 'css' }"
+        @update:value="onElementLeftCssChange"
+        @blur="onElementLeftCssChange"
+    />
+    {# Custom CSS für Image Container (Left) #}
+    <sw-code-editor
+        :value="block.customFields?.imageContainerLeftCss || ''"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.imageContainerLeftCss.label')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.imageContainerLeftCss.helpText')"
+        :editor-config="{ mode: 'css' }"
+        @update:value="onImageContainerLeftCssChange"
+        @blur="onImageContainerLeftCssChange"
+    />
     {% endblock %}
     
     {# Element Positionierung - Right Slot #}
@@ -269,6 +287,24 @@
         :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.elementRightAnimate.label')"
         :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.elementRightAnimate.helpText')"
         @update:model-value="onElementRightAnimateChange"
+    />
+    {# Custom CSS für Right Element Wrapper #}
+    <sw-code-editor
+        :value="block.customFields?.elementRightCss || ''"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.elementRightCss.label')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.elementRightCss.helpText')"
+        :editor-config="{ mode: 'css' }"
+        @update:value="onElementRightCssChange"
+        @blur="onElementRightCssChange"
+    />
+    {# Custom CSS für Image Container (Right) #}
+    <sw-code-editor
+        :value="block.customFields?.imageContainerRightCss || ''"
+        :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.imageContainerRightCss.label')"
+        :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.imageContainerRightCss.helpText')"
+        :editor-config="{ mode: 'css' }"
+        @update:value="onImageContainerRightCssChange"
+        @blur="onImageContainerRightCssChange"
     />
     {% endblock %}
     

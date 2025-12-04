@@ -248,6 +248,15 @@ export default {
         },
       ];
     },
+    
+    // Default CSS für Logo "outside" Position
+    defaultLogoOutsideCss() {
+      return `position: absolute;
+top: 1rem;
+left: 1rem;
+max-width: 200px;
+z-index: 10;`;
+    },
   },
 
   created() {
@@ -276,24 +285,47 @@ export default {
         this.element.config.sliderItems?.source !== "default" &&
         this.element.config.sliderItems?.value?.length > 0
       ) {
-        const mediaIds = this.element.config.sliderItems.value
-          .map((configElement) => configElement.mediaId)
-          .filter((id) => id !== null);
+        // Sammle ALLE Media IDs (Background + Logo)
+        const backgroundMediaIds = [];
+        const logoMediaIds = [];
+        
+        this.element.config.sliderItems.value.forEach((configElement) => {
+          if (configElement.mediaId) {
+            backgroundMediaIds.push(configElement.mediaId);
+          }
+          if (configElement.logoImageId) {
+            logoMediaIds.push(configElement.logoImageId);
+          }
+        });
+        
+        // Alle Media IDs kombinieren (ohne Duplikate)
+        const allMediaIds = [...new Set([...backgroundMediaIds, ...logoMediaIds])].filter(Boolean);
 
-        if (mediaIds.length > 0) {
-          const criteria = new Criteria(1, 25);
-          criteria.setIds(mediaIds);
+        if (allMediaIds.length > 0) {
+          const criteria = new Criteria(1, 50);
+          criteria.setIds(allMediaIds);
 
           try {
             const searchResult = await this.mediaRepository.search(criteria);
 
-            this.mediaItems = mediaIds
+            // Background Media Items zuweisen
+            this.mediaItems = backgroundMediaIds
               .map((mediaId) => searchResult.get(mediaId))
               .filter((mediaItem) => mediaItem !== null);
 
-            this.element.config.sliderItems.value.forEach((item, i) => {
-              if (searchResult.get(item.mediaId) === null) {
-                this.onItemRemove({ id: item.mediaId }, i);
+            // Logo Media Items zuweisen (pro Slide Index)
+            this.element.config.sliderItems.value.forEach((item, index) => {
+              // Prüfe Background Media
+              if (item.mediaId && searchResult.get(item.mediaId) === null) {
+                this.onItemRemove({ id: item.mediaId }, index);
+              }
+              
+              // Logo Media zuweisen
+              if (item.logoImageId) {
+                const logoMedia = searchResult.get(item.logoImageId);
+                if (logoMedia) {
+                  this.slideLogoMedia[index] = logoMedia;
+                }
               }
             });
           } catch (error) {
@@ -364,6 +396,10 @@ export default {
         newTab: false,
         // Per-Slide Content Fields
         logoImageId: null, // Logo Image pro Slide
+        logoPosition: 'inside', // Logo Position: 'inside' (default) oder 'outside'
+        logoTranslateX: 0, // Logo Position X (px) - nur bei 'inside'
+        logoTranslateY: 0, // Logo Position Y (px) - nur bei 'inside'
+        logoCustomCss: '', // Custom CSS für Logo - nur bei 'outside'
         headline: null,
         text: null,
         button1Text: null,
@@ -447,6 +483,11 @@ export default {
           url: null,
           newTab: false,
           // Per-Slide Content Fields
+          logoImageId: null,
+          logoPosition: 'inside', // Logo Position: 'inside' (default) oder 'outside'
+          logoTranslateX: 0, // Logo Position X (px) - nur bei 'inside'
+          logoTranslateY: 0, // Logo Position Y (px) - nur bei 'inside'
+          logoCustomCss: '', // Custom CSS für Logo - nur bei 'outside'
           headline: null,
           text: null,
           button1Text: null,

@@ -19,8 +19,22 @@
                 </div>
             </div>
             
+            {# Logo Outside (absolut oben links) - REAKTIV #}
+            <div v-if="logoUrl && logoPosition === 'outside'" 
+                 class="sw-cms-el-hero-slider__logo-outside"
+                 :style="logoOutsideStyles">
+                <img :src="logoUrl" alt="Logo" class="sw-cms-el-hero-slider__logo-img">
+            </div>
+            
             {# Content Overlay (zentriert) - Headline, Text, Buttons mit reaktiven Farben #}
             <div class="sw-cms-el-hero-slider__content" :style="contentStyles">
+                {# Logo Inside (im Content-Bereich) - REAKTIV #}
+                <div v-if="logoUrl && logoPosition !== 'outside'" 
+                     class="sw-cms-el-hero-slider__logo-inside"
+                     :style="logoInsideStyles">
+                    <img :src="logoUrl" alt="Logo" class="sw-cms-el-hero-slider__logo-img">
+                </div>
+                
                 <h3 v-if="headline" :style="headlineStyles">{{ headline }}</h3>
                 <p v-if="text" :style="textStyles">{{ text }}</p>
                 <div v-if="button1Text || button2Text" class="sw-cms-el-hero-slider__buttons">

@@ -192,6 +192,22 @@
                             "label": "Rechtes Element animieren",
                             "helpText": "Aktivieren Sie die Animation für das rechte Element beim Scrollen"
                         },
+                        "elementLeftCss": {
+                            "label": "CSS für linkes Element-Wrapper",
+                            "helpText": "Benutzerdefiniertes CSS für den linken Element-Wrapper (z.B. padding, margin, background). Wird auf Desktop angewendet, NICHT auf Mobile."
+                        },
+                        "elementRightCss": {
+                            "label": "CSS für rechtes Element-Wrapper",
+                            "helpText": "Benutzerdefiniertes CSS für den rechten Element-Wrapper (z.B. padding, margin, background). Wird auf Desktop angewendet, NICHT auf Mobile."
+                        },
+                        "imageContainerLeftCss": {
+                            "label": "CSS für linken Bild-Container",
+                            "helpText": "Benutzerdefiniertes CSS für den linken Bild-Container (.cms-image-container). z.B. height: 80%; object-fit: contain;"
+                        },
+                        "imageContainerRightCss": {
+                            "label": "CSS für rechten Bild-Container",
+                            "helpText": "Benutzerdefiniertes CSS für den rechten Bild-Container (.cms-image-container). z.B. height: 80%; object-fit: contain;"
+                        },
                         "audioFile": {
                             "label": "Audio-Datei",
                             "helpText": "Optional: Audio-Datei für Hintergrundmusik oder Sound-Effekte"
@@ -389,6 +405,16 @@
                     "logoImage": "Logo/Bild vor Überschrift",
                     "logoImageCaption": "Logo/Bild vor Überschrift (wird über dem Titel angezeigt)",
                     "logoImageHelpText": "Optional: Logo oder Bild, das vor der Headline angezeigt wird. Wird nur auf diesem Slide verwendet.",
+                    "logoPosition": "Logo-Position",
+                    "logoPositionHelpText": "Wählen Sie, ob das Logo innerhalb des Content-Bereichs oder außerhalb (absolut positioniert) angezeigt werden soll.",
+                    "logoPositionInside": "Im Content-Bereich",
+                    "logoPositionOutside": "Außerhalb (absolut oben links)",
+                    "logoTranslateX": "Logo Position X (px)",
+                    "logoTranslateXHelpText": "Horizontale Verschiebung des Logos in Pixel (negativ = links, positiv = rechts)",
+                    "logoTranslateY": "Logo Position Y (px)",
+                    "logoTranslateYHelpText": "Vertikale Verschiebung des Logos in Pixel (negativ = oben, positiv = unten)",
+                    "logoCustomCss": "Logo Custom CSS",
+                    "logoCustomCssHelpText": "Zusätzliches CSS für das Logo (z.B. max-width: 200px; top: 2rem;). Wird nur bei 'Außerhalb' angewendet.",
                     "mediaUploadHelpText": "Wählen Sie Bilder für den Hero-Slider aus (max. 200 KB empfohlen). Moderne Bildformate (WebP, AVIF) werden automatisch komprimiert.",
                     "uploadSizeWarning": {
                         "title": "Große Datei erkannt",

@@ -6,8 +6,18 @@
  * - Video stoppt wo es war und setzt fort wenn wieder sichtbar
  * - Overlay Scroll Animation (von außen nach innen) - BEI JEDEM SCROLL
  * - Performance-Optimierung via Intersection Observer
+ * - DYNAMIC 33° ANGLE: Sets --overlay-height for constant 33° angle
  *
  * WICHTIG: Animation wird bei JEDEM Eintritt in den Viewport ausgelöst!
+ * 
+ * KONSTANTER 33°-WINKEL (Best Practice nach NewCity):
+ * https://www.insidenewcity.com/consistent-diagonal-clipping-with-css/
+ * 
+ * offset = height × tan(33°)
+ * 
+ * SCSS definiert: --overlay-tangent: 0.6494 (tan(33°))
+ * JavaScript setzt: --overlay-height basierend auf offsetHeight
+ * SCSS berechnet: --overlay-corner-offset: calc(var(--overlay-tangent) * var(--overlay-height))
  */
 
 import Plugin from "src/plugin-system/plugin.class";
@@ -54,6 +64,12 @@ export default class HeroVideoExtendedPlugin extends Plugin {
 
     this._isVisible = false;
 
+    // WICHTIG: Setze --overlay-height für konstanten 33°-Winkel
+    if (this.overlay) {
+      this._updateOverlayHeight();
+      this._initResizeObserver();
+    }
+
     // Setup Intersection Observer für Animation UND Video
     this._setupIntersectionObserver();
 
@@ -61,6 +77,44 @@ export default class HeroVideoExtendedPlugin extends Plugin {
     if (this.video) {
       this._ensureAutoplay();
     }
+  }
+  
+  /**
+   * Set the --overlay-height CSS custom property based on element height.
+   * SCSS uses this to calculate the corner offset for a constant 33° angle.
+   * 
+   * Best Practice nach NewCity:
+   * https://www.insidenewcity.com/consistent-diagonal-clipping-with-css/
+   * 
+   * SCSS berechnet: --overlay-corner-offset = --overlay-tangent × --overlay-height
+   * 
+   * @private
+   */
+  _updateOverlayHeight() {
+    if (!this.overlay) return;
+    
+    const height = this.overlay.offsetHeight;
+    
+    // Setze CSS Custom Property für Höhe (SCSS berechnet den Offset)
+    this.overlay.style.setProperty('--overlay-height', `${height}px`);
+    
+    if (this._debug) {
+      console.log(`[HeroVideoExtended] Set --overlay-height: ${height}px`);
+    }
+  }
+  
+  /**
+   * Initialize ResizeObserver to update overlay height on resize
+   * @private
+   */
+  _initResizeObserver() {
+    if (!this.overlay || typeof ResizeObserver === 'undefined') return;
+    
+    this._resizeObserver = new ResizeObserver(() => {
+      this._updateOverlayHeight();
+    });
+    
+    this._resizeObserver.observe(this.overlay);
   }
 
   /**
@@ -244,6 +298,10 @@ export default class HeroVideoExtendedPlugin extends Plugin {
   destroy() {
     if (this.observer) {
       this.observer.disconnect();
+    }
+    if (this._resizeObserver) {
+      this._resizeObserver.disconnect();
+      this._resizeObserver = null;
     }
     super.destroy();
   }

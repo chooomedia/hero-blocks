@@ -1,0 +1,890 @@
+/**
+ * Hero Block Slider Component Styles
+ * 
+ * ✅ AKTUALISIERT vom HeroBlocks Plugin (2025-11-25)
+ * - KEIN display: none Bug mehr!
+ * - Tiny Slider steuert Sichtbarkeit selbst
+ * - Alle Helper Classes integriert
+ * - Nav-Dots für Mobile UND Desktop
+ * 
+ * Quelle: HeroBlocks/src/Resources/app/storefront/src/scss/components/hero-slider.scss
+ */
+
+.hero-slider {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    
+    // ========================================================================
+    // Height Control (Cover/Contain Display Mode)
+    // ========================================================================
+    &.has-height-control {
+        min-height: var(--hero-slider-min-height, 80vh);
+        max-height: var(--hero-slider-max-height, none);
+        height: var(--hero-slider-min-height, 80vh);
+    }
+
+    // ========================================================================
+    // Slider Container (Tiny Slider Container)
+    // ========================================================================
+    &-container {
+        position: relative;
+        width: 100%;
+    }
+    
+    &.has-height-control &-container {
+        min-height: var(--hero-slider-min-height, 80vh);
+        height: var(--hero-slider-min-height, 80vh);
+        max-height: var(--hero-slider-max-height, none);
+        
+        &.tns-slider,
+        &.tns-carousel,
+        &.tns-subpixel,
+        &.tns-calc,
+        &.tns-horizontal {
+            min-height: var(--hero-slider-min-height, 80vh);
+            height: var(--hero-slider-min-height, 80vh);
+            max-height: var(--hero-slider-max-height, none);
+        }
+    }
+
+    // ========================================================================
+    // Item Container (Tiny Slider Item Container - tns-item)
+    // ========================================================================
+    &-item-container {
+        position: relative;
+        width: 100%;
+    }
+    
+    &.has-height-control &-item-container {
+        min-height: var(--hero-slider-min-height, 80vh);
+        height: var(--hero-slider-min-height, 80vh);
+        max-height: var(--hero-slider-max-height, none);
+        
+        &.tns-item {
+            min-height: var(--hero-slider-min-height, 80vh);
+            height: var(--hero-slider-min-height, 80vh);
+            max-height: var(--hero-slider-max-height, none);
+        }
+    }
+    
+    // ⚠️ WICHTIG: KEIN display: none Workaround!
+    // Tiny Slider steuert Sichtbarkeit selbst mit .tns-slide-active
+    // Das alte display: none verhinderte, dass Slides angezeigt werden!
+    
+    // ========================================================================
+    // Slider Item (einzelnes Slide)
+    // ========================================================================
+    &-item {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: inherit;
+        max-height: inherit;
+        display: block;
+        max-width: 100%;
+        
+        &.is-cover {
+            min-height: var(--hero-slider-min-height, 80vh);
+            height: var(--hero-slider-min-height, 80vh);
+            max-height: var(--hero-slider-max-height, none);
+            display: block;
+            
+            .hero-slide-background {
+                min-height: var(--hero-slider-min-height, 80vh);
+                height: var(--hero-slider-min-height, 80vh);
+                max-height: var(--hero-slider-max-height, none);
+            }
+        }
+        
+        &.is-contain {
+            height: 100%;
+            min-height: inherit;
+        }
+    }
+}
+
+// ========================================================================
+// Slide Background (Image Layer)
+// ========================================================================
+.hero-slide-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+
+    &.is-cover {
+        height: 100%;
+        min-height: 100%;
+        
+        .hero-slide-img {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center center;
+            display: block;
+        }
+    }
+
+    &.is-contain {
+        .hero-slide-img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center center;
+        }
+    }
+
+    &.is-standard {
+        position: relative;
+        height: auto;
+        
+        .hero-slide-img {
+            display: block;
+            width: 100%;
+            height: auto;
+            object-position: center center;
+        }
+    }
+
+    .hero-slide-img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-position: center center;
+    }
+}
+
+// ========================================================================
+// Slide Content (Text/Logo/Buttons Overlay)
+// ========================================================================
+.hero-slide-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    pointer-events: none;
+    
+    a, button {
+        pointer-events: auto;
+    }
+    
+    &-inner {
+        opacity: 0;
+        transform: translateY(-30px);
+        transition: opacity 0.9s ease-in-out 0.3s, transform 0.9s ease-in-out 0.3s;
+        width: 100%;
+        max-width: 800px;
+        text-align: center;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+// ========================================================================
+// Content Animation for Active Slides (Smooth Blend-In für ALLE Slides)
+// ========================================================================
+// WICHTIG: Diese Selektoren müssen AUSSERHALB von .hero-slide-content sein,
+// da sie die volle Spezifität benötigen.
+//
+// KONZEPT:
+// 1. Alle Slides starten mit opacity: 0, transform: translateY(-30px)
+// 2. Wenn ein Slide aktiv wird (.tns-slide-active), animiert der Content smooth ein
+// 3. Der ERSTE Slide bekommt die Animation nach kurzer Verzögerung (page load)
+// 4. Bei Slide-Wechsel: neuer aktiver Slide animiert smooth ein
+//
+// WICHTIG: Die Animation verwendet @keyframes statt transition, damit sie
+// bei jedem Slide-Wechsel neu startet und sichtbar ist.
+
+// Aktiver Slide: Content smooth einblenden mit Animation
+// Die Animation startet jedes Mal neu, wenn die Klasse hinzugefügt wird
+.hero-slider-item-container.tns-slide-active .hero-slide-content .hero-slide-content-inner {
+    animation: heroContentFadeIn 0.9s ease-in-out forwards;
+}
+
+// Nicht-aktive Slides: Content ausblenden (Ausgangszustand)
+.hero-slider-item-container:not(.tns-slide-active) .hero-slide-content .hero-slide-content-inner {
+    opacity: 0;
+    transform: translateY(-30px);
+    animation: none; // Animation zurücksetzen für nächsten Durchlauf
+}
+
+// Fallback: Wenn TinySlider noch nicht initialisiert ist
+// Der erste Slide bekommt die Animation nach kurzer Verzögerung
+.hero-slider:not(.tns-slider) .hero-slider-item-container:first-child .hero-slide-content .hero-slide-content-inner {
+    animation: heroContentFadeIn 0.9s ease-in-out 0.2s forwards;
+}
+
+// Animation Keyframes für Content Blend-In
+// Wird bei JEDEM Slide-Wechsel neu ausgeführt
+@keyframes heroContentFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-slide-content {
+    
+    // Vertical Alignment
+    &--vertical-top {
+        align-items: flex-start;
+        padding-top: calc(2rem + var(--header-height, 50px));
+        
+        @media screen and (max-width: 767px) {
+            padding-top: 2rem;
+        }
+        
+        .hero-slide-content-inner {
+            justify-content: flex-start;
+        }
+    }
+
+    &--vertical-center {
+        align-items: center;
+        
+        .hero-slide-content-inner {
+            justify-content: center;
+        }
+    }
+
+    &--vertical-bottom {
+        align-items: flex-end;
+        padding-bottom: 2rem;
+        
+        .hero-slide-content-inner {
+            justify-content: flex-end;
+        }
+    }
+
+    // Horizontal Alignment
+    &--horizontal-left {
+        justify-content: flex-start;
+        padding-left: 2rem;
+        
+        .hero-slide-content-inner {
+            align-items: flex-start;
+            text-align: left;
+            max-width: 100%;
+            margin-left: 8%;
+            margin-right: auto;
+        }
+    }
+
+    &--horizontal-center {
+        justify-content: center;
+        
+        .hero-slide-content-inner {
+            align-items: center;
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+
+    &--horizontal-right {
+        justify-content: flex-end;
+        padding-right: 2rem;
+        
+        .hero-slide-content-inner {
+            align-items: flex-end;
+            text-align: right;
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: 8%;
+        }
+    }
+}
+
+// ========================================================================
+// Content Elements (Logo, Headline, Text, Buttons)
+// ========================================================================
+// ========================================================================
+// Logo Inside Content (Standard Position)
+// ========================================================================
+.hero-slide-logo {
+    margin-bottom: 0;
+    text-align: center;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    // KEINE EIGENE Animation - Logo nimmt Parent-Animation (.hero-slide-content-inner) mit!
+    // Dadurch blendet Logo smooth ein beim Slide-Wechsel, hat aber keine separate Fade-Animation
+
+    &-img {
+        max-width: 200px;
+        height: auto;
+        filter: brightness(1.1);
+
+        @media screen and (min-width: 768px) {
+            max-width: 300px;
+        }
+    }
+
+    .hero-slide-content--horizontal-left & {
+        justify-content: flex-start;
+        text-align: left;
+    }
+
+    .hero-slide-content--horizontal-right & {
+        justify-content: flex-end;
+        text-align: right;
+    }
+    
+    .hero-slide-content--horizontal-center & {
+        justify-content: center;
+        text-align: center;
+    }
+}
+
+// ========================================================================
+// Logo Outside Content (Absolute Position - Top Left)
+// ========================================================================
+// WICHTIG: Logo wird außerhalb des Content-Bereichs absolut positioniert
+// - Position: oben links im Slide
+// - Container-Klasse für responsive Breite
+// - Custom CSS kann via Admin überschrieben werden
+// ========================================================================
+.hero-slide-logo-outside {
+    position: absolute;
+    top: 1rem;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    pointer-events: none;
+    
+    // Animation: Smooth einblenden mit Slide
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.6s ease-out 0.2s, transform 0.6s ease-out 0.2s;
+    
+    // Container padding erben (1rem auf Mobile, mehr auf Desktop)
+    padding-left: 1rem;
+    padding-right: 1rem;
+    
+    @media screen and (min-width: 768px) {
+        top: 1.5rem;
+        padding-left: 0; // Container hat eigenes Padding
+        padding-right: 0;
+    }
+    
+    @media screen and (min-width: 1200px) {
+        top: 2rem;
+    }
+    
+    .hero-slide-logo-img {
+        max-width: 150px;
+        height: auto;
+        filter: brightness(1.1);
+        pointer-events: auto;
+        
+        @media screen and (min-width: 768px) {
+            max-width: 200px;
+        }
+        
+        @media screen and (min-width: 1200px) {
+            max-width: 250px;
+        }
+    }
+}
+
+// Animation für Outside Logo bei aktivem Slide
+.hero-slider-item-container.tns-slide-active .hero-slide-logo-outside {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+// Nicht-aktive Slides: Logo ausblenden
+.hero-slider-item-container:not(.tns-slide-active) .hero-slide-logo-outside {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+// Fallback: Wenn TinySlider noch nicht initialisiert ist
+.hero-slider:not(.tns-slider) .hero-slider-item-container:first-child .hero-slide-logo-outside {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.hero-slide-headline,
+h1.hero-slide-headline,
+h2.hero-slide-headline,
+h3.hero-slide-headline {
+    font-size: 2.5rem !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #fff !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
+    width: 100%;
+    text-align: inherit;
+
+    @media screen and (min-width: 768px) {
+        font-size: 3.5rem !important;
+    }
+
+    @media screen and (min-width: 992px) {
+        font-size: 4rem !important;
+    }
+}
+
+.hero-slide-text {
+    font-size: 1.125rem;
+    line-height: 1.6;
+    margin: 0 !important;
+    padding: 0;
+    color: #fff;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    text-align: inherit;
+
+    @media screen and (min-width: 768px) {
+        font-size: 1.25rem;
+    }
+}
+
+.hero-slide-buttons {
+    font-family: 'Oswald', sans-serif;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 0 !important;
+    padding: 0;
+    width: 100%;
+    
+    .hero-slide-content--horizontal-left & {
+        justify-content: flex-start;
+    }
+
+    .hero-slide-content--horizontal-right & {
+        justify-content: flex-end;
+    }
+    
+    .hero-slide-content--horizontal-center & {
+        justify-content: center;
+    }
+
+    // HINWEIS: .btn Styles (border-radius, padding, font-weight) 
+    // werden zentral in HorexShopTheme/_buttons.scss definiert
+    .btn {
+        transition: all 0.3s ease;
+    }
+}
+
+// ========================================================================
+// Navigation Controls (Prev/Next Buttons)
+// ========================================================================
+.hero-slider-controls-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1rem;
+
+    @media screen and (min-width: 768px) {
+        padding: 0 2rem;
+    }
+
+    .hero-slider-controls-prev,
+    .hero-slider-controls-next {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(255, 255, 255, 0.5);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 0.375rem;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.25s ease, opacity 0.3s ease;
+        color: var(--bs-body-color, #2b3136);
+        pointer-events: auto;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        // Hover-Only: Initial versteckt
+        opacity: 0;
+
+        svg {
+            width: 20px;
+            height: 20px;
+            display: block;
+            margin: 0 auto;
+            position: relative;
+            top: 0;
+        }
+
+        .icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            line-height: 1;
+        }
+
+        &:hover,
+        &:focus {
+            background-color: rgba(255, 255, 255, 0.8);
+            border-color: var(--bs-primary, #798490);
+            transform: translateY(-50%) scale(1.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        &:active {
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        &:focus {
+            outline: 2px solid var(--bs-primary, #0042a0);
+            outline-offset: 2px;
+        }
+    }
+
+    .hero-slider-controls-prev {
+        left: 1rem;
+
+        @media screen and (min-width: 768px) {
+            left: 2rem;
+        }
+
+        &.is-nav-prev-outside {
+            left: -3rem;
+
+            @media screen and (max-width: 1199px) {
+                left: 1rem;
+            }
+        }
+    }
+
+    .hero-slider-controls-next {
+        right: 1rem;
+
+        @media screen and (min-width: 768px) {
+            right: 2rem;
+        }
+
+        &.is-nav-next-outside {
+            right: -3rem;
+
+            @media screen and (max-width: 1199px) {
+                right: 1rem;
+            }
+        }
+    }
+}
+
+// ========================================================================
+// Hover-Only: Prev/Next Buttons nur bei Hover über Slider sichtbar
+// ========================================================================
+.hero-slider:hover {
+    .hero-slider-controls-prev,
+    .hero-slider-controls-next {
+        opacity: 1;
+    }
+}
+
+// ========================================================================
+// Navigation Dots (Bottom Indicators)
+// ========================================================================
+.hero-slider {
+    .tns-nav,
+    .base-slider-dots {
+        position: absolute;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 15;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin: 0;
+        padding: 0.5rem 1rem;
+        pointer-events: auto;
+
+        @media screen and (max-width: 767px) {
+            bottom: 1rem;
+            padding: 0.375rem 0.75rem;
+    }
+
+        button,
+        .base-slider-dot {
+            width: 14px !important;
+            height: 14px !important;
+            border-radius: 50% !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            background-color: rgba(255, 255, 255, 0.3) !important;
+            transition: background-color 0.3s ease, transform 0.3s ease !important;
+            box-shadow: none !important;
+            cursor: pointer;
+
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.5) !important;
+                transform: scale(1.1);
+            }
+
+            &.tns-nav-active,
+            &[aria-label*="Current"] {
+                background-color: rgba(255, 255, 255, 0.9) !important;
+                transform: scale(1.2);
+            }
+
+            &:focus {
+                outline: none !important;
+                border: none !important;
+            }
+        }
+    }
+
+    &.has-dots-outside {
+        padding-bottom: 4rem;
+
+        @media screen and (max-width: 767px) {
+            padding-bottom: 3.5rem;
+        }
+
+        .tns-nav,
+        .base-slider-dots {
+            bottom: 1rem;
+    }
+}
+}
+
+// ========================================================================
+// Full-Width Layout Support
+// ========================================================================
+.hero-slider-full-width {
+    width: 100%;
+    max-width: 100vw;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    overflow-x: hidden;
+    box-sizing: border-box;
+
+    @media screen and (min-width: 768px) {
+        margin-left: calc(-1 * var(--bs-gutter-x, 1.5rem) * 0.5);
+        margin-right: calc(-1 * var(--bs-gutter-x, 1.5rem) * 0.5);
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        width: calc(100% + var(--bs-gutter-x, 1.5rem));
+        max-width: calc(100% + var(--bs-gutter-x, 1.5rem));
+        overflow-x: visible;
+    }
+
+    .hero-slider,
+    .cms-element-hero-slider,
+    .hero-slider-container {
+        width: 100%;
+        max-width: 100%;
+        padding: 0 !important;
+        margin: 0 !important;
+        box-sizing: border-box;
+        overflow-x: hidden;
+    }
+    
+    .container,
+    .row {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+}
+
+// ========================================================================
+// CMS Integration Fixes
+// ========================================================================
+.cms-block-container-row {
+    &.g-0 {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
+.cms-block-container-row.row.cms-row {
+    .col-12[data-cms-element-id] {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
+.cms-page .cms-section:first-child {
+    .cms-block-hero-slider:first-child,
+    .sw-cms-block-hero-slider:first-child {
+        margin-top: 0;
+
+        @media screen and (max-width: 767px) {
+            margin-top: 0;
+        }
+    }
+}
+
+.cms-block-hero-slider {
+    position: relative;
+    width: 100%;
+    margin-bottom: 0;
+
+    + .cms-block {
+        margin-top: 2rem;
+
+        @media screen and (max-width: 767px) {
+            margin-top: 1.5rem;
+        }
+    }
+}
+
+// ========================================================================
+// Mobile Optimizations
+// ========================================================================
+@media screen and (max-width: 767px) {
+    .hero-slide-content {
+        padding: 1rem;
+
+        &--vertical-top {
+            padding-top: 1rem;
+        }
+    }
+
+    .hero-slide-background {
+        &.is-contain {
+            .hero-slide-img {
+                object-position: center top;
+            }
+        }
+    }
+
+    .hero-slide-buttons {
+        flex-direction: row;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+
+        .btn {
+            // Mobile: Buttons behalten ihre Padding-Werte, keine volle Breite
+            flex: 0 1 auto;
+            padding-left: 2rem; // Proportional zu Desktop (3rem)
+            padding-right: 2rem;
+            min-width: auto;
+            white-space: nowrap;
+        }
+    }
+
+    .cms-section-default.full-width,
+    .cms-section-default.full-width .cms-block-container,
+    .cms-section-default.full-width .cms-block-container-row {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    .hero-slider-full-width {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        overflow-x: hidden !important;
+        
+        * {
+            max-width: 100% !important;
+            box-sizing: border-box;
+        }
+    }
+    
+    body,
+    html {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+    }
+}
+
+// ========================================================================
+// Accessibility: Reduced Motion
+// ========================================================================
+@media (prefers-reduced-motion: reduce) {
+    .hero-slider {
+        .hero-slider-controls-prev,
+        .hero-slider-controls-next {
+            transition: none;
+        }
+        
+        .hero-slide-content-inner {
+            transition: none !important;
+            opacity: 1 !important;
+            transform: none !important;
+        }
+        
+        .tns-item {
+            transition: none !important;
+            }
+        }
+    }
+
+// ========================================================================
+// Print Styles
+// ========================================================================
+@media print {
+    .hero-slider {
+        .hero-slider-controls-container,
+        .tns-nav {
+            display: none;
+                }
+        
+        .hero-slider-item {
+            page-break-inside: avoid;
+        }
+    }
+}

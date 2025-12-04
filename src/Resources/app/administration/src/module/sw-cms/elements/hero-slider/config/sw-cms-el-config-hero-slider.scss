@@ -228,6 +228,25 @@
         gap: 1rem;
     }
 
+    // Logo Position Settings (translateX, translateY)
+    &__logo-position {
+        margin-top: 1rem;
+        padding: 1rem;
+        background-color: var(--color-background-elevated);
+        border-radius: 0.5rem;
+        border: 1px solid var(--color-border-default);
+    }
+
+    &__logo-position-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+
+        @media (max-width: 768px) {
+            grid-template-columns: 1fr;
+        }
+    }
+
     // Zwei Button-Gruppen nebeneinander (Desktop), mobil untereinander
     &__buttons-row {
         display: grid;

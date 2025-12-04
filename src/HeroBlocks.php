@@ -9,6 +9,17 @@ use Shopware\Core\Framework\Plugin\Context\InstallContext;
 use Shopware\Core\Framework\Plugin\Context\UpdateContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
+/**
+ * Hero Blocks Plugin
+ * 
+ * HINWEIS: Dieses Plugin implementiert NICHT ThemeInterface.
+ * SCSS-Styles werden vom aktiven Theme (z.B. HorexShopTheme) kompiliert.
+ * 
+ * Die SCSS-Quelldateien befinden sich in:
+ * - src/Resources/app/storefront/src/scss/components/
+ * 
+ * Diese werden vom Theme importiert und kompiliert.
+ */
 class HeroBlocks extends Plugin
 {
     public function install(InstallContext $installContext): void

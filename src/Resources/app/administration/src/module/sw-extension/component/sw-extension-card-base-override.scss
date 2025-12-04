@@ -111,7 +111,7 @@
         // Description Text direkt im Info-Bereich - Sauber unter dem Title
         .sw-extension-card-base__description-text {
             font-size: $font-size-xxs;
-            line-height: 1.5;
+            line-height: 1.3;
             color: var(--color-text-secondary-default);
             margin: 4px 0 0 0; // WICHTIG: 4px Abstand nach oben (nach Title), keine anderen Margins
             padding: 0; // WICHTIG: Kein Padding - sauber ausgerichtet

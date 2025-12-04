@@ -1,0 +1,41 @@
+/**
+ * Hero Blocks - Hero Slider Helper Classes
+ * 
+ * Note: Theme variables are automatically inherited
+ * 
+ * Step-by-step:
+ * 1. Text styling helpers using CSS variables for dynamic colors and sizes
+ * 2. Button styling helpers with CSS variable support
+ * 
+ * Note: Height control rules are defined in _hero-slider.scss (no duplicates!)
+ */
+
+.hero-slide-headline {
+    color: var(--hero-headline-color, #fff);
+    font-size: var(--hero-headline-font-size, inherit);
+}
+
+.hero-slide-text {
+    color: var(--hero-text-color, #fff);
+    font-size: var(--hero-text-font-size, inherit);
+}
+
+.btn-hero-primary {
+    --hero-button1-bg-color: #c20017;
+    --hero-button1-text-color: #fff;
+    
+    background-color: var(--hero-button1-bg-color, #c20017);
+    color: var(--hero-button1-text-color, #fff);
+    // HINWEIS: padding-left/right und border-radius werden zentral 
+    // in HorexShopTheme/_buttons.scss über .btn definiert
+}
+
+.btn-hero-secondary {
+    --hero-button2-bg-color: var(--bs-body-bg, #fff);
+    --hero-button2-text-color: var(--bs-body-color, #2b3136);
+    
+    background-color: var(--hero-button2-bg-color, var(--bs-body-bg, #fff));
+    color: var(--hero-button2-text-color, var(--bs-body-color, #2b3136));
+    // HINWEIS: padding-left/right und border-radius werden zentral 
+    // in HorexShopTheme/_buttons.scss über .btn definiert
+}

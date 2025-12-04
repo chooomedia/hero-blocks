@@ -1,0 +1,61 @@
+/**
+ * Hero Blocks Plugin - Base Styles
+ * 
+ * WICHTIG: Diese Datei wird automatisch von Shopware in die Theme-Kompilierung
+ * einbezogen (auch ohne ThemeInterface).
+ * 
+ * Shopware sucht automatisch nach:
+ * - Resources/app/storefront/src/scss/base.scss
+ * 
+ * Theme-Variablen (--sw-color-*, --bs-*) werden vom aktiven Theme vererbt.
+ * 
+ * HINWEIS FÜR STANDALONE-INSTALLATION:
+ * Wenn HeroBlocks ohne Child-Theme installiert wird, werden diese Styles
+ * automatisch in das aktive Theme kompiliert.
+ */
+
+// ============================================================================
+// 1. Hero Slider Component
+// ============================================================================
+@import "components/hero-slider";
+@import "components/hero-slider-helpers";
+
+// ============================================================================
+// 2. Hero Image Overlay Block
+// ============================================================================
+@import "components/hero-image-overlay";
+
+// ============================================================================
+// 3. Hero Video Extended Block
+// ============================================================================
+@import "components/hero-video-extended";
+
+// ============================================================================
+// 4. Hero Two Columns (Parallax) Block
+// ============================================================================
+@import "components/hero-two-columns-parallax";
+
+// ============================================================================
+// 5. Hero Category Slider Block
+// ============================================================================
+@import "category-slider";
+
+// ============================================================================
+// 6. Hero Mega Menu Block
+// ============================================================================
+@import "components/hero-mega-menu";
+
+// ============================================================================
+// 7. Hero Instagram Feed Block
+// ============================================================================
+@import "components/hero-instagram-feed";
+
+// ============================================================================
+// 8. Hero FAQ Block
+// ============================================================================
+@import "components/hero-faq";
+
+// ============================================================================
+// 9. Hero Shopping Experience Block
+// ============================================================================
+@import "components/hero-shopping-experience";

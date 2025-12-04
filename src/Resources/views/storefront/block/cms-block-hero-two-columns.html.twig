@@ -30,8 +30,13 @@
     {# Background CSS Code Toggle #}
     {% set backgroundLeftUseCss = (block.customFields.backgroundLeftUseCss is defined) ? block.customFields.backgroundLeftUseCss : false %}
     {% set backgroundRightUseCss = (block.customFields.backgroundRightUseCss is defined) ? block.customFields.backgroundRightUseCss : false %}
-    {% set backgroundLeftCss = (block.customFields.backgroundLeftCss is defined and block.customFields.backgroundLeftCss is not empty) ? block.customFields.backgroundLeftCss : 'background: repeating-linear-gradient(123deg, #46494A 0px, #46494A 6px, transparent 6px, transparent 12px);' %}
-    {% set backgroundRightCss = (block.customFields.backgroundRightCss is defined and block.customFields.backgroundRightCss is not empty) ? block.customFields.backgroundRightCss : 'background: repeating-linear-gradient(123deg, #46494A 0px, #46494A 6px, transparent 6px, transparent 12px);' %}
+    {# WICHTIG: Gradient endet mit Farbe statt transparent (verhindert dunklen Rand am Ende) #}
+    {% set backgroundLeftCss = (block.customFields.backgroundLeftCss is defined and block.customFields.backgroundLeftCss is not empty) ? block.customFields.backgroundLeftCss : 'clip-path: polygon(0px 0px, 100% 0%, 16% 100%, 0% 100%);
+background: repeating-linear-gradient(123deg, rgba(214, 171, 96, 0.5) 0px, rgba(214, 171, 96, 0.5) 6px, transparent 6px, transparent 12px, rgba(214, 171, 96, 0.5) 12px, rgba(214, 171, 96, 0.5) 13px);
+max-width: 30vw;' %}
+    {% set backgroundRightCss = (block.customFields.backgroundRightCss is defined and block.customFields.backgroundRightCss is not empty) ? block.customFields.backgroundRightCss : 'clip-path: polygon(84% 0%, 100% 0%, 100% 100%, 0% 100%);
+background: repeating-linear-gradient(123deg, rgba(214, 171, 96, 0.5) 0px, rgba(214, 171, 96, 0.5) 6px, transparent 6px, transparent 12px, rgba(214, 171, 96, 0.5) 12px, rgba(214, 171, 96, 0.5) 13px);
+max-width: 30vw;' %}
     
     {# Scroll Animation Settings #}
     {% set scrollAnimationAngle = (block.customFields.scrollAnimationAngle is defined and block.customFields.scrollAnimationAngle is not empty) ? block.customFields.scrollAnimationAngle : '33' %}
@@ -50,11 +55,17 @@
     {% set elementLeftTranslateX = (block.customFields.elementLeftTranslateX is defined) ? block.customFields.elementLeftTranslateX : '0' %}
     {% set elementLeftTranslateY = (block.customFields.elementLeftTranslateY is defined) ? block.customFields.elementLeftTranslateY : '0' %}
     {% set elementLeftAnimate = (block.customFields.elementLeftAnimate is defined) ? block.customFields.elementLeftAnimate : false %}
+    {% set elementLeftCss = (block.customFields.elementLeftCss is defined and block.customFields.elementLeftCss is not empty) ? block.customFields.elementLeftCss : '' %}
     
     {# Element Positionierung - Right Slot #}
     {% set elementRightTranslateX = (block.customFields.elementRightTranslateX is defined) ? block.customFields.elementRightTranslateX : '0' %}
     {% set elementRightTranslateY = (block.customFields.elementRightTranslateY is defined) ? block.customFields.elementRightTranslateY : '0' %}
     {% set elementRightAnimate = (block.customFields.elementRightAnimate is defined) ? block.customFields.elementRightAnimate : false %}
+    {% set elementRightCss = (block.customFields.elementRightCss is defined and block.customFields.elementRightCss is not empty) ? block.customFields.elementRightCss : '' %}
+    
+    {# Image Container CSS (für .cms-image-container) #}
+    {% set imageContainerLeftCss = (block.customFields.imageContainerLeftCss is defined and block.customFields.imageContainerLeftCss is not empty) ? block.customFields.imageContainerLeftCss : '' %}
+    {% set imageContainerRightCss = (block.customFields.imageContainerRightCss is defined and block.customFields.imageContainerRightCss is not empty) ? block.customFields.imageContainerRightCss : '' %}
 
     {# WICHTIG: Background-Bilder werden auf .cms-block Level gerendert (wie Standard-Block) #}
     {# Background Mode: Single Image #}
@@ -134,19 +145,17 @@
                 {% set desktopOrder = layoutDesktop == 'text-left' ? '2' : '1' %}
                 {% set orderClasses = 'order-' ~ mobileOrder ~ ' order-md-' ~ tabletOrder ~ ' order-lg-' ~ desktopOrder %}
                 
-                {# WICHTIG: min-height aus Admin-Settings anwenden #}
-                {% set columnStyle = '' %}
-                {% if minHeight %}
-                    {% set columnStyle = 'min-height: ' ~ minHeight ~ ';' %}
-                {% endif %}
-                
-                <div class="col-md-6 {{ orderClasses }}" data-cms-element-id="{{ element.id }}" {% if columnStyle %}style="{{ columnStyle }}"{% endif %}>
+                {# WICHTIG: min-height nur auf Desktop (nicht Mobile) via CSS-Klasse #}
+                <div class="col-md-6 {{ orderClasses }}" data-cms-element-id="{{ element.id }}" {% if minHeight %}data-min-height="{{ minHeight }}"{% endif %}>
                     {% block block_hero_two_columns_left_inner %}
                         {# WICHTIG: Wrapper für Element-Positionierung und Animation #}
+                        {# Custom CSS nur auf Desktop anwenden (via data-Attribut für JS/CSS) #}
                         <div class="hero-two-columns-element-wrapper hero-two-columns-element-wrapper--left"
                              {% if elementLeftAnimate %}data-scroll-animate="true"{% endif %}
                              data-translate-x="{{ elementLeftTranslateX }}"
-                             data-translate-y="{{ elementLeftTranslateY }}">
+                             data-translate-y="{{ elementLeftTranslateY }}"
+                             {% if elementLeftCss %}data-custom-css="{{ elementLeftCss|e('html_attr') }}"{% endif %}
+                             {% if imageContainerLeftCss %}data-image-container-css="{{ imageContainerLeftCss|e('html_attr') }}"{% endif %}>
                             {% sw_include '@Storefront/storefront/element/cms-element-' ~ element.type ~ '.html.twig' ignore missing %}
                         </div>
                     {% endblock %}
@@ -164,19 +173,17 @@
                 {% set desktopOrder = layoutDesktop == 'text-left' ? '1' : '2' %}
                 {% set orderClasses = 'order-' ~ mobileOrder ~ ' order-md-' ~ tabletOrder ~ ' order-lg-' ~ desktopOrder %}
                 
-                {# WICHTIG: min-height aus Admin-Settings anwenden #}
-                {% set columnStyle = '' %}
-                {% if minHeight %}
-                    {% set columnStyle = 'min-height: ' ~ minHeight ~ ';' %}
-                {% endif %}
-                
-                <div class="col-md-6 {{ orderClasses }}" data-cms-element-id="{{ element.id }}" {% if columnStyle %}style="{{ columnStyle }}"{% endif %}>
+                {# WICHTIG: min-height nur auf Desktop (nicht Mobile) via CSS-Klasse #}
+                <div class="col-md-6 {{ orderClasses }}" data-cms-element-id="{{ element.id }}" {% if minHeight %}data-min-height="{{ minHeight }}"{% endif %}>
                     {% block block_hero_two_columns_right_inner %}
                         {# WICHTIG: Wrapper für Element-Positionierung und Animation #}
+                        {# Custom CSS nur auf Desktop anwenden (via data-Attribut für JS/CSS) #}
                         <div class="hero-two-columns-element-wrapper hero-two-columns-element-wrapper--right"
                              {% if elementRightAnimate %}data-scroll-animate="true"{% endif %}
                              data-translate-x="{{ elementRightTranslateX }}"
-                             data-translate-y="{{ elementRightTranslateY }}">
+                             data-translate-y="{{ elementRightTranslateY }}"
+                             {% if elementRightCss %}data-custom-css="{{ elementRightCss|e('html_attr') }}"{% endif %}
+                             {% if imageContainerRightCss %}data-image-container-css="{{ imageContainerRightCss|e('html_attr') }}"{% endif %}>
                             {% sw_include '@Storefront/storefront/element/cms-element-' ~ element.type ~ '.html.twig' ignore missing %}
                         </div>
                     {% endblock %}

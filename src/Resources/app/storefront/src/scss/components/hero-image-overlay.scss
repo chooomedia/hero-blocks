@@ -1,11 +1,11 @@
 /**
- * Hero Video Extended Block - Storefront Styles
+ * Hero Image Overlay Block - Storefront Styles
  * 
  * QUELLE: HeroBlocks Plugin (eigenständig nutzbar)
  * Theme-Variablen (--sw-color-*, --bs-*) werden vom aktiven Theme vererbt.
  * 
  * Features:
- * - Full-width video background
+ * - Full-width image background
  * - Angled text overlay (KONSTANT 33° - außen gerade, innen abgeschrägt)
  * - Scroll animation (von außen nach innen)
  * - Responsive design (Mobile First)
@@ -26,6 +26,7 @@
  * 3. clip-path verwendet: calc(var(--overlay-tangent) * var(--overlay-height))
  * 
  * WICHTIG: Admin-Settings für background-color werden 1:1 übernommen!
+ * Die SCSS-Datei setzt KEINEN eigenen background-color, nur Fallback via CSS var.
  * 
  * @since 1.0.0
  */
@@ -33,62 +34,42 @@
 // ============================================================================
 // SECTION OVERRIDE - Verhindert Abschneiden des überstehenden Overlays
 // ============================================================================
-.cms-section:has(.cms-block-hero-video-extended) {
+.cms-section:has(.cms-block-hero-image-overlay) {
     overflow: visible !important;
 }
 
 // Fallback für Browser ohne :has()
-.cms-section--hero-video-extended-wrapper {
+.cms-section--hero-image-overlay-wrapper {
     overflow: visible !important;
 }
 
 // ============================================================================
 // MAIN BLOCK
 // ============================================================================
-.cms-block-hero-video-extended {
+.cms-block-hero-image-overlay {
     position: relative;
     width: 100%;
     min-height: 400px;
     overflow: visible;
-    background-color: #1a1a2e;
+    padding: 0;
 
     // ========================================
-    // VIDEO WRAPPER
+    // IMAGE WRAPPER
     // ========================================
-    &__video-wrapper {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 0;
-    overflow: hidden;
-}
+    &__image-wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 0;
+        overflow: hidden;
+    }
 
-    &__video {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    min-width: 100%;
-    min-height: 100%;
-    width: auto;
-    height: auto;
+    &__image {
+        width: 100%;
+        height: 100%;
         object-fit: cover;
-}
-
-    &__placeholder {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-        align-items: center;
-    justify-content: center;
-        background-color: #1a1a1a;
-        color: rgba(255, 255, 255, 0.5);
-        font-size: 1.25rem;;
     }
     
     // ========================================
@@ -180,7 +161,7 @@
             right: 0;
             left: auto;
             text-align: left;
-    
+            
             // KONSTANTER 33° Winkel: offset = height × tan(33°)
             clip-path: polygon(var(--overlay-corner-offset) 0, 100% 0, 100% 100%, 0 100%);
             padding-left: calc(1.5rem + var(--overlay-corner-offset));
@@ -221,8 +202,8 @@
             &--middle-right,
             &--bottom-right {
                 padding-left: calc(2.5rem + var(--overlay-corner-offset));
-    }
-    
+            }
+            
             &--top-left,
             &--top-right {
                 top: -2rem;
@@ -250,46 +231,26 @@
         // ========================================
         &[data-overlay-animate]:not(.is-animated) {
             opacity: 0;
-            // MOBILE: Sanftere Animation (100% statt 120% um Glitch zu vermeiden)
-            @media (max-width: 767px) {
-                will-change: transform, opacity;
-            }
         }
         
         // Left positions: slide from left
         &--top-left[data-overlay-animate]:not(.is-animated),
         &--bottom-left[data-overlay-animate]:not(.is-animated) {
-            transform: translateX(-100%);
-        
-            @media (min-width: 768px) {
-                transform: translateX(-120%);
-            }
+            transform: translateX(-120%);
         }
         
         &--middle-left[data-overlay-animate]:not(.is-animated) {
-            transform: translateX(-100%) translateY(-50%);
-            
-            @media (min-width: 768px) {
-                transform: translateX(-120%) translateY(-50%);
+            transform: translateX(-120%) translateY(-50%);
         }
-    }
-    
+
         // Right positions: slide from right
         &--top-right[data-overlay-animate]:not(.is-animated),
         &--bottom-right[data-overlay-animate]:not(.is-animated) {
-            transform: translateX(100%);
-            
-            @media (min-width: 768px) {
-                transform: translateX(120%);
-            }
+            transform: translateX(120%);
         }
         
         &--middle-right[data-overlay-animate]:not(.is-animated) {
-            transform: translateX(100%) translateY(-50%);
-            
-            @media (min-width: 768px) {
-                transform: translateX(120%) translateY(-50%);
-            }
+            transform: translateX(120%) translateY(-50%);
         }
 
         // ========================================
@@ -343,9 +304,9 @@
         
         @media (min-width: 1200px) {
             font-size: 1.65rem;
+        }
     }
-}
-
+    
     &__text {
         margin: 0;
         font-size: 0.9rem;
@@ -371,7 +332,7 @@
 // ACCESSIBILITY: Reduced Motion
 // ============================================================================
 @media (prefers-reduced-motion: reduce) {
-    .cms-block-hero-video-extended {
+    .cms-block-hero-image-overlay {
         &__overlay {
             transition: none;
             
@@ -379,15 +340,11 @@
                 opacity: 1;
                 transform: none !important;
                 
-                &.cms-block-hero-video-extended__overlay--middle-left,
-                &.cms-block-hero-video-extended__overlay--middle-right {
+                &.cms-block-hero-image-overlay__overlay--middle-left,
+                &.cms-block-hero-image-overlay__overlay--middle-right {
                     transform: translateY(-50%) !important;
-        }
-    }
-}
-
-        &__video {
-            animation-play-state: paused !important;
+                }
+            }
         }
     }
 }
@@ -396,12 +353,12 @@
 // PRINT STYLES
 // ============================================================================
 @media print {
-    .cms-block-hero-video-extended {
+    .cms-block-hero-image-overlay {
         min-height: 300px;
         
-        &__video,
-        &__video-wrapper {
-            display: none;
+        &__image-wrapper {
+            position: relative;
+            height: 200px;
         }
         
         &__overlay {
@@ -412,6 +369,7 @@
             max-width: 100%;
             clip-path: none;
             padding: 1rem;
+            margin-top: 1rem;
         }
     }
 }

@@ -1,439 +1,601 @@
 /**
- * Hero Mega Menu - Storefront Styles
- * Gemäß Mockups: horex-relaunch-header-megamenu-1/2/3.png
+ * HOREX Theme - Hero Mega Menu Styles
+ * 
+ * WICHTIG: Mega Menu Block aus HeroBlocks Plugin - im Header integriert
+ * 
+ * Step-by-step:
+ * 1. Header-Integration: Gleiche Styles wie normales Header-Menü (Oswald Bold, Uppercase, Centered)
+ * 2. Full-Width Navigation (so breit wie Container-Max-Width)
+ * 3. Dropdown mit Container-Max-Width (breitestes Parent-Element)
+ * 4. CSS-Variablen für Admin-Konfiguration (Link-Color, Hover-Color, Background, Padding)
+ * 5. ARIA-Labels, SEO-ready, Semantic HTML
+ * 6. Responsive: Mobile Stacking, Desktop Full-Width
+ * 
+ * WICHTIG: @Storefront wird bereits in base.scss importiert, daher sind alle Variablen verfügbar
  */
 
-// ============================================================================
-// CSS Custom Properties (konfigurierbar über CMS)
-// ============================================================================
-:root {
-    --hero-mega-menu-link-color: #000;
-    --hero-mega-menu-link-hover-color: #c00;
-    --hero-mega-menu-dropdown-background: #fff;
-    --hero-mega-menu-dropdown-padding: 2rem;
-    --hero-mega-menu-category-image-size: 250px;
-}
+// WICHTIG: CSS-Variablen für Admin-Konfiguration
+// Werden über block.customFields gesetzt (z.B. linkColor, linkHoverColor, dropdownBackground, dropdownPadding)
+// MOCKUP: Gemäß horex-relaunch-header-megamenu-1/2/3.png
+$hero-mega-menu-link-color: var(--hero-mega-menu-link-color, $sw-text-color);
+$hero-mega-menu-link-hover-color: var(--hero-mega-menu-link-hover-color, $sw-color-brand-primary);
+$hero-mega-menu-dropdown-background: var(--hero-mega-menu-dropdown-background, rgba(255, 255, 255, 0.98)); // MOCKUP: Fast weiß, leicht transparent
+$hero-mega-menu-dropdown-padding: var(--hero-mega-menu-dropdown-padding, 1rem); // MOCKUP: Großzügiges Padding
 
-// ============================================================================
-// Mega Menu Container
-// ============================================================================
+// WICHTIG: Untermenü-Link-Farbe (is-level-1) - MOCKUP: Schwarz wie Hauptlinks
+$hero-mega-menu-submenu-link-color: #4a4a4a; // MOCKUP: Dunkelgrau für bessere Lesbarkeit
+$hero-mega-menu-submenu-link-hover-color: $sw-color-brand-primary; // MOCKUP: Rot bei Hover
+$hero-mega-menu-submenu-link-active-color: $sw-color-brand-primary; // MOCKUP: Rot für aktiven Link
+
+// WICHTIG: Mega Menu Block - Full-Width mit Container-Max-Width
+// WICHTIG: Sauber ausgerichtet, zentriert direkt unter Header (fixed/sticky Header)
 .cms-block-hero-mega-menu {
     position: relative;
     width: 100%;
-}
-
-// ============================================================================
-// Navigation Bar
-// ============================================================================
-.hero-mega-menu-nav {
-    position: relative;
-    width: 100%;
-
-    &__list {
-        display: flex;
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        gap: 2.5rem;
-        align-items: center;
-        justify-content: center;
-
-        @media (max-width: 991px) {
-            flex-direction: column;
-            gap: 0;
-        }
+    height: auto;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    z-index: 1029; // WICHTIG: Unter Header (1030), aber über Content
+    
+    // WICHTIG: Auf Mobile verstecken (via CSS, nicht Template!)
+    @include media-breakpoint-down(lg) {
+        display: none !important;
     }
-
-    &__item {
+    
+    // WICHTIG: Navigation Container - Breite wie Logo, sauber zentriert
+    // WICHTIG: Menu zentriert unter Header, Breite orientiert sich am Logo (w-25 w-md-50)
+    .hero-mega-menu-nav {
         position: relative;
-        list-style: none;
-
-        @media (max-width: 991px) {
-            width: 100%;
-        }
-    }
-
-    // ========================================================================
-    // Top-Level Links
-    // ========================================================================
-    &__link {
-        display: inline-block;
-        padding: 1rem 0;
-        color: var(--hero-mega-menu-link-color);
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 1rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        transition: color 0.3s ease;
-        cursor: pointer;
-
-        @media (max-width: 991px) {
-            display: block;
-            padding: 1rem 1.5rem;
-            width: 100%;
-        }
-
-        span {
-            position: relative;
-        }
-
-        // Hover-Effekt
-        &:hover {
-            color: var(--hero-mega-menu-link-hover-color);
-        }
-
-        // Active State
-        &[aria-expanded="true"] {
-            color: var(--hero-mega-menu-link-hover-color);
-        }
-    }
-
-    // ========================================================================
-    // Dropdown Container (Full-Width)
-    // ========================================================================
-    &__dropdown {
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100vw;
-        max-width: 1320px; // Container max-width
-        background-color: var(--hero-mega-menu-dropdown-background);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.3s ease, visibility 0.3s ease;
-        z-index: 1000;
-        pointer-events: none;
-
-        @media (max-width: 991px) {
-            position: static;
-            transform: none;
-            width: 100%;
-            max-width: none;
-            box-shadow: none;
-            display: none;
-        }
-
-        // Sichtbar bei Hover oder aria-expanded
-        .hero-mega-menu-nav__item:hover &,
-        .hero-mega-menu-nav__item.is--open & {
-            opacity: 1;
-            visibility: visible;
-            pointer-events: auto;
-
-            @media (max-width: 991px) {
-                display: block;
+        width: fit-content; // WICHTIG: Fit-Content für natürliche Breite
+        max-width: 100%; // WICHTIG: Max-Width für Responsive
+        height: 100%;
+        margin: 0 auto; // WICHTIG: Zentriert innerhalb Container
+        display: flex;
+        align-items: center;
+        justify-content: center; // WICHTIG: Standardmäßig mittig, center unter Header
+        
+        // WICHTIG: Breite orientiert sich am Logo (w-25 w-md-50 = 25% Desktop, 50% Tablet)
+        // WICHTIG: CSS Custom Property für Logo-Breite könnte hier genutzt werden
+        // WICHTIG: Aktuell: fit-content für natürliche Breite der Menu-Items
+        
+        // WICHTIG: Navigation List - Horizontal Layout (Header-Style: Centered, Oswald Bold, Uppercase)
+        // WICHTIG: Sauber zentriert unter Header (Best Practices - nicht verrückt nach rechts)
+        &__list {
+            display: flex;
+            flex-wrap: nowrap; // WICHTIG: Keine Wraps - alle Punkte in einer Linie
+            list-style: none;
+            margin: 0; // WICHTIG: Kein margin: auto (wird von Parent zentriert)
+            padding: 0;
+            gap: 0.5rem; // WICHTIG: Saubere Abstände zwischen Menu Punkten
+            height: 100%;
+            align-items: center; // WICHTIG: Icon Buttons auf Linie der Menu Punkten
+            justify-content: center; // WICHTIG: Menu-Punkte zentriert (center unter Header)
+            
+            @include media-breakpoint-down(lg) {
+                flex-direction: column;
+                gap: 0;
+                height: auto;
+                align-items: stretch;
+                justify-content: flex-start;
             }
         }
-
-        // WICHTIG: Hover-Intent - Dropdown bleibt offen wenn Maus darüber ist
-        &:hover {
-            opacity: 1;
-            visibility: visible;
-            pointer-events: auto;
-        }
-    }
-
-    &__dropdown-content {
-        padding: var(--hero-mega-menu-dropdown-padding);
-        display: flex;
-        flex-direction: column;
-        gap: 2rem;
-
-        @media (max-width: 991px) {
-            padding: 1rem;
-        }
-    }
-
-    // ========================================================================
-    // Categories Section
-    // ========================================================================
-    &__categories {
-        width: 100%;
-    }
-
-    // ========================================================================
-    // Widget Sections (Produkte, Instagram etc.)
-    // ========================================================================
-    &__widget {
-        padding: 1.5rem;
-        background-color: #f8f9fa;
-        border-radius: 8px;
-
-        &-placeholder {
-            text-align: center;
-            color: #6c757d;
-            font-style: italic;
-        }
-    }
-}
-
-// ============================================================================
-// Categories Layout (Überschreibt Shopware Standard)
-// ============================================================================
-
-// Level 0 - Haupt-Kategorien mit Bildern
-.navigation-flyout-categories.is-level-0 {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-    margin: 0;
-
-    // col-auto für natürliche Breite
-    > .col-auto {
-        flex: 0 0 auto;
-        padding: 0;
         
-        // Category Image
-        .category-image-wrapper {
-            margin-bottom: 1rem;
-            overflow: hidden;
-            border-radius: 8px;
-            background-color: #f8f9fa;
-
-            img {
-                width: var(--hero-mega-menu-category-image-size);
-                height: var(--hero-mega-menu-category-image-size);
-                object-fit: cover;
-                display: block;
-                transition: transform 0.3s ease;
-
-                &:hover {
-                    transform: scale(1.05);
+        // WICHTIG: Navigation Item (Header-Style: White-space nowrap, saubere Abstände)
+        // WICHTIG: Position static für has-children (damit Dropdown aus Container bricht)
+        // WICHTIG: Icon Buttons auf Linie der Menu Punkte ausgerichtet
+        &__item {
+            position: static; // WICHTIG: Static für Dropdown-Positionierung (wie Original-Nav)
+            margin: 0;
+            padding: 0;
+            white-space: nowrap;
+            display: flex;
+            align-items: center; // WICHTIG: Icon Buttons auf Linie der Menu Punkte ausgerichtet
+            
+            @include media-breakpoint-down(lg) {
+                width: 100%;
+                padding-right: 0;
+                position: static; // Mobile: Static für statisches Dropdown
+            }
+            
+            &--has-children {
+                // WICHTIG: Position static für Dropdown (damit es aus Container bricht)
+                position: static;
+                
+                @include media-breakpoint-up(lg) {
+                    // Desktop: Static damit Dropdown relativ zum Nav-Container positioniert wird
+                    position: static;
+                }
+                
+                // Dropdown-Indikator (z.B. Pfeil nach unten)
+                .hero-mega-menu-nav__link::after {
+                    content: '';
+                    display: inline-block;
+                    width: 0;
+                    height: 0;
+                    margin-left: 0.5rem;
+                    vertical-align: middle;
+                    border-left: 4px solid transparent;
+                    border-right: 4px solid transparent;
+                    border-top: 4px solid currentColor;
+                    opacity: 0.7;
+                    transition: opacity 0.2s ease, transform 0.2s ease;
+                }
+                
+                &:hover .hero-mega-menu-nav__link::after {
+                    opacity: 1;
+                    transform: translateY(2px);
+                }
+                
+                @include media-breakpoint-down(lg) {
+                    position: static; // Mobile: Static für statisches Dropdown
+                    
+                    .hero-mega-menu-nav__link::after {
+                        transform: rotate(-90deg);
+                    }
                 }
             }
         }
+        
+        // WICHTIG: Navigation Link (Header-Style: Oswald Bold, Uppercase, Centered)
+        // WICHTIG: Unterscheidung zwischen Links MIT und OHNE Untermenü
+        &__link {
+            display: inline-block;
+            padding: 0.5rem 0.75rem;
+            color: $hero-mega-menu-link-color;
+            text-decoration: none !important;
+            font-family: 'Oswald', sans-serif;
+            font-weight: 700 !important;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            line-height: $line-height-base;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            border: none !important;
+            outline: none !important;
+            border-radius: 3px;
+            
+            // WICHTIG: Links OHNE Untermenü - einfacher Hover (kein Dropdown)
+            // WICHTIG: Container Width - Breite bleibt gleich, nur Color Change
+            .hero-mega-menu-nav__item:not(.hero-mega-menu-nav__item--has-children) & {
+                &:hover,
+                &:focus,
+                &:focus-visible,
+                &:active {
+                    color: $hero-mega-menu-link-hover-color;
+                    background-color: transparent;
+                    text-decoration: none !important;
+                    border: none !important;
+                    outline: none !important;
+                    box-shadow: none !important;
+                }
+            }
+            
+            // WICHTIG: Links MIT Untermenü - Hover für Dropdown-Trigger
+            .hero-mega-menu-nav__item--has-children & {
+                // WICHTIG: Hover-Effekt bleibt gleich, aber Dropdown wird angezeigt
+                &:hover,
+                &:focus,
+                &:focus-visible {
+                    color: $hero-mega-menu-link-hover-color;
+                    background-color: transparent;
+                    text-decoration: none !important;
+                    border: none !important;
+                    outline: none !important;
+                    box-shadow: none !important;
+                }
+            }
+            
+            // WICHTIG: Active State (Header-Style: Background, Border-Radius)
+            // WICHTIG: Aktiver Link: Wrapper (li) verwendet rote Farbe-Variable, Text weiß, Pfeil weiß
+            &.active,
+            &[aria-current="page"],
+            .hero-mega-menu-nav__item.active & {
+                color: #ffffff;
+                font-weight: 700 !important;
+                padding: 0.5rem 0.75rem;
+                background-color: $sw-color-brand-primary;
+                border-radius: 3px;
+                text-decoration: none !important;
+                border: none !important;
+                outline: none !important;
+                box-shadow: none !important;
+                
+                // WICHTIG: Pfeil (::after) auch weiß bei aktivem Link
+                &::after {
+                    border-top-color: #ffffff;
+                }
+                
+                &:hover,
+                &:focus,
+                &:focus-visible,
+                &:active {
+                    color: #ffffff;
+                    background-color: $sw-color-brand-primary;
+                    border: none !important;
+                    outline: none !important;
+                    box-shadow: none !important;
+                    
+                    &::after {
+                        border-top-color: #ffffff;
+                    }
+                }
+            }
+            
+            // WICHTIG: Aktiver Wrapper (li) verwendet rote Farbe-Variable
+            .hero-mega-menu-nav__item.active & {
+                color: #ffffff;
+                background-color: $sw-color-brand-primary;
+                
+                &::after {
+                    border-top-color: #ffffff;
+                }
+            }
+            
+            @include media-breakpoint-down(lg) {
+                display: block;
+                width: 100%;
+                padding: 1rem;
+                border-bottom: 1px solid $sw-border-color;
+                border-radius: 0;
+                font-size: $font-size-base;
+                text-transform: none;
+                
+                // WICHTIG: Mobile - alle Links gleich behandeln (kein Dropdown-Hover)
+                &:hover,
+                &:focus,
+                &:focus-visible {
+                    background-color: rgba(0, 0, 0, 0.05);
+                }
+                
+                &.active,
+                &[aria-current="page"] {
+                    background-color: rgba(0, 0, 0, 0.05);
+                    padding: 1rem;
+                }
+            }
+        }
+        
+        // WICHTIG: Dropdown - Nur bei Links MIT Untermenü (wie Original-Nav)
+        // WICHTIG: Best Practices: Sauber zentriert direkt unter Header (fixed/sticky)
+        // WICHTIG: Full-Width, zentriert, unter Header
+        // WICHTIG: Position relativ zum Nav-Container (nicht Item)
+        &__dropdown {
+            position: fixed; // WICHTIG: Fixed für sticky Header - bleibt unter Header beim Scrollen
+            top: var(--header-height, 50px); // WICHTIG: Direkt unter Header (aus _header.scss)
+            left: 0;
+            right: 0;
+            width: 100vw; // WICHTIG: Komplette Breite (Full-Width Viewport)
+            background-color: $hero-mega-menu-dropdown-background;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+            border-top: 1px solid $sw-border-color;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+            z-index: 1028; // WICHTIG: Unter Header (1030), aber über Content (1000)
+            
+            // WICHTIG: Dropdown anzeigen bei Hover (wie Shopware Standard)
+            // WICHTIG: Elegant, einfach - .show class wird von JavaScript gesetzt
+            &.show {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
+            
+            // WICHTIG: CSS Hover Fallback (für bessere UX)
+            .hero-mega-menu-nav__item--has-children:hover &,
+            .hero-mega-menu-nav__item--has-children:focus-within & {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
+            
+            // WICHTIG: Dropdown schließen wenn Maus verlässt (nur bei Hover, nicht bei Click)
+            // WICHTIG: Click öffnet/schließt Dropdown (toggle via JavaScript .open class)
+            // WICHTIG: Transition wird durch :hover State gehandhabt (keine zusätzlichen Styles nötig)
+            
+            @include media-breakpoint-down(lg) {
+                // WICHTIG: Mobile - Dropdown wird statisch angezeigt (kein Hover)
+                // WICHTIG: Wie Original-Theme Nav Mobile (Offcanvas)
+                position: static;
+                width: 100%;
+                margin-left: 0;
+                max-width: 100%;
+                box-shadow: none;
+                border-top: none;
+                border-left: 3px solid $sw-color-brand-primary;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+            }
+        }
+        
+        // WICHTIG: Dropdown Content - Bootstrap Container mit Max-Width
+        &__dropdown-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            padding: $hero-mega-menu-dropdown-padding $grid-gutter-width;
+            margin: 0 auto; // WICHTIG: Zentriert innerhalb Dropdown
+            max-width: 100%; // WICHTIG: Bootstrap Container Max-Width respektieren
+            width: 100%;
+            
+            // WICHTIG: Bootstrap Container Max-Width Begrenzung (wie .container)
+            // WICHTIG: Verwende Bootstrap's Container-Max-Widths (verfügbar über @Storefront)
+            @include media-breakpoint-up(sm) {
+                max-width: 540px;
+            }
+            
+            @include media-breakpoint-up(md) {
+                max-width: 720px;
+            }
+            
+            @include media-breakpoint-up(lg) {
+                max-width: 960px;
+            }
+            
+            @include media-breakpoint-up(xl) {
+                max-width: 1140px;
+            }
+            
+            @include media-breakpoint-up(xxl) {
+                max-width: 1320px;
+            }
+            
+            @include media-breakpoint-down(md) {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+                max-width: 100%;
+            }
+        }
+        
+        // WICHTIG: Kategorien-Bereich
+        &__categories {
+            flex: 1;
+            min-width: 0; // Verhindert Overflow
+            
+            @include media-breakpoint-down(md) {
+                width: 100%;
+            }
+        }
+        
+        // WICHTIG: Widget-Bereich
+        &__widget {
+            flex: 0 0 auto;
+            min-width: 250px;
+            max-width: 350px;
+            
+            @include media-breakpoint-down(md) {
+                width: 100%;
+                max-width: 100%;
+            }
+            
+            // Produkt-Widget
+            &--products {
+                // TODO: Produkt-Widget Styles
+                // Platzhalter für zukünftige Implementierung
+                display: block;
+            }
+            
+            // Instagram Feed Widget
+            &--instagram {
+                // TODO: Instagram Feed Widget Styles
+                // Platzhalter für zukünftige Implementierung
+                display: block;
+            }
+            
+            // Placeholder für Widgets
+            &-placeholder {
+                padding: 1rem;
+                background-color: rgba(0, 0, 0, 0.02);
+                border: 1px dashed $sw-border-color;
+                border-radius: 3px;
+                text-align: center;
+                color: $sw-text-color;
+                font-size: $font-size-sm;
+                opacity: 0.7;
+            }
+        }
+    }
+}
 
-        // Kategorie Links unter Bild
+// WICHTIG: Mobile/Tablet: Stacking-Layout (bereits in Desktop-Styles integriert)
+// Zusätzliche Mobile-Anpassungen für Header-Integration
+@include media-breakpoint-down(lg) {
+    .cms-block-hero-mega-menu {
+        height: auto;
+        
+        .hero-mega-menu-nav {
+            &__list {
+                flex-direction: column;
+                height: auto;
+                align-items: stretch;
+                justify-content: flex-start;
+            }
+            
+            &__item {
+                width: 100%;
+                padding-right: 0;
+                
+                &--has-children {
+                    .hero-mega-menu-nav__link::after {
+                        transform: rotate(-90deg);
+                    }
+                }
+            }
+            
+            &__link {
+                display: block;
+                width: 100%;
+                padding: 1rem;
+                border-bottom: 1px solid $sw-border-color;
+                border-radius: 0;
+                font-size: $font-size-base;
+                text-transform: none;
+            }
+        }
+    }
+}
+
+// WICHTIG: Accessibility: Keyboard Navigation
+.cms-block-hero-mega-menu {
+    .hero-mega-menu-nav {
+        &__link {
+            &:focus-visible {
+                outline: 2px solid $sw-color-brand-primary;
+                outline-offset: 2px;
+            }
+        }
+        
+        &__item:focus-within .hero-mega-menu-nav__dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+    }
+}
+
+// WICHTIG: Navigation Flyout Categories Styles (Shopware Standard Template)
+// WICHTIG: Trennstriche entfernen, margin-lefts entfernen, col-auto/col-3, Oswald Font für Überkategorien
+.navigation-flyout-categories {
+    // WICHTIG: Trennstriche entfernen (sauber raus)
+    // HINWEIS: .navigation-flyout-col wird nicht mehr verwendet (Bootstrap col-3 im Twig)
+    &.is-level-0 {
+        > .navigation-flyout-col::before {
+            display: none !important;
+        }
+    }
+    
+    // WICHTIG: margin-lefts entfernen (sauber entfernen)
+    &:not(.is-level-0) {
+        margin-left: 0 !important;
+    }
+    
+    // WICHTIG: Überkategorien (is-level-0) - Oswald Font
+    &.is-level-0 {
+        .nav-item.is-level-0 {
+            font-family: 'Oswald', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: $sw-text-color;
+        }
+    }
+    
+    // WICHTIG: Untermenü-Links (is-level-1) - #dce0e3 statt #2b3136
+    .navigation-flyout-link.is-level-1 {
+        color: $hero-mega-menu-submenu-link-color !important;
+        transition: color 0.3s ease;
+        
+        &:hover,
+        &:focus,
+        &:focus-visible {
+            color: $hero-mega-menu-submenu-link-hover-color !important;
+        }
+        
+        &.active,
+        &[aria-current="page"] {
+            color: $hero-mega-menu-submenu-link-active-color !important;
+        }
+    }
+    
+    // WICHTIG: Bootstrap Klassen werden jetzt direkt im Twig verwendet (col-12 col-md-6 col-lg-3)
+    // Kein @extend mehr nötig - saubere Bootstrap Best Practices im Template
+    
+    // HINWEIS: .navigation-flyout-col wird nicht mehr verwendet - Bootstrap Klassen im Twig
+    // Falls dennoch benötigt (z.B. durch andere Templates), hier als Fallback:
+    .navigation-flyout-col,
+    [class*="col-"] {
+        position: relative;
+        
+        // WICHTIG: Category-Bild (falls vorhanden) - Gemäß Mockups 250x250px
+        // MOCKUP: Siehe horex-relaunch-header-megamenu-1/2/3.png
+        .category-image-wrapper {
+            width: 250px; // MOCKUP: Feste Breite gemäß Mockups
+            height: 250px; // MOCKUP: Feste Höhe gemäß Mockups
+            margin: 0 auto 1rem; // WICHTIG: Zentriert horizontal
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 8px; // SMOOTH: Abgerundete Ecken
+            background-color: #f8f9fa; // SMOOTH: Subtiler Hintergrund
+            flex-shrink: 0; // WICHTIG: Verhindert Schrumpfen
+            
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover; // MOCKUP: Cover für volle Fläche (wie in Mockups)
+                display: block;
+                transition: transform 0.3s ease; // SMOOTH: Hover-Animation
+                
+                &:hover {
+                    transform: scale(1.05); // SMOOTH: Leichtes Zoom bei Hover
+                }
+            }
+            
+            @include media-breakpoint-down(lg) {
+                width: 100%;
+                height: auto;
+                max-width: 250px;
+                
+                img {
+                    height: auto;
+                    aspect-ratio: 1; // WICHTIG: Quadratisches Format beibehalten
+                }
+            }
+        }
+        
+        // WICHTIG: Main-Wrapper mit Texten - MOCKUP: Text-Ausrichtung und Spacing
         .category-content-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        // Hauptkategorie (Level 0) - Fettgedruckt
-        .navigation-flyout-link.is-level-0 {
-            font-weight: 700;
-            font-size: 1rem;
-            color: #000;
-            text-decoration: none;
-            padding: 0;
-            transition: color 0.3s ease;
-
-            &:hover {
-                color: var(--hero-mega-menu-link-hover-color);
-            }
-
-            // Folder (nicht klickbar) - kein Hover-Effekt
-            &:not([href]) {
-                cursor: default;
-            }
-        }
-    }
-
-    // Trennstrich zwischen Kategorien (außer beim ersten)
-    > .navigation-flyout-col {
-        position: relative;
-        padding-left: 2rem;
-
-        &::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 1px;
-            background-color: #e0e0e0;
-        }
-
-        @media (max-width: 991px) {
-            padding-left: 0;
-
-            &::before {
-                display: none;
-            }
-        }
-    }
-}
-
-// Level 1 - Unterkategorien (Text-Links)
-.navigation-flyout-categories.is-level-1 {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-top: 0.75rem;
-
-    > div {
-        padding: 0;
-    }
-
-    .category-content-wrapper {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .navigation-flyout-link.is-level-1 {
-        font-weight: 400;
-        font-size: 0.9rem;
-        color: #4a4a4a;
-        text-decoration: none;
-        padding: 0.25rem 0;
-        transition: color 0.3s ease, padding-left 0.3s ease;
-
-        &:hover {
-            color: var(--hero-mega-menu-link-hover-color);
-            padding-left: 0.5rem;
-        }
-
-        // Folder (nicht klickbar)
-        &:not([href]) {
-            cursor: default;
-            &:hover {
-                padding-left: 0;
-            }
-        }
-    }
-
-    // Trennstrich für Level 1 entfernen
-    .navigation-flyout-col::before {
-        display: none;
-    }
-}
-
-// ============================================================================
-// Product Cards (für Shop-Dropdown wie in Mockup 1)
-// ============================================================================
-.hero-mega-menu-products {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-    margin-bottom: 2rem;
-
-    @media (max-width: 991px) {
-        grid-template-columns: 1fr;
-    }
-}
-
-.hero-mega-menu-product-card {
-    text-align: center;
-
-    &__image {
-        margin-bottom: 1rem;
-        overflow: hidden;
-        border-radius: 8px;
-        background-color: #f8f9fa;
-
-        img {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            display: block;
-            transition: transform 0.3s ease;
-
-            &:hover {
-                transform: scale(1.05);
-            }
-        }
-    }
-
-    &__title {
-        font-weight: 600;
-        font-size: 1rem;
-        margin-bottom: 0.5rem;
-        color: #000;
-    }
-
-    &__links {
-        display: flex;
-        gap: 0.5rem;
-        justify-content: center;
-        font-size: 0.9rem;
-
-        a {
-            color: #4a4a4a;
-            text-decoration: none;
-            transition: color 0.3s ease;
-
-            &:hover {
-                color: var(--hero-mega-menu-link-hover-color);
-            }
-        }
-
-        span {
-            color: #ccc;
-        }
-    }
-}
-
-// ============================================================================
-// Mobile Optimizations
-// ============================================================================
-@media (max-width: 991px) {
-    .hero-mega-menu-nav {
-        &__dropdown {
-            // Mobile: Kein absolute positioning
-            position: static;
-            transform: none;
-            width: 100%;
+            gap: 0.75rem; // MOCKUP: Spacing zwischen Links
             
-            // Slide-Down Animation für Mobile
-            &[aria-hidden="false"] {
-                animation: slideDown 0.3s ease;
+            .nav-item {
+                text-align: left; // MOCKUP: Links linksbündig
+                
+                &.is-level-0 {
+                    font-weight: 700; // MOCKUP: Hauptkategorien fett
+                    font-size: 1rem;
+                    margin-bottom: 0.5rem;
+                    
+                    &:first-child {
+                        margin-top: 0; // MOCKUP: Kein oberer Margin für erste Kategorie
+                    }
+                }
+            }
+            
+            // WICHTIG: Unterkategorien-Container
+            .navigation-flyout-categories.is-level-1 {
+                margin-left: 0; // MOCKUP: Keine Einrückung
+                
+                .nav-item {
+                    font-size: 0.9rem;
+                    font-weight: 400;
+                    padding: 0.25rem 0;
+                    transition: color 0.3s ease;
+                    
+                    &:hover {
+                        // WICHTIG: Kein padding-left mehr beim Hover
+                        color: var(--hero-mega-menu-link-hover-color, #c00);
+                    }
+                }
             }
         }
+    }
+}
 
-        &__list {
-            // Mobile: Vertical Stack
-            flex-direction: column;
-            align-items: stretch;
+// WICHTIG: Aktiver Link - Wrapper (li) verwendet rote Farbe-Variable
+.hero-mega-menu-nav__item.active {
+    .hero-mega-menu-nav__link {
+        color: #ffffff;
+        background-color: $sw-color-brand-primary;
+        
+        &::after {
+            border-top-color: #ffffff;
         }
-    }
-
-    .navigation-flyout-categories.is-level-0 {
-        flex-direction: column;
-        gap: 1rem;
-
-        > .col-auto {
-            width: 100%;
-
-            .category-image-wrapper img {
-                width: 100%;
-                height: auto;
-                max-width: var(--hero-mega-menu-category-image-size);
-                margin: 0 auto;
-            }
-        }
-    }
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-// ============================================================================
-// Accessibility & Keyboard Navigation
-// ============================================================================
-.hero-mega-menu-nav__link:focus,
-.navigation-flyout-link:focus {
-    outline: 2px solid var(--hero-mega-menu-link-hover-color);
-    outline-offset: 2px;
-}
-
-// ============================================================================
-// Print Styles
-// ============================================================================
-@media print {
-    .hero-mega-menu-nav__dropdown {
-        display: none;
     }
 }
 

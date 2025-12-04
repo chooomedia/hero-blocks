@@ -9,15 +9,11 @@
  */
 
 // ============================================================================
-// SCSS Styles - NICHT hier importieren!
+// SCSS Styles - Werden über theme.json geladen!
 // ============================================================================
-// WICHTIG: SCSS-Dateien werden NICHT in JavaScript importiert!
-// Die Styles werden über das Theme (HorexShopTheme) geladen.
-//
-// ⚠️ HINWEIS: Alle Komponenten-Styles sind im Child-Theme aktiv:
-// - HorexShopTheme/src/.../components-hero-blocks/_hero-slider.scss
-// - HorexShopTheme/src/.../components-hero-blocks/_hero-mega-menu.scss
-// - etc.
+// WICHTIG: HeroBlocks implementiert ThemeInterface und kompiliert eigene SCSS.
+// Alle Styles sind in: src/Resources/app/storefront/src/scss/base.scss
+// Theme-Variablen (--sw-color-*, --bs-*) werden vom aktiven Theme vererbt.
 
 // ============================================================================
 // Import JavaScript Plugin Classes

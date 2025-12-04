@@ -162,6 +162,59 @@
                                         auto-upload
                                         @media-upload-finish="onSlideLogoUpload(index, $event)"
                                     />
+                                    
+                                    {# Logo Position Mode (inside/outside content) #}
+                                    <div v-if="sliderItem.logoImageId" class="sw-cms-el-config-hero-slider__logo-settings">
+                                        <mt-select
+                                            v-model="sliderItem.logoPosition"
+                                            :label="$tc('sw-cms.elements.heroSlider.config.logoPosition')"
+                                            :help-text="$tc('sw-cms.elements.heroSlider.config.logoPositionHelpText')"
+                                            :options="[
+                                                { value: 'inside', label: $tc('sw-cms.elements.heroSlider.config.logoPositionInside') },
+                                                { value: 'outside', label: $tc('sw-cms.elements.heroSlider.config.logoPositionOutside') }
+                                            ]"
+                                            @update:model-value="emitUpdateEl"
+                                        />
+                                        
+                                        {# Logo Position Settings (translateX, translateY) - nur bei "inside" sichtbar #}
+                                        <div v-if="sliderItem.logoPosition !== 'outside'" class="sw-cms-el-config-hero-slider__logo-position">
+                                            <div class="sw-cms-el-config-hero-slider__logo-position-row">
+                                                <mt-number-field
+                                                    v-model="sliderItem.logoTranslateX"
+                                                    :label="$tc('sw-cms.elements.heroSlider.config.logoTranslateX')"
+                                                    :placeholder="'0'"
+                                                    :help-text="$tc('sw-cms.elements.heroSlider.config.logoTranslateXHelpText')"
+                                                    number-type="int"
+                                                    :min="-500"
+                                                    :max="500"
+                                                    :step="5"
+                                                    @update:model-value="emitUpdateEl"
+                                                />
+                                                <mt-number-field
+                                                    v-model="sliderItem.logoTranslateY"
+                                                    :label="$tc('sw-cms.elements.heroSlider.config.logoTranslateY')"
+                                                    :placeholder="'0'"
+                                                    :help-text="$tc('sw-cms.elements.heroSlider.config.logoTranslateYHelpText')"
+                                                    number-type="int"
+                                                    :min="-500"
+                                                    :max="500"
+                                                    :step="5"
+                                                    @update:model-value="emitUpdateEl"
+                                                />
+                                            </div>
+                                        </div>
+                                        
+                                        {# Custom CSS für Logo (nur bei "outside" sichtbar) #}
+                                        <sw-code-editor
+                                            v-if="sliderItem.logoPosition === 'outside'"
+                                            :value="sliderItem.logoCustomCss || defaultLogoOutsideCss"
+                                            :label="$tc('sw-cms.elements.heroSlider.config.logoCustomCss')"
+                                            :help-text="$tc('sw-cms.elements.heroSlider.config.logoCustomCssHelpText')"
+                                            :editor-config="{ mode: 'css' }"
+                                            @update:value="(value) => { sliderItem.logoCustomCss = value; emitUpdateEl(); }"
+                                            @blur="emitUpdateEl"
+                                        />
+                                    </div>
                                 </div>
                                 {% endblock %}
                                 

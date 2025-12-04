@@ -192,6 +192,22 @@
                             "label": "Animate right element",
                             "helpText": "Enable animation for the right element on scroll"
                         },
+                        "elementLeftCss": {
+                            "label": "CSS for left element wrapper",
+                            "helpText": "Custom CSS for the left element wrapper (e.g. padding, margin, background). Applied on desktop only, NOT on mobile."
+                        },
+                        "elementRightCss": {
+                            "label": "CSS for right element wrapper",
+                            "helpText": "Custom CSS for the right element wrapper (e.g. padding, margin, background). Applied on desktop only, NOT on mobile."
+                        },
+                        "imageContainerLeftCss": {
+                            "label": "CSS for left image container",
+                            "helpText": "Custom CSS for the left image container (.cms-image-container). e.g. height: 80%; object-fit: contain;"
+                        },
+                        "imageContainerRightCss": {
+                            "label": "CSS for right image container",
+                            "helpText": "Custom CSS for the right image container (.cms-image-container). e.g. height: 80%; object-fit: contain;"
+                        },
                         "audioFile": {
                             "label": "Audio file",
                             "helpText": "Optional: Audio file for background music or sound effects"
@@ -389,6 +405,16 @@
                     "logoImage": "Logo/Image before headline",
                     "logoImageCaption": "Logo/Image before headline (displayed above title)",
                     "logoImageHelpText": "Optional: Logo or image displayed before the headline. Used only on this slide.",
+                    "logoPosition": "Logo Position",
+                    "logoPositionHelpText": "Choose whether the logo is displayed inside the content area or outside (absolutely positioned).",
+                    "logoPositionInside": "Inside Content Area",
+                    "logoPositionOutside": "Outside (absolute top-left)",
+                    "logoTranslateX": "Logo Position X (px)",
+                    "logoTranslateXHelpText": "Horizontal offset of the logo in pixels (negative = left, positive = right)",
+                    "logoTranslateY": "Logo Position Y (px)",
+                    "logoTranslateYHelpText": "Vertical offset of the logo in pixels (negative = up, positive = down)",
+                    "logoCustomCss": "Logo Custom CSS",
+                    "logoCustomCssHelpText": "Additional CSS for the logo (e.g. max-width: 200px; top: 2rem;). Only applied when 'Outside' is selected.",
                     "mediaUploadHelpText": "Select images for the hero slider (max. 200 KB recommended). Modern image formats (WebP, AVIF) are automatically compressed.",
                     "uploadSizeWarning": {
                         "title": "Large file detected",
