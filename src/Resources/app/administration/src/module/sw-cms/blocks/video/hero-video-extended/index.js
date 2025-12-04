@@ -68,6 +68,8 @@ Shopware.Service('cmsService').registerCmsBlock({
                         source: 'static',
                         value: '<h2 class="hero-overlay-headline">Ihre Überschrift</h2><p class="hero-overlay-text">Ihr Beschreibungstext hier eingeben...</p>',
                     },
+                    // WICHTIG: verticalAlign für Shopware's checkRequiredSlotConfigField
+                    verticalAlign: { source: 'static', value: 'center' },
                 },
             },
         },

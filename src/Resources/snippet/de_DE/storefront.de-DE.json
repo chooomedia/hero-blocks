@@ -15,8 +15,35 @@
             "licenseExpired": {
                 "title": "🔒 Premium-Feature: Lizenz abgelaufen",
                 "message": "Dieses exklusive Feature erfordert eine aktive Lizenz. Verlängern Sie jetzt und profitieren Sie von allen Premium-Funktionen!",
-                "renewButton": "Jetzt verlängern & profitieren"
+                "renewButton": "Jetzt verlängern & profitieren",
+                "close": "Schließen"
+            },
+            "heroSlider": {
+                "ariaLabel": "Hero Slider",
+                "skipHeroSlider": "Hero Slider überspringen"
             }
+        }
+    },
+    "heroBlocks": {
+        "megaMenu": {
+            "link": {
+                "ariaLabel": "%name% öffnen"
+            },
+            "dropdown": {
+                "ariaLabel": "Unternavigation für %name%"
+            },
+            "categories": {
+                "ariaLabel": "Kategorien"
+            }
+        },
+        "instagramFeed": {
+            "ariaLabel": "Instagram Feed",
+            "loadMore": "Mehr laden",
+            "viewPostOn": "Beitrag auf %platform% ansehen",
+            "video": "Video",
+            "videoNotSupported": "Ihr Browser unterstützt das Video-Tag nicht.",
+            "likes": "Likes",
+            "comments": "Kommentare"
         }
     }
 }

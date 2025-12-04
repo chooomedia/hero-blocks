@@ -88,6 +88,8 @@ Shopware.Service('cmsService').registerCmsBlock({
             default: {
                 config: {
                     displayMode: { source: 'static', value: 'cover' },
+                    minHeight: { source: 'static', value: '340px' },
+                    verticalAlign: { source: 'static', value: 'center' },
                 },
                 data: {
                     media: {
@@ -97,7 +99,18 @@ Shopware.Service('cmsService').registerCmsBlock({
                 },
             },
         },
-        right: 'text',
+        right: {
+            type: 'text',
+            default: {
+                config: {
+                    content: {
+                        source: 'static',
+                        value: '<h2>Ihre Überschrift</h2><p>Ihr Text hier...</p>',
+                    },
+                    verticalAlign: { source: 'static', value: 'center' },
+                },
+            },
+        },
     },
 });
 

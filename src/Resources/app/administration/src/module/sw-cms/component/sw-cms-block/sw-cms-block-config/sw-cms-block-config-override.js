@@ -11,15 +11,19 @@ Shopware.Component.override('sw-cms-block-config', {
     template,
     
     mounted() {
-        console.log('[Block Config Override] Mounted! Block:', this.block?.name);
+        // Debug: Block type (not name!) determines the block config
+        console.log('[Block Config Override] Mounted! Block type:', this.block?.type, 'name:', this.block?.name);
         console.log('[Block Config Override] blockConfig:', this.blockConfig);
         console.log('[Block Config Override] configComponent:', this.blockConfig?.configComponent);
     },
     
     watch: {
-        'block.name': {
-            handler(newName) {
-                console.log('[Block Config Override] Block changed to:', newName);
+        // CRITICAL: Watch block.type, NOT block.name!
+        // block.name is a user-defined label (e.g., "regina-hero-slider")
+        // block.type is the registered block type (e.g., "hero-block-slider")
+        'block.type': {
+            handler(newType) {
+                console.log('[Block Config Override] Block type changed to:', newType, 'name:', this.block?.name);
                 console.log('[Block Config Override] blockConfig:', this.blockConfig);
                 console.log('[Block Config Override] configComponent:', this.blockConfig?.configComponent);
             },

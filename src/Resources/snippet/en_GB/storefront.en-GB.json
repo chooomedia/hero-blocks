@@ -15,8 +15,35 @@
             "licenseExpired": {
                 "title": "🔒 Premium Feature: License Expired",
                 "message": "This exclusive feature requires an active license. Renew now and enjoy all premium features!",
-                "renewButton": "Renew Now & Benefit"
+                "renewButton": "Renew Now & Benefit",
+                "close": "Close"
+            },
+            "heroSlider": {
+                "ariaLabel": "Hero Slider",
+                "skipHeroSlider": "Skip Hero Slider"
             }
+        }
+    },
+    "heroBlocks": {
+        "megaMenu": {
+            "link": {
+                "ariaLabel": "Open %name%"
+            },
+            "dropdown": {
+                "ariaLabel": "Submenu for %name%"
+            },
+            "categories": {
+                "ariaLabel": "Categories"
+            }
+        },
+        "instagramFeed": {
+            "ariaLabel": "Instagram Feed",
+            "loadMore": "Load More",
+            "viewPostOn": "View post on %platform%",
+            "video": "Video",
+            "videoNotSupported": "Your browser does not support the video tag.",
+            "likes": "Likes",
+            "comments": "Comments"
         }
     }
 }

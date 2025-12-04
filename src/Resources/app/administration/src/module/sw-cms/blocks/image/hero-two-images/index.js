@@ -13,20 +13,8 @@ Shopware.Component.register('sw-cms-block-hero-two-images', () => import('./comp
 
 // WICHTIG: Block-Sichtbarkeit basierend auf System-Config
 const configKey = 'HeroBlocks.config.enableTwoImages';
-let isEnabled = false;
-
-// Versuche Config synchron zu lesen (wenn System-Config bereits geladen)
-try {
-    const systemConfigApi = Shopware.Service('systemConfigApiService');
-    if (systemConfigApi && systemConfigApi.getValues) {
-        const cachedConfig = systemConfigApi.getValues();
-        if (cachedConfig && cachedConfig[configKey] !== undefined) {
-            isEnabled = cachedConfig[configKey] === true;
-        }
-    }
-} catch (e) {
-    // Config noch nicht geladen - wird asynchron geladen
-}
+// WICHTIG: Kein synchroner getValues() Aufruf ohne Parameter (verursacht 400 Fehler)
+// Die Sichtbarkeit wird asynchron über den sw-cms-sidebar Override gesteuert
 
 const blockConfig = {
     name: 'hero-two-images',
@@ -48,6 +36,8 @@ const blockConfig = {
                 config: {
                     displayMode: { source: 'static', value: 'cover' },
                     minHeight: { source: 'static', value: '340px' },
+                    // WICHTIG: verticalAlign für Shopware's checkRequiredSlotConfigField
+                    verticalAlign: { source: 'static', value: 'center' },
                 },
             },
         },
@@ -57,6 +47,8 @@ const blockConfig = {
                 config: {
                     displayMode: { source: 'static', value: 'cover' },
                     minHeight: { source: 'static', value: '340px' },
+                    // WICHTIG: verticalAlign für Shopware's checkRequiredSlotConfigField
+                    verticalAlign: { source: 'static', value: 'center' },
                 },
             },
         },

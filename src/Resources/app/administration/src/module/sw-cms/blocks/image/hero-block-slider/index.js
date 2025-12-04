@@ -89,6 +89,8 @@ Shopware.Service("cmsService").registerCmsBlock({
             source: "static",
             value: 300,
           },
+          // WICHTIG: verticalAlign für Shopware's checkRequiredSlotConfigField
+          verticalAlign: { source: "static", value: "center" },
         },
         data: {},
       },

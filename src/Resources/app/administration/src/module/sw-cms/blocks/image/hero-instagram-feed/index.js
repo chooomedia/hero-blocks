@@ -97,7 +97,13 @@ const blockConfig = {
             type: 'hero-instagram-feed',
             default: {
                 config: {
-                    // Element-spezifische Config (falls nötig)
+                    // WICHTIG: Config muss mindestens ein Feld haben für checkRequiredSlotConfigField
+                    postLimit: {
+                        source: 'static',
+                        value: 12,
+                    },
+                    // WICHTIG: verticalAlign für Shopware's checkRequiredSlotConfigField
+                    verticalAlign: { source: 'static', value: 'center' },
                 },
             },
         },
