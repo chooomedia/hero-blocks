@@ -1,25 +1,30 @@
 {% block sw_cms_el_category_slider %}
 <div class="sw-cms-el-hero-category-slider">
-    {# V3.0 - Reaktive Preview für Slide-Management (1-4 Slides nebeneinander) #}
+    {# V3.3 - Reaktive Preview für Slide-Management (1-4 Slides nebeneinander) - Matching Frontend #}
     <div class="sw-cms-el-hero-category-slider__preview" v-if="hasSlides" :class="{ 'is-single-image': imageCount === '1', 'is-double-image': imageCount === '2', 'is-triple-image': imageCount === '3', 'is-quad-image': imageCount === '4' }">
         {# Slider Preview - Dynamisch 1-4 Slides (REAKTIV auf imageCount & categorySlides) #}
         <div class="sw-cms-el-hero-category-slider__preview-slider">
             <template v-for="(previewImg, index) in previewImages" :key="`preview-${index}-${renderCount}`">
                 <div class="sw-cms-el-hero-category-slider__preview-slide">
-                    {# Slide Title (Custom Title oder Category Name) #}
-                    <div class="sw-cms-el-hero-category-slider__preview-slide-title">
-                        {{ previewImg.title }}
-                        <span v-if="!previewImg.isReal" class="sw-cms-el-hero-category-slider__preview-slide-badge">(Preview)</span>
-                </div>
+                    {# Background Image #}
                     <img
                         :src="previewImg.url"
                         :alt="previewImg.title"
                         class="sw-cms-el-hero-category-slider__preview-image"
                     >
+                    {# Slide Title (Custom Title oder Category Name) - Top Left #}
+                    <div class="sw-cms-el-hero-category-slider__preview-slide-title">
+                        {{ previewImg.title }}
+                        <span v-if="!previewImg.isReal" class="sw-cms-el-hero-category-slider__preview-slide-badge">(Preview)</span>
+                    </div>
+                    {# Button - Top Right #}
+                    <div class="sw-cms-el-hero-category-slider__preview-slide-button">
+                        {{ $tc('component.cms.categorySlider.moreInfo') || 'Mehr' }}
+                    </div>
                     {# Custom Text (wenn vorhanden) #}
                     <div v-if="previewImg.text" class="sw-cms-el-hero-category-slider__preview-slide-text">
                         {{ previewImg.text }}
-                </div>
+                    </div>
                 </div>
             </template>
         </div>

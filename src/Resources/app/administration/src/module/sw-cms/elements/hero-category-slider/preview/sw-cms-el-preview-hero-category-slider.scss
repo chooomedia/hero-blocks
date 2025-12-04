@@ -1,3 +1,8 @@
+// ========================================================================
+// HERO CATEGORY SLIDER - SIDEBAR PREVIEW
+// V3.3 - Matching Frontend Design
+// ========================================================================
+
 .sw-cms-el-preview-hero-category-slider {
     display: flex;
     flex-direction: column;
@@ -5,28 +10,97 @@
     justify-content: center;
     height: 100%;
     width: 100%;
-    background: #f0f2f5;
-    border: 1px solid #d1d9e0;
-    border-radius: 4px;
-    padding: 20px;
-    text-align: center;
+    background: #1a1a1a;
+    border-radius: 8px;
+    padding: 12px;
+    box-sizing: border-box;
     
-    &__placeholder {
+    // Slider Preview Container - Two slides side by side
+    &__slider-preview {
+        display: flex;
+        gap: 8px;
+        width: 100%;
+        flex: 1;
+        min-height: 0;
+    }
+    
+    // Individual Slide
+    &__slide {
+        flex: 1;
+        position: relative;
+        background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+        border-radius: 6px;
+        min-height: 80px;
         display: flex;
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        color: #666;
+        justify-content: space-between;
+        padding: 8px;
+        overflow: hidden;
         
-        &-icon {
-            margin-bottom: 10px;
-            opacity: 0.5;
-        }
-        
-        &-text {
-            font-size: 14px;
-            font-weight: 600;
+        // Subtle image overlay effect
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, 0.6) 100%);
+            pointer-events: none;
+            z-index: 1;
         }
     }
+    
+    // Slide Title - Top left like frontend
+    &__slide-title {
+        position: relative;
+        z-index: 2;
+        font-family: 'Oswald', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 11px;
+        font-weight: 600;
+        color: #fff;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        line-height: 1.2;
+    }
+    
+    // Slide Button - Bottom right like frontend
+    &__slide-button {
+        position: relative;
+        z-index: 2;
+        align-self: flex-end;
+        font-size: 8px;
+        font-weight: 500;
+        color: #333;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 2px 8px;
+        border-radius: 3px;
+        white-space: nowrap;
+    }
+    
+    // Navigation Dots
+    &__dots {
+        display: flex;
+        justify-content: center;
+        gap: 4px;
+        margin-top: 8px;
+    }
+    
+    &__dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        
+        &--active {
+            background: rgba(255, 255, 255, 0.9);
+        }
+    }
+    
+    // Label
+    &__label {
+        margin-top: 6px;
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.6);
+        text-align: center;
+    }
 }
-

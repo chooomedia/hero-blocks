@@ -37,35 +37,65 @@
             flex: 1;
             min-height: 0; // WICHTIG: Erlaubt Flexbox-Shrinking
             max-width: 48%; // WICHTIG: Default 48% Breite pro Slide
-            position: relative; // WICHTIG: Für absolute positionierten Titel
+            position: relative; // WICHTIG: Für absolute positionierte Elemente
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden; // WICHTIG: Verhindert Überlauf
-            border-radius: 4px;
-            background: var(--color-gray-100);
+            border-radius: 8px;
+            background: #1a1a1a;
             
-            // Category Title INNERHALB des Slide (oben links mit Abstand, OHNE Background)
+            // Gradient Overlay für bessere Lesbarkeit
+            &::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, 0.4) 100%);
+                pointer-events: none;
+                z-index: 2;
+            }
+            
+            // Category Title - Top Left (wie Frontend)
             &-title {
                 position: absolute;
                 top: 0.75rem;
                 left: 0.75rem;
+                max-width: calc(100% - 80px);
                 font-family: 'Oswald', sans-serif;
                 font-size: 14px;
                 font-weight: 600;
                 color: #fff;
                 z-index: 10;
                 text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
-                // WICHTIG: KEIN background - nur Text-Shadow für Lesbarkeit
+                line-height: 1.2;
+            }
+            
+            // Button - Top Right (wie Frontend)
+            &-button {
+                position: absolute;
+                top: 0.75rem;
+                right: 0.75rem;
+                font-size: 11px;
+                font-weight: 500;
+                color: #333;
+                background: rgba(255, 255, 255, 0.9);
+                padding: 4px 12px;
+                border-radius: 4px;
+                z-index: 10;
+                white-space: nowrap;
             }
         }
         
         &-image {
             width: 100%;
-            height: auto; // WICHTIG: Auto height für korrekte Proportionen
-            max-height: 300px; // WICHTIG: Maximal 300px Höhe
-            object-fit: contain; // WICHTIG: contain (vollständiges Bild sichtbar)
-            border-radius: 4px;
+            height: 100%;
+            object-fit: cover; // WICHTIG: cover wie im Frontend
+            border-radius: 8px;
+            position: relative;
+            z-index: 1;
         }
         
         // Navigation Dots (außerhalb unterhalb)

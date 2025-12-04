@@ -1,13 +1,33 @@
 {% block sw_cms_el_preview_category_slider %}
 <div class="sw-cms-el-preview-hero-category-slider">
-    <div class="sw-cms-el-preview-hero-category-slider__placeholder">
-        <span class="sw-cms-el-preview-hero-category-slider__placeholder-icon">
-            <mt-icon name="regular-image" size="24"></mt-icon>
-        </span>
-        <div class="sw-cms-el-preview-hero-category-slider__placeholder-text">
-            {{ $tc('sw-cms.elements.categorySlider.label') }}
+    {# V3.3 - Sidebar Preview matching Frontend Design #}
+    <div class="sw-cms-el-preview-hero-category-slider__slider-preview">
+        {# Two Category Slides Preview #}
+        <div class="sw-cms-el-preview-hero-category-slider__slide">
+            <div class="sw-cms-el-preview-hero-category-slider__slide-title">
+                Category 1
+            </div>
+            <div class="sw-cms-el-preview-hero-category-slider__slide-button">
+                {{ $tc('component.cms.categorySlider.moreInfo') || 'Mehr' }}
+            </div>
         </div>
+        <div class="sw-cms-el-preview-hero-category-slider__slide">
+            <div class="sw-cms-el-preview-hero-category-slider__slide-title">
+                Category 2
+            </div>
+            <div class="sw-cms-el-preview-hero-category-slider__slide-button">
+                {{ $tc('component.cms.categorySlider.moreInfo') || 'Mehr' }}
+            </div>
+        </div>
+    </div>
+    {# Navigation Dots #}
+    <div class="sw-cms-el-preview-hero-category-slider__dots">
+        <span class="sw-cms-el-preview-hero-category-slider__dot sw-cms-el-preview-hero-category-slider__dot--active"></span>
+        <span class="sw-cms-el-preview-hero-category-slider__dot"></span>
+    </div>
+    {# Label #}
+    <div class="sw-cms-el-preview-hero-category-slider__label">
+        {{ $tc('sw-cms.elements.categorySlider.label') }}
     </div>
 </div>
 {% endblock %}
-
