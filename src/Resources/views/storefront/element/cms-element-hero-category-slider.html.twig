@@ -100,11 +100,11 @@
                     itemscope
                     itemtype="https://schema.org/ImageGallery"
                 >
+                    {# Skip-Link für Accessibility - nur für Screen Reader sichtbar #}
                     {% block element_hero_category_slider_skip_slider %}
-                        {% sw_include '@Storefront/storefront/component/skip-target.html.twig' with {
-                            targetId: blockId,
-                            snippet: 'component.cms.imageGallery.skipImageGallery',
-                        } %}
+                        <a href="#content-after-target-{{ blockId }}" class="visually-hidden-focusable">
+                            {{ 'component.cms.imageGallery.skipImageGallery'|trans|sw_sanitize }}
+                        </a>
                     {% endblock %}
 
                     {# V3.3 - Bootstrap Row/Col für Static Mode, Custom für Slider Mode #}
