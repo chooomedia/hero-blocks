@@ -216,6 +216,7 @@ export default {
 
         /**
          * Initialisiert Element-Config für content Slot (SPRACHABHÄNGIG)
+         * WICHTIG: Inline styles für weiße Farbe (konsistent mit hero-image-overlay)
          */
         initializeElementConfig() {
             const slot = this.contentSlot;
@@ -228,10 +229,11 @@ export default {
                 slot.config = {};
             }
 
+            // Default Content mit inline styles für weiße Farbe (wie bei hero-image-overlay)
             const elementDefaults = {
                 content: { 
                     source: 'static', 
-                    value: '<h2 class="hero-overlay-headline">Ihre Überschrift</h2><p class="hero-overlay-text">Ihr Beschreibungstext hier eingeben...</p>' 
+                    value: '<h2 class="hero-overlay-headline" style="color: #ffffff; margin-bottom: 0.25rem;">Ihre Überschrift</h2><p class="hero-overlay-text" style="color: #ffffff;">Ihr Beschreibungstext hier eingeben...</p>' 
                 },
             };
 

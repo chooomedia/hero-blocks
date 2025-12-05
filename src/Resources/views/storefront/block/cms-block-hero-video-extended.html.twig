@@ -110,7 +110,8 @@
                    {% endif %}
                    role="complementary"
                    aria-labelledby="{{ block.id }}-headline">
-                <div class="cms-block-hero-video-extended__overlay-content">
+                <div class="cms-block-hero-video-extended__overlay-content"
+                     style="{{ overlayTextStyle }}">
                     {{ overlayContent|raw }}
                 </div>
             </aside>

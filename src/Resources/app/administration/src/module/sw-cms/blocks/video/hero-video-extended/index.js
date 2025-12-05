@@ -66,7 +66,9 @@ Shopware.Service('cmsService').registerCmsBlock({
                 config: {
                     content: {
                         source: 'static',
-                        value: '<h2 class="hero-overlay-headline">Ihre Überschrift</h2><p class="hero-overlay-text">Ihr Beschreibungstext hier eingeben...</p>',
+                        // WICHTIG: Inline styles für weiße Farbe (wie bei hero-image-overlay)
+                        // margin-bottom: 0.25rem für konsistenten Abstand zwischen Headline und Text
+                        value: '<h2 class="hero-overlay-headline" style="color: #ffffff; margin-bottom: 0.25rem;">Ihre Überschrift</h2><p class="hero-overlay-text" style="color: #ffffff;">Ihr Beschreibungstext hier eingeben...</p>',
                     },
                     // WICHTIG: verticalAlign für Shopware's checkRequiredSlotConfigField
                     verticalAlign: { source: 'static', value: 'center' },

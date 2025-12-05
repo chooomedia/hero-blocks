@@ -138,7 +138,19 @@
         // WICHTIG: KEIN background-color hier!
         // Admin-Settings werden via inline style 1:1 übernommen.
         
-        // Smooth Animation
+        // ========================================
+        // KRITISCH: Hardware-Beschleunigung für clip-path
+        // ========================================
+        // Problem: Bei transform-Animationen kann clip-path "verschwinden"
+        // Lösung: Erzwinge GPU-Rendering mit translateZ(0) und isolation
+        // Referenz: https://stackoverflow.com/questions/48163824/clip-path-not-working-with-transform
+        isolation: isolate;
+        // WICHTIG: Basis-Transform für Hardware-Beschleunigung
+        // Wird von den Animations-States überschrieben
+        transform: translateZ(0);
+        
+        // Smooth Animation - NUR transform und opacity animieren
+        // WICHTIG: clip-path NICHT animieren (verursacht Glitches)
         transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
                     opacity 0.6s ease-out;
 
@@ -159,15 +171,19 @@
 
         &--top-left {
             top: -1.5rem;
+            // WICHTIG: translateZ(0) für Hardware-Beschleunigung
+            transform: translateZ(0);
         }
 
         &--middle-left {
             top: 50%;
-            transform: translateY(-50%);
+            // WICHTIG: translateZ(0) zusammen mit translateY für konsistentes Rendering
+            transform: translateY(-50%) translateZ(0);
         }
 
         &--bottom-left {
             bottom: -1.5rem;
+            transform: translateZ(0);
         }
 
         // ========================================
@@ -188,15 +204,17 @@
 
         &--top-right {
             top: -1.5rem;
+            transform: translateZ(0);
         }
 
         &--middle-right {
             top: 50%;
-            transform: translateY(-50%);
+            transform: translateY(-50%) translateZ(0);
         }
 
         &--bottom-right {
             bottom: -1.5rem;
+            transform: translateZ(0);
         }
 
         // ========================================
@@ -221,7 +239,7 @@
             &--middle-right,
             &--bottom-right {
                 padding-left: calc(2.5rem + var(--overlay-corner-offset));
-    }
+            }
     
             &--top-left,
             &--top-right {
@@ -231,6 +249,12 @@
             &--bottom-left,
             &--bottom-right {
                 bottom: -2rem;
+            }
+            
+            // WICHTIG: middle-Positionen brauchen translateY(-50%) + translateZ(0)
+            &--middle-left,
+            &--middle-right {
+                transform: translateY(-50%) translateZ(0);
             }
         }
 
@@ -248,47 +272,52 @@
         // ========================================
         // SCROLL ANIMATION - Initial State
         // ========================================
+        // WICHTIG: clip-path muss IMMER angewendet werden, unabhängig vom Animations-Status!
+        // Problem war: Bei transform-Animation konnte clip-path "verschwinden"
+        // Lösung: clip-path wird NICHT in der Animation verändert, nur transform und opacity
         &[data-overlay-animate]:not(.is-animated) {
             opacity: 0;
-            // MOBILE: Sanftere Animation (100% statt 120% um Glitch zu vermeiden)
-            @media (max-width: 767px) {
-                will-change: transform, opacity;
-            }
+            // WICHTIG: will-change für bessere Performance und verhindert Rendering-Glitches
+            will-change: transform, opacity;
+            // WICHTIG: backface-visibility verhindert Flicker bei 3D-Transforms
+            backface-visibility: hidden;
+            // WICHTIG: transform-style für konsistente Rendering
+            transform-style: preserve-3d;
         }
         
         // Left positions: slide from left
         &--top-left[data-overlay-animate]:not(.is-animated),
         &--bottom-left[data-overlay-animate]:not(.is-animated) {
-            transform: translateX(-100%);
+            transform: translateX(-100%) translateZ(0);
         
             @media (min-width: 768px) {
-                transform: translateX(-120%);
+                transform: translateX(-120%) translateZ(0);
             }
         }
         
         &--middle-left[data-overlay-animate]:not(.is-animated) {
-            transform: translateX(-100%) translateY(-50%);
+            transform: translateX(-100%) translateY(-50%) translateZ(0);
             
             @media (min-width: 768px) {
-                transform: translateX(-120%) translateY(-50%);
+                transform: translateX(-120%) translateY(-50%) translateZ(0);
+            }
         }
-    }
     
         // Right positions: slide from right
         &--top-right[data-overlay-animate]:not(.is-animated),
         &--bottom-right[data-overlay-animate]:not(.is-animated) {
-            transform: translateX(100%);
+            transform: translateX(100%) translateZ(0);
             
             @media (min-width: 768px) {
-                transform: translateX(120%);
+                transform: translateX(120%) translateZ(0);
             }
         }
         
         &--middle-right[data-overlay-animate]:not(.is-animated) {
-            transform: translateX(100%) translateY(-50%);
+            transform: translateX(100%) translateY(-50%) translateZ(0);
             
             @media (min-width: 768px) {
-                transform: translateX(120%) translateY(-50%);
+                transform: translateX(120%) translateY(-50%) translateZ(0);
             }
         }
 
@@ -297,23 +326,28 @@
         // ========================================
         &[data-overlay-animate].is-animated {
             opacity: 1;
+            // WICHTIG: will-change entfernen nach Animation für bessere Performance
+            will-change: auto;
         }
         
         &--top-left[data-overlay-animate].is-animated,
         &--bottom-left[data-overlay-animate].is-animated,
         &--top-right[data-overlay-animate].is-animated,
         &--bottom-right[data-overlay-animate].is-animated {
-            transform: translateX(0);
+            // WICHTIG: translateZ(0) für Hardware-Beschleunigung und konsistentes Rendering
+            transform: translateX(0) translateZ(0);
         }
         
         &--middle-left[data-overlay-animate].is-animated,
         &--middle-right[data-overlay-animate].is-animated {
-            transform: translateX(0) translateY(-50%);
+            transform: translateX(0) translateY(-50%) translateZ(0);
         }
         
         // Fallback: Ohne data-overlay-animate immer sichtbar
         &:not([data-overlay-animate]) {
             opacity: 1;
+            // WICHTIG: Auch hier translateZ(0) für konsistentes clip-path Rendering
+            transform: translateZ(0);
         }
     }
     
@@ -325,11 +359,55 @@
         z-index: 1;
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        gap: 0.25rem; // Konsistenter Abstand zwischen Headline und Text
+        
+        // ========================================
+        // HEADLINE STYLES (via HTML class)
+        // Für sprachabhängigen Content aus Element-Slot
+        // WICHTIG: Konsistent mit hero-image-overlay Block!
+        // ========================================
+        h2,
+        .hero-overlay-headline {
+            margin: 0 0 0.25rem 0;
+            font-family: 'Oswald', var(--sw-font-family-headline, sans-serif);
+            font-size: 1.25rem;
+            font-weight: 500;
+            line-height: 1.3;
+            text-transform: uppercase;
+            // WICHTIG: Weiß als Standard - inline styles können überschreiben
+            color: #ffffff;
+            
+            @media (min-width: 768px) {
+                font-size: 1.5rem;
+            }
+            
+            @media (min-width: 1200px) {
+                font-size: 1.65rem;
+            }
+        }
+        
+        // ========================================
+        // TEXT STYLES (via HTML class)
+        // WICHTIG: Konsistent mit hero-image-overlay Block!
+        // ========================================
+        p,
+        .hero-overlay-text {
+            margin: 0;
+            font-size: 0.9rem;
+            font-weight: 400;
+            line-height: 1.4;
+            // WICHTIG: Weiß als Standard - inline styles können überschreiben
+            color: #ffffff;
+            
+            @media (min-width: 768px) {
+                font-size: 1.25rem;
+            }
+        }
     }
     
+    // Legacy: Alte BEM-Klassen (für Rückwärtskompatibilität)
     &__headline {
-        margin: 0;
+        margin: 0 0 0.25rem 0;
         font-family: 'Oswald', var(--sw-font-family-headline, sans-serif);
         font-size: 1.25rem;
         font-weight: 500;
@@ -343,13 +421,13 @@
         
         @media (min-width: 1200px) {
             font-size: 1.65rem;
+        }
     }
-}
 
     &__text {
         margin: 0;
         font-size: 0.9rem;
-        line-height: 1.3;
+        line-height: 1.4;
         color: inherit;
         
         p {
@@ -377,14 +455,15 @@
             
             &[data-overlay-animate] {
                 opacity: 1;
-                transform: none !important;
+                // WICHTIG: translateZ(0) beibehalten für konsistentes clip-path Rendering
+                transform: translateZ(0) !important;
                 
                 &.cms-block-hero-video-extended__overlay--middle-left,
                 &.cms-block-hero-video-extended__overlay--middle-right {
-                    transform: translateY(-50%) !important;
+                    transform: translateY(-50%) translateZ(0) !important;
+                }
+            }
         }
-    }
-}
 
         &__video {
             animation-play-state: paused !important;
