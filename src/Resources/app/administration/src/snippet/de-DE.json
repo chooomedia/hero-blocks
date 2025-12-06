@@ -324,6 +324,10 @@
                     "label": "Hero Mega Menu",
                     "description": "Erweiterte Mega-Menü-Navigation mit Kategorien, Produkten und Widgets"
                 },
+                "heroBookingForm": {
+                    "label": "Hero Booking Form",
+                    "description": "HOREX Probefahrt- und Buchungsformular mit Modellauswahl und Kontaktdaten"
+                },
                 "heroImageOverlay": {
                     "label": "Hero Image Overlay",
                     "description": "Vollbild-Bild mit schrägem Text-Overlay-Panel",
@@ -374,6 +378,67 @@
             }
         },
         "elements": {
+            "heroBookingForm": {
+                "label": "Hero Booking Form",
+                "config": {
+                    "tabs": {
+                        "content": "Inhalt",
+                        "settings": "Einstellungen",
+                        "locations": "Standorte",
+                        "advanced": "Erweitert"
+                    },
+                    "titleLabel": "Formular-Titel",
+                    "titlePlaceholder": "z.B. Probefahrt anfragen",
+                    "confirmationTextLabel": "Bestätigungstext",
+                    "confirmationTextPlaceholder": "Vielen Dank für Ihre Anfrage! Wir werden Sie in Kürze kontaktieren.",
+                    "confirmationTextHelpText": "Text, der nach erfolgreicher Formularübermittlung angezeigt wird. Leer lassen für Standardnachricht.",
+                    "infoText": "Das Modell-Dropdown wird dynamisch aus der Kategorie 'Models' geladen. Die Kategorie-Auswahl wird in einer zukünftigen Version konfigurierbar sein.",
+                    "mailReceiverLabel": "E-Mail-Empfänger",
+                    "mailReceiverHelpText": "Geben Sie E-Mail-Adressen ein, die Formularübermittlungen erhalten sollen. Drücken Sie Enter nach jeder Adresse.",
+                    "defaultMailReceiverLabel": "Shop-Standard-E-Mail verwenden",
+                    "defaultMailReceiverHelpText": "Wenn aktiviert, werden Formularübermittlungen auch an die Standard-E-Mail-Adresse des Shops gesendet.",
+                    "locationsInfoText": "Definieren Sie die Standorte, die im 'Wunschort'-Dropdown verfügbar sind. Benutzer können ihren bevorzugten Standort für die Probefahrt auswählen.",
+                    "currentLocationsLabel": "Aktuelle Standorte",
+                    "noLocationsText": "Keine Standorte definiert. Fügen Sie unten Ihren ersten Standort hinzu.",
+                    "addLocationLabel": "Neuen Standort hinzufügen",
+                    "locationLabelLabel": "Anzeigename",
+                    "locationLabelPlaceholder": "z.B. Werk II München",
+                    "locationValueLabel": "Interner Wert",
+                    "locationValuePlaceholder": "z.B. muenchen",
+                    "locationValueHelpText": "Interne Kennung (Kleinbuchstaben, keine Leerzeichen). Wird automatisch aus dem Anzeigenamen generiert.",
+                    "addLocationButton": "Standort hinzufügen",
+                    "comingSoon": "Demnächst",
+                    "modelCategoryLabel": "Modell-Kategorie",
+                    "modelCategoryPlaceholder": "Kategorie auswählen...",
+                    "modelCategoryHelpText": "Wählen Sie die Kategorie, deren Unterkategorien als Modell-Optionen im Dropdown angezeigt werden sollen. Diese Funktion ist in einer zukünftigen Version verfügbar.",
+                    "webhookUrlLabel": "Webhook URL",
+                    "webhookUrlPlaceholder": "https://api.webhook-services.automation.com/automate-scale-your-marketing",
+                    "webhookUrlHelpText": "Anstelle des E-Mail-Versands können Formulardaten als JSON an einen Webhook für Marketing-Automatisierung gesendet werden. Diese Funktion ist in einer zukünftigen Version verfügbar.",
+                    "googleMapsApiKeyLabel": "Google Maps API-Schlüssel",
+                    "googleMapsApiKeyPlaceholder": "AIza...",
+                    "googleMapsApiKeyHelpText": "API-Schlüssel für Google Maps Adressvalidierung. Validiert vom Benutzer eingegebene Adressen vor der Übermittlung.",
+                    "googleMapsSetupTitle": "So erhalten Sie einen Google Maps API-Schlüssel:",
+                    "googleMapsSetupStep1": "Gehen Sie zur Google Cloud Console (console.cloud.google.com)",
+                    "googleMapsSetupStep2": "Erstellen Sie ein neues Projekt oder wählen Sie ein bestehendes aus",
+                    "googleMapsSetupStep3": "Aktivieren Sie 'Address Validation API' und 'Geocoding API'",
+                    "googleMapsSetupStep4": "Erstellen Sie unter 'Anmeldedaten' einen API-Schlüssel und beschränken Sie ihn auf Ihre Domain",
+                    "modelLabel": "Modell",
+                    "modelPlaceholder": "Bitte wählen...",
+                    "zipLabel": "Wohnort, PLZ",
+                    "zipPlaceholder": "z.B. 86899 Landsberg am Lech",
+                    "locationLabel": "Wunschort",
+                    "salutationLabel": "Anrede",
+                    "titleFieldLabel": "Titel",
+                    "titleFieldPlaceholder": "z.B. Dr., Prof.",
+                    "firstNameLabel": "Vorname",
+                    "lastNameLabel": "Nachname",
+                    "emailLabel": "E-Mail",
+                    "phoneLabel": "Telefon",
+                    "messageLabel": "Nachricht",
+                    "messagePlaceholder": "Ihre Nachricht an uns...",
+                    "submitLabel": "Absenden"
+                }
+            },
             "heroBlocks": {
                 "heroTextOverlay": {
                     "label": "Hero Text Overlay",

@@ -1,0 +1,92 @@
+{% block sw_cms_element_hero_booking_modal %}
+    <div class="sw-cms-el-hero-booking-form">
+        {# Form Header #}
+        <h3 class="sw-cms-el-hero-booking-form__headline">
+            {{ formTitle }}
+        </h3>
+
+        {# Form Fields Preview (Contact Form Style) #}
+        <div class="sw-cms-el-hero-booking-form__form">
+            {# Row 1: Model (full width) #}
+            <div class="sw-cms-el-hero-booking-form__form-group full-width">
+                <mt-select
+                    :model-value="''"
+                    :label="$tc('sw-cms.elements.heroBookingForm.config.modelLabel') + ' *'"
+                    :options="[{value: 'regina', label: 'Regina Evo'}, {value: 'vr6', label: 'VR6'}]"
+                    :placeholder="$tc('sw-cms.elements.heroBookingForm.config.modelPlaceholder')"
+                />
+            </div>
+
+            {# Row 2: ZIP + Location #}
+            <div class="sw-cms-el-hero-booking-form__form-group two-items">
+                <mt-text-field
+                    :label="$tc('sw-cms.elements.heroBookingForm.config.zipLabel') + ' *'"
+                    :model-value="$tc('sw-cms.elements.heroBookingForm.config.zipPlaceholder')"
+                />
+                <mt-select
+                    :model-value="''"
+                    :label="$tc('sw-cms.elements.heroBookingForm.config.locationLabel') + ' *'"
+                    :options="[{value: 'landsberg', label: 'HOREX-Werk Landsberg'}, {value: 'ingolstadt', label: 'HOREX Flagshipstore Ingolstadt'}]"
+                />
+            </div>
+
+            {# Row 3: Salutation + Title #}
+            <div class="sw-cms-el-hero-booking-form__form-group two-items">
+                <mt-select
+                    :model-value="''"
+                    :label="$tc('sw-cms.elements.heroBookingForm.config.salutationLabel')"
+                    :options="[{value: 'mr', label: 'Herr'}, {value: 'mrs', label: 'Frau'}]"
+                />
+                <mt-text-field
+                    :label="$tc('sw-cms.elements.heroBookingForm.config.titleLabel')"
+                    :model-value="$tc('sw-cms.elements.heroBookingForm.config.titlePlaceholder')"
+                />
+            </div>
+
+            {# Row 4: First Name + Last Name #}
+            <div class="sw-cms-el-hero-booking-form__form-group two-items">
+                <mt-text-field
+                    :label="$tc('sw-cms.elements.heroBookingForm.config.firstNameLabel') + ' *'"
+                    :model-value="'Max'"
+                />
+                <mt-text-field
+                    :label="$tc('sw-cms.elements.heroBookingForm.config.lastNameLabel') + ' *'"
+                    :model-value="'Mustermann'"
+                />
+            </div>
+
+            {# Row 5: Email + Phone #}
+            <div class="sw-cms-el-hero-booking-form__form-group two-items">
+                <mt-text-field
+                    :label="$tc('sw-cms.elements.heroBookingForm.config.emailLabel') + ' *'"
+                    :model-value="'max@example.com'"
+                />
+                <mt-text-field
+                    :label="$tc('sw-cms.elements.heroBookingForm.config.phoneLabel') + ' *'"
+                    :model-value="'+49 123 456789'"
+                />
+            </div>
+
+            {# Row 6: Message #}
+            <div class="sw-cms-el-hero-booking-form__form-group full-width">
+                <mt-textarea
+                    :label="$tc('sw-cms.elements.heroBookingForm.config.messageLabel')"
+                    :model-value="$tc('sw-cms.elements.heroBookingForm.config.messagePlaceholder')"
+                />
+            </div>
+
+            {# Privacy Note #}
+            <h4 class="sw-cms-el-hero-booking-form__privacy-title">
+                {{ $tc('sw-cms.elements.form.element.label.privacy') }}
+            </h4>
+            <p class="sw-cms-el-hero-booking-form__privacy-note">
+                {{ $tc('sw-cms.elements.form.element.helpText.requiredFields') }}
+            </p>
+
+            {# Submit Button #}
+            <div class="sw-cms-el-hero-booking-form__action">
+                {{ $tc('sw-cms.elements.heroBookingForm.config.submitLabel') }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,65 @@
+// Hero Booking Form Preview - Contact Form Style
+// Import globales Matt Interfaces Branding
+@import "../../../../_blocks/matt-interfaces-branding";
+
+.sw-cms-preview-hero-booking-form {
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    min-height: 180px;
+    position: relative;
+    padding-bottom: 40px; // Space for branding
+
+    &__headline {
+        font-size: 11px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 12px;
+        text-align: center;
+    }
+
+    &__inputs {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 6px;
+    }
+
+    &__input {
+        flex: 1;
+        height: 18px;
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 3px;
+        font-size: 8px;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        padding: 0 6px;
+        
+        &--full {
+            flex: none;
+            width: 100%;
+            margin-bottom: 6px;
+        }
+        
+        &--textarea {
+            height: 28px;
+            margin-bottom: 8px;
+            align-items: flex-start;
+            padding-top: 4px;
+        }
+    }
+
+    &__action {
+        padding: 5px 12px;
+        background-color: #d6ab60;
+        color: #fff;
+        border-radius: 3px;
+        font-size: 9px;
+        font-weight: 600;
+        text-align: center;
+        margin-top: auto;
+    }
+}

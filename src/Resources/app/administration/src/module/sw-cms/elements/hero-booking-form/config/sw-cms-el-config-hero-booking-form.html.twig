@@ -1,0 +1,252 @@
+{% block sw_cms_el_config_hero_booking_modal %}
+<sw-tabs
+    position-identifier="sw-cms-element-config-hero-booking-form"
+    class="sw-cms-el-config-hero-booking-form__tabs"
+    default-item="content"
+>
+    <template #default="{ active }">
+        {# Content Tab #}
+        <sw-tabs-item
+            :title="$tc('sw-cms.elements.heroBookingForm.config.tabs.content')"
+            name="content"
+            :active-tab="active"
+        >
+            {{ $tc('sw-cms.elements.heroBookingForm.config.tabs.content') }}
+        </sw-tabs-item>
+
+        {# Settings Tab #}
+        <sw-tabs-item
+            :title="$tc('sw-cms.elements.heroBookingForm.config.tabs.settings')"
+            name="settings"
+            :active-tab="active"
+        >
+            {{ $tc('sw-cms.elements.heroBookingForm.config.tabs.settings') }}
+        </sw-tabs-item>
+
+        {# Location Options Tab #}
+        <sw-tabs-item
+            :title="$tc('sw-cms.elements.heroBookingForm.config.tabs.locations')"
+            name="locations"
+            :active-tab="active"
+        >
+            {{ $tc('sw-cms.elements.heroBookingForm.config.tabs.locations') }}
+        </sw-tabs-item>
+
+        {# Coming Soon Tab #}
+        <sw-tabs-item
+            :title="$tc('sw-cms.elements.heroBookingForm.config.tabs.advanced')"
+            name="advanced"
+            :active-tab="active"
+        >
+            {{ $tc('sw-cms.elements.heroBookingForm.config.tabs.advanced') }}
+        </sw-tabs-item>
+    </template>
+
+    <template #content="{ active }">
+        {# === CONTENT TAB === #}
+        <sw-container
+            v-if="active === 'content'"
+            class="sw-cms-el-config-hero-booking-form__tab-content"
+        >
+            {# Form Title #}
+            <mt-text-field
+                v-model="title"
+                :label="$tc('sw-cms.elements.heroBookingForm.config.titleLabel')"
+                :placeholder="$tc('sw-cms.elements.heroBookingForm.config.titlePlaceholder')"
+            />
+
+            {# Confirmation Text #}
+            <mt-textarea
+                v-model="confirmationText"
+                :label="$tc('sw-cms.elements.heroBookingForm.config.confirmationTextLabel')"
+                :placeholder="$tc('sw-cms.elements.heroBookingForm.config.confirmationTextPlaceholder')"
+                :help-text="$tc('sw-cms.elements.heroBookingForm.config.confirmationTextHelpText')"
+            />
+
+            {# Info Banner #}
+            <mt-banner variant="info" class="mt-4">
+                {{ $tc('sw-cms.elements.heroBookingForm.config.infoText') }}
+            </mt-banner>
+        </sw-container>
+
+        {# === SETTINGS TAB === #}
+        <sw-container
+            v-else-if="active === 'settings'"
+            class="sw-cms-el-config-hero-booking-form__tab-settings"
+        >
+            {# Mail Receiver #}
+            <sw-tagged-field
+                :value="mailReceiver"
+                :class="getLastMailClass"
+                :label="$tc('sw-cms.elements.heroBookingForm.config.mailReceiverLabel')"
+                name="mailReceiver"
+                placeholder="john@doe.com"
+                @update:value="updateMailReceiver"
+            />
+
+            <p class="sw-cms-el-config-hero-booking-form__help-text">
+                {{ $tc('sw-cms.elements.heroBookingForm.config.mailReceiverHelpText') }}
+            </p>
+
+            {# Default Mail Receiver Switch #}
+            <sw-switch-field
+                v-model:value="defaultMailReceiver"
+                :label="$tc('sw-cms.elements.heroBookingForm.config.defaultMailReceiverLabel')"
+                :help-text="$tc('sw-cms.elements.heroBookingForm.config.defaultMailReceiverHelpText')"
+            />
+
+            {# Webhook URL (Coming Soon) - under Default Mail Receiver #}
+            <div class="sw-cms-el-config-hero-booking-form__coming-soon-field mt-4">
+                <mt-text-field
+                    :label="$tc('sw-cms.elements.heroBookingForm.config.webhookUrlLabel')"
+                    :placeholder="$tc('sw-cms.elements.heroBookingForm.config.webhookUrlPlaceholder')"
+                    value="https://api.webhook-services.automation.com/automate-scale-your-marketing"
+                    :disabled="true"
+                    :help-text="$tc('sw-cms.elements.heroBookingForm.config.webhookUrlHelpText')"
+                >
+                    <template #suffix>
+                        <sw-label variant="info" size="small" appearance="pill">
+                            {{ $tc('sw-cms.elements.heroBookingForm.config.comingSoon') }}
+                        </sw-label>
+                    </template>
+                </mt-text-field>
+            </div>
+        </sw-container>
+
+        {# === LOCATION OPTIONS TAB === #}
+        <sw-container
+            v-else-if="active === 'locations'"
+            class="sw-cms-el-config-hero-booking-form__tab-locations"
+        >
+            <mt-banner variant="info" class="mb-4">
+                {{ $tc('sw-cms.elements.heroBookingForm.config.locationsInfoText') }}
+            </mt-banner>
+
+            {# Current Locations List #}
+            <div class="sw-cms-el-config-hero-booking-form__locations-list">
+                <h4>{{ $tc('sw-cms.elements.heroBookingForm.config.currentLocationsLabel') }}</h4>
+                
+                <div 
+                    v-for="(location, index) in preferredLocations" 
+                    :key="index"
+                    class="sw-cms-el-config-hero-booking-form__location-item"
+                >
+                    <div class="sw-cms-el-config-hero-booking-form__location-info">
+                        <span class="location-label">{{ location.label }}</span>
+                        <span class="location-value">({{ location.value }})</span>
+                    </div>
+                    <div class="sw-cms-el-config-hero-booking-form__location-actions">
+                        <sw-button
+                            size="small"
+                            variant="ghost"
+                            :disabled="index === 0"
+                            @click="moveLocationUp(index)"
+                        >
+                            <sw-icon name="regular-chevron-up-s" small />
+                        </sw-button>
+                        <sw-button
+                            size="small"
+                            variant="ghost"
+                            :disabled="index >= preferredLocations.length - 1"
+                            @click="moveLocationDown(index)"
+                        >
+                            <sw-icon name="regular-chevron-down-s" small />
+                        </sw-button>
+                        <sw-button
+                            size="small"
+                            variant="ghost-danger"
+                            @click="removeLocation(index)"
+                        >
+                            <sw-icon name="regular-times-s" small />
+                        </sw-button>
+                    </div>
+                </div>
+
+                <div v-if="preferredLocations.length === 0" class="sw-cms-el-config-hero-booking-form__no-locations">
+                    {{ $tc('sw-cms.elements.heroBookingForm.config.noLocationsText') }}
+                </div>
+            </div>
+
+            {# Add New Location #}
+            <div class="sw-cms-el-config-hero-booking-form__add-location mt-4">
+                <h4>{{ $tc('sw-cms.elements.heroBookingForm.config.addLocationLabel') }}</h4>
+                
+                <mt-text-field
+                    v-model="newLocationLabel"
+                    :label="$tc('sw-cms.elements.heroBookingForm.config.locationLabelLabel')"
+                    :placeholder="$tc('sw-cms.elements.heroBookingForm.config.locationLabelPlaceholder')"
+                />
+
+                <mt-text-field
+                    v-model="newLocationValue"
+                    :label="$tc('sw-cms.elements.heroBookingForm.config.locationValueLabel')"
+                    :placeholder="$tc('sw-cms.elements.heroBookingForm.config.locationValuePlaceholder')"
+                    :help-text="$tc('sw-cms.elements.heroBookingForm.config.locationValueHelpText')"
+                />
+
+                <sw-button
+                    variant="primary"
+                    :disabled="!newLocationLabel || !newLocationValue"
+                    @click="addLocation"
+                >
+                    {{ $tc('sw-cms.elements.heroBookingForm.config.addLocationButton') }}
+                </sw-button>
+            </div>
+        </sw-container>
+
+        {# === ADVANCED TAB (Coming Soon) === #}
+        <sw-container
+            v-else-if="active === 'advanced'"
+            class="sw-cms-el-config-hero-booking-form__tab-advanced"
+        >
+            {# Model Category Selection (Coming Soon) #}
+            <div class="sw-cms-el-config-hero-booking-form__coming-soon-field">
+                <sw-field
+                    type="single-select"
+                    :label="$tc('sw-cms.elements.heroBookingForm.config.modelCategoryLabel')"
+                    :placeholder="$tc('sw-cms.elements.heroBookingForm.config.modelCategoryPlaceholder')"
+                    :value="null"
+                    :disabled="true"
+                >
+                    <template #suffix>
+                        <sw-label variant="info" size="small" appearance="pill">
+                            {{ $tc('sw-cms.elements.heroBookingForm.config.comingSoon') }}
+                        </sw-label>
+                    </template>
+                </sw-field>
+                <p class="sw-cms-el-config-hero-booking-form__help-text">
+                    {{ $tc('sw-cms.elements.heroBookingForm.config.modelCategoryHelpText') }}
+                </p>
+            </div>
+
+            {# Google Maps API Key (Coming Soon) #}
+            <div class="sw-cms-el-config-hero-booking-form__coming-soon-field mt-4">
+                <mt-text-field
+                    :label="$tc('sw-cms.elements.heroBookingForm.config.googleMapsApiKeyLabel')"
+                    :placeholder="$tc('sw-cms.elements.heroBookingForm.config.googleMapsApiKeyPlaceholder')"
+                    value="AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY"
+                    :disabled="true"
+                    :help-text="$tc('sw-cms.elements.heroBookingForm.config.googleMapsApiKeyHelpText')"
+                >
+                    <template #suffix>
+                        <sw-label variant="info" size="small" appearance="pill">
+                            {{ $tc('sw-cms.elements.heroBookingForm.config.comingSoon') }}
+                        </sw-label>
+                    </template>
+                </mt-text-field>
+                
+                {# Google Maps Setup Instructions #}
+                <mt-banner variant="warning" class="mt-3">
+                    <strong>{{ $tc('sw-cms.elements.heroBookingForm.config.googleMapsSetupTitle') }}</strong>
+                    <ol class="sw-cms-el-config-hero-booking-form__setup-steps">
+                        <li>{{ $tc('sw-cms.elements.heroBookingForm.config.googleMapsSetupStep1') }}</li>
+                        <li>{{ $tc('sw-cms.elements.heroBookingForm.config.googleMapsSetupStep2') }}</li>
+                        <li>{{ $tc('sw-cms.elements.heroBookingForm.config.googleMapsSetupStep3') }}</li>
+                        <li>{{ $tc('sw-cms.elements.heroBookingForm.config.googleMapsSetupStep4') }}</li>
+                    </ol>
+                </mt-banner>
+            </div>
+        </sw-container>
+    </template>
+</sw-tabs>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% block block_hero_booking_form %}
+{# 
+    HOREX Hero Booking Form Block
+    Probefahrt-/Buchungsformular CMS Block
+#}
+<div class="cms-block-hero-booking-form px-0">
+    {% set element = block.slots.getSlot('content') %}
+    {% if element and element.type %}
+        {% sw_include '@HeroBlocks/storefront/element/cms-element-hero-booking-form.html.twig' with {
+            element: element
+        } %}
+    {% endif %}
+</div>
+{% endblock %}

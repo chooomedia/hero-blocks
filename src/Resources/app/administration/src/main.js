@@ -20,6 +20,7 @@ Shopware.Locale.extend("en-GB", enGB);
 import "./module/sw-cms/elements/hero-slider/index.js";
 import "./module/sw-cms/elements/hero-category-slider/index.js";
 import "./module/sw-cms/elements/hero-instagram-feed/index.js";
+import "./module/sw-cms/elements/hero-booking-form/index.js";
 // HINWEIS: Für sprachabhängige Texte in Overlay-Blöcken verwenden wir den
 // Standard "text" Element-Typ, dessen Config in cms_slot_translation gespeichert wird.
 
@@ -64,3 +65,5 @@ import "./module/sw-cms/blocks/commerce/hero-shopping-experience/index.js";
 import "./module/sw-cms/blocks/text/hero-faq/index.js";
 // WICHTIG: Hero Image Overlay Block - wird nur angezeigt wenn enableHeroImageOverlay aktiviert ist
 import "./module/sw-cms/blocks/image/hero-image-overlay/index.js";
+// WICHTIG: Hero Booking Form Block - Probefahrt-/Buchungsformular
+import "./module/sw-cms/blocks/form/hero-booking-form/index.js";

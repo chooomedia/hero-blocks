@@ -1,0 +1,19 @@
+.sw-cms-el-preview-hero-booking-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    min-height: 80px;
+
+    .sw-icon {
+        color: #d6ab60;
+        margin-bottom: 8px;
+    }
+
+    span {
+        font-size: 12px;
+        color: #333;
+        text-align: center;
+    }
+}

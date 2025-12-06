@@ -1,0 +1,363 @@
+{% block element_hero_booking_form %}
+{# 
+    HOREX Hero Booking Form (Probefahrt-/Buchungsformular)
+    
+    Uses CUSTOM BookingFormController route (frontend.booking-form.send)
+    instead of standard ContactFormRoute for full custom field support.
+    
+    Fields:
+    - Model (dropdown from "Models" category)
+    - City/ZIP + Preferred Location (side by side)
+    - Salutation + Title (side by side)
+    - First Name + Last Name (side by side)
+    - Email + Phone (side by side)
+    - Message (textarea)
+    - Submit button
+    
+    Config Options:
+    - title: Form title
+    - confirmationText: Custom confirmation message
+    - mailReceiver: Array of email recipients
+    - defaultMailReceiver: Use shop default email
+    - preferredLocations: Array of {label, value} for location dropdown
+    
+    All custom fields are sent directly to BookingFormController
+    which handles validation, email sending, and Flow Builder integration.
+#}
+
+{% set formPrefix = 'hero-booking-form' %}
+{% set formTitle = element.config.title.value|default('horex.testRide.headline'|trans) %}
+{% set confirmationText = element.config.confirmationText.value|default('') %}
+{% set preferredLocations = element.config.preferredLocations.value|default([]) %}
+{# CRITICAL: Use custom BookingFormController route instead of standard contact form #}
+{% set action = 'frontend.booking-form.send' %}
+{% set submitText = 'horex.testRide.submit' %}
+
+<div class="cms-element-hero-booking-form cms-element-form">
+    {# 
+        IMPORTANT: Uses FormCmsHandler plugin (registered on .cms-element-form form)
+        - Handles AJAX form submission to custom BookingFormController
+        - Shows success/error messages without page reload
+        - All custom fields are sent directly (no JavaScript merge needed)
+    #}
+    <form action="{{ path(action) }}"
+          method="post"
+          data-form-validation="true"
+          data-form-preserver="true"
+          id="{{ formPrefix }}"
+          class="horex-booking-modal-form horex-newsletter-form"
+          aria-label="{{ formTitle }}">
+        
+        <div class="form-content">
+            {# Row 1: Model Selection (full width) - Dynamic from "Models" category #}
+            <div class="row g-2 mb-3">
+                {% block hero_booking_form_model %}
+                    {% set modelId = formPrefix ~ '-model' %}
+                    {% set modelFeedbackId = modelId ~ '-feedback' %}
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label class="form-label" for="{{ modelId }}">
+                                {{ 'horex.testRide.labelModel'|trans|default('Wählen Sie Ihr Modell') }}
+                                <span class="form-required-label" aria-hidden="true">{{ 'general.required'|trans|sw_sanitize }}</span>
+                            </label>
+                            <select class="form-select"
+                                    id="{{ modelId }}"
+                                    name="model"
+                                    aria-describedby="{{ modelFeedbackId }}"
+                                    data-validation="required"
+                                    aria-required="true"
+                                    required>
+                                <option value="" disabled selected>{{ 'horex.testRide.placeholderModel'|trans|default('Bitte wählen...') }}</option>
+                                {# Dynamic categories from "Models" - Best Practice: Use navigation tree #}
+                                {% set modelsCategory = null %}
+                                {% for item in page.header.navigation.tree %}
+                                    {% if item.category.translated.name|lower == 'models' or item.category.translated.name|lower == 'modelle' %}
+                                        {% set modelsCategory = item %}
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                {% if modelsCategory and modelsCategory.children %}
+                                    {% for child in modelsCategory.children %}
+                                        <option value="{{ child.category.translated.name }}">{{ child.category.translated.name }}</option>
+                                    {% endfor %}
+                                {% else %}
+                                    {# Fallback static options if category not found #}
+                                    <option value="Regina Evo">Regina Evo</option>
+                                    <option value="VR6">VR6</option>
+                                {% endif %}
+                            </select>
+                            <div id="{{ modelFeedbackId }}" class="form-field-feedback"></div>
+                        </div>
+                    </div>
+                {% endblock %}
+            </div>
+
+            {# Row 2: City/ZIP + Preferred Location (side by side) #}
+            <div class="row g-2 mb-3">
+                {% block hero_booking_form_zip %}
+                    {% set zipId = formPrefix ~ '-zip' %}
+                    {% set zipFeedbackId = zipId ~ '-feedback' %}
+                    <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="{{ zipId }}">
+                                {{ 'horex.testRide.labelZip'|trans|default('Wohnort, PLZ') }}
+                                <span class="form-required-label" aria-hidden="true">{{ 'general.required'|trans|sw_sanitize }}</span>
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="{{ zipId }}"
+                                   name="zip"
+                                   aria-describedby="{{ zipFeedbackId }}"
+                                   data-validation="required"
+                                   aria-required="true"
+                                   placeholder="{{ 'horex.testRide.placeholderZip'|trans|default('z.B. 86899 Landsberg am Lech') }}"
+                                   required>
+                            <div id="{{ zipFeedbackId }}" class="form-field-feedback"></div>
+                        </div>
+                    </div>
+                {% endblock %}
+
+                {% block hero_booking_form_location %}
+                    {% set locationId = formPrefix ~ '-location' %}
+                    {% set locationFeedbackId = locationId ~ '-feedback' %}
+                    <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="{{ locationId }}">
+                                {{ 'horex.testRide.labelLocation'|trans|default('Wunschort') }}
+                                <span class="form-required-label" aria-hidden="true">{{ 'general.required'|trans|sw_sanitize }}</span>
+                            </label>
+                            <select class="form-select"
+                                    id="{{ locationId }}"
+                                    name="preferredLocation"
+                                    aria-describedby="{{ locationFeedbackId }}"
+                                    data-validation="required"
+                                    aria-required="true"
+                                    required>
+                                <option value="" disabled selected>{{ 'horex.testRide.placeholderLocation'|trans|default('Bitte wählen...') }}</option>
+                                
+                                {# Dynamic locations from element config #}
+                                {% if preferredLocations is not empty %}
+                                    {% for location in preferredLocations %}
+                                        <option value="{{ location.value }}">{{ location.label }}</option>
+                                    {% endfor %}
+                                {% else %}
+                                    {# Fallback static options if no locations configured #}
+                                    <option value="landsberg">{{ 'horex.testRide.locationLandsberg'|trans|default('HOREX-Werk Landsberg am Lech') }}</option>
+                                    <option value="ingolstadt">{{ 'horex.testRide.locationIngolstadt'|trans|default('HOREX Flagshipstore Ingolstadt') }}</option>
+                                {% endif %}
+                            </select>
+                            <div id="{{ locationFeedbackId }}" class="form-field-feedback"></div>
+                        </div>
+                    </div>
+                {% endblock %}
+            </div>
+
+            {# Row 3: Salutation + Title (side by side) #}
+            <div class="row g-2 mb-3">
+                {% block hero_booking_form_salutation %}
+                    {% set salutationId = formPrefix ~ '-salutation' %}
+                    {% set salutationFeedbackId = salutationId ~ '-feedback' %}
+                    <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="{{ salutationId }}">
+                                {{ 'account.personalSalutationLabel'|trans }}
+                                <span class="form-required-label" aria-hidden="true">{{ 'general.required'|trans|sw_sanitize }}</span>
+                            </label>
+                            <select class="form-select contact-select"
+                                    id="{{ salutationId }}"
+                                    name="salutationId"
+                                    aria-describedby="{{ salutationFeedbackId }}"
+                                    data-validation="required"
+                                    aria-required="true"
+                                    required>
+                                <option disabled selected value="">{{ 'account.personalSalutationPlaceholder'|trans }}</option>
+                                {# Salutations from element.data (loaded via HeroBookingFormTypeDataResolver) #}
+                                {% if element.data is defined and element.data is iterable %}
+                                    {% for salutation in element.data %}
+                                        <option value="{{ salutation.id }}">{{ salutation.translated.displayName }}</option>
+                                    {% endfor %}
+                                {% elseif page.salutations is defined and page.salutations is iterable %}
+                                    {% for salutation in page.salutations %}
+                                        <option value="{{ salutation.id }}">{{ salutation.translated.displayName }}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                            <div id="{{ salutationFeedbackId }}" class="form-field-feedback"></div>
+                        </div>
+                    </div>
+                {% endblock %}
+
+                {% block hero_booking_form_title %}
+                    {% set titleId = formPrefix ~ '-title' %}
+                    {% set titleFeedbackId = titleId ~ '-feedback' %}
+                    <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="{{ titleId }}">
+                                {{ 'horex.testRide.labelTitle'|trans|default('Titel') }}
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   id="{{ titleId }}"
+                                   name="title"
+                                   aria-describedby="{{ titleFeedbackId }}"
+                                   autocomplete="honorific-prefix"
+                                   placeholder="{{ 'horex.testRide.placeholderTitle'|trans|default('z.B. Dr., Prof.') }}">
+                            <div id="{{ titleFeedbackId }}" class="form-field-feedback"></div>
+                        </div>
+                    </div>
+                {% endblock %}
+            </div>
+
+            {# Row 4: First Name + Last Name (side by side) #}
+            <div class="row g-2 mb-3">
+                {% block hero_booking_form_first_name %}
+                    {% sw_include '@Storefront/storefront/element/cms-element-form/form-components/cms-element-form-input.html.twig'
+                        with {
+                        fieldName: 'firstName',
+                        autocomplete: 'section-personal given-name',
+                        required: true,
+                        additionalClass: 'col-12 col-md-6',
+                        label: 'account.personalFirstNameLabel',
+                        placeholder: 'account.personalFirstNamePlaceholder'
+                    }
+                    %}
+                {% endblock %}
+
+                {% block hero_booking_form_last_name %}
+                    {% sw_include '@Storefront/storefront/element/cms-element-form/form-components/cms-element-form-input.html.twig'
+                        with {
+                        fieldName: 'lastName',
+                        autocomplete: 'section-personal family-name',
+                        required: true,
+                        additionalClass: 'col-12 col-md-6',
+                        label: 'account.personalLastNameLabel',
+                        placeholder: 'account.personalLastNamePlaceholder'
+                    }
+                    %}
+                {% endblock %}
+            </div>
+
+            {# Row 5: Email + Phone (side by side) #}
+            <div class="row g-2 mb-3">
+                {% block hero_booking_form_email %}
+                    {% set emailId = formPrefix ~ '-email' %}
+                    {% set emailFeedbackId = emailId ~ '-feedback' %}
+                    <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label class="form-label" for="{{ emailId }}">
+                                {{ 'horex.testRide.labelEmail'|trans|default('E-Mail') }}
+                                <span class="form-required-label" aria-hidden="true">{{ 'general.required'|trans|sw_sanitize }}</span>
+                            </label>
+                            <input type="email"
+                                   class="form-control"
+                                   id="{{ emailId }}"
+                                   name="email"
+                                   aria-describedby="{{ emailFeedbackId }}"
+                                   data-validation="required,email"
+                                   aria-required="true"
+                                   autocomplete="email"
+                                   placeholder="{{ 'horex.testRide.placeholderEmail'|trans|default('max@example.com') }}"
+                                   required>
+                            <div id="{{ emailFeedbackId }}" class="form-field-feedback"></div>
+                        </div>
+                    </div>
+                {% endblock %}
+
+                {% block hero_booking_form_phone %}
+                    {% sw_include '@Storefront/storefront/element/cms-element-form/form-components/cms-element-form-input.html.twig'
+                        with {
+                        fieldName: 'phone',
+                        autocomplete: 'tel',
+                        type: 'tel',
+                        required: true,
+                        additionalClass: 'col-12 col-md-6',
+                        label: 'account.personalPhoneLabel',
+                        placeholder: 'account.personalPhonePlaceholder'
+                    }
+                    %}
+                {% endblock %}
+            </div>
+
+            {# Row 6: Message (full width textarea) - REQUIRED by BookingFormController #}
+            <div class="row g-2 mb-3">
+                {% block hero_booking_form_message %}
+                    {% set messageId = formPrefix ~ '-message' %}
+                    {% set messageFeedbackId = messageId ~ '-feedback' %}
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label class="form-label" for="{{ messageId }}">
+                                {{ 'horex.testRide.labelMessage'|trans|default('Nachricht') }}
+                                <span class="form-required-label" aria-hidden="true">{{ 'general.required'|trans|sw_sanitize }}</span>
+                            </label>
+                            <textarea class="form-control"
+                                      id="{{ messageId }}"
+                                      name="comment"
+                                      aria-describedby="{{ messageFeedbackId }}"
+                                      data-validation="required"
+                                      aria-required="true"
+                                      rows="3"
+                                      style="min-height: 80px;"
+                                      placeholder="{{ 'horex.testRide.placeholderMessage'|trans|default('Ihre Nachricht an uns...') }}"
+                                      required></textarea>
+                            <div id="{{ messageFeedbackId }}" class="form-field-feedback"></div>
+                        </div>
+                    </div>
+                {% endblock %}
+            </div>
+
+            {# Captcha #}
+            {% block hero_booking_form_captcha %}
+                {% sw_include '@Storefront/storefront/component/captcha/base.html.twig' with { additionalClass : 'col-md-12' } %}
+            {% endblock %}
+
+            {# Privacy Notice #}
+            {% block hero_booking_form_privacy %}
+                {% sw_include '@Storefront/storefront/component/privacy-notice.html.twig' %}
+            {% endblock %}
+
+            {# Required Fields Info #}
+            {% block hero_booking_form_required_info %}
+                <div class="form-text mt-3 mb-3">
+                    {{ 'horex.testRide.requiredFields'|trans|default('Die mit einem Stern (*) markierten Felder sind Pflichtfelder.') }}
+                </div>
+            {% endblock %}
+
+            {# Submit Button - uses standard Shopware component for proper form handling #}
+            {% block hero_booking_form_submit %}
+                {% sw_include '@Storefront/storefront/element/cms-element-form/form-components/cms-element-form-submit.html.twig' with {
+                    submitText: submitText
+                } %}
+            {% endblock %}
+        </div>
+
+        {# Hidden Fields - metadata for BookingFormController #}
+        {% block hero_booking_form_hidden %}
+            <div class="form-hidden-fields">
+                {% if page.navigationId and page.entityName %}
+                    <input type="hidden" id="{{ formPrefix }}-navigationId" name="navigationId" value="{{ page.navigationId }}">
+                    <input type="hidden" id="{{ formPrefix }}-entityName" name="entityName" value="{{ page.entityName }}">
+                {% else %}
+                    <input type="hidden" id="{{ formPrefix }}-navigationId" name="navigationId" value="{{ shopware.navigation.id }}">
+                {% endif %}
+                
+                <input type="hidden" id="{{ formPrefix }}-slotId" name="slotId" value="{{ element.id }}">
+                <input type="hidden" id="{{ formPrefix }}-subject" name="subject" value="Probefahrt-Anfrage">
+                
+                {# Custom confirmation text (if set) #}
+                {% if confirmationText %}
+                    <input type="hidden" name="confirmationText" value="{{ confirmationText }}">
+                {% endif %}
+                
+                <input type="submit" class="submit--hidden d-none">
+            </div>
+        {% endblock %}
+    </form>
+</div>
+
+{# 
+    NOTE: No JavaScript merge needed anymore!
+    All custom fields (model, zip, preferredLocation, title) are sent directly
+    to the custom BookingFormController which handles them natively.
+#}
+
+{% endblock %}

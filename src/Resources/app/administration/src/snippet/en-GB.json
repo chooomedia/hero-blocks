@@ -324,6 +324,10 @@
                     "label": "Hero Mega Menu",
                     "description": "Advanced mega menu navigation with categories, products and widgets"
                 },
+                "heroBookingForm": {
+                    "label": "Hero Booking Form",
+                    "description": "HOREX test ride and booking form with model selection and contact details"
+                },
                 "heroImageOverlay": {
                     "label": "Hero Image Overlay",
                     "description": "Full-width image with angled text overlay panel",
@@ -374,6 +378,67 @@
             }
         },
         "elements": {
+            "heroBookingForm": {
+                "label": "Hero Booking Form",
+                "config": {
+                    "tabs": {
+                        "content": "Content",
+                        "settings": "Settings",
+                        "locations": "Locations",
+                        "advanced": "Advanced"
+                    },
+                    "titleLabel": "Form Title",
+                    "titlePlaceholder": "e.g. Request a Test Ride",
+                    "confirmationTextLabel": "Confirmation Text",
+                    "confirmationTextPlaceholder": "Thank you for your request! We will contact you shortly.",
+                    "confirmationTextHelpText": "Text displayed after successful form submission. Leave empty for default message.",
+                    "infoText": "The model dropdown is dynamically loaded from the 'Models' category. Category selection will be configurable in a future version.",
+                    "mailReceiverLabel": "Email Recipients",
+                    "mailReceiverHelpText": "Enter email addresses to receive form submissions. Press Enter after each address.",
+                    "defaultMailReceiverLabel": "Use Shop Default Email",
+                    "defaultMailReceiverHelpText": "If enabled, form submissions will also be sent to the shop's default email address.",
+                    "locationsInfoText": "Define the locations available in the 'Preferred Location' dropdown. Users can select their preferred location for the test ride.",
+                    "currentLocationsLabel": "Current Locations",
+                    "noLocationsText": "No locations defined. Add your first location below.",
+                    "addLocationLabel": "Add New Location",
+                    "locationLabelLabel": "Display Name",
+                    "locationLabelPlaceholder": "e.g. Werk II München",
+                    "locationValueLabel": "Internal Value",
+                    "locationValuePlaceholder": "e.g. munich",
+                    "locationValueHelpText": "Internal identifier (lowercase, no spaces). Will be auto-generated from display name.",
+                    "addLocationButton": "Add Location",
+                    "comingSoon": "Coming Soon",
+                    "modelCategoryLabel": "Model Category",
+                    "modelCategoryPlaceholder": "Select category...",
+                    "modelCategoryHelpText": "Select the category whose subcategories will be displayed as model options in the dropdown. This feature will be available in a future version.",
+                    "webhookUrlLabel": "Webhook URL",
+                    "webhookUrlPlaceholder": "https://api.webhook-services.automation.com/automate-scale-your-marketing",
+                    "webhookUrlHelpText": "Instead of email delivery, form data can be sent as JSON to a webhook endpoint for marketing automation. This feature will be available in a future version.",
+                    "googleMapsApiKeyLabel": "Google Maps API Key",
+                    "googleMapsApiKeyPlaceholder": "AIza...",
+                    "googleMapsApiKeyHelpText": "API key for Google Maps Address Validation. Validates user-entered addresses before submission.",
+                    "googleMapsSetupTitle": "How to get a Google Maps API Key:",
+                    "googleMapsSetupStep1": "Go to Google Cloud Console (console.cloud.google.com)",
+                    "googleMapsSetupStep2": "Create a new project or select an existing one",
+                    "googleMapsSetupStep3": "Enable 'Address Validation API' and 'Geocoding API'",
+                    "googleMapsSetupStep4": "Create an API key under 'Credentials' and restrict it to your domain",
+                    "modelLabel": "Model",
+                    "modelPlaceholder": "Please select...",
+                    "zipLabel": "City, ZIP",
+                    "zipPlaceholder": "e.g. 86899 Landsberg am Lech",
+                    "locationLabel": "Preferred Location",
+                    "salutationLabel": "Salutation",
+                    "titleFieldLabel": "Title",
+                    "titleFieldPlaceholder": "e.g. Dr., Prof.",
+                    "firstNameLabel": "First Name",
+                    "lastNameLabel": "Last Name",
+                    "emailLabel": "Email",
+                    "phoneLabel": "Phone",
+                    "messageLabel": "Message",
+                    "messagePlaceholder": "Your message to us...",
+                    "submitLabel": "Submit"
+                }
+            },
             "heroBlocks": {
                 "heroTextOverlay": {
                     "label": "Hero Text Overlay",

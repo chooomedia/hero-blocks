@@ -75,6 +75,15 @@
             <helpText>Enables the Hero Image Overlay Block with angled text overlay panel over a full-width image.</helpText>
         </input-field>
         <input-field type="bool">
+            <name>enableHeroBookingForm</name>
+            <label lang="de-DE">Hero Booking Form Block aktivieren</label>
+            <label>Enable Hero Booking Form Block</label>
+            <defaultValue>false</defaultValue>
+            <disabled>false</disabled>
+            <helpText lang="de-DE">Aktiviert den Hero Booking Form Block für Probefahrt-Anfragen und Buchungsformulare mit Modellauswahl und Kontaktdaten.</helpText>
+            <helpText>Enables the Hero Booking Form Block for test ride requests and booking forms with model selection and contact details.</helpText>
+        </input-field>
+        <input-field type="bool">
             <name>enableShoppingExperience</name>
             <label lang="de-DE">Erweiterte Theme Shopping Experience aktivieren</label>
             <label>Enable Advanced Theme Shopping Experience</label>

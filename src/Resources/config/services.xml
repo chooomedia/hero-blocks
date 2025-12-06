@@ -83,6 +83,17 @@
             <tag name="shopware.cms.data_resolver"/>
         </service>
         
+        <service id="HeroBlocks\Content\Cms\TypeDataResolver\HeroBookingFormTypeDataResolver">
+            <argument type="service" id="Shopware\Core\System\Salutation\SalesChannel\SalutationRoute"/>
+            <tag name="shopware.cms.data_resolver"/>
+        </service>
+        
+        <!-- Hero Booking Form Mail Subscriber -->
+        <service id="HeroBlocks\Subscriber\HeroBookingFormMailSubscriber">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        
         <service id="HeroBlocks\Storefront\Twig\NavigationExtension">
             <argument type="service" id="Shopware\Core\Content\Category\Service\NavigationLoader"/>
             <tag name="twig.extension"/>
@@ -100,6 +111,21 @@
         <service id="HeroBlocks\Storefront\Twig\FaqExtension">
             <argument type="service" id="HeroBlocks\Service\ConfigService"/>
             <tag name="twig.extension"/>
+        </service>
+        
+        <!-- Booking Form Controller (Storefront) -->
+        <service id="HeroBlocks\Controller\Storefront\BookingFormController" public="true">
+            <argument type="service" id="Shopware\Core\Content\Mail\Service\MailService"/>
+            <argument type="service" id="Shopware\Core\Framework\Validation\DataValidator"/>
+            <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="logger"/>
+            <argument type="service" id="HeroBlocks\Service\LicenseCheckService"/>
+            <tag name="controller.service_arguments"/>
+            <tag name="container.service_subscriber"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
         </service>
         
         <!-- Scheduled Task: License Expiry Reminder -->
