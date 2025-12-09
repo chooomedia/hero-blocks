@@ -1,11 +1,23 @@
 {% block block_hero_mega_menu %}
-    {# WICHTIG: Mega Menu Block - Full-Width Navigation mit Widgets #}
-    {# SEO-ready: Schema.org, ARIA-Labels, Semantic HTML #}
-    {# WICHTIG: Block-Config wird in block.customFields gespeichert (NICHT block.config!) #}
+    {# ===== HERO MEGA MENU - Eigenständiger CMS Block ===== #}
+    {# 
+     * WICHTIG: Dieser Block ist UNABHÄNGIG vom Theme-Header!
+     * Kann mehrfach in Erlebniswelten verwendet werden.
+     * 
+     * Features:
+     * - Lädt Navigation selbstständig über Twig Extension
+     * - Konfigurierbare Styles über block.customFields
+     * - Full-Width Navigation mit Container-Max-Width
+     * - ARIA-Labels, SEO-ready, Semantic HTML
+     * 
+     * Verwendung:
+     * - In Erlebniswelten als eigenständiger Block
+     * - NICHT für Theme-Header (dafür gibt es main-navigation.html.twig)
+     #}
     
     {# WICHTIG: License-Hinweis wird ZENTRAL angezeigt (page/content/index.html.twig) #}
-    {# NICHT mehr hier pro Block - verhindert Duplicates! #}
     
+    {# Block-spezifische CSS Custom Properties #}
     {% set customStyles = [] %}
     {% if block.customFields.linkColor is defined and block.customFields.linkColor is not empty %}
         {% set customStyles = customStyles|merge(['--hero-mega-menu-link-color: ' ~ block.customFields.linkColor]) %}
@@ -19,30 +31,34 @@
     {% if block.customFields.dropdownPadding is defined and block.customFields.dropdownPadding is not empty %}
         {% set customStyles = customStyles|merge(['--hero-mega-menu-dropdown-padding: ' ~ block.customFields.dropdownPadding]) %}
     {% endif %}
+    
+    {# Navigation laden - Eigenständig über Twig Extension #}
+    {% set navigationTree = null %}
+    
+    {# 1. Versuche Navigation über Twig Extension zu laden (bevorzugt) #}
+    {% set navigationTree = hero_mega_menu_navigation()|default(null) %}
+    
+    {# 2. Fallback: Navigation aus Header (wenn in Header-Kontext verwendet) #}
+    {% if navigationTree is null and header is defined and header.navigation is defined and header.navigation.tree is defined %}
+        {% set navigationTree = { 'tree': header.navigation.tree } %}
+    {% endif %}
+    
+    {# 3. Fallback: Übergebene navigationTree Variable (für direkte Includes) #}
+    {% if navigationTree is null and navigationTree is defined %}
+        {# Variable wurde bereits übergeben #}
+    {% endif %}
+    
     <div class="cms-block-hero-mega-menu"
          data-hero-mega-menu="true"
+         data-hero-mega-menu-options='{"closeOnClickOutside": true}'
          {% if customStyles|length > 0 %} style="{{ customStyles|join('; ') }};"{% endif %}>
         
         {# Mega Menu Navigation - Full-Width mit Container-Max-Width #}
-        {# WICHTIG: Immer so breit wie breitestes Parent-Element (Container-Max-Width quasi) #}
         <nav class="hero-mega-menu-nav"
              role="navigation"
              aria-label="{{ 'header.navigationAriaLabel'|trans|default('Hauptnavigation')|striptags }}"
              itemscope="itemscope"
              itemtype="https://schema.org/SiteNavigationElement">
-            {% set navbarOptions = {
-                pathIdList: shopware.navigation.pathIdList
-            } %}
-            
-            {# WICHTIG: Navigation über Twig Extension laden (falls verfügbar) oder direkt aus Header #}
-            {% if navigationTree is not defined %}
-                {% set navigationTree = hero_mega_menu_navigation()|default(null) %}
-            {% endif %}
-            
-            {# Fallback: Navigation aus Header (wenn Twig Extension nicht verfügbar) #}
-            {% if navigationTree is null and header.navigation.tree is defined %}
-                {% set navigationTree = { 'tree': header.navigation.tree } %}
-            {% endif %}
             
             <ul class="hero-mega-menu-nav__list" role="menubar">
                 {% if navigationTree and navigationTree.tree is defined %}
@@ -51,72 +67,78 @@
                         {% set id = category.id %}
                         {% set name = category.translated.name %}
                         {% set hasChildren = treeItem.children|length > 0 %}
-                    
-                    <li class="hero-mega-menu-nav__item {% if hasChildren %}hero-mega-menu-nav__item--has-children{% endif %}"
-                        role="none">
-                        {# WICHTIG: category_url(category) gibt null zurück für Folder-Kategorien #}
-                        {# WICHTIG: Bei null oder leerem String setze href="" (leeres Attribut) #}
-                        {% set categoryUrl = category_url(category) %}
-                        <a {% if categoryUrl %}href="{{ categoryUrl }}"{% else %}href=""{% endif %}
-                           class="hero-mega-menu-nav__link"
-                           role="menuitem"
-                           itemprop="url"
-                           {% if category_linknewtab(category) %}target="_blank" rel="noopener noreferrer"{% endif %}
-                           aria-label="{{ 'heroBlocks.megaMenu.link.ariaLabel'|trans({'%name%': name})|default(name ~ ' öffnen')|striptags }}"
-                           aria-haspopup="{% if hasChildren %}true{% else %}false{% endif %}"
-                           aria-expanded="false"
-                           title="{{ name|striptags }}">
-                            <span itemprop="name">{{ name }}</span>
-                        </a>
+                        {% set isActive = category.id in shopware.navigation.pathIdList %}
                         
-                        {% if hasChildren %}
-                            {# Mega Menu Dropdown - Full-Width (so breit wie Container-Max-Width) #}
-                            <div class="hero-mega-menu-nav__dropdown"
-                                 role="menu"
-                                 aria-label="{{ 'heroBlocks.megaMenu.dropdown.ariaLabel'|trans({'%name%': name})|default('Unternavigation für ' ~ name)|striptags }}"
-                                 aria-hidden="true">
-                                <div class="container hero-mega-menu-nav__dropdown-content">
-                                    {# Kategorien #}
-                                    <div class="hero-mega-menu-nav__categories" role="group" aria-label="{{ 'heroBlocks.megaMenu.categories.ariaLabel'|trans|default('Kategorien')|striptags }}">
-                                        {% sw_include '@Storefront/storefront/layout/navbar/categories.html.twig' with {
-                                            navigationTree: treeItem.children,
-                                            navigationMedia: category.media,
-                                            page: page
-                                        } only %}
+                        <li class="hero-mega-menu-nav__item{% if hasChildren %} hero-mega-menu-nav__item--has-children{% endif %}{% if isActive %} is-active{% endif %}"
+                            role="none">
+                            
+                            {# WICHTIG: category_url(category) gibt null zurück für Folder-Kategorien #}
+                            {% set categoryUrl = category_url(category) %}
+                            <a {% if categoryUrl %}href="{{ categoryUrl }}"{% else %}href=""{% endif %}
+                               class="hero-mega-menu-nav__link{% if isActive %} is-active{% endif %}"
+                               role="menuitem"
+                               itemprop="url"
+                               {% if category_linknewtab(category) %}target="_blank" rel="noopener noreferrer"{% endif %}
+                               aria-label="{{ 'heroBlocks.megaMenu.link.ariaLabel'|trans({'%name%': name})|default(name ~ ' öffnen')|striptags }}"
+                               aria-haspopup="{% if hasChildren %}true{% else %}false{% endif %}"
+                               aria-expanded="false"
+                               title="{{ name|striptags }}">
+                                <span itemprop="name">{{ name }}</span>
+                            </a>
+                            
+                            {% if hasChildren %}
+                                {# Mega Menu Dropdown - Full-Width (so breit wie Container-Max-Width) #}
+                                <div class="hero-mega-menu-nav__dropdown"
+                                     role="menu"
+                                     aria-label="{{ 'heroBlocks.megaMenu.dropdown.ariaLabel'|trans({'%name%': name})|default('Unternavigation für ' ~ name)|striptags }}"
+                                     aria-hidden="true">
+                                    <div class="container hero-mega-menu-nav__dropdown-content">
+                                        {# Kategorien #}
+                                        <div class="hero-mega-menu-nav__categories" role="group" aria-label="{{ 'heroBlocks.megaMenu.categories.ariaLabel'|trans|default('Kategorien')|striptags }}">
+                                            {% sw_include '@Storefront/storefront/layout/navbar/categories.html.twig' with {
+                                                navigationTree: treeItem.children,
+                                                navigationMedia: category.media,
+                                                page: page
+                                            } only %}
+                                        </div>
+                                        
+                                        {# Widget-Bereich: Produkte (wenn aktiviert) #}
+                                        {% if block.customFields.showProducts is defined and block.customFields.showProducts == true %}
+                                            <div class="hero-mega-menu-nav__widget hero-mega-menu-nav__widget--products"
+                                                 role="region"
+                                                 aria-label="{{ 'header.navigationProductsAriaLabel'|trans|default('Produktempfehlungen')|striptags }}">
+                                                {# TODO: Produkt-Widget implementieren #}
+                                                <div class="hero-mega-menu-nav__widget-placeholder">
+                                                    {{ 'header.navigationProducts'|trans|default('Produktempfehlungen')|sw_sanitize }}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                        
+                                        {# Widget-Bereich: Instagram Feed (wenn aktiviert) #}
+                                        {% if block.customFields.showInstagramFeed is defined and block.customFields.showInstagramFeed == true %}
+                                            <div class="hero-mega-menu-nav__widget hero-mega-menu-nav__widget--instagram"
+                                                 role="region"
+                                                 aria-label="{{ 'header.navigationInstagramAriaLabel'|trans|default('Instagram Feed')|striptags }}">
+                                                {# TODO: Instagram Feed Widget implementieren #}
+                                                <div class="hero-mega-menu-nav__widget-placeholder">
+                                                    {{ 'header.navigationInstagram'|trans|default('Instagram Feed')|sw_sanitize }}
+                                                </div>
+                                            </div>
+                                        {% endif %}
                                     </div>
-                                    
-                                    {# Widget-Bereich: Produkte (wenn aktiviert) #}
-                                    {# WICHTIG: Block-Config wird in block.customFields gespeichert (NICHT block.config!) #}
-                                    {% if block.customFields.showProducts is defined and block.customFields.showProducts == true %}
-                                        <div class="hero-mega-menu-nav__widget hero-mega-menu-nav__widget--products"
-                                             role="region"
-                                             aria-label="{{ 'header.navigationProductsAriaLabel'|trans|default('Produktempfehlungen')|striptags }}">
-                                            {# TODO: Produkt-Widget implementieren #}
-                                            <div class="hero-mega-menu-nav__widget-placeholder">
-                                                {{ 'header.navigationProducts'|trans|default('Produktempfehlungen')|sw_sanitize }}
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                    
-                                    {# Widget-Bereich: Instagram Feed (wenn aktiviert) #}
-                                    {% if block.customFields.showInstagramFeed is defined and block.customFields.showInstagramFeed == true %}
-                                        <div class="hero-mega-menu-nav__widget hero-mega-menu-nav__widget--instagram"
-                                             role="region"
-                                             aria-label="{{ 'header.navigationInstagramAriaLabel'|trans|default('Instagram Feed')|striptags }}">
-                                            {# TODO: Instagram Feed Widget implementieren #}
-                                            <div class="hero-mega-menu-nav__widget-placeholder">
-                                                {{ 'header.navigationInstagram'|trans|default('Instagram Feed')|sw_sanitize }}
-                                            </div>
-                                        </div>
-                                    {% endif %}
                                 </div>
-                            </div>
-                        {% endif %}
-                    </li>
+                            {% endif %}
+                        </li>
                     {% endfor %}
+                {% else %}
+                    {# Keine Navigation verfügbar - Hinweis für Entwickler #}
+                    <li class="hero-mega-menu-nav__item hero-mega-menu-nav__item--empty">
+                        <span class="hero-mega-menu-nav__empty-notice">
+                            {{ 'heroBlocks.megaMenu.noNavigation'|trans|default('Navigation nicht verfügbar')|sw_sanitize }}
+                        </span>
+                    </li>
                 {% endif %}
             </ul>
         </nav>
     </div>
 {% endblock %}
-

@@ -43,7 +43,7 @@
                              {% if richSnippetsEnabled %}itemscope itemprop="mainEntity" itemtype="https://schema.org/Question"{% endif %}>
                             
                             {# FAQ Question Button - Bootstrap btn + custom dark/light bg #}
-                            <button class="btn w-100 text-start d-flex align-items-center p-3 border-bottom border-white rounded-0 faq-question-btn {% if colorTheme == 'dark' %}bg-dark text-white{% else %}bg-light text-dark{% endif %}"
+                            <button class="btn-faq w-100 text-start d-flex align-items-center px-4 py-3 border-bottom border-white rounded-0 faq-question-btn {% if colorTheme == 'dark' %}bg-dark text-white{% else %}bg-light text-dark{% endif %}"
                                     type="button"
                                     data-bs-toggle="collapse"
                                     data-bs-target="#faq-answer-{{ block.id }}-{{ loop.index }}"

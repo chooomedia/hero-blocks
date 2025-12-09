@@ -73,6 +73,10 @@
             <argument type="service" id="Shopware\Storefront\Page\Cms\DefaultMediaResolver"/>
             <tag name="shopware.cms.data_resolver"/>
         </service>
+
+        <service id="HeroBlocks\Content\Cms\TypeDataResolver\HeroTimelineTypeDataResolver">
+            <tag name="shopware.cms.data_resolver"/>
+        </service>
         
         <service id="HeroBlocks\Content\Cms\TypeDataResolver\CategorySliderTypeDataResolver">
             <tag name="shopware.cms.data_resolver"/>
@@ -91,6 +95,11 @@
         <!-- Hero Booking Form Mail Subscriber -->
         <service id="HeroBlocks\Subscriber\HeroBookingFormMailSubscriber">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+        
+        <!-- Product Listing Subscriber: Adds properties association to listings -->
+        <service id="HeroBlocks\Subscriber\ProductListingSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
         

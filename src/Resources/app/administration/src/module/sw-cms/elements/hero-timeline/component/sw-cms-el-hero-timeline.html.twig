@@ -1,0 +1,91 @@
+{% block sw_cms_element_hero_timeline %}
+<div class="sw-cms-el-hero-timeline">
+    {# Header mit Titel #}
+    <div class="sw-cms-el-hero-timeline__header">
+        <h3 class="sw-cms-el-hero-timeline__title">
+            {{ $tc('sw-cms.elements.heroTimeline.label') }}
+        </h3>
+        <span class="sw-cms-el-hero-timeline__count" v-if="hasItems">
+            {{ timelineItems.length }} {{ $tc('sw-cms.elements.heroTimeline.itemsLabel') }}
+        </span>
+    </div>
+
+    {# Timeline Preview - Vertikales Layout wie im Storefront #}
+    <div class="sw-cms-el-hero-timeline__preview" v-if="hasItems">
+        {# Vertikale Linie #}
+        <div class="sw-cms-el-hero-timeline__line"></div>
+
+        {# Timeline Entries #}
+        <div class="sw-cms-el-hero-timeline__entries">
+            <div
+                v-for="(item, index) in timelineItems"
+                :key="index"
+                class="sw-cms-el-hero-timeline__entry"
+                :class="{ 'is--active': isActive(index) }"
+                @click="setActiveItem(index)"
+            >
+                {# Year Button #}
+                <div class="sw-cms-el-hero-timeline__year-btn">
+                    {{ item.year || 'YYYY' }}
+                </div>
+
+                {# Content Wrapper - nur für aktives Item sichtbar #}
+                <div class="sw-cms-el-hero-timeline__item-wrapper" v-if="isActive(index)">
+                    <div class="sw-cms-el-hero-timeline__item-inner">
+                        {# Text Content #}
+                        <div class="sw-cms-el-hero-timeline__text">
+                            <h4>{{ item.title || $tc('sw-cms.elements.heroTimeline.placeholder.title') }}</h4>
+                            <p>{{ getTextPreview(item) }}</p>
+                        </div>
+
+                        {# Media Column mit Slider-Vorschau #}
+                        <div class="sw-cms-el-hero-timeline__media">
+                            {# Slider Container #}
+                            <div class="sw-cms-el-hero-timeline__slider">
+                                {# Prev Button #}
+                                <div class="sw-cms-el-hero-timeline__nav-btn">
+                                    <sw-icon name="regular-chevron-left-s" size="16px" />
+                                </div>
+                                
+                                {# Image Preview #}
+                                <div class="sw-cms-el-hero-timeline__image">
+                                    <template v-if="getFirstMediaUrl(item)">
+                                        <img :src="getFirstMediaUrl(item)" :alt="item.title" class="sw-cms-el-hero-timeline__img" />
+                                    </template>
+                                    <template v-else>
+                                        <div class="sw-cms-el-hero-timeline__image-placeholder">
+                                            <sw-icon name="regular-image" size="24px" />
+                                        </div>
+                                    </template>
+                                </div>
+                                
+                                {# Next Button #}
+                                <div class="sw-cms-el-hero-timeline__nav-btn">
+                                    <sw-icon name="regular-chevron-right-s" size="16px" />
+                                </div>
+                            </div>
+                            
+                            {# Dots Navigation #}
+                            <div class="sw-cms-el-hero-timeline__dots" v-if="getMediaCount(item) > 0">
+                                <span 
+                                    v-for="(media, mediaIndex) in item.media" 
+                                    :key="mediaIndex"
+                                    class="sw-cms-el-hero-timeline__dot"
+                                    :class="{ 'is--active': mediaIndex === 0 }"
+                                ></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Empty State #}
+    <div v-else class="sw-cms-el-hero-timeline__empty">
+        <sw-icon name="regular-clock" size="32px" />
+        <p>{{ $tc('sw-cms.elements.heroTimeline.placeholder.empty') }}</p>
+        <small>{{ $tc('sw-cms.elements.heroTimeline.placeholder.hint') }}</small>
+    </div>
+</div>
+{% endblock %}

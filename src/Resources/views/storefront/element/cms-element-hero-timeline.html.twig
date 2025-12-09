@@ -1,0 +1,354 @@
+{% block element_hero_timeline %}
+{# 
+    Hero Timeline Element - Storefront Template
+    Basierend auf: https://www.horex.com/planet-horex/chronik/
+    
+    Features:
+    - VERTIKALE Navigation (Buttons UNTEREINANDER) von Desktop bis Mobile
+    - Aktiver Button: Halb überragend am Timeline-Item-Wrapper (NICHT doppelt)
+    - Timeline-Linie: Vertikal von oben nach unten durch alle Elemente
+    - Inaktive Buttons: Setzen sich unterhalb des Item-Wrappers fort
+    - Smooth Animationen beim Öffnen/Wechseln
+    - Slider mit smooth Slide-Wechsel
+    
+    Layout:
+    - Timeline-Linie in der Mitte
+    - Buttons auf der Linie (vertikal untereinander)
+    - Aktiver Button + Item-Wrapper erscheinen inline in der Timeline
+    - Inaktive Buttons darunter fortgesetzt
+#}
+
+{# Hole Timeline-Items aus data (Resolver) oder config (Fallback) #}
+{% set timelineItems = element.data.timelineItems|default(element.config.timelineItems.value|default([])) %}
+{% set elementId = 'timeline-' ~ random() %}
+
+<div class="cms-element-hero-timeline" 
+     id="{{ elementId }}"
+     data-hero-timeline="true"
+     data-timeline-id="{{ elementId }}">
+    
+    {% if timelineItems|length > 0 %}
+        {# Timeline Container mit vertikaler Linie #}
+        <div class="hero-timeline__container">
+            {# Vertikale Timeline-Linie (Hintergrund) #}
+            <div class="hero-timeline__line"></div>
+            
+            {# Timeline Items - Buttons und Content vertikal #}
+            <div class="hero-timeline__items">
+                {% for item in timelineItems %}
+                    {# Timeline Entry: Button + Content (wenn aktiv) #}
+                    <div class="hero-timeline__entry" data-timeline-entry="{{ loop.index0 }}">
+                        
+                        {# Jahr-Button #}
+                        <button type="button" 
+                                class="hero-timeline__year-btn"
+                                data-timeline-index="{{ loop.index0 }}"
+                                data-year="{{ item.year|default('----') }}"
+                                aria-label="Jahr {{ item.year|default('----') }}"
+                                aria-expanded="false">
+                            <span class="hero-timeline__year-text">{{ item.year|default('----') }}</span>
+                        </button>
+                        
+                        {# Timeline Item Content (initial versteckt) #}
+                        <div class="hero-timeline__item" 
+                             data-timeline-item="{{ loop.index0 }}"
+                             aria-hidden="true">
+                            
+                            <div class="hero-timeline__item-inner">
+                                <div class="row g-4 g-lg-5 align-items-center">
+                                    {# Text Column (links auf Desktop) #}
+                                    <div class="col-12 col-lg-5 hero-timeline__text-col">
+                                        {% if item.title %}
+                                            <h2 class="hero-timeline__title">{{ item.title }}</h2>
+                                        {% endif %}
+                                        {% if item.text %}
+                                            <div class="hero-timeline__text">{{ item.text|raw }}</div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    {# Image/Slider Column (rechts auf Desktop) #}
+                                    <div class="col-12 col-lg-7 hero-timeline__media-col">
+                                        {% set mediaItems = item.media|default([]) %}
+                                        {% set mediaCount = mediaItems|length %}
+                                        
+                                        {% if mediaCount > 0 %}
+                                            <div class="hero-timeline__slider" 
+                                                 data-hero-timeline-slider="{{ loop.index0 }}"
+                                                 data-slide-count="{{ mediaCount }}">
+                                                
+                                                {# Slider-Track mit fester Höhe zur Vermeidung von Layout-Shift #}
+                                                <div class="hero-timeline__slider-track">
+                                                    {% for mediaItem in mediaItems %}
+                                                        {# Media URL auflösen - unterstützt Media-Entity und statische URLs #}
+                                                        {% set mediaUrl = null %}
+                                                        {% set mediaAlt = item.title|default('Timeline Image') %}
+                                                        {% set mediaWidth = 800 %}
+                                                        {% set mediaHeight = 600 %}
+                                                        
+                                                        {# Prüfe ob mediaItem eine Media-Entity ist (hat id und mimeType) #}
+                                                        {% if mediaItem.id is defined and mediaItem.mimeType is defined %}
+                                                            {# Media-Entity: Baue URL aus path mit /media/ Prefix #}
+                                                            {% set mediaUrl = '/media/' ~ mediaItem.path %}
+                                                            {% set mediaAlt = mediaItem.translated.alt|default(mediaItem.alt)|default(mediaAlt) %}
+                                                            {# Hole echte Dimensionen wenn verfügbar #}
+                                                            {% if mediaItem.metaData.width is defined %}
+                                                                {% set mediaWidth = mediaItem.metaData.width %}
+                                                            {% endif %}
+                                                            {% if mediaItem.metaData.height is defined %}
+                                                                {% set mediaHeight = mediaItem.metaData.height %}
+                                                            {% endif %}
+                                                        {% elseif mediaItem.url is defined %}
+                                                            {% set mediaUrl = mediaItem.url %}
+                                                            {% set mediaAlt = mediaItem.alt|default(mediaAlt) %}
+                                                        {% elseif mediaItem.mediaUrl is defined %}
+                                                            {% set mediaUrl = mediaItem.mediaUrl %}
+                                                        {% elseif mediaItem.media.url is defined %}
+                                                            {% set mediaUrl = mediaItem.media.url %}
+                                                            {% set mediaAlt = mediaItem.media.alt|default(mediaAlt) %}
+                                                        {% endif %}
+                                                        
+                                                        {% if mediaUrl %}
+                                                            <div class="hero-timeline__slide {% if loop.first %}is--active{% endif %}"
+                                                                 data-slide-index="{{ loop.index0 }}">
+                                                                <img src="{{ mediaUrl }}" 
+                                                                     alt="{{ mediaAlt }}"
+                                                                     class="hero-timeline__slide-image"
+                                                                     width="{{ mediaWidth }}"
+                                                                     height="{{ mediaHeight }}"
+                                                                     loading="{% if loop.first %}eager{% else %}lazy{% endif %}"
+                                                                     decoding="async">
+                                                            </div>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                                
+                                                {# Navigation Controls - Hero Slider Style #}
+                                                {% if mediaCount > 1 %}
+                                                    <div class="hero-timeline__controls">
+                                                        <button type="button" 
+                                                                class="hero-timeline__nav hero-timeline__nav--prev" 
+                                                                aria-label="{{ 'general.previous'|trans|striptags }}">
+                                                            {% sw_icon 'arrow-head-left' %}
+                                                        </button>
+                                                        <button type="button" 
+                                                                class="hero-timeline__nav hero-timeline__nav--next" 
+                                                                aria-label="{{ 'general.next'|trans|striptags }}">
+                                                            {% sw_icon 'arrow-head-right' %}
+                                                        </button>
+                                                    </div>
+                                                    
+                                                    {# Dots Navigation - Hero Slider Style #}
+                                                    <div class="hero-timeline__dots">
+                                                        {% for mediaItem in mediaItems %}
+                                                            <button type="button" 
+                                                                    class="hero-timeline__dot {% if loop.first %}is--active{% endif %}"
+                                                                    data-dot-index="{{ loop.index0 }}"
+                                                                    aria-label="Slide {{ loop.index }} von {{ mediaCount }}"
+                                                                    aria-current="{% if loop.first %}true{% else %}false{% endif %}">
+                                                            </button>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% else %}
+                                            {# Placeholder wenn keine Bilder #}
+                                            <div class="hero-timeline__placeholder">
+                                                <div class="hero-timeline__placeholder-icon">
+                                                    {% sw_icon 'default-object-image' style { size: 'lg' } %}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+    {% else %}
+        {# Placeholder wenn keine Items #}
+        <div class="hero-timeline__empty">
+            <div class="hero-timeline__empty-icon">
+                {% sw_icon 'default-time-clock' style { size: 'lg' } %}
+            </div>
+            <p class="hero-timeline__empty-text">{{ "heroBlocks.timeline.noItems"|trans|sw_sanitize }}</p>
+        </div>
+    {% endif %}
+</div>
+
+{# Inline JavaScript für Timeline-Funktionalität #}
+<script>
+(function() {
+    'use strict';
+    
+    function initHeroTimeline(container) {
+        const entries = Array.from(container.querySelectorAll('[data-timeline-entry]'));
+        const yearBtns = Array.from(container.querySelectorAll('.hero-timeline__year-btn'));
+        const items = Array.from(container.querySelectorAll('.hero-timeline__item'));
+        
+        let activeIndex = -1;
+        let isAnimating = false;
+        const sliders = new Map();
+        
+        // Initialize sliders for each item
+        items.forEach((item, itemIndex) => {
+            const slides = Array.from(item.querySelectorAll('.hero-timeline__slide'));
+            const dots = Array.from(item.querySelectorAll('.hero-timeline__dot'));
+            const prevBtn = item.querySelector('.hero-timeline__nav--prev');
+            const nextBtn = item.querySelector('.hero-timeline__nav--next');
+            const track = item.querySelector('.hero-timeline__slider-track');
+            
+            if (slides.length === 0) return;
+            
+            const sliderState = { slides, dots, track, currentSlide: 0, autoplayInterval: null };
+            sliders.set(itemIndex, sliderState);
+            
+            // Prev button
+            if (prevBtn) {
+                prevBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const state = sliders.get(itemIndex);
+                    if (!state || state.slides.length <= 1) return;
+                    const newIndex = state.currentSlide === 0 ? state.slides.length - 1 : state.currentSlide - 1;
+                    goToSlide(itemIndex, newIndex);
+                });
+            }
+            
+            // Next button
+            if (nextBtn) {
+                nextBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const state = sliders.get(itemIndex);
+                    if (!state || state.slides.length <= 1) return;
+                    const newIndex = state.currentSlide === state.slides.length - 1 ? 0 : state.currentSlide + 1;
+                    goToSlide(itemIndex, newIndex);
+                });
+            }
+            
+            // Dots
+            dots.forEach((dot, dotIndex) => {
+                dot.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    goToSlide(itemIndex, dotIndex);
+                });
+            });
+        });
+        
+        function goToSlide(itemIndex, slideIndex) {
+            const state = sliders.get(itemIndex);
+            if (!state || slideIndex === state.currentSlide) return;
+            
+            const currentSlide = state.slides[state.currentSlide];
+            const nextSlide = state.slides[slideIndex];
+            
+            // Fade out current
+            currentSlide.classList.remove('is--active');
+            currentSlide.classList.add('is--leaving');
+            
+            // Fade in next
+            nextSlide.classList.add('is--entering');
+            
+            setTimeout(() => {
+                currentSlide.classList.remove('is--leaving');
+                nextSlide.classList.remove('is--entering');
+                nextSlide.classList.add('is--active');
+            }, 400);
+            
+            // Update dots
+            state.dots.forEach((dot, i) => {
+                dot.classList.toggle('is--active', i === slideIndex);
+            });
+            
+            state.currentSlide = slideIndex;
+        }
+        
+        function activateItem(index) {
+            if (index === activeIndex || isAnimating) return;
+            if (index < 0 || index >= items.length) return;
+            
+            isAnimating = true;
+            
+            const entry = entries[index];
+            const item = items[index];
+            const btn = yearBtns[index];
+            
+            // Deactivate previous
+            if (activeIndex >= 0) {
+                const prevEntry = entries[activeIndex];
+                const prevItem = items[activeIndex];
+                const prevBtn = yearBtns[activeIndex];
+                
+                prevEntry.classList.remove('is--active');
+                prevItem.classList.remove('is--active');
+                prevItem.setAttribute('aria-hidden', 'true');
+                prevBtn.classList.remove('is--active');
+                prevBtn.setAttribute('aria-expanded', 'false');
+                
+                // Reset styles for collapse
+                prevItem.style.maxHeight = '0';
+                prevItem.style.opacity = '0';
+            }
+            
+            // Activate new
+            entry.classList.add('is--active');
+            btn.classList.add('is--active');
+            btn.setAttribute('aria-expanded', 'true');
+            item.setAttribute('aria-hidden', 'false');
+            
+            // Expand animation - einmalig, keine wiederholte Animation
+            item.style.maxHeight = '0';
+            item.style.opacity = '0';
+            item.classList.add('is--active');
+            
+            // Force reflow
+            void item.offsetHeight;
+            
+            // Animate open
+            item.style.maxHeight = item.scrollHeight + 'px';
+            item.style.opacity = '1';
+            
+            // After animation completes
+            setTimeout(() => {
+                // Set maxHeight to none to allow dynamic content
+                item.style.maxHeight = 'none';
+                
+                // Scroll to entry smoothly
+                const rect = entry.getBoundingClientRect();
+                const offset = window.pageYOffset + rect.top - 100;
+                window.scrollTo({ top: offset, behavior: 'smooth' });
+                
+                activeIndex = index;
+                isAnimating = false;
+            }, 500);
+        }
+        
+        // Register button clicks
+        yearBtns.forEach((btn, index) => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                activateItem(index);
+            });
+        });
+        
+        console.log('[HeroTimeline] Initialized with', items.length, 'items (vertical layout)');
+    }
+    
+    // Initialize when DOM is ready
+    function init() {
+        const containers = document.querySelectorAll('[data-hero-timeline]');
+        containers.forEach(initHeroTimeline);
+    }
+    
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+</script>
+{% endblock %}

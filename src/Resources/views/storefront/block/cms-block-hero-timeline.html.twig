@@ -1,0 +1,9 @@
+{% block block_hero_timeline %}
+    <div class="cms-block-hero-timeline">
+        {% set element = block.slots.getSlot('timeline') %}
+        {% if element and element.type %}
+            {% sw_include '@Storefront/storefront/element/cms-element-' ~ element.type ~ '.html.twig' ignore missing %}
+        {% endif %}
+    </div>
+{% endblock %}
+

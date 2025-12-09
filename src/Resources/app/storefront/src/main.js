@@ -34,6 +34,9 @@ import HeroTwoColumnsParallaxPlugin from "./hero-two-columns-parallax/hero-two-c
 // Video Plugin (Play/Pause Control für Hero Video Extended)
 import HeroVideoExtendedPlugin from "./hero-video-extended/hero-video-extended.plugin";
 
+// Timeline Plugin
+import HeroTimelinePlugin from "./hero-timeline/hero-timeline.plugin";
+
 // Mega Menu (Auto-initialisiert sich selbst via DOMContentLoaded)
 // WICHTIG: Kein PluginManager, da Legacy-Code mit eigenem Event-System
 import "./hero-mega-menu/hero-mega-menu";
@@ -61,7 +64,7 @@ if (typeof window.PluginManager !== "undefined" && window.PluginManager) {
     HeroTwoColumnsParallaxPlugin,
     ".cms-block-hero-two-columns"
   );
-  console.log(
+  console.warn(
     '[HeroBlocks] Plugin "HeroTwoColumnsParallax" registered successfully'
   );
 
@@ -75,9 +78,28 @@ if (typeof window.PluginManager !== "undefined" && window.PluginManager) {
     HeroVideoExtendedPlugin,
     "[data-hero-video-extended]"
   );
-  console.log(
+  console.warn(
     '[HeroBlocks] Plugin "HeroVideoExtended" registered successfully'
   );
+
+  // ========================================================================
+  // Hero Timeline Plugin
+  // ========================================================================
+  // Timeline mit Jahr-Buttons, Content-Bereich und Bilder-Slider
+  try {
+    if (HeroTimelinePlugin) {
+      window.PluginManager.register(
+        "HeroTimeline",
+        HeroTimelinePlugin,
+        "[data-hero-timeline]"
+      );
+      console.warn('[HeroBlocks] Plugin "HeroTimeline" registered successfully');
+    } else {
+      console.error('[HeroBlocks] HeroTimelinePlugin is undefined');
+    }
+  } catch (e) {
+    console.error('[HeroBlocks] Error registering HeroTimeline plugin:', e);
+  }
 
   // ========================================================================
   // HINWEIS: Folgende Blocks nutzen Shopware's base-slider (KEIN eigenes Plugin nötig)
@@ -89,7 +111,7 @@ if (typeof window.PluginManager !== "undefined" && window.PluginManager) {
   // Diese Blocks nutzen data-base-slider="true" und werden automatisch
   // von Shopware's base-slider Plugin initialisiert
 
-  console.log("[HeroBlocks] ✅ All plugins registered successfully");
+  console.warn("[HeroBlocks] ✅ All plugins registered successfully");
 } else {
   console.error(
     "[HeroBlocks] ❌ PluginManager not available! Cannot register plugins."

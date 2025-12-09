@@ -374,10 +374,52 @@
                             "right": "Rechts"
                         }
                     }
+                },
+                "heroTimeline": {
+                    "label": "Hero Timeline",
+                    "description": "Zeitleiste mit Jahresnavigation, Text und Bild-Slider",
+                    "placeholder": {
+                        "title": "Ihre Überschrift",
+                        "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                        "year": "Jahr",
+                        "media": "Keine Bilder ausgewählt",
+                        "empty": "Noch keine Timeline-Items vorhanden."
+                    },
+                    "config": {
+                        "title": "Timeline-Items",
+                        "addItem": "Item hinzufügen",
+                        "year": "Jahr",
+                        "titleLabel": "Headline",
+                        "text": "Text",
+                        "media": "Bilder",
+                        "chooseMedia": "Bilder auswählen"
+                    }
                 }
             }
         },
         "elements": {
+            "heroTimeline": {
+                "label": "Hero Timeline",
+                "itemsLabel": "Einträge",
+                "mediaLabel": "Bilder",
+                "config": {
+                    "title": "Timeline-Items",
+                    "addItem": "Item hinzufügen",
+                    "year": "Jahr",
+                    "titleLabel": "Headline",
+                    "text": "Text",
+                    "media": "Bilder",
+                    "chooseMedia": "Bilder auswählen"
+                },
+                "placeholder": {
+                    "title": "Ihre Überschrift",
+                    "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                    "year": "Jahr",
+                    "media": "Keine Bilder ausgewählt",
+                    "empty": "Noch keine Timeline-Items vorhanden.",
+                    "hint": "Konfigurieren Sie Timeline-Items in den Element-Einstellungen."
+                }
+            },
             "heroBookingForm": {
                 "label": "Hero Booking Form",
                 "config": {

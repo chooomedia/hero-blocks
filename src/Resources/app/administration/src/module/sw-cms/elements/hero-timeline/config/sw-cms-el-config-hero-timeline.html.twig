@@ -1,0 +1,104 @@
+{% block sw_cms_element_hero_timeline_config %}
+<div class="sw-cms-el-config-hero-timeline">
+    <div class="sw-cms-el-config-hero-timeline__header">
+        <h3>{{ $tc('sw-cms.elements.heroTimeline.config.title') }}</h3>
+        <sw-button size="small" variant="primary" @click="addTimelineItem">
+            {{ $tc('sw-cms.elements.heroTimeline.config.addItem') }}
+        </sw-button>
+    </div>
+
+    <div v-if="timelineItems.length > 0" class="sw-cms-el-config-hero-timeline__list">
+        <sw-card v-for="(item, index) in timelineItems"
+                 :key="index"
+                 class="sw-cms-el-config-hero-timeline__item"
+                 position-identifier="hero-timeline-item">
+            <template #title>
+                <div class="sw-cms-el-config-hero-timeline__item-title">
+                    <span>{{ item.year || $tc('sw-cms.elements.heroTimeline.placeholder.year') }}</span>
+                    <sw-button size="x-small"
+                               variant="danger"
+                               @click="removeTimelineItem(index)">
+                        {{ $tc('global.default.delete') }}
+                    </sw-button>
+                </div>
+            </template>
+
+            <sw-container columns="1fr 1fr" gap="16px">
+                <sw-text-field
+                    v-model="item.year"
+                    :label="$tc('sw-cms.elements.heroTimeline.config.year')"
+                    required
+                    @change="emitUpdate"
+                />
+
+                <sw-text-field
+                    v-model="item.title"
+                    :label="$tc('sw-cms.elements.heroTimeline.config.titleLabel')"
+                    @change="emitUpdate"
+                />
+            </sw-container>
+
+            <sw-textarea-field
+                v-model="item.text"
+                :label="$tc('sw-cms.elements.heroTimeline.config.text')"
+                rows="4"
+                @change="emitUpdate"
+            />
+
+            <div class="sw-cms-el-config-hero-timeline__media">
+                <div class="sw-cms-el-config-hero-timeline__media-header">
+                    <label class="sw-cms-el-config-hero-timeline__media-label">
+                        {{ $tc('sw-cms.elements.heroTimeline.config.media') }}
+                    </label>
+                    <sw-button size="x-small" @click="onOpenMediaModal(index)">
+                        {{ $tc('sw-cms.elements.heroTimeline.config.chooseMedia') }}
+                    </sw-button>
+                </div>
+                <div class="sw-cms-el-config-hero-timeline__media-list" v-if="item.media && item.media.length">
+                    <div v-for="(mediaItem, mediaIndex) in item.media" 
+                         :key="mediaItem.mediaId || mediaItem.id || mediaIndex"
+                         class="sw-cms-el-config-hero-timeline__media-item">
+                        {# Try sw-media-preview-v2 with mediaId #}
+                        <sw-media-preview-v2
+                            v-if="mediaItem.mediaId || mediaItem.id"
+                            :source="mediaItem.mediaId || mediaItem.id"
+                            class="sw-cms-el-config-hero-timeline__media-preview"
+                        />
+                        {# Fallback: Show image directly from URL #}
+                        <img v-else-if="mediaItem.url || mediaItem.mediaUrl"
+                             :src="mediaItem.url || mediaItem.mediaUrl"
+                             :alt="'Media ' + (mediaIndex + 1)"
+                             class="sw-cms-el-config-hero-timeline__media-img" />
+                        <sw-button
+                            size="x-small"
+                            variant="danger"
+                            class="sw-cms-el-config-hero-timeline__media-remove"
+                            @click="removeMediaFromItem(index, mediaIndex)">
+                            <sw-icon name="regular-times-s" size="12px" />
+                        </sw-button>
+                    </div>
+                </div>
+                <p v-else class="sw-cms-el-config-hero-timeline__media-empty">
+                    {{ $tc('sw-cms.elements.heroTimeline.placeholder.media') }}
+                </p>
+            </div>
+        </sw-card>
+    </div>
+
+    <div v-else class="sw-cms-el-config-hero-timeline__empty">
+        {{ $tc('sw-cms.elements.heroTimeline.placeholder.empty') }}
+    </div>
+
+    <sw-media-modal-v2
+        v-if="mediaModalIsOpen"
+        :allow-multi-select="true"
+        :caption="$tc('sw-cms.elements.heroTimeline.config.media')"
+        :entity-context="cmsPageState?.entityName || 'cms_page'"
+        :initial-folder-id="cmsPageState?.defaultMediaFolderId || null"
+        :upload-tag="uploadTag"
+        @media-modal-selection-change="onMediaSelectionChange"
+        @modal-close="onCloseMediaModal"
+    />
+</div>
+{% endblock %}
+

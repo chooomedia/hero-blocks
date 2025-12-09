@@ -1,0 +1,177 @@
+// ============================================================================
+// Hero Timeline Block Preview - Sidebar Block Selection
+// Vertikales Layout wie im Storefront
+// ============================================================================
+
+$preview-accent-color: #d6ab60;
+$preview-border-color: #1a1a1a;
+$preview-bg-white: #fff;
+$preview-text-color: #1a1a1a;
+$preview-muted-color: #7b8a9a;
+$preview-line-color: #d1d9e0;
+
+// Button Sizes für Preview (klein)
+$preview-btn-size: 32px;
+$preview-line-width: 2px;
+
+.sw-cms-preview-hero-timeline {
+    position: relative;
+    padding: 12px;
+    border: 1px solid $preview-line-color;
+    border-radius: 8px;
+    background: $preview-bg-white;
+    min-height: 180px;
+
+    // ========================================
+    // Navigation Container
+    // ========================================
+    &__nav {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    // ========================================
+    // Vertikale Linie
+    // ========================================
+    &__line {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: $preview-line-width;
+        background: $preview-line-color;
+        transform: translateX(-50%);
+        z-index: 0;
+    }
+
+    // ========================================
+    // Timeline Entries Container
+    // ========================================
+    &__entries {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        z-index: 1;
+    }
+
+    // ========================================
+    // Single Entry
+    // ========================================
+    &__entry {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+
+        // Spacing zwischen Entries
+        &:not(:last-child) {
+            margin-bottom: 8px;
+        }
+
+        // Aktiver Entry
+        &.is--active {
+            .sw-cms-preview-hero-timeline__year-btn {
+                background: $preview-accent-color;
+                border-color: $preview-accent-color;
+                color: $preview-bg-white;
+                z-index: 3;
+            }
+
+            .sw-cms-preview-hero-timeline__item-wrapper {
+                display: block;
+            }
+        }
+    }
+
+    // ========================================
+    // Year Button
+    // ========================================
+    &__year-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: $preview-btn-size;
+        height: $preview-btn-size;
+        border-radius: 50%;
+        border: $preview-line-width solid $preview-border-color;
+        background: $preview-bg-white;
+        color: $preview-text-color;
+        font-family: 'Lato', sans-serif;
+        font-weight: 700;
+        font-size: 9px;
+        cursor: pointer;
+        position: relative;
+        z-index: 2;
+        transition: all 0.2s ease;
+    }
+
+    // ========================================
+    // Item Wrapper (Content Box)
+    // ========================================
+    &__item-wrapper {
+        display: none;
+        width: 100%;
+        margin-top: calc(-1 * #{$preview-btn-size} / 2);
+        padding-top: calc(#{$preview-btn-size} / 2 + 6px);
+    }
+
+    &__item-inner {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding: 8px;
+        background: $preview-bg-white;
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    // ========================================
+    // Text Content
+    // ========================================
+    &__text {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 2px;
+
+        h4 {
+            margin: 0;
+            font-family: 'Oswald', sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            line-height: 1.2;
+            color: $preview-text-color;
+        }
+
+        p {
+            margin: 0;
+            font-family: 'Lato', sans-serif;
+            font-size: 8px;
+            line-height: 1.4;
+            color: $preview-muted-color;
+        }
+    }
+
+    // ========================================
+    // Image Placeholder
+    // ========================================
+    &__image {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &__image-placeholder {
+        width: 100%;
+        height: 40px;
+        background: linear-gradient(135deg, #e8e8e8 25%, #f5f5f5 50%, #e8e8e8 75%);
+        border-radius: 4px;
+    }
+}

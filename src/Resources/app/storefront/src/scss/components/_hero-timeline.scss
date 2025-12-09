@@ -1,0 +1,676 @@
+/**
+ * Hero Timeline Block - Storefront Styles
+ * Basierend auf: https://www.horex.com/planet-horex/chronik/
+ * 
+ * Features:
+ * - VERTIKALE Navigation (Buttons UNTEREINANDER) von Desktop bis Mobile
+ * - Aktiver Button: Halb überragend am Timeline-Item-Wrapper oben
+ * - Timeline-Linie: Vertikal von oben nach unten durch alle Elemente
+ * - Inaktive Buttons: Setzen sich unterhalb des Item-Wrappers fort
+ * - Smooth Animationen beim Öffnen/Wechseln (keine Wiederholung)
+ * - Slider mit smooth Slide-Wechsel (wie Hero Slider)
+ * - ZENTRIERT auf Breite (Desktop bis Mobile)
+ * - Bootstrap Box-Shadow auf Item-Wrapper
+ */
+
+// Variables - Theme Colors
+$timeline-accent-color: var(--sw-color-accent, #d6ab60);
+$timeline-text-color: var(--sw-text-color, #1a1a1a);
+$timeline-line-color: var(--sw-border-color, #1a1a1a);
+$timeline-bg-light: var(--sw-background-color, #f5f5f5);
+$timeline-white: #fff;
+
+// Bootstrap Box-Shadow (Standard)
+$timeline-box-shadow: 0 0 1rem rgba(0, 0, 0, 0.25);
+$timeline-box-shadow-lg: 0 0 3rem rgba(0, 0, 0, 0.275);
+
+// Transitions
+$timeline-transition-fast: 0.3s ease;
+$timeline-transition-normal: 0.4s ease;
+$timeline-transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
+// Button Sizes
+$btn-size-mobile: 70px;
+$btn-size-tablet: 80px;
+$btn-size-desktop: 90px;
+
+// Line Width
+$line-width: 2px;
+
+// Spacing für Timeline-Linie Sichtbarkeit
+$timeline-gap-mobile: 2rem;
+$timeline-gap-tablet: 2.5rem;
+$timeline-gap-desktop: 3rem;
+
+// ============================================================================
+// MAIN CONTAINER
+// ============================================================================
+.cms-element-hero-timeline {
+    position: relative;
+    padding: 2rem 0;
+}
+
+// ============================================================================
+// TIMELINE CONTAINER - ZENTRIERT
+// ============================================================================
+.hero-timeline__container {
+    position: relative;
+    max-width: var(--sw-container-max-width, 1000px);
+    margin: 0 auto;
+    
+    // Flexbox für Zentrierung
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+// ============================================================================
+// VERTIKALE TIMELINE-LINIE (Hintergrund) - ZENTRIERT
+// ============================================================================
+.hero-timeline__line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: $line-width;
+    background-color: $timeline-line-color;
+    z-index: 0;
+}
+
+// ============================================================================
+// TIMELINE ITEMS CONTAINER - ZENTRIERT
+// ============================================================================
+.hero-timeline__items {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+// ============================================================================
+// TIMELINE ENTRY (Button + Content) - ZENTRIERT
+// ============================================================================
+.hero-timeline__entry {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    
+    // Abstand zwischen Entries für Timeline-Sichtbarkeit
+    margin-bottom: $timeline-gap-mobile;
+    
+    @media (min-width: 768px) {
+        margin-bottom: $timeline-gap-tablet;
+    }
+    
+    @media (min-width: 992px) {
+        margin-bottom: $timeline-gap-desktop;
+    }
+    
+    // Letzter Entry ohne Margin
+    &:last-child {
+        margin-bottom: 0;
+    }
+    
+    // Aktiver Entry
+    &.is--active {
+        // Mehr Abstand nach unten wenn aktiv (für Timeline-Linie nach Item-Wrapper)
+        margin-bottom: $timeline-gap-mobile;
+        
+        @media (min-width: 768px) {
+            margin-bottom: $timeline-gap-tablet;
+        }
+        
+        @media (min-width: 992px) {
+            margin-bottom: $timeline-gap-desktop;
+        }
+        
+        .hero-timeline__year-btn {
+            background-color: $timeline-accent-color;
+            border-color: $timeline-accent-color;
+            color: $timeline-white;
+            transform: scale(1.1);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+            z-index: 10;
+            
+            // Positionierung: Halb überragend am Item-Wrapper
+            position: relative;
+            margin-bottom: calc(-#{$btn-size-mobile} / 2);
+            
+            @media (min-width: 768px) {
+                margin-bottom: calc(-#{$btn-size-tablet} / 2);
+            }
+            
+            @media (min-width: 992px) {
+                margin-bottom: calc(-#{$btn-size-desktop} / 2);
+            }
+        }
+    }
+}
+
+// ============================================================================
+// YEAR BUTTON - ZENTRIERT auf Timeline-Linie
+// ============================================================================
+.hero-timeline__year-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    
+    // Größe
+    width: $btn-size-mobile;
+    height: $btn-size-mobile;
+    
+    // Initial State: Weiß mit schwarzem Border
+    background-color: $timeline-white;
+    border: $line-width solid $timeline-line-color;
+    border-radius: 50%;
+    
+    // Font: Lato, schwarz
+    font-family: var(--sw-font-family-base, 'Lato', sans-serif);
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: $timeline-text-color;
+    
+    // Interaction
+    cursor: pointer;
+    transition: all $timeline-transition-normal;
+    position: relative;
+    z-index: 2;
+    
+    @media (min-width: 768px) {
+        width: $btn-size-tablet;
+        height: $btn-size-tablet;
+        font-size: 1rem;
+    }
+    
+    @media (min-width: 992px) {
+        width: $btn-size-desktop;
+        height: $btn-size-desktop;
+        font-size: 1.125rem;
+    }
+    
+    &:hover:not(.is--active) {
+        background-color: $timeline-accent-color;
+        border-color: $timeline-accent-color;
+        color: $timeline-white;
+        transform: scale(1.05);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+    
+    &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(214, 171, 96, 0.4);
+    }
+    
+    // Aktiver Button Style (direkt auf Button-Klasse)
+    &.is--active {
+        background-color: $timeline-accent-color;
+        border-color: $timeline-accent-color;
+        color: $timeline-white;
+        transform: scale(1.1);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+        z-index: 10;
+        
+        // Positionierung: Halb überragend am Item-Wrapper
+        position: relative;
+        margin-bottom: calc(-#{$btn-size-mobile} / 2);
+        
+        @media (min-width: 768px) {
+            margin-bottom: calc(-#{$btn-size-tablet} / 2);
+        }
+        
+        @media (min-width: 992px) {
+            margin-bottom: calc(-#{$btn-size-desktop} / 2);
+        }
+    }
+}
+
+.hero-timeline__year-text {
+    white-space: nowrap;
+}
+
+// ============================================================================
+// TIMELINE ITEM CONTENT - MIT BOOTSTRAP BOX-SHADOW
+// ============================================================================
+.hero-timeline__item {
+    width: 100%;
+    max-width: 900px;
+    max-height: 0;
+    opacity: 0;
+    // overflow: hidden;
+    transition: max-height $timeline-transition-slow, 
+                opacity $timeline-transition-normal;
+    
+    &.is--active {
+        opacity: 1;
+    }
+}
+
+.hero-timeline__item-inner {
+    background-color: $timeline-white;
+    border-radius: 0.5rem;
+    
+    // Bootstrap Box-Shadow (Standard .shadow)
+    box-shadow: $timeline-box-shadow;
+    padding: 1.5rem;
+    
+    @media (min-width: 768px) {
+        padding: 2rem;
+        border-radius: 0.75rem;
+    }
+    
+    @media (min-width: 992px) {
+        padding: 2.5rem;
+        border-radius: 1rem;
+        
+        // Bootstrap Box-Shadow Large auf Desktop
+        box-shadow: $timeline-box-shadow-lg;
+    }
+}
+
+// ============================================================================
+// TEXT COLUMN
+// ============================================================================
+.hero-timeline__text-col {
+    order: 2;
+    
+    @media (min-width: 992px) {
+        order: 1;
+    }
+}
+
+.hero-timeline__title {
+    font-family: var(--sw-font-family-headline, 'Oswald', sans-serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: $timeline-text-color;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+    
+    @media (min-width: 768px) {
+        font-size: 1.75rem;
+    }
+    
+    @media (min-width: 992px) {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+}
+
+.hero-timeline__text {
+    font-family: var(--sw-font-family-base, 'Lato', sans-serif);
+    font-size: 1rem;
+    line-height: 1.7;
+    color: $timeline-text-color;
+    
+    p {
+        margin-bottom: 1rem;
+        
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+    
+    @media (min-width: 992px) {
+        font-size: 1.0625rem;
+    }
+}
+
+// ============================================================================
+// MEDIA COLUMN
+// ============================================================================
+.hero-timeline__media-col {
+    order: 1;
+    margin-bottom: 1.5rem;
+    
+    @media (min-width: 992px) {
+        order: 2;
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+// ============================================================================
+// SLIDER - Smooth Animationen wie Hero Slider
+// ============================================================================
+.hero-timeline__slider {
+    position: relative;
+    background-color: $timeline-bg-light;
+    border-radius: 4px;
+    // WICHTIG: overflow: visible, Track hat overflow: hidden
+    overflow: visible;
+    width: 100%;
+    
+    @media (min-width: 992px) {
+        max-width: 100%;
+    }
+}
+
+// ============================================================================
+// SLIDER TRACK - Fixed Height zur Vermeidung von Layout-Shift
+// ============================================================================
+.hero-timeline__slider-track {
+    position: relative;
+    width: 100%;
+    // WICHTIG: Feste Höhe zur Vermeidung von Layout-Shift beim Lazy Loading
+    aspect-ratio: 4 / 3;
+    min-height: 280px;
+    max-height: 480px;
+    // WICHTIG: overflow: hidden auf Track-Ebene für Bilder
+    overflow: hidden;
+    border-radius: 4px;
+    
+    @media (min-width: 768px) {
+        min-height: 320px;
+        max-height: 520px;
+    }
+    
+    @media (min-width: 992px) {
+        min-height: 380px;
+        max-height: 580px;
+    }
+}
+
+// ============================================================================
+// SLIDES - Absolute positioned für smooth transitions ohne Layout-Shift
+// ============================================================================
+.hero-timeline__slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity $timeline-transition-normal, 
+                visibility $timeline-transition-normal,
+                transform $timeline-transition-normal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    // GPU-Beschleunigung für smooth animations
+    will-change: opacity, transform;
+    backface-visibility: hidden;
+    
+    &.is--active {
+        opacity: 1;
+        visibility: visible;
+        z-index: 2;
+    }
+    
+    &.is--leaving {
+        opacity: 0;
+        transform: scale(0.98);
+        z-index: 1;
+    }
+    
+    &.is--entering {
+        opacity: 1;
+        visibility: visible;
+        z-index: 3;
+    }
+}
+
+// ============================================================================
+// SLIDE IMAGE - Mit Width/Height für Layout-Shift Prevention
+// ============================================================================
+.hero-timeline__slide-image {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    margin: 0 auto;
+    // Smooth loading
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    
+    // Skeleton-Hintergrund während Laden
+    background-color: $timeline-bg-light;
+}
+
+// ============================================================================
+// NAVIGATION CONTROLS CONTAINER (wie Hero Slider)
+// ============================================================================
+.hero-timeline__controls {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+}
+
+// ============================================================================
+// NAVIGATION ARROWS (Hero Slider Style)
+// ============================================================================
+.hero-timeline__nav {
+    width: 44px;
+    height: 44px;
+    // WICHTIG: Flexbox für perfekte Zentrierung der Icons
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, 
+                box-shadow 0.2s ease, 
+                background-color 0.25s ease, 
+                opacity 0.3s ease;
+    color: var(--bs-body-color, #2b3136);
+    pointer-events: auto;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    // Hover-Only: Initial versteckt auf Desktop
+    opacity: 0.7;
+    // Keine Padding - Icons sind zentriert
+    padding: 0;
+    
+    @media (min-width: 768px) {
+        opacity: 0;
+    }
+
+    // WICHTIG: Icon-Zentrierung
+    svg {
+        width: 20px;
+        height: 20px;
+        display: block;
+        margin: 0;
+        // Keine zusätzlichen Offsets
+        position: static;
+    }
+    
+    .icon {
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+        line-height: 1;
+        
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    &:hover,
+    &:focus {
+        background-color: rgba(255, 255, 255, 0.95);
+        border-color: rgba(0, 0, 0, 0.3);
+        transform: translateY(-50%) scale(1.08);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        opacity: 1;
+    }
+
+    &:active {
+        transform: translateY(-50%) scale(1.02);
+    }
+
+    &:focus {
+        outline: 2px solid rgba(0, 0, 0, 0.3);
+        outline-offset: 2px;
+    }
+    
+    &--prev {
+        left: 0.75rem;
+        
+        @media (min-width: 768px) {
+            left: 1rem;
+        }
+    }
+    
+    &--next {
+        right: 0.75rem;
+        
+        @media (min-width: 768px) {
+            right: 1rem;
+        }
+    }
+}
+
+// Hover-Only: Buttons sichtbar bei Hover über Slider
+.hero-timeline__slider:hover {
+    .hero-timeline__nav {
+        opacity: 1;
+    }
+}
+
+// ============================================================================
+// DOTS NAVIGATION (Hero Slider Style)
+// ============================================================================
+.hero-timeline__dots {
+    // Position unter dem Slider-Track (nicht absolute)
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 1rem 0;
+    pointer-events: auto;
+    
+    @media (min-width: 768px) {
+        padding: 1.25rem 0;
+    }
+}
+
+.hero-timeline__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: none;
+    padding: 0;
+    margin: 0;
+    background-color: rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, 
+                transform 0.3s ease,
+                box-shadow 0.3s ease;
+    cursor: pointer;
+    
+    @media (min-width: 768px) {
+        width: 12px;
+        height: 12px;
+    }
+    
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.2);
+        transform: scale(1.15);
+    }
+    
+    &.is--active {
+        background-color: rgba(0, 0, 0, 0.2);
+        transform: scale(1.15);
+    }
+    
+    &:focus {
+        outline: none;
+    }
+}
+
+// ============================================================================
+// PLACEHOLDER & EMPTY STATE
+// ============================================================================
+.hero-timeline__placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 250px;
+    background-color: $timeline-bg-light;
+    border-radius: 4px;
+    
+    @media (min-width: 992px) {
+        min-height: 300px;
+    }
+}
+
+.hero-timeline__placeholder-icon {
+    color: rgba(0, 0, 0, 0.2);
+    
+    .icon {
+        width: 64px;
+        height: 64px;
+    }
+}
+
+.hero-timeline__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.hero-timeline__empty-icon {
+    color: rgba(0, 0, 0, 0.2);
+    margin-bottom: 1rem;
+    
+    .icon {
+        width: 48px;
+        height: 48px;
+    }
+}
+
+.hero-timeline__empty-text {
+    font-size: 1rem;
+    color: rgba(0, 0, 0, 0.5);
+    margin: 0;
+}
+
+// ============================================================================
+// BLOCK CONTAINER
+// ============================================================================
+.cms-block-hero-timeline {
+    padding: 0;
+    position: relative;
+    
+    .cms-block-container {
+        max-width: 1320px;
+        margin: 0 auto;
+        padding: 0 1rem;
+        
+        @media (min-width: 768px) {
+            padding: 0 1.5rem;
+        }
+    }
+}

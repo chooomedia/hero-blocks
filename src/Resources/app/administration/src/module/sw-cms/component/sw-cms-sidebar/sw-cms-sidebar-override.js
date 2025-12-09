@@ -13,6 +13,7 @@ Shopware.Component.override("sw-cms-sidebar", {
         enableFaqBlock: false,
         enableHeroImageOverlay: false,
         enableHeroBookingForm: false,
+        enableHeroTimeline: false,
       },
     };
   },
@@ -117,6 +118,19 @@ Shopware.Component.override("sw-cms-sidebar", {
           console.warn("[HeroBlocks] ✅ Hero Booking Form block is visible");
         }
 
+        // Hero Timeline Block
+        if (name === "hero-timeline") {
+          console.warn(
+            "[HeroBlocks] Checking hero-timeline block - enableHeroTimeline:",
+            this.heroBlocksConfig.enableHeroTimeline
+          );
+          if (!this.heroBlocksConfig.enableHeroTimeline) {
+            console.warn("[HeroBlocks] ❌ Hero Timeline block filtered out");
+            return false;
+          }
+          console.warn("[HeroBlocks] ✅ Hero Timeline block is visible");
+        }
+
         return true;
       });
 
@@ -154,6 +168,8 @@ Shopware.Component.override("sw-cms-sidebar", {
               values["HeroBlocks.config.enableHeroImageOverlay"] === true,
             enableHeroBookingForm:
               values["HeroBlocks.config.enableHeroBookingForm"] === true,
+            enableHeroTimeline:
+              values["HeroBlocks.config.enableHeroTimeline"] === true,
           };
           console.warn("[HeroBlocks] ✅ Config loaded:", this.heroBlocksConfig);
           console.warn("[HeroBlocks] 🔄 Forcing cmsBlocks recomputation");

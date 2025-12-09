@@ -84,6 +84,15 @@
             <helpText>Enables the Hero Booking Form Block for test ride requests and booking forms with model selection and contact details.</helpText>
         </input-field>
         <input-field type="bool">
+            <name>enableHeroTimeline</name>
+            <label lang="de-DE">Hero Timeline Block aktivieren</label>
+            <label>Enable Hero Timeline Block</label>
+            <defaultValue>false</defaultValue>
+            <disabled>false</disabled>
+            <helpText lang="de-DE">Aktiviert den Hero Timeline Block mit Jahresnavigation, Text und Bild-Slider. Wenn deaktiviert, erscheint der Block nicht in den Erlebniswelten.</helpText>
+            <helpText>Enables the Hero Timeline block with year navigation, text, and image slider. If disabled, the block will not appear in the Shopping Experiences.</helpText>
+        </input-field>
+        <input-field type="bool">
             <name>enableShoppingExperience</name>
             <label lang="de-DE">Erweiterte Theme Shopping Experience aktivieren</label>
             <label>Enable Advanced Theme Shopping Experience</label>

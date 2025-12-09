@@ -374,10 +374,52 @@
                             "right": "Right"
                         }
                     }
+                },
+                "heroTimeline": {
+                    "label": "Hero Timeline",
+                    "description": "Timeline with year navigation, text, and image slider",
+                    "placeholder": {
+                        "title": "Your headline",
+                        "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                        "year": "Year",
+                        "media": "No images selected",
+                        "empty": "No timeline items yet."
+                    },
+                    "config": {
+                        "title": "Timeline items",
+                        "addItem": "Add item",
+                        "year": "Year",
+                        "titleLabel": "Headline",
+                        "text": "Text",
+                        "media": "Images",
+                        "chooseMedia": "Select images"
+                    }
                 }
             }
         },
         "elements": {
+            "heroTimeline": {
+                "label": "Hero Timeline",
+                "itemsLabel": "items",
+                "mediaLabel": "images",
+                "config": {
+                    "title": "Timeline items",
+                    "addItem": "Add item",
+                    "year": "Year",
+                    "titleLabel": "Headline",
+                    "text": "Text",
+                    "media": "Images",
+                    "chooseMedia": "Select images"
+                },
+                "placeholder": {
+                    "title": "Your headline",
+                    "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                    "year": "Year",
+                    "media": "No images selected",
+                    "empty": "No timeline items yet.",
+                    "hint": "Configure timeline items in the element settings."
+                }
+            },
             "heroBookingForm": {
                 "label": "Hero Booking Form",
                 "config": {
