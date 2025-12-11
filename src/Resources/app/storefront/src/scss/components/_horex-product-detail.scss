@@ -189,7 +189,7 @@
     .btn-accent {
         background-color: var(--sw-color-accent, #d6ab60);
         border-color: var(--sw-color-accent, #d6ab60);
-        color: #fff;
+        color:  var(--sw-background-color);
         transition: all 0.3s ease;
         font-size: 1.25rem;
 
@@ -198,7 +198,7 @@
         }
 
         .icon > svg {
-            fill: currentColor;
+            fill: currentColor!important;
         }
     }
 

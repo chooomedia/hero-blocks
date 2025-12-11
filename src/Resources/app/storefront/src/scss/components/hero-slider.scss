@@ -468,7 +468,7 @@ h3.hero-slide-headline {
 .hero-slide-buttons {
     font-family: 'Oswald', sans-serif;
     display: flex;
-    gap: 0.75rem;
+    gap: 1rem;
     justify-content: center;
     flex-wrap: wrap;
     margin: 0 !important;
@@ -797,7 +797,6 @@ h3.hero-slide-headline {
         width: 100%;
 
         .btn {
-            // Mobile: Buttons behalten ihre Padding-Werte, keine volle Breite
             flex: 0 1 auto;
             padding-left: 2rem; // Proportional zu Desktop (3rem)
             padding-right: 2rem;

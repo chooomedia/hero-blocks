@@ -42,6 +42,7 @@ Interactive wizard to create a new CMS block with all required files:
 ```
 
 **Generated Structure:**
+
 ```
 src/Resources/app/administration/src/module/sw-cms/blocks/[category]/[block-name]/
 ├── index.js              # Block registration
@@ -63,6 +64,7 @@ src/Resources/views/storefront/block/
 ```
 
 **Available Categories:**
+
 - `text` - Text-only blocks
 - `image` - Image blocks
 - `text-image` - Text & image blocks
@@ -87,17 +89,20 @@ src/Resources/views/storefront/block/
 ## After Creating a Block
 
 1. **Import in main.js:**
+
    ```javascript
-   import './module/sw-cms/blocks/[category]/[block-name]/index.js';
+   import "./module/sw-cms/blocks/[category]/[block-name]/index.js";
    ```
 
 2. **Add Snippets:**
+
    ```json
    // de-DE.json & en-GB.json
    "[blockNameCamel]": { "label": "Block Label" }
    ```
 
 3. **Add Enable Toggle (optional):**
+
    ```xml
    <!-- config.xml -->
    <name>enable[BlockNamePascal]</name>
@@ -125,4 +130,5 @@ src/Resources/views/storefront/block/
 
 ---
 
-*Powered by [Matt Interfaces](https://matt-interfaces.ch)*
+_Powered by [Matt Interfaces](https://matt-interfaces.ch)_
+

@@ -8,7 +8,7 @@
 
 **Professional CMS Blocks for Shopware Shopping Experiences**
 
-*More Conversion. Less Code.*
+_More Conversion. Less Code._
 
 [Features](#-features) • [Installation](#-installation) • [Documentation](#-documentation) • [Support](#-support)
 
@@ -18,18 +18,18 @@
 
 ## ✨ Features
 
-| Block | Category | Description |
-|-------|----------|-------------|
-| 🎠 **Hero Block Slider** | Image | Multi-slide hero slider with navigation, auto-play, and per-slide styling |
-| 📐 **Hero Two Columns** | Text-Image | Image & text layout with parallax scrolling effects |
-| 🍔 **Hero Mega Menu** | Sidebar | Advanced mega menu navigation with products and widgets |
-| 🏷️ **Hero Category Slider** | Image | Category slider with images and links |
-| 📸 **Hero Instagram Feed** | Image | Instagram API integration for dynamic feeds |
-| 🎬 **Hero Video Extended** | Video | Video block with Intersection Observer for play/pause |
-| ❓ **Hero FAQ** | Text | FAQ accordion with Schema.org rich snippets |
-| 📅 **Hero Timeline** | Text-Image | Timeline block with year navigation |
-| 🛒 **Hero Shopping Experience** | Commerce | Enhanced product detail pages |
-| 📋 **Hero Booking Form** | Form | Test ride & booking forms with model selection |
+| Block                           | Category   | Description                                                               |
+| ------------------------------- | ---------- | ------------------------------------------------------------------------- |
+| 🎠 **Hero Block Slider**        | Image      | Multi-slide hero slider with navigation, auto-play, and per-slide styling |
+| 📐 **Hero Two Columns**         | Text-Image | Image & text layout with parallax scrolling effects                       |
+| 🍔 **Hero Mega Menu**           | Sidebar    | Advanced mega menu navigation with products and widgets                   |
+| 🏷️ **Hero Category Slider**     | Image      | Category slider with images and links                                     |
+| 📸 **Hero Instagram Feed**      | Image      | Instagram API integration for dynamic feeds                               |
+| 🎬 **Hero Video Extended**      | Video      | Video block with Intersection Observer for play/pause                     |
+| ❓ **Hero FAQ**                 | Text       | FAQ accordion with Schema.org rich snippets                               |
+| 📅 **Hero Timeline**            | Text-Image | Timeline block with year navigation                                       |
+| 🛒 **Hero Shopping Experience** | Commerce   | Enhanced product detail pages                                             |
+| 📋 **Hero Booking Form**        | Form       | Test ride & booking forms with model selection                            |
 
 ### Additional Features
 
@@ -166,6 +166,7 @@ sequenceDiagram
 4. Activate workflow
 
 **Webhook URLs:**
+
 - License: `https://your-n8n.com/webhook/license/hero-blocks`
 - Update: `https://your-n8n.com/webhook/update/hero-blocks`
 
@@ -200,13 +201,13 @@ docker exec horex-shopware php bin/console cache:clear
 
 ## 🔧 Troubleshooting
 
-| Problem | Solution |
-|---------|----------|
-| Build fails | Check Docker container status, clear cache, reinstall node_modules |
-| Styles not loading | Run `theme:compile` - styles are in child theme |
-| JS plugin not registered | Check PluginManager availability in console |
-| License shows invalid | Check webhook URL in .env, verify n8n workflow is active |
-| Update check fails | Verify GitHub API access, check rate limits |
+| Problem                  | Solution                                                           |
+| ------------------------ | ------------------------------------------------------------------ |
+| Build fails              | Check Docker container status, clear cache, reinstall node_modules |
+| Styles not loading       | Run `theme:compile` - styles are in child theme                    |
+| JS plugin not registered | Check PluginManager availability in console                        |
+| License shows invalid    | Check webhook URL in .env, verify n8n workflow is active           |
+| Update check fails       | Verify GitHub API access, check rate limits                        |
 
 ---
 
@@ -236,6 +237,6 @@ docker exec horex-shopware php bin/console cache:clear
 
 **Developed with ❤️ by [Matt Interfaces](https://matt-interfaces.ch)**
 
-*Professional Shopware Solutions*
+_Professional Shopware Solutions_
 
 </div>
