@@ -1,0 +1,221 @@
+{# 
+HERO PRODUCT LANDING CMS ELEMENT
+================================
+
+This element allows displaying product data on Landing Pages.
+The product is selected in the CMS Admin and loaded via TypeDataResolver.
+
+AVAILABLE VARIABLES:
+- element.data.product - The full ProductEntity
+- element.data.product.translated.name - Product name (translated)
+- element.data.product.translated.description - Product description (translated)
+- element.data.product.translated.metaDescription - Meta description
+- element.data.product.calculatedPrice.totalPrice - Price
+- element.data.product.cover.media - Cover image MediaEntity
+- element.data.product.properties - Product properties (PropertyGroupOptionCollection)
+- element.data.product.manufacturer - Manufacturer entity
+- element.data.product.productNumber - Product number (SKU)
+- element.data.product.ean - EAN number
+- element.data.product.media - All product images
+
+CONFIG OPTIONS (from element.config):
+- showName - Show product name
+- showDescription - Show product description
+- showPrice - Show product price
+- showProperties - Show product properties
+- showManufacturer - Show manufacturer
+- showBuyButton - Show add to cart button
+- layout - Layout variant (default, compact, full)
+
+EXAMPLE USAGE IN CUSTOM TEMPLATES:
+You can override this template or use the product variable in other templates:
+
+{% verbatim %}
+{{ element.data.product.translated.name }}
+{{ element.data.product.translated.description|raw }}
+{{ element.data.product.calculatedPrice.totalPrice|currency }}
+{% endverbatim %}
+#}
+
+{% block element_hero_product_landing %}
+    {% set product = element.data.product %}
+    {% set config = element.config %}
+    
+    {# Config Options (with defaults) #}
+    {% set showName = config.showName.value is defined ? config.showName.value : true %}
+    {% set showDescription = config.showDescription.value is defined ? config.showDescription.value : true %}
+    {% set showPrice = config.showPrice.value is defined ? config.showPrice.value : true %}
+    {% set showProperties = config.showProperties.value is defined ? config.showProperties.value : true %}
+    {% set showManufacturer = config.showManufacturer.value is defined ? config.showManufacturer.value : false %}
+    {% set showBuyButton = config.showBuyButton.value is defined ? config.showBuyButton.value : true %}
+    {% set layout = config.layout.value is defined ? config.layout.value : 'default' %}
+    
+    {# Check if product exists #}
+    {% if product %}
+        <div class="cms-element-hero-product-landing cms-element-hero-product-landing--{{ layout }}"
+             data-product-id="{{ product.id }}"
+             itemscope
+             itemtype="https://schema.org/Product">
+            
+            {# ==================== PRODUCT CONTENT ==================== #}
+            <div class="hero-product-landing__content">
+                
+                {# ========== PRODUCT IMAGE ========== #}
+                {% block element_hero_product_landing_image %}
+                    {% if product.cover and product.cover.media %}
+                        <div class="hero-product-landing__image">
+                            {% set media = product.cover.media %}
+                            {% sw_thumbnails 'hero-product-landing-image' with {
+                                media: media,
+                                sizes: {
+                                    'xs': '100vw',
+                                    'sm': '50vw',
+                                    'md': '400px',
+                                    'lg': '500px'
+                                },
+                                attributes: {
+                                    'class': 'hero-product-landing__img',
+                                    'alt': product.translated.name,
+                                    'title': product.translated.name,
+                                    'itemprop': 'image',
+                                    'loading': 'lazy'
+                                }
+                            } %}
+                        </div>
+                    {% endif %}
+                {% endblock %}
+                
+                {# ========== PRODUCT INFO ========== #}
+                <div class="hero-product-landing__info">
+                    
+                    {# Product Name #}
+                    {% block element_hero_product_landing_name %}
+                        {% if showName %}
+                            <h2 class="hero-product-landing__name" itemprop="name">
+                                {{ product.translated.name }}
+                            </h2>
+                        {% endif %}
+                    {% endblock %}
+                    
+                    {# Manufacturer #}
+                    {% block element_hero_product_landing_manufacturer %}
+                        {% if showManufacturer and product.manufacturer %}
+                            <div class="hero-product-landing__manufacturer" itemprop="brand" itemscope itemtype="https://schema.org/Brand">
+                                <span itemprop="name">{{ product.manufacturer.translated.name }}</span>
+                            </div>
+                        {% endif %}
+                    {% endblock %}
+                    
+                    {# Product Description #}
+                    {% block element_hero_product_landing_description %}
+                        {% if showDescription and product.translated.description %}
+                            <div class="hero-product-landing__description" itemprop="description">
+                                {{ product.translated.description|raw }}
+                            </div>
+                        {% endif %}
+                    {% endblock %}
+                    
+                    {# Product Properties #}
+                    {% block element_hero_product_landing_properties %}
+                        {% if showProperties and product.properties|length > 0 %}
+                            <div class="hero-product-landing__properties">
+                                {% for property in product.properties %}
+                                    {% set groupName = property.group.translated.name ?? property.group.name %}
+                                    {% set optionName = property.translated.name ?? property.name %}
+                                    
+                                    {% if groupName and optionName %}
+                                        <div class="hero-product-landing__property">
+                                            <span class="hero-product-landing__property-label">
+                                                {{ groupName }}:
+                                            </span>
+                                            <span class="hero-product-landing__property-value">
+                                                {{ optionName }}
+                                            </span>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endblock %}
+                    
+                    {# Product Price #}
+                    {% block element_hero_product_landing_price %}
+                        {% if showPrice and product.calculatedPrice %}
+                            <div class="hero-product-landing__price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+                                <meta itemprop="priceCurrency" content="{{ context.currency.isoCode }}">
+                                <meta itemprop="price" content="{{ product.calculatedPrice.totalPrice }}">
+                                <span class="hero-product-landing__price-value">
+                                    {{ product.calculatedPrice.totalPrice|currency }}
+                                </span>
+                                
+                                {# Tax Info #}
+                                {% if product.calculatedTaxes|length > 0 %}
+                                    {% set tax = product.calculatedTaxes.first %}
+                                    <span class="hero-product-landing__price-tax">
+                                        {{ 'detail.priceIncludesTax'|trans({ '%tax%': tax.taxRate }) }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    {% endblock %}
+                    
+                    {# Buy Button #}
+                    {% block element_hero_product_landing_buy %}
+                        {% if showBuyButton %}
+                            <div class="hero-product-landing__buy">
+                                <form method="post" 
+                                      action="{{ path('frontend.checkout.line-item.add') }}" 
+                                      class="hero-product-landing__buy-form"
+                                      data-add-to-cart="true">
+                                    
+                                    {{ sw_csrf('frontend.checkout.line-item.add') }}
+                                    
+                                    <input type="hidden" name="redirectTo" value="frontend.cart.offcanvas">
+                                    <input type="hidden" name="lineItems[{{ product.id }}][id]" value="{{ product.id }}">
+                                    <input type="hidden" name="lineItems[{{ product.id }}][referencedId]" value="{{ product.id }}">
+                                    <input type="hidden" name="lineItems[{{ product.id }}][type]" value="product">
+                                    <input type="hidden" name="lineItems[{{ product.id }}][stackable]" value="1">
+                                    <input type="hidden" name="lineItems[{{ product.id }}][removable]" value="1">
+                                    <input type="hidden" name="lineItems[{{ product.id }}][quantity]" value="1">
+                                    
+                                    <button type="submit" 
+                                            class="btn btn-primary hero-product-landing__buy-button"
+                                            title="{{ 'listing.boxAddProduct'|trans }}">
+                                        {% sw_icon 'bag' %}
+                                        <span>{{ 'listing.boxAddProduct'|trans }}</span>
+                                    </button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    {% endblock %}
+                    
+                    {# Product Number #}
+                    {% block element_hero_product_landing_product_number %}
+                        {% if product.productNumber %}
+                            <div class="hero-product-landing__product-number">
+                                <span class="hero-product-landing__product-number-label">
+                                    {{ 'detail.productNumber'|trans }}:
+                                </span>
+                                <span class="hero-product-landing__product-number-value" itemprop="sku">
+                                    {{ product.productNumber }}
+                                </span>
+                            </div>
+                        {% endif %}
+                    {% endblock %}
+                    
+                </div>
+                
+            </div>
+            
+        </div>
+    {% else %}
+        {# No product assigned - Show message in storefront (only for debugging) #}
+        {% if app.environment == 'dev' %}
+            <div class="cms-element-hero-product-landing cms-element-hero-product-landing--empty">
+                <p class="text-muted">
+                    <em>Hero Product Landing: Kein Produkt zugewiesen.</em>
+                </p>
+            </div>
+        {% endif %}
+    {% endif %}
+{% endblock %}

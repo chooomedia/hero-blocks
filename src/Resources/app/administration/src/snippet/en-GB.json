@@ -237,13 +237,13 @@
                         "inDevelopment": "This block is currently in development and can be enabled via plugin settings."
                     }
                 },
-        "twoImages": {
-            "label": "Hero Two Images",
-            "description": "Two images side by side with flexible layout options"
-        },
-        "mattInterfacesBranding": {
-            "title": "Developed by Matt Interfaces - Learn more about Shopware Hero Blocks"
-        },
+                "twoImages": {
+                    "label": "Hero Two Images",
+                    "description": "Two images side by side with flexible layout options"
+                },
+                "mattInterfacesBranding": {
+                    "title": "Developed by Matt Interfaces - Learn more about Shopware Hero Blocks"
+                },
                 "heroVideoExtended": {
                     "label": "Hero Video Extended",
                     "description": "Video hero block with angled text overlay and scroll animation",
@@ -375,6 +375,10 @@
                         }
                     }
                 },
+                "heroProductLanding": {
+                    "label": "Hero Product Landing",
+                    "description": "Display product data on landing pages - for Regina Evo, VR6 Raw and other product pages"
+                },
                 "heroTimeline": {
                     "label": "Hero Timeline",
                     "description": "Timeline with year navigation, text, and image slider",
@@ -398,6 +402,52 @@
             }
         },
         "elements": {
+            "heroProductLanding": {
+                "label": "Hero Product Landing",
+                "placeholder": {
+                    "title": "Product Landing Block",
+                    "hint": "Select a product in the element settings"
+                },
+                "config": {
+                    "product": {
+                        "label": "Select Product",
+                        "placeholder": "Search for product...",
+                        "helpText": "Select the product whose data should be displayed on the landing page. You can then access all product data in the template (name, description, price, properties, etc.)"
+                    },
+                    "displayOptions": {
+                        "title": "Display Options"
+                    },
+                    "showName": {
+                        "label": "Show Product Name"
+                    },
+                    "showDescription": {
+                        "label": "Show Product Description"
+                    },
+                    "showPrice": {
+                        "label": "Show Price"
+                    },
+                    "showProperties": {
+                        "label": "Show Product Properties"
+                    },
+                    "showManufacturer": {
+                        "label": "Show Manufacturer"
+                    },
+                    "showBuyButton": {
+                        "label": "Show Buy Button"
+                    },
+                    "layoutOptions": {
+                        "title": "Layout Options"
+                    },
+                    "layout": {
+                        "label": "Layout Variant",
+                        "options": {
+                            "default": "Default",
+                            "compact": "Compact",
+                            "full": "Full"
+                        }
+                    }
+                }
+            },
             "heroTimeline": {
                 "label": "Hero Timeline",
                 "itemsLabel": "items",

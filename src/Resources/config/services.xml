@@ -92,6 +92,10 @@
             <tag name="shopware.cms.data_resolver"/>
         </service>
         
+        <service id="HeroBlocks\Content\Cms\TypeDataResolver\HeroProductLandingTypeDataResolver">
+            <tag name="shopware.cms.data_resolver"/>
+        </service>
+        
         <!-- Hero Booking Form Mail Subscriber -->
         <service id="HeroBlocks\Subscriber\HeroBookingFormMailSubscriber">
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
@@ -118,6 +122,12 @@
         </service>
         
         <service id="HeroBlocks\Storefront\Twig\FaqExtension">
+            <argument type="service" id="HeroBlocks\Service\ConfigService"/>
+            <tag name="twig.extension"/>
+        </service>
+        
+        <!-- Shopping Experience Extension: Twig-Funktionen für erweiterte Produktdetailseite -->
+        <service id="HeroBlocks\Storefront\Twig\ShoppingExperienceExtension">
             <argument type="service" id="HeroBlocks\Service\ConfigService"/>
             <tag name="twig.extension"/>
         </service>

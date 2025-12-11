@@ -1,0 +1,76 @@
+.sw-cms-preview-hero-product-landing {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 6px;
+    min-height: 120px;
+    
+    // Matt Interfaces Branding
+    &__branding {
+        position: absolute;
+        top: 4px;
+        right: 6px;
+        
+        a {
+            text-decoration: none;
+        }
+    }
+    
+    &__branding-text {
+        font-size: 8px;
+        font-weight: 600;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        
+        &:hover {
+            color: #64748b;
+        }
+    }
+    
+    // Product Preview
+    &__product {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        margin-top: 8px;
+    }
+    
+    &__image {
+        width: 48px;
+        height: 48px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #e2e8f0;
+        border-radius: 6px;
+        color: #94a3b8;
+    }
+    
+    &__info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    &__name {
+        font-size: 13px;
+        font-weight: 600;
+        color: #334155;
+    }
+    
+    &__description {
+        font-size: 10px;
+        color: #64748b;
+    }
+    
+    &__price {
+        font-size: 11px;
+        font-weight: 600;
+        color: #059669;
+    }
+}

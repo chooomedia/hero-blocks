@@ -237,13 +237,13 @@
                         "inDevelopment": "Dieser Block ist aktuell in Entwicklung und wird über die Plugin-Einstellungen aktiviert."
                     }
                 },
-        "twoImages": {
-            "label": "Hero Two Images",
-            "description": "Zwei Bilder nebeneinander mit flexiblen Layout-Optionen"
-        },
-        "mattInterfacesBranding": {
-            "title": "Entwickelt von Matt Interfaces - Mehr erfahren über Shopware Hero Blocks"
-        },
+                "twoImages": {
+                    "label": "Hero Two Images",
+                    "description": "Zwei Bilder nebeneinander mit flexiblen Layout-Optionen"
+                },
+                "mattInterfacesBranding": {
+                    "title": "Entwickelt von Matt Interfaces - Mehr erfahren über Shopware Hero Blocks"
+                },
                 "heroVideoExtended": {
                     "label": "Hero Video Extended",
                     "description": "Video-Hero-Block mit schrägem Text-Overlay und Scroll-Animation",
@@ -375,6 +375,10 @@
                         }
                     }
                 },
+                "heroProductLanding": {
+                    "label": "Hero Product Landing",
+                    "description": "Produktdaten auf Landing Pages anzeigen - für Regina Evo, VR6 Raw und andere Produktseiten"
+                },
                 "heroTimeline": {
                     "label": "Hero Timeline",
                     "description": "Zeitleiste mit Jahresnavigation, Text und Bild-Slider",
@@ -398,6 +402,52 @@
             }
         },
         "elements": {
+            "heroProductLanding": {
+                "label": "Hero Product Landing",
+                "placeholder": {
+                    "title": "Product Landing Block",
+                    "hint": "Wählen Sie ein Produkt in den Element-Einstellungen aus"
+                },
+                "config": {
+                    "product": {
+                        "label": "Produkt auswählen",
+                        "placeholder": "Produkt suchen...",
+                        "helpText": "Wählen Sie das Produkt aus, dessen Daten auf der Landing Page angezeigt werden sollen. Sie können dann im Template auf alle Produktdaten zugreifen (Name, Beschreibung, Preis, Properties, etc.)"
+                    },
+                    "displayOptions": {
+                        "title": "Anzeigeoptionen"
+                    },
+                    "showName": {
+                        "label": "Produktname anzeigen"
+                    },
+                    "showDescription": {
+                        "label": "Produktbeschreibung anzeigen"
+                    },
+                    "showPrice": {
+                        "label": "Preis anzeigen"
+                    },
+                    "showProperties": {
+                        "label": "Produkteigenschaften anzeigen"
+                    },
+                    "showManufacturer": {
+                        "label": "Hersteller anzeigen"
+                    },
+                    "showBuyButton": {
+                        "label": "Kaufen-Button anzeigen"
+                    },
+                    "layoutOptions": {
+                        "title": "Layout-Optionen"
+                    },
+                    "layout": {
+                        "label": "Layout-Variante",
+                        "options": {
+                            "default": "Standard",
+                            "compact": "Kompakt",
+                            "full": "Vollständig"
+                        }
+                    }
+                }
+            },
             "heroTimeline": {
                 "label": "Hero Timeline",
                 "itemsLabel": "Einträge",

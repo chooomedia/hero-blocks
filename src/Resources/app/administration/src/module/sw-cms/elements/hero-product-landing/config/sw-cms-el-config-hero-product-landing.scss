@@ -1,0 +1,66 @@
+.sw-cms-el-config-hero-product-landing {
+    // Product Result Item in Picker
+    &__product-result {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 4px 0;
+    }
+
+    &__product-image {
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        border-radius: 4px;
+        overflow: hidden;
+        background: #f3f4f6;
+    }
+
+    &__product-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        overflow: hidden;
+    }
+
+    &__product-name {
+        font-weight: 500;
+        color: #111827;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__product-number {
+        font-size: 12px;
+        color: #6b7280;
+    }
+
+    // Display Options Section
+    &__display-options {
+        margin-top: 24px;
+        padding-top: 24px;
+        border-top: 1px solid #e5e7eb;
+
+        h4 {
+            margin: 0 0 16px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+    }
+
+    // Layout Options Section
+    &__layout-options {
+        margin-top: 24px;
+        padding-top: 24px;
+        border-top: 1px solid #e5e7eb;
+
+        h4 {
+            margin: 0 0 16px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+    }
+}

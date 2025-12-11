@@ -25,7 +25,11 @@ export default class HeroTimelinePlugin extends Plugin {
         activeClass: 'is--active',
         visibleClass: 'is--visible',
         animatingInClass: 'is--animating-in',
-        animationDuration: 400,
+        closingClass: 'is--closing',
+        // SMOOTHER UX: Langsamere Animationen (800ms statt 400ms)
+        animationDuration: 800,
+        // Delay zwischen Close und Open für sauberere Transition
+        transitionDelay: 300,
         verticalLineHeight: 60, // px
     };
 
@@ -137,15 +141,21 @@ export default class HeroTimelinePlugin extends Plugin {
         const nextBtn = this.yearBtns[index];
         const year = nextBtn?.dataset.year || '----';
 
-        // Wenn vorher ein Item aktiv war, ausblenden
+        // Wenn vorher ein Item aktiv war, SMOOTH ausblenden
         if (this.activeIndex >= 0) {
             const currentItem = this.items[this.activeIndex];
             const currentBtn = this.yearBtns[this.activeIndex];
 
-            // Aktuelles Item ausblenden
+            // SMOOTH Close: Closing-Klasse hinzufügen für Animation
+            currentItem.classList.add(this.options.closingClass);
             currentItem.classList.remove(this.options.activeClass);
-            currentItem.style.display = 'none';
             currentBtn?.classList.remove(this.options.activeClass);
+            
+            // Nach Animation verstecken
+            setTimeout(() => {
+                currentItem.classList.remove(this.options.closingClass);
+                currentItem.style.display = 'none';
+            }, this.options.transitionDelay);
         }
 
         // Content Area sichtbar machen (falls noch versteckt)
@@ -166,20 +176,26 @@ export default class HeroTimelinePlugin extends Plugin {
             this.verticalLine.style.height = `${this.options.verticalLineHeight}px`;
         }
 
-        // Neues Item anzeigen
+        // SMOOTH Open: Neues Item mit Verzögerung anzeigen
+        const openDelay = this.activeIndex >= 0 ? this.options.transitionDelay : 0;
+        
         setTimeout(() => {
             nextItem.style.display = '';
-            nextItem.classList.add(this.options.activeClass, this.options.animatingInClass);
-            nextBtn?.classList.add(this.options.activeClass);
+            // Kurz warten, dann active-Klasse hinzufügen für Slide-In Animation
+            requestAnimationFrame(() => {
+                nextItem.classList.add(this.options.activeClass, this.options.animatingInClass);
+                nextBtn?.classList.add(this.options.activeClass);
+            });
 
             this.activeIndex = index;
 
+            // Cleanup nach Animation
             setTimeout(() => {
                 nextItem.classList.remove(this.options.animatingInClass);
                 this.isAnimating = false;
             }, this.options.animationDuration);
 
-        }, this.activeIndex >= 0 ? 200 : 0); // Delay nur wenn vorher Item aktiv war
+        }, openDelay);
     }
 
     _prevSlide(itemIndex) {

@@ -1,0 +1,202 @@
+{# 
+HOREX CUSTOM CMS ELEMENT: Product Detail Information
+SHOPWARE BEST PRACTICES & HOREX CUSTOM STYLING
+
+Layout:
+- Left Column: Buy Button + Quantity Selector
+- Right Column: Price, Properties, Product Colors
+
+Features:
+- Motorcycle Properties (Leistung, Drehmoment, Zylinder)
+- Property Colors Selection
+- Custom Button Styling (btn-accent)
+- Right-aligned pricing with secondary color
+- Quantity selector only for non-motorcycles
+- Bootstrap 5 responsive grid
+#}
+
+{% set product = page.product %}
+{% set isMotorcycle = product.productNumber|slice(0, 2) == 'HM' or 'regina evo' in product.translated.name|lower or 'vr6 raw' in product.translated.name|lower %}
+{% set properties = product.properties.elements %}
+
+{% block cms_element_horex_product_detail %}
+<div class="cms-element-horex-product-detail">
+    <div class="container-fluid">
+        <div class="row align-items-start gap-4">
+            
+            {# ==================== LEFT COLUMN: BUY BUTTON + QUANTITY ==================== #}
+            <div class="col-12 col-lg-6">
+                {# Product Info Header #}
+                <div class="product-detail-header mb-4">
+                    {% block horex_product_detail_header %}
+                        <h1 class="product-detail-title h3 fw-bold mb-2">
+                            {{ product.translated.name }}
+                        </h1>
+                        
+                        {% if product.manufacturer %}
+                        <p class="product-detail-manufacturer sr-only small mb-3">
+                            {{ product.manufacturer.translated.name }}
+                        </p>
+                        {% endif %}
+                    {% endblock %}
+                </div>
+                
+                {# Motorcycle Properties #}
+                {% if isMotorcycle and properties|length > 0 %}
+                <div class="product-properties-section mb-4">
+                    {% block horex_product_properties %}
+                        <div class="product-properties">
+                            {% for property in properties %}
+                                {% set groupName = property.group.translated.name ?? property.group.name %}
+                                {% set optionName = property.translated.name ?? property.name %}
+                                
+                                {% if groupName and optionName %}
+                                    <div class="property-item mb-2 pb-2 border-bottom">
+                                        {# Property Label (Oswald Font) #}
+                                        <p class="property-label fw-bold text-uppercase mb-1" style="font-family: 'Oswald', sans-serif; font-size: 12px; letter-spacing: 0.5px;">
+                                            {{ groupName }}
+                                        </p>
+                                        
+                                        {# Property Value (Lato, Secondary Color) #}
+                                        <p class="property-value mb-0" style="font-family: 'Lato', sans-serif; font-size: 16px; color: var(--bs-secondary, #6c757d);">
+                                            {{ optionName }}
+                                        </p>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endblock %}
+                </div>
+                {% endif %}
+                
+                {# Buy Section #}
+                <div class="product-detail-buy-section">
+                    {% block horex_product_buy %}
+                        <form method="post" action="{{ path('frontend.checkout.line-item.add') }}" class="product-detail-buy-form">
+                            <input type="hidden" name="redirectTo" value="frontend.detail.page">
+                            <input type="hidden" name="redirectParameters" value="{{ {productId: product.id}|json_encode }}">
+                            <input type="hidden" name="lineItems[{{ product.id }}][id]" value="{{ product.id }}">
+                            <input type="hidden" name="lineItems[{{ product.id }}][referencedId]" value="{{ product.id }}">
+                            <input type="hidden" name="lineItems[{{ product.id }}][type]" value="product">
+                            <input type="hidden" name="lineItems[{{ product.id }}][stackable]" value="1">
+                            <input type="hidden" name="lineItems[{{ product.id }}][removable]" value="1">
+                            <input type="hidden" name="product-name" value="{{ product.translated.name }}">
+                            
+                            <div class="row gap-2">
+                                {# Quantity Selector (nur für Non-Motorcycles) #}
+                                {% if not isMotorcycle %}
+                                <div class="col-12 col-sm-auto">
+                                    <fieldset class="d-flex align-items-center gap-2">
+                                        <legend class="visually-hidden">{{ 'component.product.quantity'|trans }}</legend>
+                                        
+                                        <div class="input-group" data-quantity-selector="true">
+                                            <button type="button" class="btn btn-outline-secondary btn-sm js-btn-minus" aria-label="{{ 'component.product.quantity.decrease'|trans }}">
+                                                <span class="icon icon-minus icon-xs"></span>
+                                            </button>
+                                            <input type="number" name="lineItems[{{ product.id }}][quantity]" 
+                                                   class="form-control form-control-sm quantity-selector text-center" 
+                                                   min="1" max="100" step="1" value="{{ product.minPurchase }}"
+                                                   aria-label="{{ 'component.product.quantity'|trans }}">
+                                            <button type="button" class="btn btn-outline-secondary btn-sm js-btn-plus" aria-label="{{ 'component.product.quantity.increase'|trans }}">
+                                                <span class="icon icon-plus icon-xs"></span>
+                                            </button>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                                {% else %}
+                                    <input type="hidden" name="lineItems[{{ product.id }}][quantity]" value="1">
+                                {% endif %}
+                                
+                                {# Buy Button (btn-accent) #}
+                                <div class="col-12 col-sm-auto">
+                                    <button type="submit" class="btn btn-accent btn-lg w-100" aria-label="{{ 'checkout.cartAddProduct'|trans }}">
+                                        <span class="btn-text">
+                                            {{ 'checkout.cartAddProduct'|trans }}
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    {% endblock %}
+                </div>
+            </div>
+            
+            {# ==================== RIGHT COLUMN: PRICE + PROPERTIES ==================== #}
+            <div class="col-12 col-lg-6">
+                {# Price Section #}
+                <div class="product-detail-price-section mb-4 text-end">
+                    {% block horex_product_price %}
+                        <div class="product-detail-price-container">
+                            {# Price (Secondary Color, 16px, Right-aligned) #}
+                            {% if product.calculatedPrice %}
+                            <p class="product-detail-price mb-2" 
+                               style="font-size: 16px; color: var(--bs-secondary, #6c757d); text-align: right;">
+                                <meta itemprop="price" content="{{ product.calculatedPrice.totalPrice }}">
+                                <strong>{{ product.calculatedPrice.totalPrice|currency }}</strong>
+                            </p>
+                            {% endif %}
+                            
+                            {# Tax Info (Secondary Color, 16px, Right-aligned) #}
+                            {% if product.calculatedTaxes|length > 0 %}
+                            <p class="product-detail-tax small mb-0"
+                               style="font-size: 16px; color: var(--bs-secondary, #6c757d); text-align: right;">
+                                {% set tax = product.calculatedTaxes.first %}
+                                <span>zzgl. MwSt. ({{ tax.taxRate }}%)</span>
+                            </p>
+                            {% endif %}
+                        </div>
+                    {% endblock %}
+                </div>
+                
+                {# Product Color Selection #}
+                {% if product.options|length > 0 %}
+                <div class="product-detail-options-section">
+                    {% block horex_product_options %}
+                        <div class="product-options">
+                            {% for option in product.options %}
+                                {% set optionValues = option.values %}
+                                
+                                {% if 'color' in option.name|lower or 'farbe' in option.name|lower %}
+                                    <div class="option-group mb-3">
+                                        <label class="form-label fw-bold mb-2" for="option-{{ option.id }}">
+                                            {{ option.name }}
+                                        </label>
+                                        
+                                        <select class="form-select" id="option-{{ option.id }}" name="options[{{ option.id }}]">
+                                            <option value="">{{ 'component.product.selectOption'|trans|default('Select...') }}</option>
+                                            {% for value in optionValues %}
+                                            <option value="{{ value.id }}" data-color="{{ value.name|lower }}">
+                                                {{ value.translated.name ?? value.name }}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endblock %}
+                </div>
+                {% endif %}
+                
+                {# Additional Product Info #}
+                <div class="product-detail-info mt-4">
+                    {% block horex_product_additional_info %}
+                        {% if product.ean %}
+                        <p class="small text-muted mb-2">
+                            <strong>{{ 'product.detail.ean'|trans }}:</strong> {{ product.ean }}
+                        </p>
+                        {% endif %}
+                        
+                        {% if product.productNumber %}
+                        <p class="small text-muted mb-0">
+                            <strong>{{ 'product.detail.productNumber'|trans }}:</strong> {{ product.productNumber }}
+                        </p>
+                        {% endif %}
+                    {% endblock %}
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

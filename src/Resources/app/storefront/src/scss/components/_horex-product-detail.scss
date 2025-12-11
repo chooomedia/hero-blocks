@@ -1,0 +1,308 @@
+/**
+ * HOREX Product Detail Element
+ * SHOPWARE BEST PRACTICES with Bootstrap 5
+ * 
+ * Layout:
+ * - Desktop (lg): Images (col-8) | Properties/Buy/Price (col-4)
+ * - Tablet (md): Images (col-7) | Properties/Buy/Price (col-5)
+ * - Mobile (xs-sm): Images (col-12) | Properties/Buy/Price (col-12) stacked
+ * 
+ * Custom Styling:
+ * - Property labels: Oswald font, uppercase
+ * - Property values: Lato 16px, secondary color
+ * - Color option rendered as property item
+ * - Price: Secondary color, right-aligned
+ * - Buy button: btn-accent custom class
+ * 
+ * FONTS: Oswald & Lato sind zentral in base.scss eingebunden
+ */
+
+.cms-element-horex-product-detail {
+
+    // ==================== LAYOUT: Images Left + Properties Right ====================
+    .product-image-wrapper {
+        width: 100%;
+        height: auto;
+        background-color: var(--bs-light, #f8f9fa);
+        
+        .product-gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+        
+        .product-image-item {
+            width: 100%;
+            margin: 0 !important;
+            padding: 0 !important;
+            
+            img {
+                width: 100%;
+                height: auto;
+                display: block;
+            }
+        }
+    }
+    
+    // Right column padding for tight layout
+    > .row > div:last-child {
+        @media (min-width: 768px) {
+            padding-left: 1rem;
+        }
+        @media (min-width: 992px) {
+            padding-left: 1.5rem;
+        }
+    }
+    .horex-model-logo {
+
+        &-img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+    }
+    .product-color {
+        &-wrapper {
+            margin: var(--bs-spacer, 1rem) 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        &-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border: 1px solid var(--sw-color-button-hover, #e8e8e8);
+            border-radius: 50%;
+            padding: 7px;
+        }
+    }
+
+    // ==================== HEADER STYLING ====================
+    .product-detail-header {
+        margin-bottom: 1.5rem;
+        
+        .product-detail-title {
+            font-size: 1.75rem;
+            color: var(--bs-dark, #000);
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+
+            @media (max-width: 767px) {
+                font-size: 1.5rem;
+            }
+        }
+
+        .product-detail-manufacturer {
+            font-size: 1rem;
+            color: var(--bs-secondary, #6c757d);
+            margin-top: 0.25rem;
+            margin-bottom: 0;
+        }
+    }
+
+    .product-properties {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+        justify-content: space-between;
+    }
+
+    .property-item {
+        padding-bottom: 0;
+        border-bottom: none;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    .property-label {
+        font-family: 'Oswald', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+        margin-top: 0;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .property-value {
+        // SHOPWARE BEST PRACTICES: Lato 16px for values
+        font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-size: 15px;
+        font-weight: 400;
+        color: var(--bs-secondary, #6c757d);
+        line-height: 1.4;
+        margin: 0;
+    }
+
+    // ==================== OPTION GROUP (COLOR) STYLING ====================
+    .option-group {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+
+        &:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .property-label {
+            margin-bottom: 0.5rem;
+        }
+
+        .form-select {
+            font-size: 14px;
+            padding: 0.5rem 0.75rem;
+            border-color: var(--bs-border-color, #dee2e6);
+
+            &:focus {
+                border-color: var(--bs-primary, #0d6efd);
+                box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+            }
+        }
+    }
+
+    // ==================== PRICE STYLING ====================
+    .product-detail-price-section {
+        background-color: transparent;
+    }
+
+    .product-detail-price-container {
+        text-align: right;
+    }
+
+    .product-detail-price {
+        font-size: 18px;
+        color: var(--bs-secondary, #6c757d);
+        font-weight: 700;
+        margin-bottom: 0.3rem;
+    }
+
+    .product-detail-tax {
+        font-size: 1rem;
+        color: var(--bs-secondary, #6c757d);
+    }
+
+    // ==================== BUTTON STYLING ====================
+    .btn-accent {
+        background-color: var(--sw-color-accent, #d6ab60);
+        border-color: var(--sw-color-accent, #d6ab60);
+        color: #fff;
+        transition: all 0.3s ease;
+        font-size: 1.25rem;
+
+        &:active {
+            transform: scale(0.98);
+        }
+
+        .icon > svg {
+            fill: currentColor;
+        }
+    }
+
+    // ==================== FORM CONTROLS ====================
+    .form-select,
+    .form-control {
+        border-color: var(--bs-border-color, #dee2e6);
+        font-size: 1.25rem;
+
+        &:focus {
+            border-color: var(--bs-primary, #0d6efd);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+        }
+    }
+
+    .input-group {
+        .btn {
+            border-color: var(--bs-border-color, #dee2e6);
+            background-color: #fff;
+            color: var(--bs-dark, #000);
+        }
+
+        .quantity-selector {
+            text-align: center;
+        }
+    }
+
+    // ==================== INFO SECTIONS ====================
+    .product-detail-info {
+        font-size: 1rem;
+
+        p {
+            margin-bottom: 0.5rem;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+
+            strong {
+                font-weight: 600;
+            }
+        }
+    }
+
+    .custom-product-description {
+        h3 {
+            font-size: 1.5rem;
+            font-weight: normal;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+        }
+
+        p {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+    }
+
+    // ==================== RESPONSIVE ADJUSTMENTS ====================
+    @media (max-width: 767px) {
+        padding: 1rem 0;
+
+        .ps-3,
+        .ps-md-4 {
+            padding-left: 0 !important;
+        }
+
+        .product-detail-header {
+            margin-bottom: 1rem;
+        }
+
+        .product-properties-section {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .option-group {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .input-group {
+            .btn,
+            .quantity-selector {
+                width: 100%;
+            }
+        }
+
+        .btn-accent {
+            width: 100%;
+        }
+    }
+}
+
+// ==================== UTILITY CLASSES ====================
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}

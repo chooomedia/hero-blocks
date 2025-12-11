@@ -264,11 +264,12 @@ Shopware.Component.override("sw-extension-config", {
       }
     },
 
-    // Click auf License Chip - öffnet Modal (delegiert an sw-system-config)
+    // Click auf License Chip - öffnet License Modal (delegiert an sw-system-config)
     onLicenseChipClick() {
       if (this.$refs.systemConfig) {
-        // Trigger License Check Button Click (öffnet Modal mit Details)
-        this.$refs.systemConfig.checkHeroBlocksLicense?.();
+        // WICHTIG: Öffne License Modal statt License Check auszuführen
+        // License Check wird über Button im Modal ausgelöst
+        this.$refs.systemConfig.openLicenseModal?.();
       }
     },
   },

@@ -52,17 +52,61 @@ Shopware.Component.override("sw-system-config", {
       },
       // Vorherige Config-Werte für Change-Detection
       previousConfig: {},
+      // Modal-System für Feature-Card Settings
+      showBlockSettingsModal: false,
+      activeModalCard: null,
+      // License Modal
+      showLicenseModal: false,
+      // License Check Cooldown (10 Sekunden)
+      isLicenseCheckCooldown: false,
+      licenseCheckCooldownSeconds: 0,
+      licenseCheckCooldownTimer: null,
     };
   },
 
   computed: {
+    /**
+     * WICHTIG: Sicherer Zugriff auf Config-Daten
+     * Verhindert TypeError wenn actualConfigData noch nicht geladen ist
+     * HINWEIS: currentSalesChannelId kann auch null sein (globale Settings)
+     */
+    safeConfigData() {
+      if (!this.actualConfigData) {
+        return {};
+      }
+      // WICHTIG: currentSalesChannelId kann null sein - das ist OK für globale Settings
+      const salesChannelId = this.currentSalesChannelId;
+      const channelData = this.actualConfigData[salesChannelId];
+
+      // Wenn kein Channel-spezifischer Wert, versuche null (global)
+      if (!channelData && salesChannelId !== null) {
+        return this.actualConfigData[null] || {};
+      }
+
+      return channelData || {};
+    },
+
+    /**
+     * Prüft ob Config-Daten geladen sind
+     * HINWEIS: currentSalesChannelId kann auch null sein (globale Settings)
+     */
+    isConfigLoaded() {
+      if (!this.actualConfigData) {
+        return false;
+      }
+      // currentSalesChannelId kann null sein - das ist OK
+      const salesChannelId = this.currentSalesChannelId;
+      const hasChannelData = Boolean(this.actualConfigData[salesChannelId]);
+      const hasGlobalData = Boolean(this.actualConfigData[null]);
+
+      return hasChannelData || hasGlobalData;
+    },
+
     licenseStatusClass() {
-      if (!this.isHeroBlocksConfig()) return "";
+      if (!this.isHeroBlocksConfig() || !this.isConfigLoaded) return "";
       const status =
-        this.actualConfigData?.[this.currentSalesChannelId]?.[
-          "HeroBlocks.config.licenseStatus"
-        ] ||
-        this.actualConfigData?.[this.currentSalesChannelId]?.["licenseStatus"];
+        this.safeConfigData["HeroBlocks.config.licenseStatus"] ||
+        this.safeConfigData["licenseStatus"];
       return status === "active"
         ? "is--license-active"
         : status === "expired"
@@ -90,13 +134,39 @@ Shopware.Component.override("sw-system-config", {
      * Wenn expired → Update Check Button deaktivieren
      */
     isLicenseExpired() {
-      if (!this.isHeroBlocksConfig()) return false;
+      if (!this.isHeroBlocksConfig() || !this.isConfigLoaded) return false;
       const status =
-        this.actualConfigData?.[this.currentSalesChannelId]?.[
-          "HeroBlocks.config.licenseStatus"
-        ] ||
-        this.actualConfigData?.[this.currentSalesChannelId]?.["licenseStatus"];
+        this.safeConfigData["HeroBlocks.config.licenseStatus"] ||
+        this.safeConfigData["licenseStatus"];
       return status === "expired";
+    },
+
+    /**
+     * Gibt das Lizenz-Ablaufdatum zurück
+     */
+    licenseExpiresAt() {
+      if (!this.isHeroBlocksConfig() || !this.isConfigLoaded) return null;
+      return (
+        this.safeConfigData["HeroBlocks.config.licenseExpiresAt"] ||
+        this.safeConfigData["licenseExpiresAt"] ||
+        null
+      );
+    },
+
+    /**
+     * Berechnet verbleibende Tage bis Lizenzablauf
+     */
+    licenseDaysRemaining() {
+      if (!this.licenseExpiresAt) return null;
+      try {
+        const expiresDate = new Date(this.licenseExpiresAt);
+        const now = new Date();
+        const diffTime = expiresDate - now;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays > 0 ? diffDays : 0;
+      } catch (e) {
+        return null;
+      }
     },
 
     /**
@@ -104,24 +174,21 @@ Shopware.Component.override("sw-system-config", {
      * Wird angezeigt wenn License expired ist
      */
     releaseNotes() {
-      if (!this.isHeroBlocksConfig()) return null;
-      const changelog =
-        this.actualConfigData?.[this.currentSalesChannelId]?.[
-          "HeroBlocks.config.updateChangelog"
-        ];
-      return changelog || null;
+      if (!this.isHeroBlocksConfig() || !this.isConfigLoaded) return null;
+      return this.safeConfigData["HeroBlocks.config.updateChangelog"] || null;
     },
 
     /**
      * Prüft ob Block aktiv ist (nicht disabled)
      */
     hasActiveBlocks() {
-      if (!this.isHeroBlocksConfig()) return false;
-      const config = this.actualConfigData?.[this.currentSalesChannelId] || {};
+      if (!this.isHeroBlocksConfig() || !this.isConfigLoaded) return false;
       return (
-        config["HeroBlocks.config.enableHeroBlockSlider"] === true ||
-        config["HeroBlocks.config.enableHeroTwoColumns"] === true ||
-        config["HeroBlocks.config.enableMegaMenu"] === true
+        this.safeConfigData["HeroBlocks.config.enableHeroBlockSlider"] ===
+          true ||
+        this.safeConfigData["HeroBlocks.config.enableHeroTwoColumns"] ===
+          true ||
+        this.safeConfigData["HeroBlocks.config.enableMegaMenu"] === true
       );
     },
 
@@ -139,11 +206,10 @@ Shopware.Component.override("sw-system-config", {
      * WICHTIG: Für Collapsible Card "Header Mega Menu Settings" (nur wenn aktiv)
      */
     isMegaMenuEnabled() {
-      if (!this.isHeroBlocksConfig()) return false;
-      const config = this.actualConfigData?.[this.currentSalesChannelId] || {};
+      if (!this.isHeroBlocksConfig() || !this.isConfigLoaded) return false;
       return (
-        config["HeroBlocks.config.enableMegaMenu"] === true ||
-        config["enableMegaMenu"] === true
+        this.safeConfigData["HeroBlocks.config.enableMegaMenu"] === true ||
+        this.safeConfigData["enableMegaMenu"] === true
       );
     },
 
@@ -152,11 +218,10 @@ Shopware.Component.override("sw-system-config", {
      * WICHTIG: Für Collapsible Card "Instagram Feed Settings" (nur wenn aktiv)
      */
     isInstagramFeedEnabled() {
-      if (!this.isHeroBlocksConfig()) return false;
-      const config = this.actualConfigData?.[this.currentSalesChannelId] || {};
+      if (!this.isHeroBlocksConfig() || !this.isConfigLoaded) return false;
       return (
-        config["HeroBlocks.config.enableHeroInstagramFeed"] === true ||
-        config["enableHeroInstagramFeed"] === true
+        this.safeConfigData["HeroBlocks.config.enableHeroInstagramFeed"] ===
+          true || this.safeConfigData["enableHeroInstagramFeed"] === true
       );
     },
 
@@ -165,11 +230,10 @@ Shopware.Component.override("sw-system-config", {
      * WICHTIG: Für Collapsible Card "FAQ Block Settings" (nur wenn aktiv)
      */
     isFaqBlockEnabled() {
-      if (!this.isHeroBlocksConfig()) return false;
-      const config = this.actualConfigData?.[this.currentSalesChannelId] || {};
+      if (!this.isHeroBlocksConfig() || !this.isConfigLoaded) return false;
       return (
-        config["HeroBlocks.config.enableFaqBlock"] === true ||
-        config["enableFaqBlock"] === true
+        this.safeConfigData["HeroBlocks.config.enableFaqBlock"] === true ||
+        this.safeConfigData["enableFaqBlock"] === true
       );
     },
 
@@ -177,11 +241,10 @@ Shopware.Component.override("sw-system-config", {
      * Prüft ob Update verfügbar ist
      */
     updateAvailable() {
-      if (!this.isHeroBlocksConfig()) return false;
-      const config = this.actualConfigData?.[this.currentSalesChannelId] || {};
+      if (!this.isHeroBlocksConfig() || !this.isConfigLoaded) return false;
       return (
-        config["HeroBlocks.config.updateAvailable"] === true ||
-        config["updateAvailable"] === true
+        this.safeConfigData["HeroBlocks.config.updateAvailable"] === true ||
+        this.safeConfigData["updateAvailable"] === true
       );
     },
 
@@ -189,13 +252,150 @@ Shopware.Component.override("sw-system-config", {
      * Gibt downloadUrl zurück (falls vorhanden)
      */
     updateDownloadUrl() {
-      if (!this.isHeroBlocksConfig()) return null;
-      const config = this.actualConfigData?.[this.currentSalesChannelId] || {};
+      if (!this.isHeroBlocksConfig() || !this.isConfigLoaded) return null;
       return (
-        config["HeroBlocks.config.updateDownloadUrl"] ||
-        config["updateDownloadUrl"] ||
+        this.safeConfigData["HeroBlocks.config.updateDownloadUrl"] ||
+        this.safeConfigData["updateDownloadUrl"] ||
         null
       );
+    },
+
+    /**
+     * Gibt alle Feature-Cards als Array zurück für v-for Rendering
+     * Jede Card hat: key, title, descriptionKey, icon, isComingSoon, isInDevelopment, hasSettings, settingsCardIndex
+     * Icons: Shopware Meteor Icon Kit (regular-* und solid-*)
+     *
+     * config.xml Card-Indizes:
+     * - Index 0: Block-Einstellungen (hidden - contains toggles)
+     * - Index 1: Header + Mega Menu Einstellungen
+     * - Index 2: FAQ Block Einstellungen
+     * - Index 3: Timeline Block Einstellungen
+     * - Index 4: Update-Informationen
+     * - Index 5: Lizenz-Informationen
+     * - Index 6: Instagram Feed Einstellungen
+     * - Index 7: Produktdetail Einstellungen
+     */
+    featureCards() {
+      return [
+        {
+          key: "enableHeroBlockSlider",
+          title: "Hero Slider",
+          descriptionKey: "heroSliderShort",
+          icon: "regular-image",
+          isComingSoon: false,
+          isInDevelopment: false,
+          hasSettings: false,
+          settingsCardIndex: null,
+        },
+        {
+          key: "enableHeroTwoColumns",
+          title: "Two Columns",
+          descriptionKey: "heroTwoColumnsShort",
+          icon: "regular-line-column",
+          isComingSoon: false,
+          isInDevelopment: false,
+          hasSettings: false,
+          settingsCardIndex: null,
+        },
+        {
+          key: "enableMegaMenu",
+          title: "Mega Menu",
+          descriptionKey: "megaMenuShort",
+          icon: "regular-bars",
+          isComingSoon: false,
+          isInDevelopment: false,
+          hasSettings: true,
+          settingsCardIndex: 1, // Card 1: Header + Mega Menu Einstellungen
+        },
+        {
+          key: "enableCategorySlider",
+          title: "Category Slider",
+          descriptionKey: "categorySliderShort",
+          icon: "regular-layer-group",
+          isComingSoon: false,
+          isInDevelopment: false,
+          hasSettings: false,
+          settingsCardIndex: null,
+        },
+        {
+          key: "enableFaqBlock",
+          title: "FAQ Block",
+          descriptionKey: "faqBlockShort",
+          icon: "regular-question-circle",
+          isComingSoon: false,
+          isInDevelopment: false,
+          hasSettings: true,
+          settingsCardIndex: 2, // Card 2: FAQ Block Einstellungen
+        },
+        {
+          key: "enableHeroImageOverlay",
+          title: "Image Overlay",
+          descriptionKey: "imageOverlayShort",
+          icon: "regular-image",
+          isComingSoon: false,
+          isInDevelopment: false,
+          hasSettings: false,
+          settingsCardIndex: null,
+        },
+        {
+          key: "enableHeroBookingForm",
+          title: "Booking Form",
+          descriptionKey: "bookingFormShort",
+          icon: "regular-calendar",
+          isComingSoon: false,
+          isInDevelopment: false,
+          hasSettings: false,
+          settingsCardIndex: null,
+        },
+        {
+          key: "enableHeroTimeline",
+          title: "Timeline",
+          descriptionKey: "timelineShort",
+          icon: "regular-clock",
+          isComingSoon: false,
+          isInDevelopment: false,
+          hasSettings: true,
+          settingsCardIndex: 3, // Card 3: Timeline Block Einstellungen
+        },
+        {
+          key: "enableHeroVideoExtended",
+          title: "Video Extended",
+          descriptionKey: "heroVideoExtendedShort",
+          icon: "regular-video",
+          isComingSoon: false,
+          isInDevelopment: false,
+          hasSettings: false,
+          settingsCardIndex: null,
+        },
+        {
+          key: "enableHeroInstagramFeed",
+          title: "Instagram Feed",
+          descriptionKey: "heroInstagramFeedShort",
+          icon: "regular-camera",
+          isComingSoon: false,
+          isInDevelopment: false,
+          hasSettings: true,
+          settingsCardIndex: 6, // Card 6: Instagram Feed Einstellungen
+        },
+        {
+          key: "enableShoppingExperience",
+          title: "Product Detail",
+          descriptionKey: "shoppingExperienceShort",
+          icon: "regular-products",
+          isComingSoon: false,
+          isInDevelopment: false,
+          hasSettings: true,
+          settingsCardIndex: 7, // Card 7: Produktdetail Einstellungen
+        },
+      ];
+    },
+
+    /**
+     * Gibt die aktiven Settings für eine Feature-Card zurück (für Modal)
+     */
+    activeModalSettings() {
+      if (!this.activeModalCard) return null;
+      return this.getSettingsForCard(this.activeModalCard);
     },
   },
 
@@ -515,6 +715,8 @@ Shopware.Component.override("sw-system-config", {
         }
       } finally {
         this.isLicenseChecking = false;
+        // Starte Cooldown nach License Check (10 Sekunden)
+        this.startLicenseCheckCooldown();
       }
     },
 
@@ -531,6 +733,378 @@ Shopware.Component.override("sw-system-config", {
         "HeroBlocks.config.enableCategorySlider",
       ];
       return activeBlocks.includes(blockName);
+    },
+
+    /**
+     * Prüft ob ein spezifischer Block aktiviert ist (aus Config)
+     * Verwendet für reaktive Feature-Cards
+     * @param {string} configKey - Der Config-Key ohne Prefix (z.B. "enableHeroBlockSlider")
+     * @returns {boolean} - true wenn Block aktiviert ist
+     */
+    isBlockEnabled(configKey) {
+      if (!this.isHeroBlocksConfig()) {
+        return false;
+      }
+
+      // WICHTIG: Wenn Config noch nicht geladen ist, verwende Default-Werte
+      // (Hero Slider und Hero Two Columns haben defaultValue: true in config.xml)
+      if (!this.isConfigLoaded) {
+        // Default-Werte für Blöcke (aus config.xml)
+        const defaultEnabledBlocks = [
+          "enableHeroBlockSlider",
+          "enableHeroTwoColumns",
+          "enableMegaMenu",
+        ];
+        return defaultEnabledBlocks.includes(configKey);
+      }
+
+      // Prüfe beide Varianten: mit und ohne Prefix
+      const fullKey = `HeroBlocks.config.${configKey}`;
+      const fullValue = this.safeConfigData[fullKey];
+      const shortValue = this.safeConfigData[configKey];
+
+      // WICHTIG: Shopware Config kann auch String "true" sein oder undefined
+      // Bei undefined → Wert wurde nie gesetzt, nutze Default (für enableHeroBlockSlider etc: true)
+      if (fullValue === undefined && shortValue === undefined) {
+        // Diese Blöcke sind standardmäßig aktiviert (defaultValue: true in config.xml)
+        const defaultEnabledBlocks = [
+          "enableHeroBlockSlider",
+          "enableHeroTwoColumns",
+          "enableMegaMenu",
+        ];
+        return defaultEnabledBlocks.includes(configKey);
+      }
+
+      // Expliziter Wert vorhanden
+      return (
+        fullValue === true ||
+        fullValue === "true" ||
+        shortValue === true ||
+        shortValue === "true"
+      );
+    },
+
+    /**
+     * Toggle Block Status (Aktiviert/Deaktiviert einen Block)
+     * Wird aufgerufen wenn User auf Feature-Card klickt
+     * @param {string} configKey - Der Config-Key ohne Prefix (z.B. "enableHeroBlockSlider")
+     */
+    async toggleBlock(configKey) {
+      if (!this.isHeroBlocksConfig()) return;
+
+      const fullKey = `HeroBlocks.config.${configKey}`;
+      const config = this.actualConfigData?.[this.currentSalesChannelId] || {};
+      const currentValue = config[fullKey] === true;
+
+      // Toggle Wert
+      const newValue = !currentValue;
+
+      console.log(`[HeroBlocks] 🔄 Toggle Block: ${configKey} → ${newValue}`);
+
+      // Setze neuen Wert (Vue 3 reaktiv)
+      if (!this.actualConfigData[this.currentSalesChannelId]) {
+        this.actualConfigData[this.currentSalesChannelId] = {};
+      }
+      this.actualConfigData[this.currentSalesChannelId][fullKey] = newValue;
+
+      // Zeige Notification
+      if (newValue) {
+        this.createNotificationSuccess({
+          title: this.$tc("sw-settings-license-check.blockToggle.enabledTitle"),
+          message: this.$tc(
+            "sw-settings-license-check.blockToggle.enabledMessage",
+            { block: configKey }
+          ),
+          duration: 3000,
+        });
+      } else {
+        this.createNotificationInfo({
+          title: this.$tc(
+            "sw-settings-license-check.blockToggle.disabledTitle"
+          ),
+          message: this.$tc(
+            "sw-settings-license-check.blockToggle.disabledMessage",
+            { block: configKey }
+          ),
+          duration: 3000,
+        });
+      }
+
+      // WICHTIG: Trigger Speichern nicht automatisch - User muss explizit speichern
+      // Markiere Config als geändert (wird vom Parent-Component gehandhabt)
+    },
+
+    /**
+     * Gibt die CSS-Klasse für eine Feature-Card zurück
+     * Basierend auf: isEnabled, isComingSoon, isInDevelopment
+     */
+    getFeatureCardClass(card) {
+      if (card.isInDevelopment) {
+        return "hero-blocks-feature-card--development";
+      }
+      if (card.isComingSoon) {
+        return "hero-blocks-feature-card--inactive";
+      }
+      // Prüfe ob Block aktiviert ist
+      return this.isBlockEnabled(card.key)
+        ? "hero-blocks-feature-card--active"
+        : "hero-blocks-feature-card--inactive";
+    },
+
+    /**
+     * Gibt das Badge-Label für eine Feature-Card zurück
+     */
+    getFeatureCardBadge(card) {
+      if (card.isInDevelopment) {
+        return this.$tc(
+          "sw-settings-license-check.featureStatus.inDevelopment"
+        );
+      }
+      if (card.isComingSoon) {
+        return this.$tc("sw-settings-license-check.featureStatus.comingSoon");
+      }
+      return this.isBlockEnabled(card.key)
+        ? this.$tc("sw-settings-license-check.featureStatus.active")
+        : this.$tc("sw-settings-license-check.featureStatus.inactive");
+    },
+
+    /**
+     * Gibt die Badge-CSS-Klasse für eine Feature-Card zurück
+     */
+    getFeatureCardBadgeClass(card) {
+      if (card.isInDevelopment) {
+        return "hero-blocks-feature-card__badge--development";
+      }
+      if (card.isComingSoon) {
+        return "hero-blocks-feature-card__badge--inactive";
+      }
+      return this.isBlockEnabled(card.key)
+        ? "hero-blocks-feature-card__badge--active"
+        : "hero-blocks-feature-card__badge--inactive";
+    },
+
+    /**
+     * Prüft ob eine Feature-Card klickbar ist
+     * Coming Soon und In Development sind nicht klickbar
+     */
+    isFeatureCardClickable(card) {
+      return !card.isComingSoon && !card.isInDevelopment;
+    },
+
+    /**
+     * Handler für Feature-Card Click
+     * Toggled den Block wenn klickbar
+     */
+    onFeatureCardClick(card) {
+      if (!this.isFeatureCardClickable(card)) {
+        // Zeige Info-Notification für Coming Soon/In Development
+        if (card.isComingSoon) {
+          this.createNotificationInfo({
+            title: this.$tc(
+              "sw-settings-license-check.blockToggle.comingSoonTitle"
+            ),
+            message: this.$tc(
+              "sw-settings-license-check.blockToggle.comingSoonMessage",
+              { block: card.title }
+            ),
+            duration: 3000,
+          });
+        } else if (card.isInDevelopment) {
+          this.createNotificationInfo({
+            title: this.$tc(
+              "sw-settings-license-check.blockToggle.inDevelopmentTitle"
+            ),
+            message: this.$tc(
+              "sw-settings-license-check.blockToggle.inDevelopmentMessage",
+              { block: card.title }
+            ),
+            duration: 3000,
+          });
+        }
+        return;
+      }
+      this.toggleBlock(card.key);
+    },
+
+    /**
+     * Öffnet das Settings-Modal für eine Feature-Card
+     * @param {Object} card - Die Feature-Card
+     * @param {Event} event - Das Click-Event (zum Stoppen der Propagation)
+     */
+    openBlockSettingsModal(card, event) {
+      if (event) {
+        event.stopPropagation();
+      }
+
+      if (!card.hasSettings) {
+        this.createNotificationInfo({
+          title: this.$tc("sw-settings-license-check.modal.noSettingsTitle"),
+          message: this.$tc(
+            "sw-settings-license-check.modal.noSettingsMessage",
+            { block: card.title }
+          ),
+          duration: 3000,
+        });
+        return;
+      }
+
+      this.activeModalCard = card;
+      this.showBlockSettingsModal = true;
+
+      console.log(
+        `[HeroBlocks] 🔧 Opening settings modal for: ${card.title}`,
+        card
+      );
+    },
+
+    /**
+     * Schließt das Block-Settings-Modal
+     */
+    closeBlockSettingsModal() {
+      this.showBlockSettingsModal = false;
+      this.activeModalCard = null;
+    },
+
+    /**
+     * Öffnet das License-Modal
+     * Wird aufgerufen wenn auf License Badge geklickt wird
+     */
+    openLicenseModal() {
+      this.showLicenseModal = true;
+      console.log("[HeroBlocks] 🔑 Opening license modal");
+    },
+
+    /**
+     * Schließt das License-Modal
+     */
+    closeLicenseModal() {
+      this.showLicenseModal = false;
+    },
+
+    /**
+     * Formatiert das Lizenz-Ablaufdatum für Anzeige
+     */
+    formatLicenseDate(dateString) {
+      if (!dateString) return "";
+      try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString(this.$i18n?.locale || "de-DE", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+      } catch (e) {
+        return dateString;
+      }
+    },
+
+    /**
+     * Startet den License Check Cooldown (10 Sekunden)
+     */
+    startLicenseCheckCooldown() {
+      this.isLicenseCheckCooldown = true;
+      this.licenseCheckCooldownSeconds = 10;
+
+      // Clear existing timer
+      if (this.licenseCheckCooldownTimer) {
+        clearInterval(this.licenseCheckCooldownTimer);
+      }
+
+      this.licenseCheckCooldownTimer = setInterval(() => {
+        this.licenseCheckCooldownSeconds--;
+        if (this.licenseCheckCooldownSeconds <= 0) {
+          this.isLicenseCheckCooldown = false;
+          clearInterval(this.licenseCheckCooldownTimer);
+          this.licenseCheckCooldownTimer = null;
+        }
+      }, 1000);
+    },
+
+    /**
+     * Gibt die Settings-Elemente für eine bestimmte Card zurück
+     * Basierend auf config.xml Card-Index
+     */
+    getSettingsForCard(card) {
+      if (!card || !card.hasSettings || card.settingsCardIndex === null) {
+        return [];
+      }
+
+      // Hole die config-Card basierend auf dem Index
+      const configCard = this.config?.[card.settingsCardIndex];
+      if (!configCard || !configCard.elements) {
+        return [];
+      }
+
+      return configCard.elements;
+    },
+
+    /**
+     * Prüft ob eine Feature-Card Settings hat
+     */
+    cardHasSettings(card) {
+      return card && card.hasSettings === true;
+    },
+
+    /**
+     * GitHub API Version-Check (direkter API-Aufruf)
+     * Fallback/Alternative zum n8n Webhook
+     */
+    async checkGitHubVersion() {
+      try {
+        console.log("[HeroBlocks] 🚀 Starting GitHub API version check...");
+        const startTime = Date.now();
+
+        const response = await fetch(
+          "https://api.github.com/repos/chooomedia/hero-blocks/releases/latest",
+          {
+            headers: {
+              Accept: "application/vnd.github.v3+json",
+              "User-Agent": "Shopware-HeroBlocks-Plugin/1.0.0",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`GitHub API error: ${response.status}`);
+        }
+
+        const release = await response.json();
+        const duration = Date.now() - startTime;
+
+        console.log(
+          `[HeroBlocks] ✅ GitHub API check completed in ${duration}ms`,
+          release
+        );
+
+        // Extrahiere Version und Download-URL
+        const latestVersion = release.tag_name
+          ? release.tag_name.replace(/^v/, "")
+          : null;
+        const downloadUrl =
+          release.assets && release.assets.length > 0
+            ? release.assets.find(
+                (a) => a.name.endsWith(".zip") && a.name.includes("hero-blocks")
+              )?.browser_download_url || null
+            : null;
+
+        return {
+          success: true,
+          latestVersion,
+          downloadUrl,
+          releaseNotes: release.body || null,
+          publishedAt: release.published_at || null,
+          htmlUrl: release.html_url || null,
+        };
+      } catch (error) {
+        console.error(
+          "[HeroBlocks] ❌ GitHub API version check failed:",
+          error
+        );
+        return {
+          success: false,
+          error: error.message,
+        };
+      }
     },
 
     // Update Check - analog zu License Check

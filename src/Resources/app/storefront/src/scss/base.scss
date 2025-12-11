@@ -15,6 +15,11 @@
  */
 
 // ============================================================================
+// GOOGLE FONTS - Zentrale Einbindung für alle Komponenten
+// ============================================================================
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&family=Lato:wght@300;400;700&display=swap');
+
+// ============================================================================
 // 1. Hero Slider Component
 // ============================================================================
 @import "components/hero-slider";
@@ -46,7 +51,12 @@
 @import "components/hero-mega-menu";
 
 // ============================================================================
-// 7. Hero Instagram Feed Block
+// 7. HOREX Product Detail Element (Custom CMS Element)
+// ============================================================================
+@import "components/horex-product-detail";
+
+// ============================================================================
+// 8. Hero Instagram Feed Block
 // ============================================================================
 @import "components/hero-instagram-feed";
 

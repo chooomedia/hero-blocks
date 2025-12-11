@@ -1,0 +1,118 @@
+{% block sw_cms_el_config_hero_product_landing %}
+<div class="sw-cms-el-config-hero-product-landing">
+
+    {# ==================== PRODUCT SELECTION ==================== #}
+    <sw-container columns="1fr" gap="16px">
+        
+        {# Product Picker - WICHTIG: Hauptelement für Landing Page Produkt-Auswahl #}
+        <sw-entity-single-select
+            :label="$tc('sw-cms.elements.heroProductLanding.config.product.label')"
+            :placeholder="$tc('sw-cms.elements.heroProductLanding.config.product.placeholder')"
+            entity="product"
+            :value="productId"
+            :criteria="productCriteria"
+            label-property="name"
+            @update:value="onProductChange"
+            @search-term-change="onProductSearchTermChange"
+        >
+            {# Custom Result Template with Product Image #}
+            <template #result-item="{ item, index, labelProperty, searchTerm, highlightSearchTerm, isSelected, setValue, getKey }">
+                <li
+                    class="sw-select-result"
+                    :class="{ 'is--active': isSelected }"
+                    @click.stop="setValue(item)"
+                >
+                    <sw-product-variant-info :variations="item.options">
+                        <div class="sw-cms-el-config-hero-product-landing__product-result">
+                            <sw-media-preview-v2
+                                v-if="item.cover && item.cover.media"
+                                :source="item.cover.media"
+                                class="sw-cms-el-config-hero-product-landing__product-image"
+                            />
+                            <div class="sw-cms-el-config-hero-product-landing__product-info">
+                                <span class="sw-cms-el-config-hero-product-landing__product-name">
+                                    {{ item.translated ? item.translated.name : item.name }}
+                                </span>
+                                <span class="sw-cms-el-config-hero-product-landing__product-number">
+                                    {{ item.productNumber }}
+                                </span>
+                            </div>
+                        </div>
+                    </sw-product-variant-info>
+                </li>
+            </template>
+        </sw-entity-single-select>
+
+        {# Help Text #}
+        <sw-help-text
+            :text="$tc('sw-cms.elements.heroProductLanding.config.product.helpText')"
+        />
+
+    </sw-container>
+
+    {# ==================== DISPLAY OPTIONS ==================== #}
+    <sw-container columns="1fr" gap="16px" class="sw-cms-el-config-hero-product-landing__display-options">
+        
+        <h4>{{ $tc('sw-cms.elements.heroProductLanding.config.displayOptions.title') }}</h4>
+
+        {# Show Name #}
+        <sw-switch-field
+            :model-value="showName"
+            :label="$tc('sw-cms.elements.heroProductLanding.config.showName.label')"
+            @update:model-value="(value) => showName = value"
+        />
+
+        {# Show Description #}
+        <sw-switch-field
+            :model-value="showDescription"
+            :label="$tc('sw-cms.elements.heroProductLanding.config.showDescription.label')"
+            @update:model-value="(value) => showDescription = value"
+        />
+
+        {# Show Price #}
+        <sw-switch-field
+            :model-value="showPrice"
+            :label="$tc('sw-cms.elements.heroProductLanding.config.showPrice.label')"
+            @update:model-value="(value) => showPrice = value"
+        />
+
+        {# Show Properties #}
+        <sw-switch-field
+            :model-value="showProperties"
+            :label="$tc('sw-cms.elements.heroProductLanding.config.showProperties.label')"
+            @update:model-value="(value) => showProperties = value"
+        />
+
+        {# Show Manufacturer #}
+        <sw-switch-field
+            :model-value="showManufacturer"
+            :label="$tc('sw-cms.elements.heroProductLanding.config.showManufacturer.label')"
+            @update:model-value="(value) => showManufacturer = value"
+        />
+
+        {# Show Buy Button #}
+        <sw-switch-field
+            :model-value="showBuyButton"
+            :label="$tc('sw-cms.elements.heroProductLanding.config.showBuyButton.label')"
+            @update:model-value="(value) => showBuyButton = value"
+        />
+
+    </sw-container>
+
+    {# ==================== LAYOUT OPTIONS ==================== #}
+    <sw-container columns="1fr" gap="16px" class="sw-cms-el-config-hero-product-landing__layout-options">
+        
+        <h4>{{ $tc('sw-cms.elements.heroProductLanding.config.layoutOptions.title') }}</h4>
+
+        {# Layout Select #}
+        <sw-single-select
+            :model-value="layout"
+            :label="$tc('sw-cms.elements.heroProductLanding.config.layout.label')"
+            :options="layoutOptions"
+            @update:model-value="(value) => layout = value"
+        />
+
+    </sw-container>
+
+</div>
+{% endblock %}

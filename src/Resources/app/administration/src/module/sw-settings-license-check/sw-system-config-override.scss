@@ -1,190 +1,463 @@
 @import "~scss/variables";
 @import "~scss/mixins";
 
-// Hero Blocks Description - Gestylt wie mt-card__wrapper (Shopware Best Practices)
-.sw-system-config__hero-blocks-description {
-    margin-bottom: 40px;
+// ============================================================================
+// Matt Interfaces CI Color System
+// Primary: #ff5432 (Orange-Red)
+// Shades for depth and hierarchy
+// ============================================================================
+$mi-primary: #ff5432;
+$mi-primary-dark: #e64a2a;
+$mi-primary-darker: #cc4226;
+$mi-primary-light: #ff7a5f;
+$mi-primary-lighter: #ffa18f;
+$mi-primary-glow: rgba(255, 84, 50, 0.25);
+$mi-primary-glow-soft: rgba(255, 84, 50, 0.12);
+
+// ============================================================================
+// Hero Blocks Intro Card - Modern Meteor UI Design
+// ============================================================================
+
+.sw-system-config__hero-blocks-intro {
+    margin-bottom: 24px;
     margin-left: auto;
     margin-right: auto;
-    max-width: 960px; // Wie sw-meteor-card
-    padding: 24px 32px;
-    background: var(--color-white);
-    border: 1px solid var(--color-gray-300);
-    border-radius: $border-radius-lg; // Shopware Standard
-    box-sizing: border-box;
-    
-    // Box Shadow wie mt-card (sw-meteor-card)
-    @include drop-shadow-default;
-    
-    @media screen and (max-width: $content-width) {
-        padding: 15px;
+    max-width: 960px;
+    background: var(--color-background-primary-default);
+    border: 1px solid var(--color-border-primary-default);
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+// Header Section - Logo + Title + Description
+.hero-blocks-intro__header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 24px 24px 20px;
+    border-bottom: 1px solid var(--color-border-primary-default);
+    background: linear-gradient(135deg, var(--color-background-primary-default) 0%, var(--color-background-secondary-default) 100%);
+}
+
+.hero-blocks-intro__logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, $mi-primary 0%, $mi-primary-dark 100%);
+    border-radius: 14px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 16px $mi-primary-glow;
+
+    .mt-icon {
+        color: #fff;
+    }
+
+    // Rocket Icon SVG - Weiß auf CI-Hintergrund
+    &-svg {
+        width: 28px;
+        height: 28px;
+        color: #fff;
+        // Leichte Rotation für dynamisches Gefühl (Rakete nach oben rechts)
+        transform: rotate(-45deg);
+        transition: transform 0.3s ease;
     }
     
-    // Moderne Typography (wie Shopware Cards)
-    font-size: $font-size-s;
-    line-height: 1.3;
+    &:hover &-svg {
+        transform: rotate(-45deg) scale(1.1);
+    }
+}
+
+.hero-blocks-intro__title-wrapper {
+    flex: 1;
+    min-width: 0;
+}
+
+.hero-blocks-intro__title {
+    font-size: 20px;
+    font-weight: 700;
     color: var(--color-text-primary-default);
+    margin: 0 0 6px 0;
+    letter-spacing: -0.02em;
+}
 
-    &-text {
-        font-size: 14px;
-        line-height: 1.7;
+.hero-blocks-intro__description {
+    font-size: 13px;
+    line-height: 1.5;
         color: var(--color-text-secondary-default);
-        margin: 0 0 20px 0;
-        font-weight: 400;
-        letter-spacing: 0.01em;
-    }
+    margin: 0;
+}
 
-    // ============================================================================
-    // Feature Grid - Modern, Elegant, Minimalist Design (ohne Icons)
-    // ============================================================================
-    &-features {
-        margin: 0;
-        padding: 0;
-        list-style: none;
+// Footer Section - Matt Interfaces Branding
+.hero-blocks-intro__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 12px 24px;
+    border-top: 1px solid var(--color-border-primary-default);
+    background: var(--color-background-secondary-default);
+}
+
+.hero-blocks-intro__branding {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    background: var(--color-background-primary-default);
+    border: 1px solid var(--color-border-primary-default);
+    border-radius: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+        border-color: $mi-primary;
+        box-shadow: 0 2px 12px $mi-primary-glow-soft;
+        transform: translateY(-1px);
+        
+        .hero-blocks-intro__branding-svg {
+            color: $mi-primary;
+        }
+        
+        .hero-blocks-intro__branding-text {
+            color: $mi-primary;
+        }
+    }
+    
+    &:active {
+        transform: translateY(0);
+    }
+}
+
+.hero-blocks-intro__branding-svg {
+    // 4:3 Aspect Ratio mit sauberem Spacing
+    width: 40px;
+    height: 30px;
+    color: var(--color-text-tertiary-default);
+    transition: color 0.3s ease;
+    flex-shrink: 0;
+}
+
+.hero-blocks-intro__branding-text {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-text-secondary-default);
+    letter-spacing: 0.02em;
+    transition: color 0.3s ease;
+    white-space: nowrap;
+}
+
+// Features Section
+.hero-blocks-intro__features {
+    padding: 20px 24px;
+    
+    &-hint {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 16px;
+        padding: 12px 16px;
+        background: var(--color-background-secondary-default);
+        border-radius: 8px;
+        font-size: 12px;
+        color: var(--color-text-secondary-default);
+        
+        .mt-icon {
+            color: $mi-primary;
+            flex-shrink: 0;
+        }
+    }
+}
+
+.hero-blocks-intro__section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-secondary-default);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 16px 0;
+    
+    .mt-icon {
+        color: $mi-primary;
+    }
+}
+
+// Feature Cards Grid
+.hero-blocks-intro__features-grid {
         display: grid;
-        // Responsive Grid: 3 Spalten Desktop, 2 Tablet, 1 Mobile
         grid-template-columns: repeat(3, 1fr);
         gap: 12px;
         
         @media (max-width: 1200px) {
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
         }
         
         @media (max-width: 768px) {
             grid-template-columns: 1fr;
-            gap: 8px;
+    }
         }
         
-        // Feature Item - Clean, minimal, modern
-        &-item {
+// Feature Card - Modern minimal card design
+.hero-blocks-feature-card {
             display: flex;
-            align-items: center;
-            padding: 12px 16px;
-            background: var(--color-white);
-            border: 1px solid var(--color-gray-200);
-            border-radius: 8px;
+    flex-direction: column;
+    padding: 16px;
+    background: var(--color-background-primary-default);
+    border: 1px solid var(--color-border-primary-default);
+    border-radius: 10px;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            box-sizing: border-box;
             position: relative;
-            overflow: hidden;
+    
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+    
+    // Klickbare Cards - Cursor und visuelles Feedback
+    &--clickable {
+        cursor: pointer;
+        
+        &:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
             
-            // Subtle left accent border
+            // Highlight-Effekt für klickbare Cards - Matt Interfaces CI
             &::before {
                 content: '';
                 position: absolute;
-                left: 0;
-                top: 0;
-                bottom: 0;
-                width: 3px;
-                background: transparent;
-                transition: background 0.25s ease;
-            }
-            
-            // Hover Effect - Smooth, elegant
-            &:hover {
-                background: var(--color-gray-50);
-                border-color: var(--color-gray-300);
-                transform: translateX(2px);
+                inset: -2px;
+                border-radius: 12px;
+                background: linear-gradient(135deg, $mi-primary-glow-soft 0%, rgba(16, 185, 129, 0.1) 100%);
+                z-index: -1;
+                opacity: 1;
+                transition: opacity 0.2s ease;
             }
         }
         
-        // Feature Content - Simple flex layout
-        &-content {
-            flex: 1;
-            min-width: 0;
+        &:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            }
+        }
+        
+    // Toggle-Indicator (Checkbox-Icon)
+    &__toggle-indicator {
+        position: absolute;
+        top: 12px;
+        right: 12px;
             display: flex;
             align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+        
+        .mt-icon {
+            transition: all 0.2s ease;
+        }
+    }
+    
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+    
+    &__icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        background: var(--color-background-secondary-default);
+        
+        .mt-icon {
+            color: $mi-primary;
+        }
+    }
+    
+    // Custom Badge - Modern pill design
+    &__badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        
+        &--active {
+            background: rgba(16, 185, 129, 0.12);
+            color: #059669;
         }
         
-        // Feature Title - Clean typography
-        &-title {
-            font-size: 13px;
-            line-height: 1.4;
-            color: var(--color-text-primary-default);
-            font-weight: 500;
-            margin: 0;
-            word-wrap: break-word;
-            letter-spacing: -0.01em;
-        }
-        
-        // Active Blocks - Subtle green accent
-        &-item--active {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.04) 0%, var(--color-white) 100%);
-            border-color: rgba(16, 185, 129, 0.15);
-            
-            &::before {
-                background: #10b981;
+        &--inactive {
+            background: rgba(107, 114, 128, 0.12);
+            color: #6b7280;
             }
             
-            &:hover {
-                background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, var(--color-gray-50) 100%);
-                border-color: rgba(16, 185, 129, 0.25);
+        &--development {
+            background: rgba(59, 130, 246, 0.12);
+            color: #2563eb;
             }
-            
-            .sw-system-config__hero-blocks-feature-title {
+    }
+    
+    &__title {
+        font-size: 14px;
+        font-weight: 600;
                 color: var(--color-text-primary-default);
+        margin: 0 0 6px 0;
+    }
+    
+    &__desc {
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.4;
+        color: var(--color-text-secondary-default);
+    }
+    
+    // Active State - Green accent
+    &--active {
+        border-color: rgba(16, 185, 129, 0.2);
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.03) 0%, var(--color-background-primary-default) 100%);
+        
+        .hero-blocks-feature-card__icon {
+            background: rgba(16, 185, 129, 0.1);
+            
+            .mt-icon {
+                color: #10b981;
             }
         }
-
-        // Inactive Blocks - Muted, coming soon style
-        &-item--inactive {
-            background: var(--color-gray-50);
-            border-color: var(--color-gray-200);
+        
+        .hero-blocks-feature-card__toggle-indicator {
+            background: rgba(16, 185, 129, 0.1);
             
-            &::before {
-                background: var(--color-gray-300);
+            .mt-icon {
+                color: #10b981;
+            }
             }
             
             &:hover {
-                background: var(--color-gray-100);
-            }
+            border-color: rgba(16, 185, 129, 0.3);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.12);
+        }
+    }
+    
+    // Inactive State - Muted
+    &--inactive {
+        background: var(--color-background-secondary-default);
+        border-color: var(--color-border-primary-default);
+        opacity: 0.85;
+        
+        .hero-blocks-feature-card__icon {
+            background: var(--color-background-primary-default);
             
-            .sw-system-config__hero-blocks-feature-title {
-                color: var(--color-text-secondary-default);
-                font-weight: 400;
+            .mt-icon {
+                color: var(--color-icon-secondary-default);
             }
+        }
+        
+        .hero-blocks-feature-card__title {
+                color: var(--color-text-secondary-default);
+        }
+        
+        .hero-blocks-feature-card__toggle-indicator {
+            background: rgba(107, 114, 128, 0.1);
+            
+            .mt-icon {
+                color: #9ca3af;
+            }
+        }
+        
+        &:hover {
+            opacity: 1;
         }
     }
 
-    // Separator zwischen aktiven und inaktiven Blocks
-    &-separator {
-        height: 1px;
-        background-color: var(--color-border-200, #e5e8ec);
-        margin: 1rem 0;
-        width: 100%;
+    // Development State - Blue accent
+    &--development {
+        border-color: rgba(59, 130, 246, 0.2);
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.03) 0%, var(--color-background-primary-default) 100%);
+        
+        .hero-blocks-feature-card__icon {
+            background: rgba(59, 130, 246, 0.1);
+            
+            .mt-icon {
+                color: #3b82f6;
+            }
+        }
+        
+        &:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.12);
+        }
+    }
     }
     
     // ============================================================================
-    // Animations Section - CSS Klassen Hinweise
+// Animations Section - Collapsible
     // ============================================================================
-    &-animations {
-        margin-top: 24px;
-        padding-top: 24px;
-        border-top: 1px solid var(--color-gray-300);
+
+.hero-blocks-intro__animations {
+    border-top: 1px solid var(--color-border-primary-default);
+    
+    .sw-collapse__header {
+        width: 100%;
+    }
         
-        &-title {
+    &-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 24px;
+        cursor: pointer;
+        user-select: none;
+        transition: background 0.2s ease;
+        
+        &:hover {
+            background: var(--color-background-secondary-default);
+        }
+        
+        &-left {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: $font-size-m;
-            font-weight: $font-weight-bold;
-            color: var(--color-text-primary-default);
-            margin: 0 0 8px 0;
+            gap: 10px;
             
             .mt-icon {
-                color: var(--color-brand-primary);
+                color: $mi-primary;
+            }
             }
         }
         
-        &-description {
-            font-size: $font-size-s;
-            color: var(--color-text-secondary-default);
-            margin: 0 0 16px 0;
-            line-height: 1.3;
+    &-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--color-text-primary-default);
+    }
+    
+    &-chevron {
+        color: var(--color-icon-secondary-default);
+        transition: transform 0.2s ease;
+    }
+    
+    &-content {
+        padding: 0 24px 24px;
+    }
+    
+    &-desc {
+        margin-bottom: 16px;
         }
         
-        // Animation Cards Grid
         &-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -194,125 +467,153 @@
             @media (max-width: 768px) {
                 grid-template-columns: 1fr;
             }
+    }
         }
         
-        // Animation Card (einzelne Klasse)
-        &-card {
+// Animation Cards - Modern Design
+.hero-blocks-animation-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
             padding: 16px;
-            background: linear-gradient(135deg, var(--color-gray-50) 0%, var(--color-white) 100%);
-            border: 1px solid var(--color-gray-300);
-            border-radius: $border-radius-default;
+    background: linear-gradient(135deg, var(--color-background-secondary-default) 0%, var(--color-background-primary-default) 100%);
+    border: 1px solid var(--color-border-primary-default);
+    border-radius: 8px;
             transition: all 0.2s ease;
             
             &:hover {
-                border-color: var(--color-brand-primary);
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            }
+        border-color: $mi-primary;
+        box-shadow: 0 2px 8px $mi-primary-glow-soft;
         }
         
-        &-header {
-            margin-bottom: 8px;
-        }
-        
-        &-class {
+    &__class {
             display: inline-block;
+        width: fit-content;
             padding: 4px 10px;
-            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+            background: linear-gradient(135deg, $mi-primary-darker 0%, $mi-primary-dark 100%);
             color: #fff;
             border-radius: 4px;
             font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
-            font-size: $font-size-xs;
+        font-size: 11px;
             font-weight: 500;
             letter-spacing: 0.02em;
         }
         
-        &-desc {
-            font-size: $font-size-xs;
+    &__desc {
+        font-size: 12px;
+        line-height: 1.4;
             color: var(--color-text-secondary-default);
             margin: 0;
-            line-height: 1.3;
+    }
         }
         
-        // Usage Steps
-        &-usage {
-            background: var(--color-gray-50);
-            border: 1px solid var(--color-gray-200);
-            border-radius: $border-radius-default;
+// Usage Steps - Modern numbered list
+.hero-blocks-intro__usage {
+    background: var(--color-background-secondary-default);
+    border: 1px solid var(--color-border-primary-default);
+    border-radius: 8px;
             padding: 16px;
             margin-bottom: 16px;
             
             &-title {
-                font-size: $font-size-s;
-                font-weight: $font-weight-semi-bold;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        font-weight: 600;
                 color: var(--color-text-primary-default);
                 margin: 0 0 12px 0;
+        
+        .mt-icon {
+            color: var(--color-icon-secondary-default);
+        }
             }
             
             &-steps {
-                margin: 0;
-                padding-left: 20px;
-                
-                li {
-                    font-size: $font-size-xs;
-                    color: var(--color-text-primary-default);
-                    line-height: 1.6;
-                    margin-bottom: 6px;
-                    
-                    &:last-child {
-                        margin-bottom: 0;
-                    }
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    &-step {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        
+        &-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            background: $mi-primary;
+            color: #fff;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        
+        &-text {
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--color-text-primary-default);
+            padding-top: 2px;
                 }
             }
         }
         
-        // Options Collapse
-        &-options {
+// Count-Up Options - Nested Collapsible
+.hero-blocks-intro__countup-options {
             margin-top: 12px;
+    
+    .sw-collapse__header {
+        width: 100%;
+    }
             
             &-header {
                 display: flex;
                 align-items: center;
-                justify-content: space-between;
+        gap: 8px;
                 padding: 10px 14px;
-                background: var(--color-gray-100);
-                border: 1px solid var(--color-gray-300);
-                border-radius: $border-radius-default;
+        background: var(--color-background-secondary-default);
+        border: 1px solid var(--color-border-primary-default);
+        border-radius: 6px;
                 cursor: pointer;
-                font-size: $font-size-xs;
-                font-weight: $font-weight-medium;
+        font-size: 12px;
+        font-weight: 500;
                 color: var(--color-text-secondary-default);
                 transition: all 0.2s ease;
                 
                 &:hover {
-                    background: var(--color-gray-200);
+            background: var(--color-background-primary-default);
+            border-color: var(--color-border-secondary-default);
                     color: var(--color-text-primary-default);
                 }
+        
+        .mt-icon:last-child {
+            margin-left: auto;
+        }
             }
             
             &-list {
-                margin: 12px 0 0 0;
-                padding: 0;
-                list-style: none;
-                
-                li {
-                    padding: 8px 12px;
-                    background: var(--color-gray-50);
-                    border: 1px solid var(--color-gray-200);
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 12px;
+    }
+    
+    &-option {
+        padding: 10px 12px;
+        background: var(--color-background-secondary-default);
+        border: 1px solid var(--color-border-primary-default);
                     border-radius: 4px;
-                    margin-bottom: 6px;
-                    
-                    &:last-child {
-                        margin-bottom: 0;
-                    }
                     
                     code {
                         font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
-                        font-size: $font-size-xxs;
+            font-size: 11px;
                         color: var(--color-text-primary-default);
                         word-break: break-word;
-                    }
-                }
-            }
         }
     }
 }
@@ -398,9 +699,9 @@
                 width: 100%;
                 background: linear-gradient(
                     90deg,
-                    #189eff 0%,
-                    #189eff 50%,
-                    #189eff 100%
+                    $mi-primary 0%,
+                    $mi-primary-light 50%,
+                    $mi-primary 100%
                 );
                 border-radius: 2px;
                 transform-origin: left;
@@ -935,6 +1236,765 @@
         .hero-blocks-progress-bar {
             margin-top: 8px;
         }
+    }
+}
+
+// ============================================================================
+// Feature Card Settings Button (Zahnrad bei Hover)
+// ============================================================================
+
+.hero-blocks-feature-card {
+    // Settings Button - erscheint bei Hover
+    &__settings-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        border: none;
+        border-radius: 6px;
+        background: var(--color-background-primary-default);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        cursor: pointer;
+        opacity: 0;
+        transform: scale(0.8);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 10;
+        
+        .mt-icon {
+            color: $mi-primary;
+            transition: transform 0.3s ease;
+        }
+        
+        &:hover {
+            background: $mi-primary;
+            box-shadow: 0 4px 12px $mi-primary-glow;
+            
+            .mt-icon {
+                color: #fff;
+                transform: rotate(90deg);
+            }
+        }
+        
+        &:active {
+            transform: scale(0.95);
+        }
+    }
+    
+    // Zeige Settings Button bei Card Hover
+    &--has-settings:hover &__settings-btn {
+        opacity: 1;
+        transform: scale(1);
+    }
+    
+    // Toggle-Indicator Position anpassen wenn Settings-Button sichtbar
+    &--has-settings:hover &__toggle-indicator {
+        top: 44px; // Verschiebe nach unten
+    }
+}
+
+// ============================================================================
+// Block Settings Modal
+// ============================================================================
+
+.hero-blocks-settings-modal {
+    &__header {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 16px 20px;
+        margin: -20px -20px 20px;
+        background: linear-gradient(135deg, var(--color-background-secondary-default) 0%, var(--color-background-primary-default) 100%);
+        border-bottom: 1px solid var(--color-border-primary-default);
+        border-radius: 4px 4px 0 0;
+    }
+    
+    &__header-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, $mi-primary 0%, $mi-primary-dark 100%);
+        border-radius: 10px;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px $mi-primary-glow;
+        
+        .mt-icon {
+            color: #fff;
+        }
+    }
+    
+    &__header-info {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    &__header-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--color-text-primary-default);
+        margin: 0 0 4px 0;
+    }
+    
+    &__header-desc {
+        font-size: 13px;
+        line-height: 1.4;
+        color: var(--color-text-secondary-default);
+        margin: 0;
+    }
+    
+    // License Warning (für Instagram Feed bei expired License)
+    &__license-warning {
+        margin-bottom: 16px;
+    }
+    
+    // Setup Guide Collapsible (Instagram Feed)
+    &__setup-guide {
+        margin-bottom: 20px;
+        
+        .sw-collapse__header {
+            width: 100%;
+        }
+        
+        &-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: var(--color-background-secondary-default);
+            border: 1px solid var(--color-border-primary-default);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--color-text-primary-default);
+            transition: all 0.2s ease;
+            
+            &:hover {
+                background: var(--color-gray-100);
+                border-color: $mi-primary;
+            }
+            
+            .mt-icon:first-child {
+                color: $mi-primary;
+            }
+            
+            .mt-icon:last-child {
+                margin-left: auto;
+                color: var(--color-text-tertiary-default);
+            }
+        }
+        
+        &-content {
+            padding: 16px;
+            background: var(--color-background-secondary-default);
+            border: 1px solid var(--color-border-primary-default);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            margin-top: -1px;
+            
+            > p {
+                font-size: 13px;
+                line-height: 1.5;
+                color: var(--color-text-secondary-default);
+                margin: 0 0 16px 0;
+            }
+        }
+        
+        &-steps {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            counter-reset: step-counter;
+            
+            li {
+                position: relative;
+                padding: 12px 16px;
+                padding-left: 44px;
+                background: var(--color-background-primary-default);
+                border: 1px solid var(--color-border-primary-default);
+                border-radius: 6px;
+                margin-bottom: 12px;
+                counter-increment: step-counter;
+                
+                    &::before {
+                    content: counter(step-counter);
+                    position: absolute;
+                    left: 12px;
+                    top: 12px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 22px;
+                    height: 22px;
+                    background: $mi-primary;
+                    color: #fff;
+                    border-radius: 50%;
+                    font-size: 11px;
+                    font-weight: 600;
+                }
+                
+                &:last-child {
+                    margin-bottom: 0;
+                }
+                
+                strong {
+                    display: block;
+                    font-size: 13px;
+                    font-weight: 600;
+                    color: var(--color-text-primary-default);
+                    margin-bottom: 4px;
+                }
+                
+                p {
+                    font-size: 12px;
+                    line-height: 1.4;
+                    color: var(--color-text-secondary-default);
+                    margin: 0 0 8px 0;
+                }
+                
+                a {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 4px;
+                    font-size: 12px;
+                    font-weight: 500;
+                    color: $mi-primary;
+                    text-decoration: none;
+                    transition: color 0.2s ease;
+                    
+                    &:hover {
+                        color: $mi-primary-dark;
+                        text-decoration: underline;
+                    }
+                    
+                    .mt-icon {
+                        flex-shrink: 0;
+                        opacity: 0.7;
+                    }
+                }
+            }
+        }
+    }
+    
+    &__content {
+        .sw-inherit-wrapper {
+            margin-bottom: 16px;
+            
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+    
+    // Actions Section (Token Check Button für Instagram)
+    &__actions {
+        display: flex;
+        gap: 12px;
+        padding-top: 16px;
+        margin-top: 16px;
+        border-top: 1px solid var(--color-border-primary-default);
+        
+        .mt-button {
+            .mt-icon {
+                margin-right: 8px;
+            }
+        }
+    }
+}
+
+// ============================================================================
+// License Modal
+// ============================================================================
+
+// Modal Wrapper - gleiche Breite wie Feature-Cards
+.hero-blocks-license-modal-wrapper {
+    .sw-modal__dialog {
+        max-width: 600px;
+    }
+}
+
+.hero-blocks-license-modal {
+    &__status {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 20px;
+        margin: -20px -20px 24px;
+        border-radius: 4px 4px 0 0;
+        
+        &.is--license-active {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.02) 100%);
+            border-bottom: 2px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        &.is--license-expired {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.02) 100%);
+            border-bottom: 2px solid rgba(239, 68, 68, 0.3);
+        }
+    }
+    
+    &__status-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        
+        .is--license-active & {
+            background: rgba(16, 185, 129, 0.15);
+            
+            .mt-icon {
+                color: #10b981;
+            }
+        }
+        
+        .is--license-expired & {
+            background: rgba(239, 68, 68, 0.15);
+            
+            .mt-icon {
+                color: #ef4444;
+            }
+        }
+    }
+    
+    &__status-info {
+        flex: 1;
+    }
+    
+    &__status-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0 0 4px 0;
+        
+        .is--license-active & {
+            color: #059669;
+        }
+        
+        .is--license-expired & {
+            color: #dc2626;
+        }
+    }
+    
+    &__status-desc {
+        font-size: 13px;
+        line-height: 1.4;
+        color: var(--color-text-secondary-default);
+        margin: 0;
+    }
+    
+    &__status-expires {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--color-text-secondary-default);
+        margin-top: 8px;
+        
+        .mt-icon {
+            color: var(--color-text-tertiary-default);
+        }
+        
+        strong {
+            font-weight: 600;
+            color: var(--color-text-primary-default);
+        }
+    }
+    
+    &__status-days {
+        color: var(--color-text-tertiary-default);
+        font-size: 11px;
+        margin-left: 4px;
+        
+        .is--license-expired & {
+            color: #ef4444;
+        }
+        
+        .is--license-active & {
+            color: #059669;
+        }
+    }
+    
+    &__fields {
+        margin-bottom: 24px;
+        
+        .sw-inherit-wrapper {
+            margin-bottom: 16px;
+            
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+    
+    &__actions {
+        display: flex;
+        gap: 12px;
+        padding-top: 16px;
+        border-top: 1px solid var(--color-border-primary-default);
+        
+        .mt-button {
+            .mt-icon {
+                margin-right: 8px;
+            }
+        }
+    }
+    
+    &__renewal {
+        margin-top: 24px;
+        
+        .mt-banner {
+            p {
+                margin: 0 0 12px 0;
+            }
+        }
+    }
+    
+    &__renewal-link {
+        display: inline-block;
+        text-decoration: none;
+        
+        .mt-button {
+            .mt-icon {
+                margin-right: 6px;
+            }
+        }
+    }
+}
+
+// ============================================================================
+// Klickbarer License Badge (für Header und Collapsible Card)
+// ============================================================================
+
+.hero-blocks-license-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    .mt-icon {
+        flex-shrink: 0;
+    }
+    
+    // Zahnrad-Icon für Settings
+    &__settings-icon {
+        margin-left: 4px;
+        opacity: 0.7;
+        transition: opacity 0.2s ease, transform 0.3s ease;
+    }
+    
+    &:hover &__settings-icon {
+        opacity: 1;
+        transform: rotate(90deg);
+    }
+    
+    &--active {
+        background: rgba(16, 185, 129, 0.15);
+        color: #059669;
+        
+        .mt-icon {
+            color: #10b981;
+        }
+        
+        &:hover {
+            background: rgba(16, 185, 129, 0.25);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+            transform: translateY(-1px);
+        }
+    }
+    
+    &--expired {
+        background: rgba(239, 68, 68, 0.15);
+        color: #dc2626;
+        
+        .mt-icon {
+            color: #ef4444;
+        }
+        
+        &:hover {
+            background: rgba(239, 68, 68, 0.25);
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+            transform: translateY(-1px);
+        }
+    }
+    
+    &--unknown {
+        background: rgba(107, 114, 128, 0.15);
+        color: #6b7280;
+        
+        .mt-icon {
+            color: #9ca3af;
+        }
+        
+        &:hover {
+            background: rgba(107, 114, 128, 0.25);
+            box-shadow: 0 2px 8px rgba(107, 114, 128, 0.2);
+            transform: translateY(-1px);
+        }
+    }
+    
+    &:active {
+        transform: translateY(0);
+    }
+    
+    // Header Badge - größer und prominenter
+    &--header {
+        padding: 8px 14px;
+        font-size: 12px;
+        border-radius: 20px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        margin-left: auto; // Positionierung rechts im Header
+        
+        &:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+    }
+}
+
+// ============================================================================
+// Modern Update Card - Collapsible Design (passend zu Feature-Cards)
+// ============================================================================
+
+.hero-blocks-update-card {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 960px;
+
+    // Header
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        background: var(--color-background-primary-default);
+        border: 1px solid var(--color-border-primary-default);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        user-select: none;
+
+        &:hover {
+            border-color: $mi-primary;
+            box-shadow: 0 2px 8px $mi-primary-glow-soft;
+        }
+    }
+
+    &__header-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    &__icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        background: linear-gradient(135deg, $mi-primary 0%, $mi-primary-light 100%);
+        border-radius: 10px;
+        color: #fff;
+        flex-shrink: 0;
+    }
+
+    &__title-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    &__title {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--color-text-primary-default);
+        margin: 0;
+    }
+
+    &__subtitle {
+        font-size: 12px;
+        color: var(--color-text-tertiary-default);
+        margin: 0;
+    }
+
+    &__header-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    &__version {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--color-text-secondary-default);
+        padding: 4px 10px;
+        background: var(--color-gray-100);
+        border-radius: 4px;
+    }
+
+    &__badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 10px;
+        font-size: 11px;
+        font-weight: 600;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+
+        &--update {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+
+        &--uptodate {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+        }
+    }
+
+    &__chevron {
+        color: var(--color-text-tertiary-default);
+        transition: transform 0.2s ease;
+    }
+
+    // Content
+    &__content {
+        padding: 20px;
+        background: var(--color-background-primary-default);
+        border: 1px solid var(--color-border-primary-default);
+        border-top: none;
+        border-radius: 0 0 12px 12px;
+        margin-top: -1px;
+    }
+
+    &__warning {
+        margin-bottom: 16px;
+    }
+
+    &__info {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 14px 16px;
+        background: var(--color-gray-50);
+        border-radius: 8px;
+        margin-bottom: 16px;
+    }
+
+    &__info-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    &__info-label {
+        font-size: 13px;
+        color: var(--color-text-secondary-default);
+    }
+
+    &__info-value {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--color-text-primary-default);
+
+        &--highlight {
+            color: $mi-primary;
+            font-weight: 600;
+        }
+    }
+
+    &__actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    &__progress {
+        margin-top: 16px;
+
+        &-track {
+            width: 100%;
+            height: 4px;
+            background: var(--color-gray-200);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        &-fill {
+            height: 100%;
+            background: linear-gradient(90deg, $mi-primary, $mi-primary-light);
+            animation: progressIndeterminate 1.5s ease-in-out infinite;
+        }
+    }
+
+    &__changelog {
+        margin-top: 16px;
+        padding: 14px 16px;
+        background: var(--color-gray-50);
+        border-radius: 8px;
+        border-left: 3px solid $mi-primary;
+
+        &-title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--color-text-primary-default);
+            margin: 0 0 8px 0;
+        }
+
+        &-content {
+            font-size: 12px;
+            color: var(--color-text-secondary-default);
+            line-height: 1.5;
+
+            ul {
+                margin: 0;
+                padding-left: 16px;
+            }
+
+            li {
+                margin-bottom: 4px;
+            }
+        }
+    }
+
+    &__hidden-fields {
+        display: none !important;
+    }
+}
+
+@keyframes progressIndeterminate {
+    0% {
+        width: 0%;
+        margin-left: 0;
+    }
+    50% {
+        width: 70%;
+        margin-left: 15%;
+    }
+    100% {
+        width: 0%;
+        margin-left: 100%;
     }
 }
 

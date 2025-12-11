@@ -1,18 +1,55 @@
 {
     "sw-settings-license-check": {
+        "intro": {
+            "headline": "More Conversion. Less Code."
+        },
+        "branding": {
+            "title": "Developed by Matt Interfaces – Your partner for custom e-commerce solutions",
+            "poweredBy": "Powered by Matt Interfaces"
+        },
         "description": "Professional CMS blocks for Shopware Shopping Experiences. Hero Slider, Two Columns layouts, scroll animations and more – built according to Shopware best practices.",
+        "featuresTitle": "Available Blocks",
         "features": {
             "heroSlider": "Hero Slider – Multi-slide hero blocks with headlines, text, buttons, and images",
+            "heroSliderShort": "Multi-slide hero with headlines, text, buttons, and images",
             "heroTwoColumns": "Hero Two Columns – Two-column layout with flexible background options and audio player",
+            "heroTwoColumnsShort": "Two-column layout with background options and audio",
             "heroVideoExtended": "Hero Video Extended – Video hero blocks with headlines, text, and buttons (Coming soon)",
+            "heroVideoExtendedShort": "Video hero with headlines, text, and buttons",
             "heroInstagramFeed": "Hero Instagram Feed – Instagram feed integration for mega menu and custom blocks (Coming soon)",
+            "heroInstagramFeedShort": "Instagram feed for mega menu and widgets",
             "megaMenu": "Mega Menu Block – Advanced navigation block with products, widgets, and Instagram feed (Coming soon)",
-            "shoppingExperience": "Shopping Experience Blocks – Additional custom blocks for enhanced shopping experiences (In development)"
+            "megaMenuShort": "Advanced navigation menu with widgets",
+            "categorySlider": "Category Slider – Category slider for product categories with images",
+            "categorySliderShort": "Category slider with images",
+            "faqBlock": "FAQ Block – Accordion with Schema.org rich snippets for SEO",
+            "faqBlockShort": "Accordion FAQ with SEO rich snippets",
+            "imageOverlay": "Image Overlay – Full-width image with angled text overlay",
+            "imageOverlayShort": "Full-width with text overlay panel",
+            "bookingForm": "Booking Form – Test ride requests and booking forms",
+            "bookingFormShort": "Test ride booking form",
+            "timeline": "Timeline – Year navigation with text and image slider",
+            "timelineShort": "Historical timeline with images",
+            "shoppingExperience": "Advanced Product Detail – 360° gallery, variant configurator with prices, standard equipment",
+            "shoppingExperienceShort": "360° gallery, configurator with prices"
         },
         "featureStatus": {
             "active": "Active",
+            "inactive": "Inactive",
             "comingSoon": "Coming soon",
             "inDevelopment": "In development"
+        },
+        "blockToggle": {
+            "clickToToggle": "Click to enable/disable",
+            "hint": "Click on a card to enable or disable the block. Save settings afterwards.",
+            "enabledTitle": "Block enabled",
+            "enabledMessage": "{block} has been enabled. Please save the settings.",
+            "disabledTitle": "Block disabled",
+            "disabledMessage": "{block} has been disabled. Please save the settings.",
+            "comingSoonTitle": "Coming soon",
+            "comingSoonMessage": "{block} will be available in a future version.",
+            "inDevelopmentTitle": "In development",
+            "inDevelopmentMessage": "{block} is currently in development."
         },
         "animations": {
             "title": "CSS Animation Classes for CMS Blocks",
@@ -44,13 +81,15 @@
         "button": {
             "checkLicense": "Check License",
             "checking": "Checking...",
+            "cooldown": "Wait ({seconds}s)...",
             "licenseExpiredTitle": "License Expired",
             "licenseExpiredMessage": "Your license has expired. Please renew your license to continue using Hero Blocks."
         },
         "status": {
             "active": "License Active",
             "expired": "License Expired",
-            "invalid": "License Invalid"
+            "invalid": "License Invalid",
+            "unknown": "Check License"
         },
         "success": {
             "title": "License check successful",
@@ -66,12 +105,18 @@
             "expiryMessage": "Your license will expire in {days} days. Please renew your license to continue using Hero Blocks."
         },
         "update": {
+            "title": "Plugin Updates",
+            "subtitle": "Check for new versions and install updates",
             "available": "Update available",
+            "upToDate": "Up to date",
             "notAvailable": "No update available",
             "latestVersion": "Latest version",
+            "installedVersion": "Installed version",
             "currentVersion": "Current version",
+            "lastCheck": "Last check",
             "downloadUrl": "Download URL",
             "changelog": "Changelog",
+            "changelogTitle": "What's new?",
             "webhookUrl": "Update webhook URL (n8n)",
             "checkForUpdates": "Check for updates",
             "updateAvailable": "A plugin update is available",
@@ -149,6 +194,19 @@
                 "newFeatures": "Early access to new features",
                 "security": "Security updates & performance optimizations"
             }
+        },
+        "modal": {
+            "settingsTitle": "Settings",
+            "openSettings": "Open settings",
+            "close": "Close",
+            "noSettingsTitle": "No settings",
+            "noSettingsMessage": "{block} has no additional settings.",
+            "noSettingsAvailable": "No settings available for this block.",
+            "loading": "Loading settings...",
+            "licenseTitle": "License Information",
+            "clickToOpenLicense": "Click for license details",
+            "expiresAt": "Expires on",
+            "daysRemaining": "days remaining"
         }
     }
 }

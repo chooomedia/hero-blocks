@@ -24,10 +24,11 @@ $timeline-white: #fff;
 $timeline-box-shadow: 0 0 1rem rgba(0, 0, 0, 0.25);
 $timeline-box-shadow-lg: 0 0 3rem rgba(0, 0, 0, 0.275);
 
-// Transitions
-$timeline-transition-fast: 0.3s ease;
-$timeline-transition-normal: 0.4s ease;
-$timeline-transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+// Transitions - SMOOTHER UX (langsamer, eleganter)
+$timeline-transition-fast: 0.4s ease-out;
+$timeline-transition-normal: 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+$timeline-transition-slow: 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+$timeline-transition-smooth: 1s cubic-bezier(0.16, 1, 0.3, 1);
 
 // Button Sizes
 $btn-size-mobile: 70px;
@@ -96,64 +97,31 @@ $timeline-gap-desktop: 3rem;
 .hero-timeline__entry {
     position: relative;
     display: flex;
+    z-index: 99;
     flex-direction: column;
     align-items: center;
     width: 100%;
     
     // Abstand zwischen Entries für Timeline-Sichtbarkeit
-    margin-bottom: $timeline-gap-mobile;
+    padding-bottom: $timeline-gap-mobile;
     
     @media (min-width: 768px) {
-        margin-bottom: $timeline-gap-tablet;
+        padding-bottom: $timeline-gap-tablet;
     }
     
     @media (min-width: 992px) {
-        margin-bottom: $timeline-gap-desktop;
+        padding-bottom: $timeline-gap-desktop;
     }
     
-    // Letzter Entry ohne Margin
+    // Letzter Entry ohne Padding
     &:last-child {
-        margin-bottom: 0;
-    }
-    
-    // Aktiver Entry
-    &.is--active {
-        // Mehr Abstand nach unten wenn aktiv (für Timeline-Linie nach Item-Wrapper)
-        margin-bottom: $timeline-gap-mobile;
-        
-        @media (min-width: 768px) {
-            margin-bottom: $timeline-gap-tablet;
-        }
-        
-        @media (min-width: 992px) {
-            margin-bottom: $timeline-gap-desktop;
-        }
-        
-        .hero-timeline__year-btn {
-            background-color: $timeline-accent-color;
-            border-color: $timeline-accent-color;
-            color: $timeline-white;
-            transform: scale(1.1);
-            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
-            z-index: 10;
-            
-            // Positionierung: Halb überragend am Item-Wrapper
-            position: relative;
-            margin-bottom: calc(-#{$btn-size-mobile} / 2);
-            
-            @media (min-width: 768px) {
-                margin-bottom: calc(-#{$btn-size-tablet} / 2);
-            }
-            
-            @media (min-width: 992px) {
-                margin-bottom: calc(-#{$btn-size-desktop} / 2);
-            }
-        }
+        padding-bottom: 0;
     }
 }
 
 // ============================================================================
 // YEAR BUTTON - ZENTRIERT auf Timeline-Linie
+// WICHTIG: z-index niedrig - Buttons HINTER aktivem Content-Wrapper
 // ============================================================================
 .hero-timeline__year-btn {
     display: flex;
@@ -176,11 +144,12 @@ $timeline-gap-desktop: 3rem;
     font-weight: 700;
     color: $timeline-text-color;
     
-    // Interaction
+    // Interaction - SMOOTHER transition
     cursor: pointer;
     transition: all $timeline-transition-normal;
     position: relative;
-    z-index: 2;
+    // WICHTIG: z-index NIEDRIG - Buttons liegen HINTER dem aktiven Content
+    z-index: 1;
     
     @media (min-width: 768px) {
         width: $btn-size-tablet;
@@ -207,26 +176,15 @@ $timeline-gap-desktop: 3rem;
         box-shadow: 0 0 0 3px rgba(214, 171, 96, 0.4);
     }
     
-    // Aktiver Button Style (direkt auf Button-Klasse)
+    // Aktiver Button Style - HÖHERER z-index als inaktive Buttons, aber NIEDRIGER als Content
     &.is--active {
         background-color: $timeline-accent-color;
         border-color: $timeline-accent-color;
         color: $timeline-white;
         transform: scale(1.1);
         box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
-        z-index: 10;
-        
-        // Positionierung: Halb überragend am Item-Wrapper
-        position: relative;
-        margin-bottom: calc(-#{$btn-size-mobile} / 2);
-        
-        @media (min-width: 768px) {
-            margin-bottom: calc(-#{$btn-size-tablet} / 2);
-        }
-        
-        @media (min-width: 992px) {
-            margin-bottom: calc(-#{$btn-size-desktop} / 2);
-        }
+        // WICHTIG: z-index höher als andere Buttons (1), aber niedriger als Content (100+)
+        z-index: 5;
     }
 }
 
@@ -236,24 +194,58 @@ $timeline-gap-desktop: 3rem;
 
 // ============================================================================
 // TIMELINE ITEM CONTENT - MIT BOOTSTRAP BOX-SHADOW
+// WICHTIG: HÖHERER z-index als Year-Buttons (liegt VOR den Buttons)
 // ============================================================================
 .hero-timeline__item {
+    position: absolute;
+    top: 100%; // Direkt unter dem .hero-timeline__entry positionieren
+    left: 50%;
+    transform: translateX(-50%);
     width: 100%;
     max-width: 900px;
+    margin-top: 2rem; // Abstand zum Button
+    // WICHTIG: HOHER z-index - Content liegt VOR allen Year-Buttons
+    z-index: 100;
+    
     max-height: 0;
     opacity: 0;
-    // overflow: hidden;
-    transition: max-height $timeline-transition-slow, 
-                opacity $timeline-transition-normal;
+    overflow: hidden;
+    // SMOOTHER Transitions - langsamer, eleganter
+    transition: max-height $timeline-transition-smooth, 
+                opacity $timeline-transition-slow,
+                transform $timeline-transition-slow,
+                overflow 0s $timeline-transition-smooth;
+    // Initial leicht nach oben verschoben (für Slide-In Effekt)
+    transform: translateX(-50%) translateY(20px);
     
     &.is--active {
         opacity: 1;
+        overflow: visible;
+        // Smooth Slide-In von unten
+        transform: translateX(-50%) translateY(0);
+        transition: max-height $timeline-transition-smooth, 
+                    opacity $timeline-transition-slow,
+                    transform $timeline-transition-slow,
+                    overflow 0s 0s;
+    }
+    
+    // Beim Schließen: Smooth Slide-Out nach oben
+    &.is--closing {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+        transition: max-height $timeline-transition-slow, 
+                    opacity $timeline-transition-normal,
+                    transform $timeline-transition-normal;
     }
 }
 
 .hero-timeline__item-inner {
     background-color: $timeline-white;
     border-radius: 0.5rem;
+    transform: translateY(-15%);
+    // WICHTIG: Content-Inner erbt hohen z-index vom Parent
+    position: relative;
+    z-index: 101;
     
     // Bootstrap Box-Shadow (Standard .shadow)
     box-shadow: $timeline-box-shadow;
@@ -265,8 +257,10 @@ $timeline-gap-desktop: 3rem;
     }
     
     @media (min-width: 992px) {
-        padding: 2.5rem;
+        z-index: 101;
+        padding: 1rem 2rem;
         border-radius: 1rem;
+        transform: translateY(-26.5%);
         
         // Bootstrap Box-Shadow Large auf Desktop
         box-shadow: $timeline-box-shadow-lg;

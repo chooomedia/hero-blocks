@@ -94,12 +94,12 @@
         </input-field>
         <input-field type="bool">
             <name>enableShoppingExperience</name>
-            <label lang="de-DE">Erweiterte Theme Shopping Experience aktivieren</label>
-            <label>Enable Advanced Theme Shopping Experience</label>
+            <label lang="de-DE">Erweiterte Produktdetail-Seite aktivieren</label>
+            <label>Enable Advanced Product Detail Page</label>
             <defaultValue>false</defaultValue>
-            <disabled>true</disabled>
-            <helpText lang="de-DE">Erweiterte Theme-spezifische Shopping-Experience-Blöcke mit Produkten und Content. Diese Funktion befindet sich aktuell in Vorbereitung und wird über das Theme bereitgestellt.</helpText>
-            <helpText>Advanced theme-specific shopping experience blocks with products and content. This feature is currently in preparation and will be provided through the theme.</helpText>
+            <disabled>false</disabled>
+            <helpText lang="de-DE">Aktiviert erweiterte Produktdetail-Features wie den HOREX Konfigurator mit Varianten-Preisen, Serienausstattung und optimiertem Layout. Funktioniert mit jedem Shopware-Theme.</helpText>
+            <helpText>Enables advanced product detail features like the HOREX Configurator with variant prices, standard equipment display and optimized layout. Works with any Shopware theme.</helpText>
         </input-field>
     </card>
     
@@ -243,6 +243,55 @@
     </card>
     
     <card>
+        <title lang="de-DE">Timeline Block Einstellungen</title>
+        <title>Timeline Block Settings</title>
+        <input-field type="single-select">
+            <name>timelineOrientation</name>
+            <label lang="de-DE">Ausrichtung</label>
+            <label>Orientation</label>
+            <options>
+                <option>
+                    <id>horizontal</id>
+                    <name lang="de-DE">Horizontal (Zeitleiste)</name>
+                    <name>Horizontal (Timeline)</name>
+                </option>
+                <option>
+                    <id>vertical</id>
+                    <name lang="de-DE">Vertikal (Liste)</name>
+                    <name>Vertical (List)</name>
+                </option>
+            </options>
+            <defaultValue>horizontal</defaultValue>
+            <helpText lang="de-DE">Ausrichtung der Timeline: Horizontal zeigt Einträge nebeneinander mit Scroll, Vertikal zeigt Einträge untereinander.</helpText>
+            <helpText>Timeline orientation: Horizontal shows entries side by side with scroll, Vertical shows entries stacked.</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>timelineShowNavigation</name>
+            <label lang="de-DE">Navigation anzeigen</label>
+            <label>Show Navigation</label>
+            <defaultValue>true</defaultValue>
+            <helpText lang="de-DE">Zeigt Navigations-Buttons (Vor/Zurück) in der Timeline an.</helpText>
+            <helpText>Shows navigation buttons (Previous/Next) in the timeline.</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>timelineAutoplay</name>
+            <label lang="de-DE">Autoplay aktivieren</label>
+            <label>Enable Autoplay</label>
+            <defaultValue>false</defaultValue>
+            <helpText lang="de-DE">Automatisches Wechseln der Timeline-Einträge.</helpText>
+            <helpText>Automatically cycle through timeline entries.</helpText>
+        </input-field>
+        <input-field type="int">
+            <name>timelineAutoplaySpeed</name>
+            <label lang="de-DE">Autoplay Geschwindigkeit (ms)</label>
+            <label>Autoplay Speed (ms)</label>
+            <defaultValue>5000</defaultValue>
+            <helpText lang="de-DE">Geschwindigkeit des Autoplay in Millisekunden (Standard: 5000ms = 5 Sekunden).</helpText>
+            <helpText>Autoplay speed in milliseconds (Default: 5000ms = 5 seconds).</helpText>
+        </input-field>
+    </card>
+    
+    <card>
         <title lang="de-DE">Update-Informationen</title>
         <title>Update Information</title>
         <input-field type="bool">
@@ -381,6 +430,60 @@
             <placeholder>12 (default)</placeholder>
             <helpText lang="de-DE">Anzahl der Instagram-Posts, die im Feed angezeigt werden sollen. Standard: 12</helpText>
             <helpText>Number of Instagram posts to display in the feed. Default: 12</helpText>
+        </input-field>
+    </card>
+    
+    <card>
+        <title lang="de-DE">Produktdetail Einstellungen</title>
+        <title>Product Detail Settings</title>
+        <input-field type="bool">
+            <name>productDetailPreloadImages</name>
+            <label lang="de-DE">360° Bilder vorladen</label>
+            <label>Preload 360° Images</label>
+            <defaultValue>true</defaultValue>
+            <helpText lang="de-DE">Lädt alle 360°-Galerie-Bilder im Hintergrund vor, um flüssigere Rotation zu ermöglichen.</helpText>
+            <helpText>Preloads all 360° gallery images in background for smoother rotation.</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>productDetailSmoothScrolling</name>
+            <label lang="de-DE">Smooth Scrolling aktivieren</label>
+            <label>Enable Smooth Scrolling</label>
+            <defaultValue>true</defaultValue>
+            <helpText lang="de-DE">Aktiviert gedämpftes, verzögertes Scrollen für flüssigere 360°-Rotation ohne Ruckeln.</helpText>
+            <helpText>Enables dampened, delayed scrolling for smoother 360° rotation without stuttering.</helpText>
+        </input-field>
+        <input-field type="int">
+            <name>productDetailScrollDamping</name>
+            <label lang="de-DE">Scroll-Dämpfung</label>
+            <label>Scroll Damping</label>
+            <defaultValue>15</defaultValue>
+            <helpText lang="de-DE">Stärke der Scroll-Dämpfung (1-50). Höher = weicher, aber langsamer. Standard: 15</helpText>
+            <helpText>Scroll damping strength (1-50). Higher = smoother but slower. Default: 15</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>productDetailMagnifier</name>
+            <label lang="de-DE">Lupe aktivieren</label>
+            <label>Enable Magnifier</label>
+            <defaultValue>true</defaultValue>
+            <helpText lang="de-DE">Zeigt eine kreisrunde 4x-Lupe beim Hover über die 360°-Galerie.</helpText>
+            <helpText>Shows a circular 4x magnifier on hover over the 360° gallery.</helpText>
+        </input-field>
+        <input-field type="int">
+            <name>productDetailMagnifierZoom</name>
+            <label lang="de-DE">Lupen-Zoom</label>
+            <label>Magnifier Zoom</label>
+            <defaultValue>4</defaultValue>
+            <helpText lang="de-DE">Zoom-Faktor der Lupe (1-10). Standard: 4x</helpText>
+            <helpText>Magnifier zoom factor (1-10). Default: 4x</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>productDetail3DRendering</name>
+            <label lang="de-DE">3D-Rendering (Coming Soon)</label>
+            <label>3D Rendering (Coming Soon)</label>
+            <defaultValue>false</defaultValue>
+            <disabled>true</disabled>
+            <helpText lang="de-DE">Generiert ein 3D-Modell aus den 360°-Bildern. Diese Funktion befindet sich in Entwicklung.</helpText>
+            <helpText>Generates a 3D model from 360° images. This feature is under development.</helpText>
         </input-field>
     </card>
 

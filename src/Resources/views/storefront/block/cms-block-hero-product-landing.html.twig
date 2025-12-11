@@ -1,0 +1,31 @@
+{% block block_hero_product_landing %}
+    {# 
+    HERO PRODUCT LANDING BLOCK
+    ==========================
+    
+    Displays product data on Landing Pages.
+    The product is selected in CMS Admin and loaded via TypeDataResolver.
+    
+    USAGE:
+    - Add this block to a Landing Page layout
+    - Select a product (e.g. Regina Evo, VR6 Raw)
+    - Product data becomes available in the template
+    
+    AVAILABLE IN CHILD TEMPLATES:
+    - element.data.product (full ProductEntity)
+    - element.data.product.translated.name
+    - element.data.product.translated.description
+    - element.data.product.calculatedPrice.totalPrice
+    - element.data.product.cover.media
+    - element.data.product.properties
+    - etc.
+    #}
+    
+    {% set element = block.slots.getSlot('content') %}
+    
+    {% if element and element.type == 'hero-product-landing' %}
+        <div class="cms-block-hero-product-landing">
+            {% sw_include '@HeroBlocks/storefront/element/cms-element-hero-product-landing.html.twig' %}
+        </div>
+    {% endif %}
+{% endblock %}

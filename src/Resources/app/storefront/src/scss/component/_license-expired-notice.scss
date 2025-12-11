@@ -25,33 +25,53 @@
         0 10px 40px rgba(255, 84, 50, 0.2),
         0 2px 8px rgba(0, 0, 0, 0.12);
     
-    transition: opacity 0.3s ease, transform 0.3s ease, max-height 0.3s ease;
+    // WICHTIG: Keine transform-Animation für den Container - Close-Button bleibt stabil
+    transition: opacity 0.3s ease, box-shadow 0.3s ease, max-height 0.3s ease;
     
-    // Hover: Leicht anheben (modern & interactive)
+    // Hover: Nur Shadow verstärken (seriös, kein Bewegung)
     &:hover {
-        transform: translateY(-2px);
         box-shadow: 
             0 12px 48px rgba(255, 84, 50, 0.25),
             0 4px 12px rgba(0, 0, 0, 0.15);
     }
     
     // Close-Button (X) - Oben rechts mit Matt Interfaces Akzent
+    // Sauber positioniert, keine Rotation oder Animation beim Hover (seriöse UX)
     &__close {
         position: absolute;
-        top: 0;
-        right: 0;
-        transform: translate(7px, -13px);
-        padding: 0.25rem;
-        background: transparent;
-        border: none;
+        top: 0.75rem;
+        right: 0.75rem;
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(255, 84, 50, 0.2);
+        border-radius: 6px;
         color: #ff5432; // Matt Interfaces Rot
-        opacity: 0.7;
-        transition: opacity 0.2s ease, transform 0.2s ease, color 0.2s ease;
+        opacity: 0.85;
+        cursor: pointer;
         z-index: 10;
+        // WICHTIG: Keine transform-Animation - smooth und seriös
+        transition: opacity 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+        
+        svg {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+        }
         
         &:hover {
             opacity: 1;
-            color: #e63a1a; // Dunkleres Rot beim Hover
+            background: rgba(255, 255, 255, 1);
+            border-color: rgba(255, 84, 50, 0.4);
+            // KEINE transform hier - Button bleibt stabil
+        }
+        
+        &:active {
+            background: rgba(255, 84, 50, 0.1);
         }
         
         &:focus {
@@ -196,18 +216,13 @@
 // Reduced Motion Support
 @media (prefers-reduced-motion: reduce) {
     .hero-blocks-license-expired-notice {
+        animation: none;
         transition: none;
         
         &__close,
         &__button,
         &__button svg {
             transition: none;
-        }
-        
-        &__close:hover,
-        &__button:hover,
-        &__button:hover svg {
-            transform: none;
         }
     }
 }

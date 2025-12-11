@@ -675,23 +675,28 @@ class LicenseCheckService
         
         $baseUrl = trim($baseUrl);
         
-        // WICHTIG: Entferne {checkType} Placeholder aus Base-URL und füge als Query-Parameter hinzu
-        // Format: https://n8n.chooomedia.com/webhook/{checkType}/hero-blocks
-        // → https://n8n.chooomedia.com/webhook/hero-blocks?checkType=license
-        // Fallback: Falls {checkType} im Path vorhanden, ersetze (Backwards Compatibility)
-        if (strpos($baseUrl, '{checkType}') !== false) {
-            // Altes Format: /webhook/{checkType}/hero-blocks
-            $url = str_replace('{checkType}', '', $baseUrl);
-            $url = str_replace('//', '/', $url); // Bereinige doppelte Slashes
-            $url = rtrim($url, '/') . '/hero-blocks'; // Stelle sicher dass /hero-blocks am Ende steht
-        } else {
-            // Neues Format: Base-URL ist bereits /webhook/hero-blocks
-            $url = rtrim($baseUrl, '/');
-        }
+        // WICHTIG: Füge checkType als PATH-Segment vor /hero-blocks ein
+        // n8n Webhook erwartet: /webhook/{checkType}/hero-blocks
+        // Unterstützte Formate:
+        // 1. Mit Placeholder: https://n8n.chooomedia.com/webhook/{checkType}/hero-blocks
+        // 2. Ohne Placeholder: https://n8n.chooomedia.com/webhook/hero-blocks
+        //    → wird zu: https://n8n.chooomedia.com/webhook/license/hero-blocks
         
-        // Füge checkType als Query-Parameter hinzu
-        $separator = strpos($url, '?') !== false ? '&' : '?';
-        $url .= $separator . 'checkType=' . urlencode($checkType);
+        if (strpos($baseUrl, '{checkType}') !== false) {
+            // Format 1: Ersetze {checkType} Placeholder
+            $url = str_replace('{checkType}', $checkType, $baseUrl);
+        } elseif (preg_match('#/webhook/hero-blocks$#', $baseUrl)) {
+            // Format 2: Füge checkType vor /hero-blocks ein
+            $url = preg_replace('#/webhook/hero-blocks$#', '/webhook/' . $checkType . '/hero-blocks', $baseUrl);
+        } elseif (preg_match('#/webhook/$#', $baseUrl)) {
+            // Format 3: Endet mit /webhook/ - füge checkType/hero-blocks an
+            $url = rtrim($baseUrl, '/') . '/' . $checkType . '/hero-blocks';
+        } else {
+            // Fallback: Hänge checkType als Query-Parameter an (Legacy-Kompatibilität)
+            $url = rtrim($baseUrl, '/');
+            $separator = strpos($url, '?') !== false ? '&' : '?';
+            $url .= $separator . 'checkType=' . urlencode($checkType);
+        }
         
         // Validiere finale URL
         if (empty($url) || !filter_var($url, FILTER_VALIDATE_URL)) {

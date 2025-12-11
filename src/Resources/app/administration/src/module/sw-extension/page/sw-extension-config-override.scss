@@ -3,28 +3,29 @@
 @import "~scss/mixins";
 
 .sw-extension-config {
-  &__license-chip-wrapper {
-    display: flex;
+  // Custom License Button (ersetzt sw-status für volle Kontrolle)
+  &__license-chip-btn {
+    display: inline-flex;
     align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
     margin-right: 12px;
-  }
-
-  &__license-chip {
+    background: var(--color-background-primary-default);
+    border: 1px solid var(--color-border-primary-default);
+    border-radius: 20px;
     cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
     transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
     user-select: none;
-
+    
     &:hover {
-      opacity: 0.8;
-      transform: translateY(-1px);
+      border-color: var(--color-interaction-primary-default);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     &:active {
-      transform: translateY(0);
+      transform: translateY(1px);
     }
 
     &.is-loading {
@@ -32,13 +33,57 @@
       pointer-events: none;
     }
 
-    &-loader {
-      flex-shrink: 0;
+    // Status-spezifische Farben
+    &.is--active {
+      border-color: rgba(34, 197, 94, 0.4);
+      background: rgba(34, 197, 94, 0.05);
     }
 
-    span {
-      white-space: nowrap;
+    &.is--expired {
+      border-color: rgba(239, 68, 68, 0.4);
+      background: rgba(239, 68, 68, 0.05);
     }
+  }
+
+  // Farb-Indikator (Punkt)
+  &__license-chip-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+
+    &.is--green {
+      background-color: #22c55e;
+    }
+
+    &.is--red {
+      background-color: #ef4444;
+    }
+
+    &.is--neutral {
+      background-color: #9ca3af;
+    }
+  }
+
+  &__license-chip-text {
+    white-space: nowrap;
+    color: var(--color-text-primary-default);
+  }
+
+  &__license-chip-icon {
+    flex-shrink: 0;
+    color: var(--color-icon-primary-default);
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+  }
+
+  &__license-chip-btn:hover &__license-chip-icon {
+    opacity: 1;
+  }
+
+  &__license-chip-loader {
+    flex-shrink: 0;
   }
 
   &__save-action {

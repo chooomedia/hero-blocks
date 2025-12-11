@@ -1,0 +1,44 @@
+{% block sw_cms_element_hero_product_landing %}
+<div class="sw-cms-el-hero-product-landing">
+    
+    {# Product Selected - Show Preview #}
+    <template v-if="hasProduct">
+        <div class="sw-cms-el-hero-product-landing__content">
+            
+            {# Product Image #}
+            <div class="sw-cms-el-hero-product-landing__image" v-if="productImage">
+                <img :src="productImage" :alt="productName" />
+            </div>
+            <div class="sw-cms-el-hero-product-landing__image sw-cms-el-hero-product-landing__image--placeholder" v-else>
+                <sw-icon name="regular-image" />
+            </div>
+            
+            {# Product Info #}
+            <div class="sw-cms-el-hero-product-landing__info">
+                <h3 class="sw-cms-el-hero-product-landing__name" v-if="showName">
+                    {{ productName }}
+                </h3>
+                
+                <p class="sw-cms-el-hero-product-landing__description" v-if="showDescription && productDescription">
+                    {{ productDescription }}
+                </p>
+                
+                <div class="sw-cms-el-hero-product-landing__price" v-if="showPrice && productPrice">
+                    {{ productPrice }}
+                </div>
+            </div>
+            
+        </div>
+    </template>
+    
+    {# No Product Selected - Show Placeholder #}
+    <template v-else>
+        <div class="sw-cms-el-hero-product-landing__placeholder">
+            <sw-icon name="regular-shopping-bag" size="48px" />
+            <p>{{ $tc('sw-cms.elements.heroProductLanding.placeholder.title') }}</p>
+            <small>{{ $tc('sw-cms.elements.heroProductLanding.placeholder.hint') }}</small>
+        </div>
+    </template>
+    
+</div>
+{% endblock %}

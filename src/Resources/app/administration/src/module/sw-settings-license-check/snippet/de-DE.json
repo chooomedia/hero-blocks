@@ -1,18 +1,55 @@
 {
     "sw-settings-license-check": {
+        "intro": {
+            "headline": "Mehr Conversion. Weniger Code."
+        },
+        "branding": {
+            "title": "Entwickelt von Matt Interfaces – Ihr Partner für maßgeschneiderte E-Commerce-Lösungen",
+            "poweredBy": "Powered by Matt Interfaces"
+        },
         "description": "Professionelle CMS-Blöcke für Shopware Shopping Experiences. Hero Slider, Two Columns Layouts, Scroll-Animationen und mehr – entwickelt nach Shopware Best Practices.",
+        "featuresTitle": "Verfügbare Blöcke",
         "features": {
             "heroSlider": "Hero Slider – Multi-Slide Hero-Blöcke mit Headlines, Texten, Buttons und Bildern",
+            "heroSliderShort": "Multi-Slide Hero mit Headlines, Texten, Buttons und Bildern",
             "heroTwoColumns": "Hero Two Columns – Zwei-Spalten-Layout mit flexiblen Hintergrund-Optionen und Audio-Player",
+            "heroTwoColumnsShort": "Zwei-Spalten-Layout mit Hintergrund-Optionen und Audio",
             "heroVideoExtended": "Hero Video Extended – Video-Hero-Blöcke mit Headlines, Texten und Buttons (Demnächst)",
+            "heroVideoExtendedShort": "Video-Hero mit Headlines, Texten und Buttons",
             "heroInstagramFeed": "Hero Instagram Feed – Instagram-Feed-Integration für Mega-Menü und Custom Blocks (Demnächst)",
+            "heroInstagramFeedShort": "Instagram-Feed für Mega-Menü und Widgets",
             "megaMenu": "Mega Menu Block – Erweiterter Navigationsblock mit Produkten, Widgets und Instagram-Feed (Demnächst)",
-            "shoppingExperience": "Shopping Experience Blocks – Zusätzliche Custom Blocks für erweiterte Shopping-Erlebnisse (In Entwicklung)"
+            "megaMenuShort": "Erweitertes Navigationsmenü mit Widgets",
+            "categorySlider": "Category Slider – Kategorie-Slider für Produktkategorien mit Bildern",
+            "categorySliderShort": "Kategorie-Slider mit Bildern",
+            "faqBlock": "FAQ Block – Akkordeon mit Schema.org Rich Snippets für SEO",
+            "faqBlockShort": "Akkordeon-FAQ mit SEO Rich Snippets",
+            "imageOverlay": "Image Overlay – Vollbild-Bild mit schrägem Text-Overlay",
+            "imageOverlayShort": "Vollbild mit Text-Overlay-Panel",
+            "bookingForm": "Booking Form – Probefahrt-Anfragen und Buchungsformulare",
+            "bookingFormShort": "Probefahrt-Buchungsformular",
+            "timeline": "Timeline – Jahresnavigation mit Text und Bild-Slider",
+            "timelineShort": "Historische Timeline mit Bildern",
+            "shoppingExperience": "Erweiterte Produktdetailseite – 360° Gallery, Varianten-Konfigurator mit Preisen, Serienausstattung",
+            "shoppingExperienceShort": "360° Gallery, Konfigurator mit Preisen"
         },
         "featureStatus": {
             "active": "Aktiv",
+            "inactive": "Inaktiv",
             "comingSoon": "Demnächst",
             "inDevelopment": "In Entwicklung"
+        },
+        "blockToggle": {
+            "clickToToggle": "Klicken zum Aktivieren/Deaktivieren",
+            "hint": "Klicken Sie auf eine Karte, um den Block zu aktivieren oder deaktivieren. Speichern Sie anschließend die Einstellungen.",
+            "enabledTitle": "Block aktiviert",
+            "enabledMessage": "{block} wurde aktiviert. Bitte speichern Sie die Einstellungen.",
+            "disabledTitle": "Block deaktiviert",
+            "disabledMessage": "{block} wurde deaktiviert. Bitte speichern Sie die Einstellungen.",
+            "comingSoonTitle": "Demnächst verfügbar",
+            "comingSoonMessage": "{block} wird in einer zukünftigen Version verfügbar sein.",
+            "inDevelopmentTitle": "In Entwicklung",
+            "inDevelopmentMessage": "{block} befindet sich aktuell in der Entwicklung."
         },
         "animations": {
             "title": "CSS-Animationsklassen für CMS-Blöcke",
@@ -50,7 +87,8 @@
         "status": {
             "active": "Lizenz aktiv",
             "expired": "Lizenz abgelaufen",
-            "invalid": "Lizenz ungültig"
+            "invalid": "Lizenz ungültig",
+            "unknown": "Lizenz prüfen"
         },
         "success": {
             "title": "Lizenzprüfung erfolgreich",
@@ -66,12 +104,18 @@
             "expiryMessage": "Ihre Lizenz läuft in {days} Tagen ab. Bitte erneuern Sie Ihre Lizenz, um Hero Blocks weiterhin nutzen zu können."
         },
         "update": {
+            "title": "Plugin Updates",
+            "subtitle": "Prüfen Sie auf neue Versionen und installieren Sie Updates",
             "available": "Update verfügbar",
+            "upToDate": "Aktuell",
             "notAvailable": "Kein Update verfügbar",
             "latestVersion": "Neueste Version",
+            "installedVersion": "Installierte Version",
             "currentVersion": "Aktuelle Version",
+            "lastCheck": "Letzte Prüfung",
             "downloadUrl": "Download-URL",
             "changelog": "Changelog",
+            "changelogTitle": "Was ist neu?",
             "webhookUrl": "Update-Webhook-URL (n8n)",
             "checkForUpdates": "Auf Updates prüfen",
             "updateAvailable": "Ein Plugin-Update ist verfügbar",
@@ -149,6 +193,26 @@
                 "newFeatures": "Frühzeitiger Zugriff auf neue Features",
                 "security": "Sicherheitsupdates & Performance-Optimierungen"
             }
+        },
+        "modal": {
+            "settingsTitle": "Einstellungen",
+            "openSettings": "Einstellungen öffnen",
+            "close": "Schließen",
+            "noSettingsTitle": "Keine Einstellungen",
+            "noSettingsMessage": "{block} hat keine zusätzlichen Einstellungen.",
+            "noSettingsAvailable": "Für diesen Block sind keine Einstellungen verfügbar.",
+            "loading": "Einstellungen werden geladen...",
+            "licenseTitle": "Lizenz-Informationen",
+            "clickToOpenLicense": "Klicken für Lizenz-Details",
+            "expiresAt": "Läuft ab am",
+            "daysRemaining": "Tage verbleibend"
+        },
+        "button": {
+            "checkLicense": "Lizenz prüfen",
+            "checking": "Prüfe...",
+            "cooldown": "Warten ({seconds}s)...",
+            "licenseExpiredTitle": "Lizenz abgelaufen",
+            "licenseExpiredMessage": "Ihre Lizenz ist abgelaufen. Bitte verlängern Sie Ihre Lizenz, um Hero Blocks weiterhin nutzen zu können."
         }
     }
 }

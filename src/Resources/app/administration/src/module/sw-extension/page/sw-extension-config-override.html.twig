@@ -38,23 +38,32 @@
 
     <template #smart-bar-actions>
         {# Active License Chip im Header - nur für HeroBlocks #}
-        <div v-if="isHeroBlocksConfig && showLicenseChip" class="sw-extension-config__license-chip-wrapper">
-            <sw-status
-                :color="licenseChipColor"
-                :class="['sw-extension-config__license-chip', { 'is-loading': isSilentLicenseChecking }]"
-                @click="onLicenseChipClick"
-                role="button"
-                tabindex="0"
-                @keydown.enter="onLicenseChipClick"
-            >
-                <sw-loader
-                    v-if="isSilentLicenseChecking"
-                    size="12px"
-                    class="sw-extension-config__license-chip-loader"
-                />
-                <span v-else>{{ licenseChipText }}</span>
-            </sw-status>
-        </div>
+        {# Layout: Custom Button mit [Farb-Indikator] [Text] [Zahnrad-Icon] #}
+        <button 
+            v-if="isHeroBlocksConfig && showLicenseChip" 
+            :class="[
+                'sw-extension-config__license-chip-btn', 
+                { 
+                    'is-loading': isSilentLicenseChecking,
+                    'is--active': licenseStatus === 'active',
+                    'is--expired': licenseStatus === 'expired' || licenseStatus === 'invalid'
+                }
+            ]"
+            @click="onLicenseChipClick"
+            type="button"
+            :title="$tc('sw-settings-license-check.modal.clickToOpenLicense')"
+        >
+            <sw-loader
+                v-if="isSilentLicenseChecking"
+                size="12px"
+                class="sw-extension-config__license-chip-loader"
+            />
+            <template v-else>
+                <span class="sw-extension-config__license-chip-indicator" :class="'is--' + licenseChipColor"></span>
+                <span class="sw-extension-config__license-chip-text">{{ licenseChipText }}</span>
+                <mt-icon name="regular-cog" size="12" class="sw-extension-config__license-chip-icon" />
+            </template>
+        </button>
         
         <mt-button
             variant="primary"
