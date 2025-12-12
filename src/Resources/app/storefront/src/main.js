@@ -22,6 +22,22 @@
 // Hero-Slider, Category-Slider, Instagram nutzen Shopware's base-slider System
 
 // ============================================================================
+// Smart Magnifier Plugin (Living Zoom Lens)
+// ============================================================================
+// Komplett eigenständige Implementierung (KEINE Shopware-Overrides!)
+// Basiert auf: https://medium.com/@ignatovich.dm/creating-magnifying-glass-effects-in-html-css-and-javascript-7d42083bdf0e
+//
+// Technik: Dupliziertes Bild innerhalb der Lupe, positioniert per Cursor.
+//
+// States:
+// - idle (5rem): Klein, subtil, folgt Cursor
+// - approaching (5-7rem atmend): In der Nähe eines Produktbildes
+// - zooming (7rem): Über Produktbild, zeigt gezoomten Inhalt
+// - smartZoom (+30%): Nach 1.5s Stillstand
+//
+import SmartMagnifierPlugin from "./smart-magnifier/smart-magnifier.plugin";
+
+// ============================================================================
 // Hero Two Columns Parallax Plugin
 // ============================================================================
 // WICHTIG: Dieses Plugin verarbeitet:
@@ -93,12 +109,35 @@ if (typeof window.PluginManager !== "undefined" && window.PluginManager) {
         HeroTimelinePlugin,
         "[data-hero-timeline]"
       );
-      console.warn('[HeroBlocks] Plugin "HeroTimeline" registered successfully');
+      console.warn(
+        '[HeroBlocks] Plugin "HeroTimeline" registered successfully'
+      );
     } else {
-      console.error('[HeroBlocks] HeroTimelinePlugin is undefined');
+      console.error("[HeroBlocks] HeroTimelinePlugin is undefined");
     }
   } catch (e) {
-    console.error('[HeroBlocks] Error registering HeroTimeline plugin:', e);
+    console.error("[HeroBlocks] Error registering HeroTimeline plugin:", e);
+  }
+
+  // ========================================================================
+  // Smart Magnifier Plugin (Living Zoom Lens)
+  // ========================================================================
+  // Eigenständige Implementierung ohne Shopware-Overrides!
+  // - idle → approaching → zooming → smartZoom
+  // - Dupliziertes Bild in Lupe (Medium-Artikel Technik)
+  try {
+    if (SmartMagnifierPlugin) {
+      window.PluginManager.register(
+        "SmartMagnifier",
+        SmartMagnifierPlugin,
+        "[data-smart-magnifier]"
+      );
+      console.warn(
+        '[HeroBlocks] Plugin "SmartMagnifier" registered successfully'
+      );
+    }
+  } catch (e) {
+    console.error("[HeroBlocks] Error registering SmartMagnifier plugin:", e);
   }
 
   // ========================================================================

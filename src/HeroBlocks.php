@@ -22,6 +22,25 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
  */
 class HeroBlocks extends Plugin
 {
+    /**
+     * Returns the path to the plugin icon (SVG or PNG)
+     * Used in Admin Extension Config Header
+     * 
+     * @return string|null Base64 encoded icon or path to icon file
+     */
+    public function getIcon(): ?string
+    {
+        $iconPath = $this->getPath() . '/src/Resources/config/plugin-icon.svg';
+        
+        if (file_exists($iconPath)) {
+            $svgContent = file_get_contents($iconPath);
+            if ($svgContent !== false) {
+                return 'data:image/svg+xml;base64,' . base64_encode($svgContent);
+            }
+        }
+        
+        return null;
+    }
     public function install(InstallContext $installContext): void
     {
         parent::install($installContext);

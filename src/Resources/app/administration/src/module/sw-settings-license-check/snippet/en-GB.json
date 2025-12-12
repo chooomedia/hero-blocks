@@ -31,7 +31,9 @@
             "timeline": "Timeline – Year navigation with text and image slider",
             "timelineShort": "Historical timeline with images",
             "shoppingExperience": "Advanced Product Detail – 360° gallery, variant configurator with prices, standard equipment",
-            "shoppingExperienceShort": "360° gallery, configurator with prices"
+            "shoppingExperienceShort": "360° gallery, configurator with prices",
+            "skeletonLoader": "Skeleton Loader – Animated loading placeholders for optimal UX and perceived performance",
+            "skeletonLoaderShort": "Animated loading placeholders for better UX"
         },
         "featureStatus": {
             "active": "Active",
@@ -41,7 +43,12 @@
         },
         "blockToggle": {
             "clickToToggle": "Click to enable/disable",
-            "hint": "Click on a card to enable or disable the block. Save settings afterwards.",
+            "clickToActivate": "Click to activate",
+            "holdToDeactivate": "Hold for 3 seconds to deactivate",
+            "holdToDeactivateProgress": "Deactivating... {percent}%",
+            "deactivated": "Block deactivated",
+            "deactivatedMessage": "{block} has been deactivated. Please save the settings.",
+            "hint": "Click on an inactive card to activate. Hold active cards for 3 seconds to deactivate.",
             "enabledTitle": "Block enabled",
             "enabledMessage": "{block} has been enabled. Please save the settings.",
             "disabledTitle": "Block disabled",
@@ -70,13 +77,38 @@
                 "step4": "Save and check preview"
             },
             "countUpOptions": {
-                "title": "Count-Up Options",
-                "dataTarget": "data-count-target=\"163\" – Target value (required for non-numeric text)",
-                "dataSuffix": "data-count-suffix=\" HP\" – Suffix after the number (optional)",
-                "dataPrefix": "data-count-prefix=\"$\" – Prefix before the number (optional)",
-                "dataDuration": "data-count-duration=\"2000\" – Animation duration in ms (default: 2000)",
-                "dataDecimals": "data-count-decimals=\"2\" – Decimal places (default: 0)"
+                "title": "Data Attribute Reference",
+                "dataTarget": "data-count-target=\"163\"",
+                "dataTargetDesc": "Target value (required for non-numeric text)",
+                "dataSuffix": "data-count-suffix=\" HP\"",
+                "dataSuffixDesc": "Suffix after the number (optional)",
+                "dataPrefix": "data-count-prefix=\"$\"",
+                "dataPrefixDesc": "Prefix before the number (optional)",
+                "dataDuration": "data-count-duration=\"2000\"",
+                "dataDurationDesc": "Animation duration in ms (default: 2000)",
+                "dataDecimals": "data-count-decimals=\"2\"",
+                "dataDecimalsDesc": "Decimal places (default: 0)"
+            },
+            "shortcodeGenerator": {
+                "title": "Count-Up Shortcode Generator",
+                "targetLabel": "Target Value",
+                "targetHint": "The number to count up to",
+                "prefixLabel": "Prefix",
+                "suffixLabel": "Suffix",
+                "durationLabel": "Duration",
+                "decimalsLabel": "Decimals",
+                "previewLabel": "Generated Code",
+                "livePreviewLabel": "Preview",
+                "copy": "Copy",
+                "copied": "Copied!"
             }
+        },
+        "copy": {
+            "clickToCopy": "Click to copy",
+            "successTitle": "Copied to clipboard",
+            "successMessage": "'{text}' was copied",
+            "errorTitle": "Copy failed",
+            "errorMessage": "Could not copy the text. Please copy manually."
         },
         "button": {
             "checkLicense": "Check License",
@@ -182,6 +214,19 @@
             "availableLanguages": "Available Languages",
             "hint": "These languages will be displayed in the Language Switcher in the header (desktop).",
             "noLanguages": "No languages found. Please check your language configuration."
+        },
+        "bookingForm": {
+            "testEmailSection": "Test Email",
+            "sendTestEmail": "Send Test Email",
+            "sending": "Sending...",
+            "testEmailSuccess": "Test Email Sent",
+            "testEmailSuccessMessage": "The test email was successfully sent to the mailcatcher.",
+            "testEmailFailed": "Email Send Failed",
+            "testEmailFailedMessage": "Could not send the test email. Please check your email configuration.",
+            "comingSoonTitle": "Coming Soon",
+            "googleCalendarDesc": "Google Calendar integration for automatic appointment synchronization",
+            "webhookDesc": "Webhook for n8n and other automations",
+            "emailTemplateDesc": "Customizable email templates for booking confirmations"
         },
         "renewal": {
             "title": "Reactivate License & Level Up",

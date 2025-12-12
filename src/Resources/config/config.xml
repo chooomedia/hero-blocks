@@ -101,7 +101,18 @@
             <helpText lang="de-DE">Aktiviert erweiterte Produktdetail-Features wie den HOREX Konfigurator mit Varianten-Preisen, Serienausstattung und optimiertem Layout. Funktioniert mit jedem Shopware-Theme.</helpText>
             <helpText>Enables advanced product detail features like the HOREX Configurator with variant prices, standard equipment display and optimized layout. Works with any Shopware theme.</helpText>
         </input-field>
+        <input-field type="bool">
+            <name>enableSkeletonLoader</name>
+            <label lang="de-DE">Skeleton Loader aktivieren</label>
+            <label>Enable Skeleton Loader</label>
+            <defaultValue>true</defaultValue>
+            <disabled>false</disabled>
+            <helpText lang="de-DE">Zeigt animierte Skeleton-Platzhalter während Inhalte geladen werden. Verbessert die wahrgenommene Ladegeschwindigkeit und UX erheblich.</helpText>
+            <helpText>Shows animated skeleton placeholders while content is loading. Significantly improves perceived load speed and UX.</helpText>
+        </input-field>
     </card>
+    
+    <!-- Alte Skeleton Loader Settings wurden entfernt und durch "Skeleton Loader & Performance" Card ersetzt -->
     
     <card>
         <title lang="de-DE">Header + Mega Menu Einstellungen</title>
@@ -292,6 +303,75 @@
     </card>
     
     <card>
+        <title lang="de-DE">Skeleton Loader &amp; Performance</title>
+        <title>Skeleton Loader &amp; Performance</title>
+        <input-field type="bool">
+            <name>enableCustomSkeletonLoader</name>
+            <label lang="de-DE">Custom Skeleton Loader aktivieren</label>
+            <label>Enable Custom Skeleton Loader</label>
+            <defaultValue>true</defaultValue>
+            <helpText lang="de-DE">Ersetzt Shopware's Standard-Ladeanimationen durch elegante Logo-basierte Skeleton Loader. Verbessert die User Experience während Ladephasen und reduziert wahrgenommene Wartezeiten (LCP-Optimierung).</helpText>
+            <helpText>Replaces Shopware's default loading animations with elegant logo-based skeleton loaders. Improves user experience during loading phases and reduces perceived wait times (LCP optimization).</helpText>
+        </input-field>
+        
+        <input-field type="single-select">
+            <name>skeletonLoaderType</name>
+            <label lang="de-DE">Standard Loader-Typ</label>
+            <label>Default Loader Type</label>
+            <options>
+                <option>
+                    <id>360</id>
+                    <name lang="de-DE">360° Gallery (Logo + Ladebalken + Text)</name>
+                    <name>360° Gallery (Logo + Progress Bar + Text)</name>
+                </option>
+                <option>
+                    <id>page</id>
+                    <name lang="de-DE">Seiten-Loader (Logo + Ladebalken)</name>
+                    <name>Page Loader (Logo + Progress Bar)</name>
+                </option>
+                <option>
+                    <id>inbox</id>
+                    <name lang="de-DE">Inbox/Card (nur Logo)</name>
+                    <name>Inbox/Card (Logo only)</name>
+                </option>
+            </options>
+            <defaultValue>page</defaultValue>
+            <helpText lang="de-DE">Wählen Sie den Standard-Typ für Skeleton Loader. 360° Gallery enthält Fortschrittstext, Page-Loader zeigt einen Ladebalken, Inbox zeigt nur das Logo mit border-radius.</helpText>
+            <helpText>Select the default skeleton loader type. 360° Gallery includes progress text, Page loader shows a progress bar, Inbox shows only the logo with border-radius.</helpText>
+        </input-field>
+        
+        <input-field type="text">
+            <name>skeletonLogoMediaId</name>
+            <label lang="de-DE">Custom Logo (überschreibt Theme-Logo)</label>
+            <label>Custom Logo (overrides Theme Logo)</label>
+            <placeholder lang="de-DE">Media-ID oder leer für Theme-Logo</placeholder>
+            <placeholder>Media ID or empty for Theme Logo</placeholder>
+            <helpText lang="de-DE">Optional: Eigenes Logo für Skeleton Loader. Leer lassen um das Theme-Logo zu verwenden. Empfohlen: Monochrome/Grayscale Version für eleganten Loading-Effekt.</helpText>
+            <helpText>Optional: Custom logo for skeleton loaders. Leave empty to use theme logo. Recommended: Monochrome/grayscale version for elegant loading effect.</helpText>
+        </input-field>
+        
+        <input-field type="text">
+            <name>skeletonLogoSize</name>
+            <label lang="de-DE">Logo-Größe (CSS-Wert)</label>
+            <label>Logo Size (CSS value)</label>
+            <defaultValue>7rem</defaultValue>
+            <placeholder lang="de-DE">7rem (Standard)</placeholder>
+            <placeholder>7rem (default)</placeholder>
+            <helpText lang="de-DE">Größe des Logos im Skeleton Loader. CSS-Werte wie rem, px, em, vw möglich. Standard: 7rem für optimale Sichtbarkeit.</helpText>
+            <helpText>Size of the logo in skeleton loader. CSS values like rem, px, em, vw allowed. Default: 7rem for optimal visibility.</helpText>
+        </input-field>
+        
+        <input-field type="bool">
+            <name>skeletonShowShimmer</name>
+            <label lang="de-DE">Shimmer-Animation aktivieren</label>
+            <label>Enable Shimmer Animation</label>
+            <defaultValue>true</defaultValue>
+            <helpText lang="de-DE">Aktiviert die sanfte Schimmer-Animation im Hintergrund des Skeleton Loaders für einen modernen Loading-Effekt.</helpText>
+            <helpText>Enables the smooth shimmer animation in the skeleton loader background for a modern loading effect.</helpText>
+        </input-field>
+    </card>
+
+    <card>
         <title lang="de-DE">Update-Informationen</title>
         <title>Update Information</title>
         <input-field type="bool">
@@ -462,19 +542,51 @@
         </input-field>
         <input-field type="bool">
             <name>productDetailMagnifier</name>
-            <label lang="de-DE">Lupe aktivieren</label>
-            <label>Enable Magnifier</label>
+            <label lang="de-DE">Smart Lupe aktivieren</label>
+            <label>Enable Smart Magnifier</label>
             <defaultValue>true</defaultValue>
-            <helpText lang="de-DE">Zeigt eine kreisrunde 4x-Lupe beim Hover über die 360°-Galerie.</helpText>
-            <helpText>Shows a circular 4x magnifier on hover over the 360° gallery.</helpText>
+            <helpText lang="de-DE">Zeigt eine kreisrunde Smart-Lupe beim Hover über die Produktbilder. Nach 1.5s Stillstand vergrößert sich die Lupe um 50% und der Zoom erhöht sich um 3x.</helpText>
+            <helpText>Shows a circular smart magnifier on hover over product images. After 1.5s of stillness, lens grows 50% and zoom increases by 3x.</helpText>
         </input-field>
         <input-field type="int">
             <name>productDetailMagnifierZoom</name>
-            <label lang="de-DE">Lupen-Zoom</label>
-            <label>Magnifier Zoom</label>
+            <label lang="de-DE">Initial-Zoom</label>
+            <label>Initial Zoom</label>
             <defaultValue>4</defaultValue>
-            <helpText lang="de-DE">Zoom-Faktor der Lupe (1-10). Standard: 4x</helpText>
-            <helpText>Magnifier zoom factor (1-10). Default: 4x</helpText>
+            <helpText lang="de-DE">Initialer Zoom-Faktor der Lupe (1-10). Standard: 4x. Bei Smart Zoom: +3x (also 7x bei Stillstand).</helpText>
+            <helpText>Initial magnifier zoom factor (1-10). Default: 4x. With Smart Zoom: +3x (so 7x when still).</helpText>
+        </input-field>
+        <input-field type="int">
+            <name>productDetailMagnifierSize</name>
+            <label lang="de-DE">Lupen-Größe (px)</label>
+            <label>Magnifier Size (px)</label>
+            <defaultValue>64</defaultValue>
+            <helpText lang="de-DE">Initiale Größe der kreisrunden Lupe in Pixeln. Standard: 64px (Bootstrap w-16). Bei Smart Zoom: +50% (also 96px).</helpText>
+            <helpText>Initial size of the circular lens in pixels. Default: 64px (Bootstrap w-16). With Smart Zoom: +50% (so 96px).</helpText>
+        </input-field>
+        <input-field type="int">
+            <name>productDetailMagnifierSmartDelay</name>
+            <label lang="de-DE">Smart Zoom Verzögerung (ms)</label>
+            <label>Smart Zoom Delay (ms)</label>
+            <defaultValue>1500</defaultValue>
+            <helpText lang="de-DE">Zeit in Millisekunden, nach der der Smart Zoom aktiviert wird, wenn der Cursor stillsteht. Standard: 1500ms (1.5 Sekunden).</helpText>
+            <helpText>Time in milliseconds before Smart Zoom activates when cursor is still. Default: 1500ms (1.5 seconds).</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>productDetailMagnifierPreload</name>
+            <label lang="de-DE">High-Res Bilder vorladen</label>
+            <label>Preload High-Res Images</label>
+            <defaultValue>true</defaultValue>
+            <helpText lang="de-DE">Lädt hochauflösende Bilder im Hintergrund vor für sofortigen Zoom ohne Ladezeit. Verwendet srcset für optimale Bildauswahl.</helpText>
+            <helpText>Preloads high-resolution images in background for instant zoom without loading time. Uses srcset for optimal image selection.</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>productDetailMagnifierSkeleton</name>
+            <label lang="de-DE">Skeleton Loader für Lupe</label>
+            <label>Skeleton Loader for Magnifier</label>
+            <defaultValue>true</defaultValue>
+            <helpText lang="de-DE">Zeigt einen Skeleton-Loader in der Lupe während das High-Res Bild lädt. Besonders nützlich bei langsamen Verbindungen.</helpText>
+            <helpText>Shows a skeleton loader in the lens while the high-res image loads. Especially useful on slow connections.</helpText>
         </input-field>
         <input-field type="bool">
             <name>productDetail3DRendering</name>
@@ -484,6 +596,55 @@
             <disabled>true</disabled>
             <helpText lang="de-DE">Generiert ein 3D-Modell aus den 360°-Bildern. Diese Funktion befindet sich in Entwicklung.</helpText>
             <helpText>Generates a 3D model from 360° images. This feature is under development.</helpText>
+        </input-field>
+    </card>
+    
+    <card>
+        <title lang="de-DE">Booking Form Einstellungen</title>
+        <title>Booking Form Settings</title>
+        <input-field type="text">
+            <name>bookingFormRecipientEmail</name>
+            <label lang="de-DE">Empfänger E-Mail</label>
+            <label>Recipient Email</label>
+            <defaultValue></defaultValue>
+            <placeholder>buchungen@example.com</placeholder>
+            <helpText lang="de-DE">E-Mail-Adresse, an die Buchungsanfragen gesendet werden. Leer lassen für Shop-Standard-E-Mail.</helpText>
+            <helpText>Email address where booking requests will be sent. Leave empty for default shop email.</helpText>
+        </input-field>
+        <input-field type="text">
+            <name>bookingFormSubject</name>
+            <label lang="de-DE">E-Mail Betreff</label>
+            <label>Email Subject</label>
+            <defaultValue>Neue Buchungsanfrage</defaultValue>
+            <placeholder>Neue Buchungsanfrage - {{ model }}</placeholder>
+            <helpText lang="de-DE">Betreffzeile für Buchungs-E-Mails. Verfügbare Platzhalter: {{ model }}, {{ name }}, {{ date }}</helpText>
+            <helpText>Subject line for booking emails. Available placeholders: {{ model }}, {{ name }}, {{ date }}</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>bookingFormSendConfirmation</name>
+            <label lang="de-DE">Bestätigungsmail an Kunde senden</label>
+            <label>Send Confirmation to Customer</label>
+            <defaultValue>true</defaultValue>
+            <helpText lang="de-DE">Sendet eine Bestätigungs-E-Mail an den Kunden nach Absenden des Formulars.</helpText>
+            <helpText>Sends a confirmation email to the customer after form submission.</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>bookingFormGoogleCalendar</name>
+            <label lang="de-DE">Google Calendar Integration (Coming Soon)</label>
+            <label>Google Calendar Integration (Coming Soon)</label>
+            <defaultValue>false</defaultValue>
+            <disabled>true</disabled>
+            <helpText lang="de-DE">Synchronisiert Buchungen mit Google Calendar. API-Token Konfiguration erfolgt in zukünftiger Version.</helpText>
+            <helpText>Syncs bookings with Google Calendar. API token configuration coming in future version.</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>bookingFormWebhookEnabled</name>
+            <label lang="de-DE">Webhook für Automationen (Coming Soon)</label>
+            <label>Webhook for Automations (Coming Soon)</label>
+            <defaultValue>false</defaultValue>
+            <disabled>true</disabled>
+            <helpText lang="de-DE">Sendet Buchungsdaten an einen Webhook-Endpoint für n8n oder andere Automatisierungen.</helpText>
+            <helpText>Sends booking data to a webhook endpoint for n8n or other automations.</helpText>
         </input-field>
     </card>
 

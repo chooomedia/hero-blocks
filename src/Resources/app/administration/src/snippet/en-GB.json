@@ -412,10 +412,10 @@
                     "product": {
                         "label": "Select Product",
                         "placeholder": "Search for product...",
-                        "helpText": "Select the product whose data should be displayed on the landing page. You can then access all product data in the template (name, description, price, properties, etc.)"
+                        "helpText": "Select the product whose data should be displayed on the landing page. You can then access all product data in the template (name, description, price, properties, custom fields, etc.)"
                     },
                     "displayOptions": {
-                        "title": "Display Options"
+                        "title": "Basic Display Options"
                     },
                     "showName": {
                         "label": "Show Product Name"
@@ -427,13 +427,42 @@
                         "label": "Show Price"
                     },
                     "showProperties": {
-                        "label": "Show Product Properties"
+                        "label": "Show Technical Specs",
+                        "helpText": "Displays product properties like Power, Torque, Cylinders etc."
                     },
                     "showManufacturer": {
                         "label": "Show Manufacturer"
                     },
                     "showBuyButton": {
                         "label": "Show Buy Button"
+                    },
+                    "customFieldsOptions": {
+                        "title": "Custom Fields & Extended Data",
+                        "hint": "These options display data from product custom fields. Configure custom fields under Settings > System > Custom Fields."
+                    },
+                    "showCustomFields": {
+                        "label": "Show Custom Fields",
+                        "helpText": "Displays all available product custom fields (e.g. highlight_features)"
+                    },
+                    "showTagline": {
+                        "label": "Show Tagline",
+                        "helpText": "Displays product tagline from custom field 'custom_horex_tagline'"
+                    },
+                    "showBadge": {
+                        "label": "Show Badge",
+                        "helpText": "Displays a badge from custom field 'custom_horex_badge_text' (e.g. 'NEW', 'LIMITED')"
+                    },
+                    "showSpecs": {
+                        "label": "Show Specs Highlight",
+                        "helpText": "Displays specs highlight from custom field or auto-generated from properties (e.g. '161 HP | 128 Nm | VR6')"
+                    },
+                    "showVariants": {
+                        "label": "Show Variants",
+                        "helpText": "Displays available variant options like colors"
+                    },
+                    "showGallery": {
+                        "label": "Show Image Gallery",
+                        "helpText": "Displays all product images as small gallery thumbnails"
                     },
                     "layoutOptions": {
                         "title": "Layout Options"
@@ -443,8 +472,20 @@
                         "options": {
                             "default": "Default",
                             "compact": "Compact",
-                            "full": "Full"
+                            "full": "Full",
+                            "hero": "Hero (Fullscreen)"
                         }
+                    },
+                    "availableData": {
+                        "title": "Available Product Custom Fields",
+                        "description": "Create these custom fields under Settings > System > Custom Fields for the Product entity:",
+                        "tagline": "Short tagline above product name",
+                        "badge": "Badge text (e.g. 'NEW', 'LIMITED')",
+                        "specsHighlight": "Specs highlight (e.g. '161 HP | 128 Nm')",
+                        "specsShort": "Short specifications as text",
+                        "videoUrl": "YouTube/Vimeo video URL",
+                        "ctaText": "Custom CTA button text",
+                        "ctaUrl": "Custom CTA button URL"
                     }
                 }
             },
@@ -891,15 +932,77 @@
             }
         }
     },
+    "hero-blocks": {
+        "config": {
+            "bookingFormSendConfirmation": "Send Confirmation to Customer",
+            "bookingFormSendConfirmation.helpText": "Sends a confirmation email to the customer after form submission",
+            "bookingFormGoogleCalendar": "Google Calendar Integration (Coming Soon)",
+            "bookingFormGoogleCalendar.helpText": "Syncs bookings with Google Calendar. API token configuration coming in future version",
+            "bookingFormWebhookEnabled": "Webhook for Automations (Coming Soon)",
+            "bookingFormWebhookEnabled.helpText": "Sends booking data to a webhook endpoint for n8n or other automations",
+            "bookingFormSubject": "Email Subject",
+            "bookingFormSubject.helpText": "Subject line for booking emails. Available placeholders: {{ model }}, {{ name }}, {{ date }}",
+            "bookingFormRecipient": "Recipient Email",
+            "bookingFormRecipient.helpText": "Email address(es) for form submissions (comma-separated)",
+            "enableLanguageSwitcher": "Enable Language Switcher",
+            "enableHeroInstagramFeed": "Enable Hero Instagram Feed",
+            "enableCategorySlider": "Enable Category Slider",
+            "enableMegaMenu": "Enable Mega Menu",
+            "enableHeroTwoColumns": "Enable Hero Two Columns",
+            "enableHeroVideoExtended": "Enable Hero Video Extended",
+            "enableHeroBookingForm": "Enable Hero Booking Form",
+            "enableHeroImageOverlay": "Enable Hero Image Overlay",
+            "enableHeroFaq": "Enable Hero FAQ",
+            "enableHeroTimeline": "Enable Hero Timeline",
+            "enableHeroProductLanding": "Enable Hero Product Landing",
+            "productDetailPreloadImages": "Preload Product Images (Skeleton Loader)",
+            "instagramAppId": "Instagram App ID",
+            "instagramAppSecret": "Instagram App Secret",
+            "instagramAccessToken": "Instagram Access Token",
+            "instagramUserId": "Instagram User ID",
+            "instagramPostsCache": "Cache Duration (Minutes)",
+            "licenseKey": "License Key",
+            "licenseEmail": "License Email",
+            "licenseStatus": "License Status",
+            "licenseExpiresAt": "License Valid Until"
+        }
+    },
     "sw-settings-license-check": {
         "description": "Professional CMS blocks for Shopware Shopping Experiences. Hero Slider, Two Columns layouts, and custom blocks built according to Shopware best practices.",
+        "intro": {
+            "headline": "Hero Blocks for Shopware"
+        },
+        "featuresTitle": "Available Blocks",
         "features": {
             "heroSlider": "Hero Slider - Multi-slide hero blocks with headlines, text, buttons, and images",
-            "heroTwoColumns": "Hero Two Columns Image & Text - Two-column layout with flexible background options (Parallax scroll: coming soon)",
-            "heroVideoExtended": "Hero Video Extended - Video hero blocks with headlines, text, and buttons (Coming soon)",
-            "heroInstagramFeed": "Hero Instagram Feed Widget - Instagram feed integration for mega menu and custom blocks (Coming soon)",
-            "megaMenu": "Mega Menu Block - Advanced navigation block with products, widgets, and Instagram feed support (Coming soon)",
-            "shoppingExperience": "Shopping Experience Blocks - Additional custom blocks for enhanced shopping experiences (In development)"
+            "heroSliderShort": "Multi-slide hero with headlines, text, buttons and images for powerful brand stories.",
+            "heroTwoColumns": "Hero Two Columns Image & Text - Two-column layout with flexible background options",
+            "heroTwoColumnsShort": "Two-column layout with image & text, parallax effects and flexible backgrounds.",
+            "heroVideoExtended": "Hero Video Extended - Video hero blocks with headlines, text, and buttons",
+            "heroVideoExtendedShort": "Video hero block with angled text overlay, headlines and CTAs.",
+            "heroInstagramFeed": "Hero Instagram Feed Widget - Instagram feed integration for mega menu and custom blocks",
+            "heroInstagramFeedShort": "Instagram feed integration with grid/slider mode and auto-refresh.",
+            "megaMenu": "Mega Menu Block - Advanced navigation block with products, widgets, and Instagram feed support",
+            "megaMenuShort": "Advanced mega menu with categories, products and social media widgets.",
+            "shoppingExperience": "Shopping Experience Blocks - Additional custom blocks for enhanced shopping experiences",
+            "shoppingExperienceShort": "Advanced product detail page with 360° gallery, configurator and variant prices.",
+            "categorySliderShort": "Category slider with images, titles and links to selected categories.",
+            "faqBlockShort": "FAQ block with accordion, Schema.org rich snippets and SEO optimization.",
+            "imageOverlayShort": "Full-width image with angled text overlay panel and scroll animation.",
+            "bookingFormShort": "Test ride and booking form with model selection and locations.",
+            "timelineShort": "Timeline with year navigation, text and image slider for history pages.",
+            "skeletonLoaderShort": "Animated loading placeholders for faster perceived performance.",
+            "smartMagnifier": "Smart Magnifier - Intelligent zoom lens with automatic magnification",
+            "smartMagnifierShort": "Circular lens with Smart Zoom: After 1.5s stillness, 50% larger and 3x more zoom."
+        },
+        "blockToggle": {
+            "clickToToggle": "Click to enable/disable",
+            "hint": "Click on a card to enable/disable the block. The gear icon opens block settings."
+        },
+        "modal": {
+            "settingsTitle": "Settings",
+            "openSettings": "Open settings",
+            "clickToOpenLicense": "Click to open license information"
         },
         "general": {
             "mainMenuItemGeneral": "Hero Slider - License Check"

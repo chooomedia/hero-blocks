@@ -16,11 +16,11 @@
 
 // WICHTIG: CSS-Variablen für Admin-Konfiguration
 // Werden über block.customFields gesetzt (z.B. linkColor, linkHoverColor, dropdownBackground, dropdownPadding)
-// MOCKUP: Gemäß horex-relaunch-header-megamenu-1/2/3.png
+// ✅ OPTIMIERT: Cleaneres Design mit weniger Backgrounds
 $hero-mega-menu-link-color: var(--hero-mega-menu-link-color, $sw-text-color);
 $hero-mega-menu-link-hover-color: var(--hero-mega-menu-link-hover-color, $sw-color-brand-primary);
-$hero-mega-menu-dropdown-background: var(--hero-mega-menu-dropdown-background, rgba(255, 255, 255, 0.9)); // MOCKUP: Fast weiß, leicht transparent
-$hero-mega-menu-dropdown-padding: var(--hero-mega-menu-dropdown-padding, 1rem); // MOCKUP: Großzügiges Padding
+$hero-mega-menu-dropdown-background: var(--hero-mega-menu-dropdown-background, rgba(255, 255, 255, 0.98)); // ✅ Noch transparenter für cleaner Look
+$hero-mega-menu-dropdown-padding: var(--hero-mega-menu-dropdown-padding, 1.5rem); // ✅ Mehr Padding für bessere Platznutzung
 
 // WICHTIG: Untermenü-Link-Farbe (is-level-1) - MOCKUP: Schwarz wie Hauptlinks
 $hero-mega-menu-submenu-link-color: #4a4a4a; // MOCKUP: Dunkelgrau für bessere Lesbarkeit
@@ -53,14 +53,23 @@ $hero-mega-menu-submenu-link-active-color: $sw-color-brand-primary; // MOCKUP: R
         margin: 0 auto; // WICHTIG: Zentriert innerhalb Container
         display: flex;
         align-items: center;
-        justify-content: center; // WICHTIG: Standardmäßig mittig, center unter Header
+        justify-content: center;
         
-        // WICHTIG: Breite orientiert sich am Logo (w-25 w-md-50 = 25% Desktop, 50% Tablet)
-        // WICHTIG: CSS Custom Property für Logo-Breite könnte hier genutzt werden
-        // WICHTIG: Aktuell: fit-content für natürliche Breite der Menu-Items
+        &-html-col {
+            font-size: 1.15rem;
+            color: $sw-text-color;
+            text-decoration: none;
+            padding: 0;
+            transition: color 0.3s ease;
+
+            &:hover,
+            &:focus,
+            &:focus-visible {
+                color: $sw-color-brand-primary;
+                text-decoration: none;
+            }
+        }
         
-        // WICHTIG: Navigation List - Horizontal Layout (Header-Style: Centered, Oswald Bold, Uppercase)
-        // WICHTIG: Sauber zentriert unter Header (Best Practices - nicht verrückt nach rechts)
         &__list {
             display: flex;
             flex-wrap: nowrap; // WICHTIG: Keine Wraps - alle Punkte in einer Linie
@@ -78,6 +87,21 @@ $hero-mega-menu-submenu-link-active-color: $sw-color-brand-primary; // MOCKUP: R
                 height: auto;
                 align-items: stretch;
                 justify-content: flex-start;
+            }
+        }
+
+        &__html {
+            font-size: 1.15rem;
+            color: $sw-text-color;
+            text-decoration: none;
+            padding: 0;
+            transition: color 0.3s ease;
+
+            &:hover,
+            &:focus,
+            &:focus-visible {
+                color: $sw-color-brand-primary;
+                text-decoration: none;
             }
         }
         
@@ -146,7 +170,7 @@ $hero-mega-menu-submenu-link-active-color: $sw-color-brand-primary; // MOCKUP: R
             text-decoration: none !important;
             font-family: 'Oswald', sans-serif;
             font-weight: 700 !important;
-            font-size: 0.95rem;
+            font-size: 1.15rem;
             text-transform: uppercase;
             line-height: $line-height-base;
             transition: all 0.3s ease;
@@ -245,12 +269,12 @@ $hero-mega-menu-submenu-link-active-color: $sw-color-brand-primary; // MOCKUP: R
                 &:hover,
                 &:focus,
                 &:focus-visible {
-                    background-color: rgba(0, 0, 0, 0.05);
+                    background-color: rgba(0, 0, 0, 0.02); // ✅ Dezenter Background
                 }
                 
                 &.active,
                 &[aria-current="page"] {
-                    background-color: rgba(0, 0, 0, 0.05);
+                    background-color: rgba(0, 0, 0, 0.02); // ✅ Dezenter Background
                     padding: 1rem;
                 }
             }
@@ -267,8 +291,8 @@ $hero-mega-menu-submenu-link-active-color: $sw-color-brand-primary; // MOCKUP: R
             right: 0;
             width: 100vw; // WICHTIG: Komplette Breite (Full-Width Viewport)
             background-color: $hero-mega-menu-dropdown-background;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
-            border-top: 1px solid $sw-border-color;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); // ✅ Dezenterer Shadow
+            border-top: 1px solid rgba(0, 0, 0, 0.06); // ✅ Dezenter Border
             opacity: 0;
             visibility: hidden;
             transform: translateY(-10px);
@@ -315,7 +339,7 @@ $hero-mega-menu-submenu-link-active-color: $sw-color-brand-primary; // MOCKUP: R
         &__dropdown-content {
             display: flex;
             flex-wrap: wrap;
-            gap: 2rem;
+            gap: 2.5rem; // ✅ Mehr Gap für bessere Platznutzung
             padding: $hero-mega-menu-dropdown-padding $grid-gutter-width;
             margin: 0 auto; // WICHTIG: Zentriert innerhalb Dropdown
             max-width: 100%; // WICHTIG: Bootstrap Container Max-Width respektieren
@@ -518,8 +542,8 @@ $hero-mega-menu-submenu-link-active-color: $sw-color-brand-primary; // MOCKUP: R
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            border-radius: 8px; // SMOOTH: Abgerundete Ecken
-            background-color: #f8f9fa; // SMOOTH: Subtiler Hintergrund
+            border-radius: 4px; // ✅ Weniger Radius für moderneren Look
+            background-color: transparent; // ✅ Kein Background für cleaner Look
             flex-shrink: 0; // WICHTIG: Verhindert Schrumpfen
             
             img {
@@ -578,7 +602,7 @@ $hero-mega-menu-submenu-link-active-color: $sw-color-brand-primary; // MOCKUP: R
                     
                     &:hover {
                         // WICHTIG: Kein padding-left mehr beim Hover
-                        color: var(--hero-mega-menu-link-hover-color, #c00);
+                        color: var(--sw-color-brand-primary, #d01720);
                     }
                 }
             }

@@ -64,6 +64,20 @@
     {% set isDecorative = sliderConfig.isDecorative.value ?: false %}
 
     <div class="cms-element-{{ element.type }}{% if displayMode == "standard" and verticalAlign %} has-vertical-alignment{% endif %}">
+        {# 
+        SHOPWARE 6.7 BEST PRACTICES: TinySlider Konfiguration
+        ======================================================
+        - loop: false → Verhindert unendliche Schleifen und DOM-Duplizierung
+        - rewind: true → Springt am Ende zum Anfang (ohne Loop-Probleme)
+        - preventScrollOnTouch: 'auto' → Verhindert Scroll-Konflikte auf Touch
+        - preventActionWhenRunning: true → Verhindert Mehrfach-Klicks während Animation
+        - freezable: true → Deaktiviert Slider wenn nur 1 Slide
+        
+        WICHTIG: Diese Konfiguration verhindert:
+        - Event-Konflikte mit anderen Plugins
+        - Doppelte Animationen bei schnellen Klicks
+        - Layout-Shifts durch DOM-Manipulation
+        #}
         {% set baseSliderOptions = {
             slider: {
                 controls: sliderConfig.navigationArrows.value in visibleNavValues,
@@ -78,12 +92,13 @@
                 ariaLive: sliderConfig.autoSlide.value ? false : true,
                 autoHeight: (displayMode == "standard") ? true : false,
                 loop: false,
-                rewind: true
+                rewind: true,
+                preventScrollOnTouch: 'auto',
+                preventActionWhenRunning: true,
+                freezable: true,
+                swipeAngle: 30
             }
         } %}
-        
-        {# Slider-Konfiguration gemäß Shopware Best Practices (wie Product Slider) #}
-        {# loop: false, rewind: true verhindert Loop-Bugs und doppelte Animationen #}
 
         {% block element_hero_slider_alignment %}
             {% if verticalAlign %}
@@ -327,15 +342,53 @@
                                                 {% if hasButton1 or hasButton2 %}
                                                     <div class="hero-slide-buttons">
                                                         {% if hasButton1 %}
-                                                            <a 
-                                                                href="{{ slideButton1Url }}" 
-                                                                class="btn btn-hero-primary"
-                                                                {% if slideButton1NewTab %}target="_blank" rel="noopener noreferrer"{% endif %}
-                                                                aria-label="{{ slideButton1Text }}"
-                                                                {% if button1BgColor %} style="background-color: {{ button1BgColor }};"{% endif %}
-                                                            >
-                                                                {{ slideButton1Text }}
-                                                            </a>
+                                                            {# AJAX Add-to-Cart: Prüfe ob URL Produkt-Detail-Seite ist #}
+                                                            {# URL-Format: .../detail/{productId} oder .../detail/{productId}# #}
+                                                            {% set isProductDetailUrl = slideButton1Url matches '/\\/detail\\/([a-f0-9]{32})/' or slideButton1Url matches '/detail\\/([a-f0-9]{32})/' %}
+                                                            {% set productIdFromUrl = null %}
+                                                            {% if isProductDetailUrl %}
+                                                                {# Extrahiere Produkt-ID aus URL (32-stellige hex ID) #}
+                                                                {% set urlParts = slideButton1Url|split('/detail/') %}
+                                                                {% if urlParts|length > 1 %}
+                                                                    {% set productIdPart = urlParts[1]|split('#')[0]|split('?')[0] %}
+                                                                    {% if productIdPart|length >= 32 %}
+                                                                        {% set productIdFromUrl = productIdPart[:32] %}
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                            {% endif %}
+                                                            
+                                                            {% if productIdFromUrl %}
+                                                                {# AJAX Add-to-Cart Form - öffnet Offcanvas Cart #}
+                                                                {# WICHTIG: Shopware 6.7+ verwendet SameSite Cookies - kein CSRF Token nötig #}
+                                                                <form action="{{ path('frontend.checkout.line-item.add') }}"
+                                                                      method="post"
+                                                                      class="hero-buy-widget"
+                                                                      data-add-to-cart="true"
+                                                                      data-url="{{ path('frontend.checkout.line-item.add') }}">
+                                                                    <input type="hidden" name="redirectTo" value="frontend.cart.offcanvas">
+                                                                    <input type="hidden" name="lineItems[{{ productIdFromUrl }}][id]" value="{{ productIdFromUrl }}">
+                                                                    <input type="hidden" name="lineItems[{{ productIdFromUrl }}][quantity]" value="1">
+                                                                    <input type="hidden" name="lineItems[{{ productIdFromUrl }}][type]" value="product">
+                                                                    <input type="hidden" name="lineItems[{{ productIdFromUrl }}][referencedId]" value="{{ productIdFromUrl }}">
+                                                                    <button type="submit" 
+                                                                            class="btn btn-hero-primary"
+                                                                            aria-label="{{ slideButton1Text }}"
+                                                                            {% if button1BgColor %} style="background-color: {{ button1BgColor }};"{% endif %}>
+                                                                        {{ slideButton1Text }}
+                                                                    </button>
+                                                                </form>
+                                                            {% else %}
+                                                                {# Standard Link (keine Produkt-URL erkannt) #}
+                                                                <a 
+                                                                    href="{{ slideButton1Url }}" 
+                                                                    class="btn btn-hero-primary"
+                                                                    {% if slideButton1NewTab %}target="_blank" rel="noopener noreferrer"{% endif %}
+                                                                    aria-label="{{ slideButton1Text }}"
+                                                                    {% if button1BgColor %} style="background-color: {{ button1BgColor }};"{% endif %}
+                                                                >
+                                                                    {{ slideButton1Text }}
+                                                                </a>
+                                                            {% endif %}
                                                         {% endif %}
                                                         
                                                         {% if hasButton2 %}

@@ -37,7 +37,7 @@ Shopware.Service("cmsService").registerCmsElement({
       source: "static",
       value: null,
     },
-    // Display Settings
+    // Display Settings - Basic Info
     showName: {
       source: "static",
       value: true,
@@ -62,10 +62,35 @@ Shopware.Service("cmsService").registerCmsElement({
       source: "static",
       value: true,
     },
+    // Display Settings - Custom Fields & Additional Data
+    showCustomFields: {
+      source: "static",
+      value: true,
+    },
+    showTagline: {
+      source: "static",
+      value: true,
+    },
+    showBadge: {
+      source: "static",
+      value: true,
+    },
+    showVariants: {
+      source: "static",
+      value: true,
+    },
+    showSpecs: {
+      source: "static",
+      value: true,
+    },
+    showGallery: {
+      source: "static",
+      value: false,
+    },
     // Layout Options
     layout: {
       source: "static",
-      value: "default", // 'default', 'compact', 'full'
+      value: "default", // 'default', 'compact', 'full', 'hero'
     },
   },
   // Admin Preview Enrichment (loads product data for preview)

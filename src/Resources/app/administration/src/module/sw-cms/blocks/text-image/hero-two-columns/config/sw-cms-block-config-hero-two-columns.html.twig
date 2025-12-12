@@ -1,16 +1,24 @@
 {% block sw_cms_block_config_hero_two_columns %}
 <div class="sw-cms-block-config-hero-two-columns" v-if="block && block.customFields">
     {# WICHTIG: Block-Config wird in block.customFields gespeichert (NICHT block.config!) #}
-    {# Layout Selection (Mobile - Fallback) #}
-    {% block sw_cms_block_config_hero_two_columns_layout %}
-    <mt-select
-        :model-value="block.customFields?.layout || 'image-left'"
-        :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.layout.label')"
-        :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.layout.helpText')"
-        :options="layoutOptions"
-        @update:model-value="onLayoutChange"
-    />
-    {% endblock %}
+    
+    {# ==================== LAYOUT SECTION ==================== #}
+    <div class="sw-cms-block-config-section">
+        <h4 class="sw-cms-block-config-section__title">
+            <sw-icon name="regular-objects-column" size="16px" />
+            Layout
+        </h4>
+        
+        {# Layout Selection (Mobile - Fallback) #}
+        {% block sw_cms_block_config_hero_two_columns_layout %}
+        <mt-select
+            :model-value="block.customFields?.layout || 'image-left'"
+            :label="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.layout.label')"
+            :help-text="$tc('sw-cms.blocks.heroBlocks.heroTwoColumns.config.layout.helpText')"
+            :options="layoutOptions"
+            @update:model-value="onLayoutChange"
+        />
+        {% endblock %}
 
     {# Layout Desktop Selection #}
     {% block sw_cms_block_config_hero_two_columns_layout_desktop %}
@@ -33,8 +41,19 @@
         @update:model-value="onLayoutTabletChange"
     />
     {% endblock %}
+    </div>
     
-    {# Background Mode Selection #}
+    {# Divider #}
+    <hr class="sw-cms-block-config-divider" />
+    
+    {# ==================== BACKGROUND SECTION ==================== #}
+    <div class="sw-cms-block-config-section">
+        <h4 class="sw-cms-block-config-section__title">
+            <sw-icon name="regular-image" size="16px" />
+            Hintergrund
+        </h4>
+        
+        {# Background Mode Selection #}
     {% block sw_cms_block_config_hero_two_columns_background_mode %}
     <mt-select
         :model-value="block.customFields?.backgroundMode || 'none'"
@@ -215,8 +234,19 @@
         @media-upload-finish="onAudioFileUpload"
     />
     {% endblock %}
+    </div>
     
-    {# Element Positionierung - Left Slot #}
+    {# Divider #}
+    <hr class="sw-cms-block-config-divider" />
+    
+    {# ==================== ELEMENT POSITIONING SECTION ==================== #}
+    <div class="sw-cms-block-config-section">
+        <h4 class="sw-cms-block-config-section__title">
+            <sw-icon name="regular-cursor-move" size="16px" />
+            Element-Positionierung
+        </h4>
+        
+        {# Element Positionierung - Left Slot #}
     {% block sw_cms_block_config_hero_two_columns_element_left %}
     <sw-container columns="repeat(auto-fit, minmax(250px, 1fr))" gap="0 30px">
         <mt-text-field
@@ -307,8 +337,19 @@
         @blur="onImageContainerRightCssChange"
     />
     {% endblock %}
+    </div>
     
-    {# Margin/Padding Fields #}
+    {# Divider #}
+    <hr class="sw-cms-block-config-divider" />
+    
+    {# ==================== SPACING SECTION ==================== #}
+    <div class="sw-cms-block-config-section">
+        <h4 class="sw-cms-block-config-section__title">
+            <sw-icon name="regular-expand" size="16px" />
+            Abstände
+        </h4>
+        
+        {# Margin/Padding Fields #}
     {% block sw_cms_block_config_hero_two_columns_spacing %}
     <mt-text-field
         :model-value="block.marginTop"
@@ -338,6 +379,7 @@
         @update:model-value="(value) => onMarginChange(value, 'marginRight')"
     />
     {% endblock %}
+    </div>
 </div>
 {% endblock %}
 

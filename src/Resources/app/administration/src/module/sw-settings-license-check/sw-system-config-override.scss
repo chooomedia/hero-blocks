@@ -2,31 +2,175 @@
 @import "~scss/mixins";
 
 // ============================================================================
-// Matt Interfaces CI Color System
-// Primary: #ff5432 (Orange-Red)
-// Shades for depth and hierarchy
+// Hero Blocks - Modern Glassmorphism Color System
+// Primary: Matt Interfaces Orange (CI-Farbe aus Logo)
+// Design: Transparent, elegant, minimal
 // ============================================================================
-$mi-primary: #ff5432;
-$mi-primary-dark: #e64a2a;
-$mi-primary-darker: #cc4226;
-$mi-primary-light: #ff7a5f;
-$mi-primary-lighter: #ffa18f;
-$mi-primary-glow: rgba(255, 84, 50, 0.25);
-$mi-primary-glow-soft: rgba(255, 84, 50, 0.12);
+$hb-primary: #FF5432; // Matt Interfaces Primary Orange (aus Logo)
+$hb-primary-dark: #E64A2B;
+$hb-primary-light: #FF7A5C;
+$hb-accent: #FF8F70; // Lighter orange accent
+$hb-success: #10b981;
+$hb-warning: #f59e0b;
+$hb-danger: #ef4444;
+
+// Glassmorphism effects
+$hb-glass-bg: rgba(255, 255, 255, 0.7);
+$hb-glass-border: rgba(255, 255, 255, 0.3);
+$hb-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+$hb-glass-blur: blur(10px);
+
+// Subtle glows with transparency (Orange-basiert)
+$hb-glow-primary: rgba(255, 84, 50, 0.15);
+$hb-glow-accent: rgba(255, 143, 112, 0.12);
+$hb-glow-success: rgba(16, 185, 129, 0.12);
+
+// Legacy aliases (für Kompatibilität)
+$mi-primary: $hb-primary;
+$mi-primary-dark: $hb-primary-dark;
+$mi-primary-darker: #CC3D24;
+$mi-primary-light: $hb-primary-light;
+$mi-primary-lighter: #FFB099;
+$mi-primary-glow: $hb-glow-primary;
+$mi-primary-glow-soft: rgba(255, 84, 50, 0.08);
+
+// Secondary brand color (für Tooltips und Kontrast-Elemente)
+$mi-secondary: #4a4a4a;
+$mi-secondary-light: #6a6a6a;
+$mi-secondary-dark: #2a2a2a;
 
 // ============================================================================
-// Hero Blocks Intro Card - Modern Meteor UI Design
+// Tooltip Styling - MI Brand Colors
 // ============================================================================
+
+// Override für sw-help-text Icon (Tooltip Trigger) - MI Orange/Grau
+.sw-field__help-text-icon,
+.sw-help-text__icon,
+.mt-help-text__icon {
+    .mt-icon {
+        color: $mi-primary !important;
+        opacity: 0.8;
+        transition: all 0.2s ease;
+        
+        &:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+    }
+}
+
+// Tooltip Content Styling
+.sw-popover,
+.mt-popover {
+    &.sw-help-text__tooltip,
+    &.mt-help-text__tooltip {
+        background: $mi-secondary !important;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(255, 84, 50, 0.1);
+        
+        // Arrow
+        &::before {
+            border-color: $mi-secondary transparent transparent transparent !important;
+        }
+        
+        .sw-help-text__tooltip-text,
+        .mt-help-text__tooltip-text {
+            color: #fff;
+            font-size: 12px;
+            line-height: 1.5;
+            padding: 12px 16px;
+        }
+    }
+}
+
+// Alternative Tooltip Icon mit Fragezeichen-Kreis (MI-Orange)
+.hero-blocks-tooltip-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    background: $mi-primary;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: help;
+    transition: all 0.2s ease;
+    
+    &::before {
+        content: '?';
+    }
+    
+    &:hover {
+        background: $mi-primary-dark;
+        transform: scale(1.1);
+    }
+}
+
+// ============================================================================
+// Hero Blocks Intro Card - Modern Glassmorphism Design
+// ============================================================================
+
+// ============================================================================
+// Global Layout - Konsistente Breiten für alle Hero Blocks Elemente
+// ============================================================================
+
+// Hero Blocks Config Page - Zentrale Breite definieren
+.sw-system-config {
+    // Sales Channel Switch - gleiche Breite wie Content
+    &__global-sales-channel-switch {
+        max-width: 960px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 16px;
+        
+        .sw-sales-channel-switch {
+            background: $hb-glass-bg;
+            backdrop-filter: $hb-glass-blur;
+            -webkit-backdrop-filter: $hb-glass-blur;
+            border: 1px solid $hb-glass-border;
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: $hb-glass-shadow;
+            
+            .sw-field__label label {
+                font-weight: 600;
+                color: var(--color-text-primary-default);
+            }
+            
+            .sw-entity-single-select__selection {
+                background: rgba(255, 255, 255, 0.8);
+                border-radius: 8px;
+                border: 1px solid rgba(0, 0, 0, 0.08);
+                transition: all 0.2s ease;
+                
+                &:hover, &:focus-within {
+                    border-color: $hb-primary;
+                    box-shadow: 0 0 0 3px rgba(255, 84, 50, 0.08);
+                }
+            }
+        }
+    }
+    
+    // Hidden config fields
+    &__hidden-config-fields {
+        display: none !important;
+    }
+}
 
 .sw-system-config__hero-blocks-intro {
     margin-bottom: 24px;
     margin-left: auto;
     margin-right: auto;
     max-width: 960px;
-    background: var(--color-background-primary-default);
-    border: 1px solid var(--color-border-primary-default);
-    border-radius: 8px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    background: $hb-glass-bg;
+    backdrop-filter: $hb-glass-blur;
+    -webkit-backdrop-filter: $hb-glass-blur;
+    border: 1px solid $hb-glass-border;
+    border-radius: 16px;
+    box-shadow: $hb-glass-shadow;
     overflow: hidden;
 }
 
@@ -36,8 +180,12 @@ $mi-primary-glow-soft: rgba(255, 84, 50, 0.12);
     align-items: flex-start;
     gap: 16px;
     padding: 24px 24px 20px;
-    border-bottom: 1px solid var(--color-border-primary-default);
-    background: linear-gradient(135deg, var(--color-background-primary-default) 0%, var(--color-background-secondary-default) 100%);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    background: linear-gradient(
+        135deg, 
+        rgba(255, 255, 255, 0.9) 0%, 
+        rgba(248, 250, 252, 0.8) 100%
+    );
 }
 
 .hero-blocks-intro__logo {
@@ -46,27 +194,36 @@ $mi-primary-glow-soft: rgba(255, 84, 50, 0.12);
     justify-content: center;
     width: 56px;
     height: 56px;
-    background: linear-gradient(135deg, $mi-primary 0%, $mi-primary-dark 100%);
+    background: linear-gradient(135deg, $hb-primary 0%, $hb-accent 100%);
     border-radius: 14px;
     flex-shrink: 0;
-    box-shadow: 0 4px 16px $mi-primary-glow;
+    box-shadow: 
+        0 4px 16px $hb-glow-primary,
+        0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 
     .mt-icon {
         color: #fff;
     }
 
-    // Rocket Icon SVG - Weiß auf CI-Hintergrund
+    // Rocket Icon SVG - Weiß auf Gradient-Hintergrund
     &-svg {
         width: 28px;
         height: 28px;
         color: #fff;
-        // Leichte Rotation für dynamisches Gefühl (Rakete nach oben rechts)
         transform: rotate(-45deg);
         transition: transform 0.3s ease;
     }
     
-    &:hover &-svg {
-        transform: rotate(-45deg) scale(1.1);
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 
+            0 8px 24px $hb-glow-primary,
+            0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+        
+        .hero-blocks-intro__logo-svg {
+            transform: rotate(-45deg) scale(1.1);
+        }
     }
 }
 
@@ -90,64 +247,6 @@ $mi-primary-glow-soft: rgba(255, 84, 50, 0.12);
     margin: 0;
 }
 
-// Footer Section - Matt Interfaces Branding
-.hero-blocks-intro__footer {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 12px 24px;
-    border-top: 1px solid var(--color-border-primary-default);
-    background: var(--color-background-secondary-default);
-}
-
-.hero-blocks-intro__branding {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 14px;
-    background: var(--color-background-primary-default);
-    border: 1px solid var(--color-border-primary-default);
-    border-radius: 8px;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    
-    &:hover {
-        border-color: $mi-primary;
-        box-shadow: 0 2px 12px $mi-primary-glow-soft;
-        transform: translateY(-1px);
-        
-        .hero-blocks-intro__branding-svg {
-            color: $mi-primary;
-        }
-        
-        .hero-blocks-intro__branding-text {
-            color: $mi-primary;
-        }
-    }
-    
-    &:active {
-        transform: translateY(0);
-    }
-}
-
-.hero-blocks-intro__branding-svg {
-    // 4:3 Aspect Ratio mit sauberem Spacing
-    width: 40px;
-    height: 30px;
-    color: var(--color-text-tertiary-default);
-    transition: color 0.3s ease;
-    flex-shrink: 0;
-}
-
-.hero-blocks-intro__branding-text {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--color-text-secondary-default);
-    letter-spacing: 0.02em;
-    transition: color 0.3s ease;
-    white-space: nowrap;
-}
 
 // Features Section
 .hero-blocks-intro__features {
@@ -189,33 +288,38 @@ $mi-primary-glow-soft: rgba(255, 84, 50, 0.12);
 
 // Feature Cards Grid
 .hero-blocks-intro__features-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-        
-        @media (max-width: 1200px) {
-            grid-template-columns: repeat(2, 1fr);
-        }
-        
-        @media (max-width: 768px) {
-            grid-template-columns: 1fr;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    
+    @media (max-width: 1200px) {
+        grid-template-columns: repeat(2, 1fr);
     }
-        }
+    
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+}
         
-// Feature Card - Modern minimal card design
+// Feature Card - Modern Glassmorphism Design
 .hero-blocks-feature-card {
-            display: flex;
+    display: flex;
     flex-direction: column;
-    padding: 16px;
-    background: var(--color-background-primary-default);
-    border: 1px solid var(--color-border-primary-default);
-    border-radius: 10px;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
+    padding: 18px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 14px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
     
     &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        transform: translateY(-3px);
+        box-shadow: 
+            0 12px 40px rgba(0, 0, 0, 0.08),
+            0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+        background: rgba(255, 255, 255, 0.95);
     }
     
     // Klickbare Cards - Cursor und visuelles Feedback
@@ -223,27 +327,34 @@ $mi-primary-glow-soft: rgba(255, 84, 50, 0.12);
         cursor: pointer;
         
         &:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+            transform: translateY(-4px);
+            box-shadow: 
+                0 16px 48px rgba(0, 0, 0, 0.1),
+                0 0 0 1px $hb-glow-primary inset;
             
-            // Highlight-Effekt für klickbare Cards - Matt Interfaces CI
+            // Subtle gradient glow effect (Orange-basiert, CI-Farbe)
             &::before {
                 content: '';
                 position: absolute;
-                inset: -2px;
-                border-radius: 12px;
-                background: linear-gradient(135deg, $mi-primary-glow-soft 0%, rgba(16, 185, 129, 0.1) 100%);
+                inset: -1px;
+                border-radius: 15px;
+                background: linear-gradient(
+                    135deg, 
+                    rgba(255, 84, 50, 0.1) 0%, 
+                    rgba(255, 143, 112, 0.08) 50%,
+                    rgba(16, 185, 129, 0.06) 100%
+                );
                 z-index: -1;
                 opacity: 1;
-                transition: opacity 0.2s ease;
+                transition: opacity 0.3s ease;
             }
         }
         
         &:active {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            }
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
         }
+    }
         
     // Toggle-Indicator (Checkbox-Icon)
     &__toggle-indicator {
@@ -267,72 +378,90 @@ $mi-primary-glow-soft: rgba(255, 84, 50, 0.12);
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 12px;
+        margin-bottom: 14px;
     }
     
     &__icon {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 36px;
-        height: 36px;
-        border-radius: 8px;
-        background: var(--color-background-secondary-default);
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, $hb-glow-primary 0%, $hb-glow-accent 100%);
+        transition: all 0.3s ease;
         
         .mt-icon {
-            color: $mi-primary;
+            color: $hb-primary;
+            transition: transform 0.3s ease;
         }
     }
     
-    // Custom Badge - Modern pill design
+    // Custom Badge - Modern frosted pill design (wie Lizenz-Chip)
     &__badge {
         display: inline-flex;
         align-items: center;
-        padding: 4px 10px;
-        border-radius: 12px;
+        gap: 6px; // Spacing zwischen Text und Icon
+        padding: 5px 12px;
+        border-radius: 20px;
         font-size: 10px;
         font-weight: 600;
-        letter-spacing: 0.02em;
+        letter-spacing: 0.03em;
         text-transform: uppercase;
         white-space: nowrap;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
         
         &--active {
             background: rgba(16, 185, 129, 0.12);
             color: #059669;
+            
+            // Check Icon OHNE eigenen Background (wie Lizenz-Chip)
+            .mt-icon {
+                color: #10b981;
+                flex-shrink: 0;
+            }
         }
         
         &--inactive {
-            background: rgba(107, 114, 128, 0.12);
+            background: rgba(107, 114, 128, 0.1);
             color: #6b7280;
-            }
+            box-shadow: 0 0 0 1px rgba(107, 114, 128, 0.15) inset;
+        }
             
         &--development {
-            background: rgba(59, 130, 246, 0.12);
-            color: #2563eb;
-            }
+            background: rgba(139, 92, 246, 0.12);
+            color: #7c3aed;
+            box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.2) inset;
+        }
     }
     
     &__title {
         font-size: 14px;
         font-weight: 600;
-                color: var(--color-text-primary-default);
+        color: var(--color-text-primary-default);
         margin: 0 0 6px 0;
+        letter-spacing: -0.01em;
     }
     
     &__desc {
         margin: 0;
         font-size: 12px;
-        line-height: 1.4;
+        line-height: 1.5;
         color: var(--color-text-secondary-default);
     }
     
-    // Active State - Green accent
+    // Active State - Elegant green accent with transparency
     &--active {
-        border-color: rgba(16, 185, 129, 0.2);
-        background: linear-gradient(135deg, rgba(16, 185, 129, 0.03) 0%, var(--color-background-primary-default) 100%);
+        border-color: rgba(16, 185, 129, 0.15);
+        background: linear-gradient(
+            135deg, 
+            rgba(16, 185, 129, 0.04) 0%, 
+            rgba(255, 255, 255, 0.9) 100%
+        );
         
         .hero-blocks-feature-card__icon {
-            background: rgba(16, 185, 129, 0.1);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.08) 100%);
             
             .mt-icon {
                 color: #10b981;
@@ -340,27 +469,33 @@ $mi-primary-glow-soft: rgba(255, 84, 50, 0.12);
         }
         
         .hero-blocks-feature-card__toggle-indicator {
-            background: rgba(16, 185, 129, 0.1);
+            background: rgba(16, 185, 129, 0.12);
             
             .mt-icon {
                 color: #10b981;
             }
-            }
+        }
             
-            &:hover {
-            border-color: rgba(16, 185, 129, 0.3);
-            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.12);
+        &:hover {
+            border-color: rgba(16, 185, 129, 0.25);
+            box-shadow: 
+                0 12px 40px rgba(16, 185, 129, 0.1),
+                0 0 0 1px rgba(16, 185, 129, 0.1) inset;
+                
+            .hero-blocks-feature-card__icon .mt-icon {
+                transform: scale(1.1);
+            }
         }
     }
     
-    // Inactive State - Muted
+    // Inactive State - Subtle muted appearance
     &--inactive {
-        background: var(--color-background-secondary-default);
-        border-color: var(--color-border-primary-default);
-        opacity: 0.85;
+        background: rgba(248, 250, 252, 0.9);
+        border-color: rgba(0, 0, 0, 0.04);
+        opacity: 0.9;
         
         .hero-blocks-feature-card__icon {
-            background: var(--color-background-primary-default);
+            background: rgba(107, 114, 128, 0.08);
             
             .mt-icon {
                 color: var(--color-icon-secondary-default);
@@ -368,11 +503,11 @@ $mi-primary-glow-soft: rgba(255, 84, 50, 0.12);
         }
         
         .hero-blocks-feature-card__title {
-                color: var(--color-text-secondary-default);
+            color: var(--color-text-secondary-default);
         }
         
         .hero-blocks-feature-card__toggle-indicator {
-            background: rgba(107, 114, 128, 0.1);
+            background: rgba(107, 114, 128, 0.08);
             
             .mt-icon {
                 color: #9ca3af;
@@ -381,28 +516,39 @@ $mi-primary-glow-soft: rgba(255, 84, 50, 0.12);
         
         &:hover {
             opacity: 1;
+            background: rgba(255, 255, 255, 0.95);
         }
     }
 
-    // Development State - Blue accent
+    // Development State - Purple accent with transparency
     &--development {
-        border-color: rgba(59, 130, 246, 0.2);
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.03) 0%, var(--color-background-primary-default) 100%);
+        border-color: rgba(139, 92, 246, 0.15);
+        background: linear-gradient(
+            135deg, 
+            rgba(139, 92, 246, 0.04) 0%, 
+            rgba(255, 255, 255, 0.9) 100%
+        );
         
         .hero-blocks-feature-card__icon {
-            background: rgba(59, 130, 246, 0.1);
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.12) 0%, rgba(139, 92, 246, 0.06) 100%);
             
             .mt-icon {
-                color: #3b82f6;
+                color: #8b5cf6;
             }
         }
         
         &:hover {
-            border-color: rgba(59, 130, 246, 0.3);
-            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.12);
+            border-color: rgba(139, 92, 246, 0.25);
+            box-shadow: 
+                0 12px 40px rgba(139, 92, 246, 0.1),
+                0 0 0 1px rgba(139, 92, 246, 0.1) inset;
+                
+            .hero-blocks-feature-card__icon .mt-icon {
+                transform: scale(1.1);
+            }
         }
     }
-    }
+}
     
     // ============================================================================
 // Animations Section - Collapsible
@@ -416,8 +562,8 @@ $mi-primary-glow-soft: rgba(255, 84, 50, 0.12);
     }
         
     &-header {
-        display: flex;
-        align-items: center;
+            display: flex;
+            align-items: center;
         justify-content: space-between;
         padding: 16px 24px;
         cursor: pointer;
@@ -470,151 +616,500 @@ $mi-primary-glow-soft: rgba(255, 84, 50, 0.12);
     }
         }
         
-// Animation Cards - Modern Design
+// Animation Cards - Modern Glassmorphism with Copy-to-Clipboard (More Transparent)
 .hero-blocks-animation-card {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-            padding: 16px;
-    background: linear-gradient(135deg, var(--color-background-secondary-default) 0%, var(--color-background-primary-default) 100%);
-    border: 1px solid var(--color-border-primary-default);
-    border-radius: 8px;
-            transition: all 0.2s ease;
-            
-            &:hover {
-        border-color: $mi-primary;
-        box-shadow: 0 2px 8px $mi-primary-glow-soft;
+    gap: 10px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 84, 50, 0.08);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    
+    // Copy indicator
+    &::after {
+        content: '';
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 20px;
+        height: 20px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='13' height='13' rx='2' ry='2'/%3E%3Cpath d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'/%3E%3C/svg%3E");
+        background-size: contain;
+        background-repeat: no-repeat;
+        opacity: 0;
+        transform: scale(0.8);
+        transition: all 0.2s ease;
+    }
+    
+    &:hover {
+        background: rgba(255, 255, 255, 0.75);
+        border-color: rgba(255, 84, 50, 0.2);
+        box-shadow: 
+            0 8px 32px rgba(255, 84, 50, 0.08),
+            0 0 0 1px rgba(255, 84, 50, 0.1) inset;
+        transform: translateY(-2px);
+        
+        &::after {
+            opacity: 0.6;
+            transform: scale(1);
         }
+    }
+    
+    &:active {
+        transform: translateY(0);
+        
+        &::after {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E");
+            opacity: 1;
+        }
+    }
+    
+    // Copied state (via JS class)
+    &.is--copied {
+        &::after {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E");
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
         
     &__class {
-            display: inline-block;
+        display: inline-block;
         width: fit-content;
-            padding: 4px 10px;
-            background: linear-gradient(135deg, $mi-primary-darker 0%, $mi-primary-dark 100%);
-            color: #fff;
-            border-radius: 4px;
-            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+        padding: 6px 12px;
+        background: linear-gradient(135deg, rgba(255, 84, 50, 0.9) 0%, rgba(255, 143, 112, 0.85) 100%);
+        color: #fff;
+        border-radius: 6px;
+        font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', monospace;
         font-size: 11px;
-            font-weight: 500;
-            letter-spacing: 0.02em;
-        }
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        box-shadow: 0 2px 8px rgba(255, 84, 50, 0.2);
+        transition: all 0.2s ease;
+    }
+    
+    &:hover &__class {
+        box-shadow: 0 4px 12px rgba(255, 84, 50, 0.25);
+    }
         
     &__desc {
         font-size: 12px;
-        line-height: 1.4;
-            color: var(--color-text-secondary-default);
-            margin: 0;
+        line-height: 1.5;
+        color: var(--color-text-secondary-default);
+        margin: 0;
+        padding-right: 24px; // Space for copy icon
     }
-        }
+}
         
-// Usage Steps - Modern numbered list
+// Usage Steps - Modern numbered list with gradient numbers
 .hero-blocks-intro__usage {
-    background: var(--color-background-secondary-default);
-    border: 1px solid var(--color-border-primary-default);
-    border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 16px;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 84, 50, 0.08);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 16px;
             
-            &-title {
+    &-title {
         display: flex;
         align-items: center;
         gap: 8px;
         font-size: 13px;
         font-weight: 600;
-                color: var(--color-text-primary-default);
-                margin: 0 0 12px 0;
+        color: var(--color-text-primary-default);
+        margin: 0 0 12px 0;
         
         .mt-icon {
-            color: var(--color-icon-secondary-default);
+            color: $mi-primary;
         }
-            }
+    }
             
-            &-steps {
+    &-steps {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 10px;
     }
     
     &-step {
         display: flex;
         align-items: flex-start;
         gap: 12px;
+        padding: 8px 12px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.3) 100%);
+        border-radius: 8px;
+        border: 1px solid rgba(255, 84, 50, 0.06);
+        transition: all 0.2s ease;
+        
+        &:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.5) 100%);
+            border-color: rgba(255, 84, 50, 0.12);
+            transform: translateX(4px);
+        }
         
         &-number {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 22px;
-            height: 22px;
-            background: $mi-primary;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, $mi-primary 0%, $mi-primary-light 100%);
             color: #fff;
             border-radius: 50%;
             font-size: 11px;
-            font-weight: 600;
+            font-weight: 700;
             flex-shrink: 0;
+            box-shadow: 0 2px 6px rgba(255, 84, 50, 0.25);
         }
         
         &-text {
             font-size: 12px;
             line-height: 1.5;
             color: var(--color-text-primary-default);
-            padding-top: 2px;
-                }
-            }
+            padding-top: 3px;
         }
+    }
+}
         
-// Count-Up Options - Nested Collapsible
+// Count-Up Options - Nested Collapsible with Copy-to-Clipboard (More Transparent)
 .hero-blocks-intro__countup-options {
-            margin-top: 12px;
+    margin-top: 12px;
     
     .sw-collapse__header {
         width: 100%;
     }
             
-            &-header {
-                display: flex;
-                align-items: center;
+    &-header {
+        display: flex;
+        align-items: center;
         gap: 8px;
-                padding: 10px 14px;
-        background: var(--color-background-secondary-default);
-        border: 1px solid var(--color-border-primary-default);
-        border-radius: 6px;
-                cursor: pointer;
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 84, 50, 0.1);
+        border-radius: 10px;
+        cursor: pointer;
         font-size: 12px;
         font-weight: 500;
-                color: var(--color-text-secondary-default);
-                transition: all 0.2s ease;
-                
-                &:hover {
-            background: var(--color-background-primary-default);
-            border-color: var(--color-border-secondary-default);
-                    color: var(--color-text-primary-default);
-                }
+        color: var(--color-text-secondary-default);
+        transition: all 0.3s ease;
+        
+        &:hover {
+            background: rgba(255, 255, 255, 0.75);
+            border-color: rgba(255, 84, 50, 0.2);
+            color: var(--color-text-primary-default);
+            box-shadow: 0 4px 16px rgba(255, 84, 50, 0.08);
+        }
+        
+        .mt-icon:first-child {
+            color: $hb-primary;
+        }
         
         .mt-icon:last-child {
             margin-left: auto;
+            opacity: 0.5;
         }
-            }
+    }
             
-            &-list {
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
+    &-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 8px;
         margin-top: 12px;
     }
     
     &-option {
-        padding: 10px 12px;
-        background: var(--color-background-secondary-default);
-        border: 1px solid var(--color-border-primary-default);
-                    border-radius: 4px;
-                    
-                    code {
-                        font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
-            font-size: 11px;
-                        color: var(--color-text-primary-default);
-                        word-break: break-word;
+        padding: 10px 14px;
+        background: rgba(255, 255, 255, 0.45);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 84, 50, 0.06);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+        
+        // Copy indicator
+        &::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='9' width='13' height='13' rx='2' ry='2'/%3E%3Cpath d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0;
+            transition: opacity 0.2s ease;
         }
+        
+        &:hover {
+            background: rgba(255, 255, 255, 0.7);
+            border-color: rgba(255, 84, 50, 0.15);
+            box-shadow: 0 2px 8px rgba(255, 84, 50, 0.06);
+            
+            &::after {
+                opacity: 0.5;
+            }
+        }
+        
+        &:active,
+        &.is--copied {
+            &::after {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E");
+                opacity: 1;
+            }
+        }
+                    
+        code {
+            font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', monospace;
+            font-size: 11px;
+            color: $hb-primary;
+            word-break: break-word;
+            padding-right: 20px;
+        }
+        
+        &-desc {
+            display: block;
+            margin-top: 4px;
+            font-size: 10px;
+            color: var(--color-text-secondary-default);
+            padding-right: 20px;
+        }
+    }
+}
+
+// ============================================================================
+// Shortcode Generator - Modern Interactive Builder
+// ============================================================================
+
+.hero-blocks-shortcode-generator {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(248, 250, 252, 0.6) 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 84, 50, 0.1);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 16px;
+    
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+        
+        &-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            
+            .mt-icon {
+                color: $hb-primary;
+            }
+        }
+    }
+    
+    &__title {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--color-text-primary-default);
+    }
+    
+    &__badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        background: linear-gradient(135deg, $hb-primary 0%, $hb-accent 100%);
+        color: #fff;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        box-shadow: 0 2px 8px rgba(255, 84, 50, 0.25);
+    }
+    
+    &__options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+    
+    &__preview {
+        background: rgba(0, 0, 0, 0.04);
+        border-radius: 10px;
+        padding: 14px;
+        margin-bottom: 14px;
+        
+        &-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        &-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--color-text-secondary-default);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            
+            .mt-icon {
+                color: var(--color-text-secondary-default);
+            }
+        }
+    }
+    
+    &__copy-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background: linear-gradient(135deg, $hb-primary 0%, $hb-accent 100%);
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 6px rgba(255, 84, 50, 0.2);
+        
+        &:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(255, 84, 50, 0.25);
+        }
+        
+        &:active {
+            transform: translateY(0);
+        }
+        
+        &.is--copied {
+            background: linear-gradient(135deg, $hb-success 0%, darken($hb-success, 5%) 100%);
+            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+        }
+    }
+    
+    &__code {
+        background: rgba(30, 30, 38, 0.95);
+        border-radius: 8px;
+        padding: 14px 16px;
+        margin: 0;
+        overflow-x: auto;
+        
+        code {
+            font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #e5e5e5;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+    }
+    
+    &__live-preview {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+        background: linear-gradient(135deg, rgba(255, 84, 50, 0.06) 0%, rgba(255, 143, 112, 0.04) 100%);
+        border: 1px solid rgba(255, 84, 50, 0.1);
+        border-radius: 10px;
+        
+        &-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--color-text-secondary-default);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            
+            .mt-icon {
+                color: $hb-primary;
+            }
+        }
+        
+        &-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-text-primary-default);
+        }
+        
+        &-prefix,
+        &-suffix {
+            color: $hb-primary;
+        }
+        
+        &-number {
+            color: var(--color-text-primary-default);
+        }
+    }
+}
+
+// Shortcode Option Input
+.hero-blocks-shortcode-option {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    
+    &__label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--color-text-secondary-default);
+        
+        .mt-icon {
+            color: $hb-primary;
+            opacity: 0.7;
+        }
+    }
+    
+    &__required {
+        color: $hb-danger;
+    }
+    
+    &__input {
+        padding: 8px 12px;
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        border-radius: 8px;
+        font-size: 13px;
+        color: var(--color-text-primary-default);
+        transition: all 0.2s ease;
+        
+        &:focus {
+            outline: none;
+            border-color: $hb-primary;
+            box-shadow: 0 0 0 3px rgba(255, 84, 50, 0.1);
+        }
+        
+        &::placeholder {
+            color: var(--color-text-tertiary-default);
+        }
+    }
+    
+    &__hint {
+        font-size: 10px;
+        color: var(--color-text-tertiary-default);
     }
 }
 
@@ -1244,7 +1739,7 @@ $mi-primary-glow-soft: rgba(255, 84, 50, 0.12);
 // ============================================================================
 
 .hero-blocks-feature-card {
-    // Settings Button - erscheint bei Hover
+    // Settings Button - erscheint bei Hover (IMMER über Long-Press Overlay!)
     &__settings-btn {
         position: absolute;
         top: 8px;
@@ -1263,7 +1758,7 @@ $mi-primary-glow-soft: rgba(255, 84, 50, 0.12);
         opacity: 0;
         transform: scale(0.8);
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 10;
+        z-index: 100; // Über Long-Press Overlay (z-index: 20)
         
         .mt-icon {
             color: $mi-primary;
@@ -1294,6 +1789,80 @@ $mi-primary-glow-soft: rgba(255, 84, 50, 0.12);
     // Toggle-Indicator Position anpassen wenn Settings-Button sichtbar
     &--has-settings:hover &__toggle-indicator {
         top: 44px; // Verschiebe nach unten
+    }
+    
+    // Long-Press Overlay für 3-Sekunden-Deaktivierung
+    &__long-press-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        border-radius: 14px;
+        z-index: 20;
+        overflow: hidden;
+    }
+    
+    &__long-press-progress {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        background: linear-gradient(
+            90deg,
+            rgba(255, 84, 50, 0.3) 0%,
+            rgba(255, 84, 50, 0.6) 50%,
+            rgba(255, 84, 50, 0.8) 100%
+        );
+        transition: width 0.05s linear;
+    }
+    
+    &__long-press-text {
+        position: relative;
+        z-index: 1;
+        font-size: 12px;
+        font-weight: 600;
+        color: #fff;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+    
+    // Long-Press State Animation
+    &--long-pressing {
+        transform: scale(0.98) !important;
+        box-shadow: 0 0 0 3px $mi-primary inset !important;
+        
+        &::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 16px;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0deg,
+                $mi-primary calc(var(--progress, 0) * 3.6deg),
+                transparent calc(var(--progress, 0) * 3.6deg)
+            );
+            z-index: -1;
+            animation: longPressPulse 0.5s ease-in-out infinite;
+        }
+    }
+}
+
+@keyframes longPressPulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
     }
 }
 
@@ -1422,7 +1991,7 @@ $mi-primary-glow-soft: rgba(255, 84, 50, 0.12);
                 margin-bottom: 12px;
                 counter-increment: step-counter;
                 
-                    &::before {
+                &::before {
                     content: counter(step-counter);
                     position: absolute;
                     left: 12px;
@@ -1483,12 +2052,188 @@ $mi-primary-glow-soft: rgba(255, 84, 50, 0.12);
     }
     
     &__content {
+        // Desktop: 2-Spalten-Layout für Formularfelder
+        @media (min-width: 768px) {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px 16px;
+        }
+        
         .sw-inherit-wrapper {
-            margin-bottom: 16px;
+            margin-bottom: 12px;
+            
+            @media (min-width: 768px) {
+                margin-bottom: 0;
+            }
             
             &:last-child {
                 margin-bottom: 0;
             }
+            
+            // Switch-Felder: Label sichtbar machen + kompakter
+            .mt-switch {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 14px;
+                background: rgba(0, 0, 0, 0.02);
+                border: 1px solid var(--color-border-primary-default);
+                border-radius: 8px;
+                transition: all 0.2s ease;
+                
+                &:hover {
+                    background: rgba(0, 0, 0, 0.04);
+                    border-color: $mi-primary;
+                }
+                
+                .mt-switch__block {
+                    padding: 0;
+                    order: 1;
+                    flex-shrink: 0;
+                }
+                
+                // Label nach dem Switch anzeigen (via ::after mit config label)
+                .mt-switch__label {
+                    order: 2;
+                    flex: 1;
+                    margin: 0;
+                    font-size: 13px;
+                    font-weight: 500;
+                    color: var(--color-text-primary-default);
+                    cursor: pointer;
+                }
+            }
+            
+            // Select-Felder: kompakter mit Label
+            .mt-select {
+                .mt-field__label label {
+                    font-size: 12px;
+                    font-weight: 600;
+                    color: var(--color-text-secondary-default);
+                    margin-bottom: 6px;
+                }
+                
+                .mt-select__selection {
+                    min-height: 36px;
+                }
+            }
+            
+            // Text-Felder: kompakter
+            .mt-text-field input {
+                padding: 8px 12px;
+            }
+            
+            // Number-Felder: kompakter
+            .mt-number-field {
+                .mt-field__label label {
+                    font-size: 12px;
+                    font-weight: 600;
+                    color: var(--color-text-secondary-default);
+                }
+            }
+        }
+        
+        // Volle Breite für bestimmte Felder
+        .sw-system-config--field-hero-blocks-config-booking-form-subject,
+        .sw-system-config--field-hero-blocks-config-booking-form-recipient-email {
+            @media (min-width: 768px) {
+                grid-column: span 2;
+            }
+        }
+        
+        // ==================== FULL WIDTH SWITCH-FELDER (MODAL SETTINGS) ====================
+        // WICHTIG: Jedes Switch-Field auf kompletter Breite des Modals anzeigen
+        // Keine 2-Spalten-Layout für Switch-Fields in Modals
+        .hero-blocks-switch-field {
+            // CRITICAL: Full Width - Grid Column Span 2 (überschreibt 2-Spalten-Layout)
+            grid-column: span 2 !important;
+            margin-bottom: 12px;
+            
+            .sw-inherit-wrapper {
+                margin-bottom: 0;
+            }
+            
+            &__inner {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px 16px;
+                background: rgba(0, 0, 0, 0.02);
+                border: 1px solid var(--color-border-primary-default);
+                border-radius: 8px;
+                transition: all 0.2s ease;
+                cursor: pointer;
+                width: 100%; // FULL WIDTH
+                
+                &:hover {
+                    background: rgba(0, 0, 0, 0.04);
+                    border-color: $mi-primary;
+                }
+            }
+            
+            // Switch-Element kompakter
+            .mt-switch {
+                flex-shrink: 0;
+                
+                .mt-switch__block {
+                    padding: 0;
+                    margin: 0;
+                    border: none;
+                    background: transparent;
+                    
+                    &--bordered {
+                        border: none;
+                        padding: 0;
+                    }
+                }
+            }
+            
+            &__label {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+            }
+            
+            &__label-text {
+                font-size: 13px;
+                font-weight: 600;
+                color: var(--color-text-primary-default);
+                line-height: 1.3;
+            }
+            
+            &__label-hint {
+                font-size: 11px;
+                font-weight: 400;
+                color: var(--color-text-secondary-default);
+                line-height: 1.4;
+                opacity: 0.8;
+            }
+            
+            // Disabled State
+            &.is--disabled {
+                .hero-blocks-switch-field__inner {
+                    opacity: 0.6;
+                    cursor: not-allowed;
+                    
+                    &:hover {
+                        background: rgba(0, 0, 0, 0.02);
+                        border-color: var(--color-border-primary-default);
+                    }
+                }
+            }
+        }
+        
+        // ==================== SYSTEM CONFIG FIELDS - FULL WIDTH FIX ====================
+        // SHOPWARE BEST PRACTICE: System-Config-Fields auf voller Breite im Modal
+        // Verhindert dass Shopware's 2-Spalten-Layout Switch-Fields umbrechen lässt
+        
+        // Booking Form Fields - Full Width
+        .sw-system-config--field-hero-blocks-config-booking-form-send-confirmation,
+        .sw-system-config--field-hero-blocks-config-booking-form-google-calendar,
+        .sw-system-config--field-hero-blocks-config-booking-form-webhook-enabled {
+            grid-column: span 2 !important;
+            width: 100% !important;
         }
     }
     
@@ -1496,14 +2241,89 @@ $mi-primary-glow-soft: rgba(255, 84, 50, 0.12);
     &__actions {
         display: flex;
         gap: 12px;
-        padding-top: 16px;
-        margin-top: 16px;
+        padding-top: 12px;
+        margin-top: 12px;
         border-top: 1px solid var(--color-border-primary-default);
         
         .mt-button {
             .mt-icon {
                 margin-right: 8px;
             }
+        }
+    }
+    
+    // Section Title für Booking Form und andere Modals
+    &__section {
+        padding-top: 12px;
+        margin-top: 12px;
+        border-top: 1px solid var(--color-border-primary-default);
+        
+        @media (min-width: 768px) {
+            grid-column: span 2;
+        }
+    }
+    
+    &__section-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 12px 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--color-text-primary-default);
+        
+        .mt-icon {
+            color: $mi-primary;
+        }
+    }
+    
+    // Coming Soon Items für Booking Form
+    &__coming-soon {
+        padding: 12px;
+        margin-top: 16px;
+        background: linear-gradient(135deg, rgba(139, 92, 246, 0.04) 0%, rgba(139, 92, 246, 0.01) 100%);
+        border: 1px solid rgba(139, 92, 246, 0.15);
+        border-radius: 10px;
+        
+        @media (min-width: 768px) {
+            grid-column: span 2;
+        }
+        
+        .hero-blocks-settings-modal__section-title {
+            color: #7c3aed;
+            margin-bottom: 10px;
+            
+            .mt-icon {
+                color: #7c3aed;
+            }
+        }
+    }
+    
+    &__coming-soon-items {
+        display: grid;
+        gap: 8px;
+        
+        @media (min-width: 768px) {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+    
+    &__coming-soon-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 8px 10px;
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px solid rgba(139, 92, 246, 0.08);
+        border-radius: 6px;
+        font-size: 11px;
+        line-height: 1.4;
+        color: var(--color-text-secondary-default);
+        
+        .mt-icon {
+            color: #8b5cf6;
+            flex-shrink: 0;
+            margin-top: 1px;
         }
     }
 }
@@ -1860,8 +2680,8 @@ $mi-primary-glow-soft: rgba(255, 84, 50, 0.12);
         letter-spacing: 0.03em;
 
         &--update {
-            background: rgba(59, 130, 246, 0.1);
-            color: #3b82f6;
+            background: rgba(255, 84, 50, 0.1);
+            color: $mi-primary;
         }
 
         &--uptodate {

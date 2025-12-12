@@ -61,6 +61,22 @@ Shopware.Component.override("sw-system-config", {
       isLicenseCheckCooldown: false,
       licenseCheckCooldownSeconds: 0,
       licenseCheckCooldownTimer: null,
+      // Shortcode Generator für Counter-Animation
+      shortcodeOptions: {
+        target: "163",
+        prefix: "",
+        suffix: " HP",
+        duration: 2000,
+        decimals: 0,
+      },
+      shortcodeCopied: false,
+      // Long-Press für Feature-Card Deaktivierung (1.5 Sekunden)
+      longPressTimer: null,
+      longPressProgress: 0,
+      longPressCardKey: null,
+      longPressStartTime: null,
+      longPressDuration: 1500, // 1.5 Sekunden (verkürzt für bessere UX)
+      longPressAnimationFrame: null,
     };
   },
 
@@ -179,6 +195,33 @@ Shopware.Component.override("sw-system-config", {
     },
 
     /**
+     * Generiert den Shortcode für Counter-Animation basierend auf Optionen
+     * Baut einen HTML-Element-String mit data-Attributen
+     */
+    generatedShortcode() {
+      const opts = this.shortcodeOptions;
+      const target = opts.target || "0";
+      let attrs = [`data-count-target="${target}"`];
+
+      if (opts.prefix) {
+        attrs.push(`data-count-prefix="${opts.prefix}"`);
+      }
+      if (opts.suffix) {
+        attrs.push(`data-count-suffix="${opts.suffix}"`);
+      }
+      if (opts.duration && opts.duration !== 2000) {
+        attrs.push(`data-count-duration="${opts.duration}"`);
+      }
+      if (opts.decimals && opts.decimals > 0) {
+        attrs.push(`data-count-decimals="${opts.decimals}"`);
+      }
+
+      return `<span class="count-up-animation" ${attrs.join(" ")}>${
+        opts.prefix || ""
+      }0${opts.suffix || ""}</span>`;
+    },
+
+    /**
      * Prüft ob Block aktiv ist (nicht disabled)
      */
     hasActiveBlocks() {
@@ -265,15 +308,16 @@ Shopware.Component.override("sw-system-config", {
      * Jede Card hat: key, title, descriptionKey, icon, isComingSoon, isInDevelopment, hasSettings, settingsCardIndex
      * Icons: Shopware Meteor Icon Kit (regular-* und solid-*)
      *
-     * config.xml Card-Indizes:
+     * config.xml Card-Indizes (AKTUELL):
      * - Index 0: Block-Einstellungen (hidden - contains toggles)
      * - Index 1: Header + Mega Menu Einstellungen
      * - Index 2: FAQ Block Einstellungen
      * - Index 3: Timeline Block Einstellungen
-     * - Index 4: Update-Informationen
-     * - Index 5: Lizenz-Informationen
-     * - Index 6: Instagram Feed Einstellungen
-     * - Index 7: Produktdetail Einstellungen
+     * - Index 4: Skeleton Loader & Performance
+     * - Index 5: Update-Informationen
+     * - Index 6: Lizenz-Informationen
+     * - Index 7: Instagram Feed Einstellungen
+     * - Index 8: Produktdetail Einstellungen
      */
     featureCards() {
       return [
@@ -344,8 +388,8 @@ Shopware.Component.override("sw-system-config", {
           icon: "regular-calendar",
           isComingSoon: false,
           isInDevelopment: false,
-          hasSettings: false,
-          settingsCardIndex: null,
+          hasSettings: true,
+          settingsCardIndex: 9, // Card 9: Booking Form Einstellungen
         },
         {
           key: "enableHeroTimeline",
@@ -375,7 +419,7 @@ Shopware.Component.override("sw-system-config", {
           isComingSoon: false,
           isInDevelopment: false,
           hasSettings: true,
-          settingsCardIndex: 6, // Card 6: Instagram Feed Einstellungen
+          settingsCardIndex: 7, // Card 7: Instagram Feed Einstellungen
         },
         {
           key: "enableShoppingExperience",
@@ -385,7 +429,17 @@ Shopware.Component.override("sw-system-config", {
           isComingSoon: false,
           isInDevelopment: false,
           hasSettings: true,
-          settingsCardIndex: 7, // Card 7: Produktdetail Einstellungen
+          settingsCardIndex: 8, // Card 8: Produktdetail Einstellungen
+        },
+        {
+          key: "enableSkeletonLoader",
+          title: "Skeleton Loader",
+          descriptionKey: "skeletonLoaderShort",
+          icon: "regular-sync",
+          isComingSoon: false,
+          isInDevelopment: false,
+          hasSettings: true,
+          settingsCardIndex: 4, // Card 4: Skeleton Loader & Performance
         },
       ];
     },
@@ -423,6 +477,64 @@ Shopware.Component.override("sw-system-config", {
     collapseItem() {
       // Toggle collapse state for license card
       // This is handled by sw-collapse component
+    },
+
+    /**
+     * CRITICAL: Element Label aus Snippets laden (Mehrsprachigkeit!)
+     * Wie bei Feature-Cards: Übersetzungen aus hero-blocks.config.*
+     *
+     * @param {Object} element - Config-Element aus config.xml
+     * @returns {String} - Übersetzte Label oder Fallback
+     */
+    getElementLabel(element) {
+      if (!element || !element.name) {
+        return "";
+      }
+
+      // Extrahiere Config-Key aus vollständigem Namen
+      // z.B. "HeroBlocks.config.bookingFormSendConfirmation" → "bookingFormSendConfirmation"
+      const configKey = element.name.replace(/^HeroBlocks\.config\./, "");
+
+      // Snippet-Key: hero-blocks.config.bookingFormSendConfirmation
+      const snippetKey = `hero-blocks.config.${configKey}`;
+
+      // Versuche Snippet zu laden
+      const translation = this.$tc(snippetKey);
+
+      // Fallback: Wenn Snippet == Key (nicht gefunden), verwende element.label oder configKey
+      if (translation === snippetKey) {
+        return element.label || configKey;
+      }
+
+      return translation;
+    },
+
+    /**
+     * CRITICAL: Element HelpText aus Snippets laden (Mehrsprachigkeit!)
+     *
+     * @param {Object} element - Config-Element aus config.xml
+     * @returns {String} - Übersetzter HelpText oder Fallback
+     */
+    getElementHelpText(element) {
+      if (!element || !element.name || !element.helpText) {
+        return "";
+      }
+
+      // Extrahiere Config-Key
+      const configKey = element.name.replace(/^HeroBlocks\.config\./, "");
+
+      // Snippet-Key: hero-blocks.config.bookingFormSendConfirmation.helpText
+      const snippetKey = `hero-blocks.config.${configKey}.helpText`;
+
+      // Versuche Snippet zu laden
+      const translation = this.$tc(snippetKey);
+
+      // Fallback: Wenn Snippet == Key (nicht gefunden), verwende element.helpText
+      if (translation === snippetKey) {
+        return element.helpText;
+      }
+
+      return translation;
     },
 
     isHeroBlocksConfig() {
@@ -893,7 +1005,9 @@ Shopware.Component.override("sw-system-config", {
 
     /**
      * Handler für Feature-Card Click
-     * Toggled den Block wenn klickbar
+     * - Kurzer Klick auf inaktive Card → Aktiviert und öffnet Settings
+     * - Kurzer Klick auf aktive Card → Öffnet Settings-Modal
+     * - 3s Gedrückt-Halten auf aktive Card → Deaktiviert
      */
     onFeatureCardClick(card) {
       if (!this.isFeatureCardClickable(card)) {
@@ -923,7 +1037,100 @@ Shopware.Component.override("sw-system-config", {
         }
         return;
       }
-      this.toggleBlock(card.key);
+
+      const isActive = this.isBlockEnabled(card.key);
+
+      if (isActive) {
+        // Aktive Card: Öffne Settings-Modal (kein Toggle bei kurzem Klick)
+        if (card.hasSettings) {
+          this.openBlockSettingsModal(card);
+        }
+      } else {
+        // Inaktive Card: Aktivieren und Settings öffnen
+        this.toggleBlock(card.key);
+        if (card.hasSettings) {
+          // Kurze Verzögerung damit Toggle gespeichert wird
+          setTimeout(() => {
+            this.openBlockSettingsModal(card);
+          }, 300);
+        }
+      }
+    },
+
+    /**
+     * Long-Press Handler: Start (mousedown/touchstart)
+     * Startet den 3-Sekunden-Timer zum Deaktivieren
+     */
+    onFeatureCardLongPressStart(card, event) {
+      if (!this.isFeatureCardClickable(card)) return;
+
+      const isActive = this.isBlockEnabled(card.key);
+      if (!isActive) return; // Long-Press nur für aktive Cards
+
+      event.preventDefault();
+
+      this.longPressCardKey = card.key;
+      this.longPressStartTime = Date.now();
+      this.longPressProgress = 0;
+
+      // Animation-Frame für smooth Progress
+      const updateProgress = () => {
+        if (!this.longPressStartTime) return;
+
+        const elapsed = Date.now() - this.longPressStartTime;
+        this.longPressProgress = Math.min(
+          (elapsed / this.longPressDuration) * 100,
+          100
+        );
+
+        if (this.longPressProgress >= 100) {
+          // 3 Sekunden erreicht → Deaktivieren
+          this.cancelLongPress();
+          this.toggleBlock(card.key);
+          this.createNotificationSuccess({
+            title: this.$tc(
+              "sw-settings-license-check.blockToggle.deactivated"
+            ),
+            message: this.$tc(
+              "sw-settings-license-check.blockToggle.deactivatedMessage",
+              { block: card.title }
+            ),
+            duration: 3000,
+          });
+        } else {
+          this.longPressAnimationFrame = requestAnimationFrame(updateProgress);
+        }
+      };
+
+      this.longPressAnimationFrame = requestAnimationFrame(updateProgress);
+    },
+
+    /**
+     * Long-Press Handler: End (mouseup/touchend/mouseleave)
+     * Bricht den Long-Press ab
+     */
+    onFeatureCardLongPressEnd() {
+      this.cancelLongPress();
+    },
+
+    /**
+     * Bricht den Long-Press ab und resettet den State
+     */
+    cancelLongPress() {
+      if (this.longPressAnimationFrame) {
+        cancelAnimationFrame(this.longPressAnimationFrame);
+        this.longPressAnimationFrame = null;
+      }
+      this.longPressCardKey = null;
+      this.longPressStartTime = null;
+      this.longPressProgress = 0;
+    },
+
+    /**
+     * Prüft ob gerade ein Long-Press auf einer Card läuft
+     */
+    isLongPressing(cardKey) {
+      return this.longPressCardKey === cardKey && this.longPressProgress > 0;
     },
 
     /**
@@ -1539,6 +1746,86 @@ Shopware.Component.override("sw-system-config", {
     },
 
     /**
+     * Sendet eine Test-Buchungs-E-Mail (Booking Form)
+     * Verwendet die konfigurierten E-Mail-Einstellungen aus dem Booking Form Modal
+     */
+    async sendBookingFormTestEmail() {
+      this.isEmailTestSending = true;
+
+      try {
+        const httpClient = this.systemConfigApiService.httpClient;
+        if (!httpClient) {
+          throw new Error("HTTP Client not available");
+        }
+
+        // Hole konfigurierte E-Mail-Adresse aus den Settings
+        const recipientEmail =
+          this.safeConfigData["HeroBlocks.config.bookingFormRecipientEmail"] ||
+          this.safeConfigData["bookingFormRecipientEmail"] ||
+          "";
+
+        const subject =
+          this.safeConfigData["HeroBlocks.config.bookingFormSubject"] ||
+          this.safeConfigData["bookingFormSubject"] ||
+          "Test Buchungsanfrage";
+
+        // Sende Test-Email über Shopware Mail Service
+        const response = await httpClient.post(
+          "/_action/hero-blocks/booking-test-email",
+          {
+            recipientEmail: recipientEmail,
+            subject: subject,
+            testData: {
+              model: "Test Modell XYZ",
+              name: "Max Mustermann",
+              email: "test@example.com",
+              phone: "+49 123 456789",
+              preferredDate: new Date().toISOString().split("T")[0],
+              message: "Dies ist eine Test-Buchungsanfrage.",
+            },
+          },
+          {
+            headers: this.systemConfigApiService.getBasicHeaders(),
+          }
+        );
+
+        if (response.data?.success) {
+          this.createNotificationSuccess({
+            title: this.$tc(
+              "sw-settings-license-check.bookingForm.testEmailSuccess"
+            ),
+            message:
+              response.data.message ||
+              this.$tc(
+                "sw-settings-license-check.bookingForm.testEmailSuccessMessage"
+              ),
+          });
+        } else {
+          throw new Error(
+            response.data?.errors?.[0]?.detail ||
+              this.$tc("sw-settings-license-check.bookingForm.testEmailFailed")
+          );
+        }
+      } catch (error) {
+        debugError("❌ Failed to send booking test email:", error);
+
+        this.createNotificationError({
+          title: this.$tc(
+            "sw-settings-license-check.bookingForm.testEmailFailed"
+          ),
+          message:
+            error.response?.data?.errors?.[0]?.detail ||
+            error.message ||
+            this.$tc(
+              "sw-settings-license-check.bookingForm.testEmailFailedMessage"
+            ),
+        });
+      } finally {
+        this.isEmailTestSending = false;
+      }
+    },
+
+    /**
      * Validiert Instagram API Credentials
      * WICHTIG: Ähnlich wie checkHeroBlocksLicense, aber für Instagram Token
      */
@@ -1928,6 +2215,126 @@ Shopware.Component.override("sw-system-config", {
           success: false,
           message: `JavaScript-Plugin-Check fehlgeschlagen: ${error.message}`,
         };
+      }
+    },
+
+    /**
+     * Copy-to-Clipboard Funktionalität (Shopware Best Practice)
+     * Verwendet navigator.clipboard API (modern, sicher)
+     * Fallback für ältere Browser: document.execCommand
+     *
+     * @param {string} text - Der zu kopierende Text
+     * @param {HTMLElement} element - Das angeklickte Element (für visuelles Feedback)
+     */
+    async copyToClipboard(text, element = null) {
+      try {
+        // Modern Clipboard API (Shopware empfohlen)
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          // Fallback für ältere Browser
+          const textarea = document.createElement("textarea");
+          textarea.value = text;
+          textarea.style.position = "fixed";
+          textarea.style.opacity = "0";
+          textarea.style.pointerEvents = "none";
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand("copy");
+          document.body.removeChild(textarea);
+        }
+
+        // Visuelles Feedback
+        if (element) {
+          element.classList.add("is--copied");
+          setTimeout(() => {
+            element.classList.remove("is--copied");
+          }, 2000);
+        }
+
+        // Success Notification
+        this.createNotificationSuccess({
+          title: this.$tc("sw-settings-license-check.copy.successTitle"),
+          message: this.$tc("sw-settings-license-check.copy.successMessage", {
+            text: text.substring(0, 30) + (text.length > 30 ? "..." : ""),
+          }),
+          duration: 2000,
+        });
+
+        console.log("[HeroBlocks] 📋 Copied to clipboard:", text);
+        return true;
+      } catch (error) {
+        console.error("[HeroBlocks] ❌ Copy to clipboard failed:", error);
+
+        this.createNotificationError({
+          title: this.$tc("sw-settings-license-check.copy.errorTitle"),
+          message: this.$tc("sw-settings-license-check.copy.errorMessage"),
+          duration: 3000,
+        });
+
+        return false;
+      }
+    },
+
+    /**
+     * Handler für Animation Card Click (Copy CSS Class)
+     * @param {Event} event - Das Click-Event
+     */
+    onAnimationCardClick(event) {
+      const card = event.currentTarget;
+      const codeElement = card.querySelector(
+        ".hero-blocks-animation-card__class"
+      );
+      if (codeElement) {
+        const cssClass = codeElement.textContent.trim();
+        this.copyToClipboard(cssClass, card);
+      }
+    },
+
+    /**
+     * Handler für CountUp Option Click (Copy data attribute)
+     * @param {Event} event - Das Click-Event
+     */
+    onCountUpOptionClick(event) {
+      const option = event.currentTarget;
+      const codeElement = option.querySelector("code");
+      if (codeElement) {
+        const dataAttr = codeElement.textContent.trim();
+        this.copyToClipboard(dataAttr, option);
+      }
+    },
+
+    /**
+     * Kopiert den generierten Shortcode in die Zwischenablage
+     * Zeigt visuelles Feedback an
+     */
+    async copyGeneratedShortcode() {
+      try {
+        await navigator.clipboard.writeText(this.generatedShortcode);
+        this.shortcodeCopied = true;
+
+        this.createNotificationSuccess({
+          title: this.$tc("sw-settings-license-check.copy.successTitle"),
+          message: this.$tc(
+            "sw-settings-license-check.copy.successMessage",
+            0,
+            {
+              text: "Shortcode",
+            }
+          ),
+          duration: 2000,
+        });
+
+        // Reset nach 2 Sekunden
+        setTimeout(() => {
+          this.shortcodeCopied = false;
+        }, 2000);
+      } catch (e) {
+        this.createNotificationError({
+          title: this.$tc("sw-settings-license-check.copy.errorTitle"),
+          message: this.$tc("sw-settings-license-check.copy.errorMessage"),
+          duration: 3000,
+        });
       }
     },
 

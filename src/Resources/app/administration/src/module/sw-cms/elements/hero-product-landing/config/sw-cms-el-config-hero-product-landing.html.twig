@@ -50,7 +50,7 @@
 
     </sw-container>
 
-    {# ==================== DISPLAY OPTIONS ==================== #}
+    {# ==================== BASIC DISPLAY OPTIONS ==================== #}
     <sw-container columns="1fr" gap="16px" class="sw-cms-el-config-hero-product-landing__display-options">
         
         <h4>{{ $tc('sw-cms.elements.heroProductLanding.config.displayOptions.title') }}</h4>
@@ -76,10 +76,11 @@
             @update:model-value="(value) => showPrice = value"
         />
 
-        {# Show Properties #}
+        {# Show Properties (Technical Specs) #}
         <sw-switch-field
             :model-value="showProperties"
             :label="$tc('sw-cms.elements.heroProductLanding.config.showProperties.label')"
+            :helpText="$tc('sw-cms.elements.heroProductLanding.config.showProperties.helpText')"
             @update:model-value="(value) => showProperties = value"
         />
 
@@ -99,6 +100,65 @@
 
     </sw-container>
 
+    {# ==================== CUSTOM FIELDS & ADDITIONAL DATA ==================== #}
+    <sw-container columns="1fr" gap="16px" class="sw-cms-el-config-hero-product-landing__custom-fields-options">
+        
+        <h4>{{ $tc('sw-cms.elements.heroProductLanding.config.customFieldsOptions.title') }}</h4>
+        
+        <p class="sw-cms-el-config-hero-product-landing__hint">
+            {{ $tc('sw-cms.elements.heroProductLanding.config.customFieldsOptions.hint') }}
+        </p>
+
+        {# Show Custom Fields #}
+        <sw-switch-field
+            :model-value="showCustomFields"
+            :label="$tc('sw-cms.elements.heroProductLanding.config.showCustomFields.label')"
+            :helpText="$tc('sw-cms.elements.heroProductLanding.config.showCustomFields.helpText')"
+            @update:model-value="(value) => showCustomFields = value"
+        />
+
+        {# Show Tagline (Custom Field) #}
+        <sw-switch-field
+            :model-value="showTagline"
+            :label="$tc('sw-cms.elements.heroProductLanding.config.showTagline.label')"
+            :helpText="$tc('sw-cms.elements.heroProductLanding.config.showTagline.helpText')"
+            @update:model-value="(value) => showTagline = value"
+        />
+
+        {# Show Badge (Custom Field) #}
+        <sw-switch-field
+            :model-value="showBadge"
+            :label="$tc('sw-cms.elements.heroProductLanding.config.showBadge.label')"
+            :helpText="$tc('sw-cms.elements.heroProductLanding.config.showBadge.helpText')"
+            @update:model-value="(value) => showBadge = value"
+        />
+
+        {# Show Specs Highlight #}
+        <sw-switch-field
+            :model-value="showSpecs"
+            :label="$tc('sw-cms.elements.heroProductLanding.config.showSpecs.label')"
+            :helpText="$tc('sw-cms.elements.heroProductLanding.config.showSpecs.helpText')"
+            @update:model-value="(value) => showSpecs = value"
+        />
+
+        {# Show Variants/Options #}
+        <sw-switch-field
+            :model-value="showVariants"
+            :label="$tc('sw-cms.elements.heroProductLanding.config.showVariants.label')"
+            :helpText="$tc('sw-cms.elements.heroProductLanding.config.showVariants.helpText')"
+            @update:model-value="(value) => showVariants = value"
+        />
+
+        {# Show Gallery #}
+        <sw-switch-field
+            :model-value="showGallery"
+            :label="$tc('sw-cms.elements.heroProductLanding.config.showGallery.label')"
+            :helpText="$tc('sw-cms.elements.heroProductLanding.config.showGallery.helpText')"
+            @update:model-value="(value) => showGallery = value"
+        />
+
+    </sw-container>
+
     {# ==================== LAYOUT OPTIONS ==================== #}
     <sw-container columns="1fr" gap="16px" class="sw-cms-el-config-hero-product-landing__layout-options">
         
@@ -112,6 +172,32 @@
             @update:model-value="(value) => layout = value"
         />
 
+    </sw-container>
+
+    {# ==================== AVAILABLE CUSTOM FIELDS INFO ==================== #}
+    <sw-container columns="1fr" gap="8px" class="sw-cms-el-config-hero-product-landing__info-box">
+        
+        <div class="sw-cms-el-config-hero-product-landing__info-header">
+            <sw-icon name="regular-info-circle-s" small />
+            <span>{{ $tc('sw-cms.elements.heroProductLanding.config.availableData.title') }}</span>
+        </div>
+        
+        <div class="sw-cms-el-config-hero-product-landing__info-content">
+            <p class="sw-cms-el-config-hero-product-landing__info-text">
+                {{ $tc('sw-cms.elements.heroProductLanding.config.availableData.description') }}
+            </p>
+            
+            <ul class="sw-cms-el-config-hero-product-landing__info-list">
+                <li><code>custom_horex_tagline</code> - {{ $tc('sw-cms.elements.heroProductLanding.config.availableData.tagline') }}</li>
+                <li><code>custom_horex_badge_text</code> - {{ $tc('sw-cms.elements.heroProductLanding.config.availableData.badge') }}</li>
+                <li><code>custom_horex_specs_highlight</code> - {{ $tc('sw-cms.elements.heroProductLanding.config.availableData.specsHighlight') }}</li>
+                <li><code>custom_horex_specs_short</code> - {{ $tc('sw-cms.elements.heroProductLanding.config.availableData.specsShort') }}</li>
+                <li><code>custom_horex_video_url</code> - {{ $tc('sw-cms.elements.heroProductLanding.config.availableData.videoUrl') }}</li>
+                <li><code>custom_horex_cta_text</code> - {{ $tc('sw-cms.elements.heroProductLanding.config.availableData.ctaText') }}</li>
+                <li><code>custom_horex_cta_url</code> - {{ $tc('sw-cms.elements.heroProductLanding.config.availableData.ctaUrl') }}</li>
+            </ul>
+        </div>
+        
     </sw-container>
 
 </div>

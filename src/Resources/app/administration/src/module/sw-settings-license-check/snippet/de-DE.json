@@ -31,7 +31,9 @@
             "timeline": "Timeline – Jahresnavigation mit Text und Bild-Slider",
             "timelineShort": "Historische Timeline mit Bildern",
             "shoppingExperience": "Erweiterte Produktdetailseite – 360° Gallery, Varianten-Konfigurator mit Preisen, Serienausstattung",
-            "shoppingExperienceShort": "360° Gallery, Konfigurator mit Preisen"
+            "shoppingExperienceShort": "360° Gallery, Konfigurator mit Preisen",
+            "skeletonLoader": "Skeleton Loader – Animierte Ladeplatzhalter für optimale UX und wahrgenommene Performance",
+            "skeletonLoaderShort": "Animierte Ladeplatzhalter für bessere UX"
         },
         "featureStatus": {
             "active": "Aktiv",
@@ -41,7 +43,12 @@
         },
         "blockToggle": {
             "clickToToggle": "Klicken zum Aktivieren/Deaktivieren",
-            "hint": "Klicken Sie auf eine Karte, um den Block zu aktivieren oder deaktivieren. Speichern Sie anschließend die Einstellungen.",
+            "clickToActivate": "Klicken zum Aktivieren",
+            "holdToDeactivate": "3 Sekunden gedrückt halten zum Deaktivieren",
+            "holdToDeactivateProgress": "Deaktivieren... {percent}%",
+            "deactivated": "Block deaktiviert",
+            "deactivatedMessage": "{block} wurde deaktiviert. Bitte speichern Sie die Einstellungen.",
+            "hint": "Klicken Sie auf eine inaktive Karte zum Aktivieren. Bei aktiven Karten 3 Sekunden halten zum Deaktivieren.",
             "enabledTitle": "Block aktiviert",
             "enabledMessage": "{block} wurde aktiviert. Bitte speichern Sie die Einstellungen.",
             "disabledTitle": "Block deaktiviert",
@@ -70,13 +77,38 @@
                 "step4": "Speichern und Vorschau prüfen"
             },
             "countUpOptions": {
-                "title": "Count-Up Optionen",
-                "dataTarget": "data-count-target=\"163\" – Zielwert (Pflicht bei nicht-numerischem Text)",
-                "dataSuffix": "data-count-suffix=\" PS\" – Suffix nach der Zahl (optional)",
-                "dataPrefix": "data-count-prefix=\"€\" – Prefix vor der Zahl (optional)",
-                "dataDuration": "data-count-duration=\"2000\" – Animationsdauer in ms (Standard: 2000)",
-                "dataDecimals": "data-count-decimals=\"2\" – Nachkommastellen (Standard: 0)"
+                "title": "Data-Attribute Referenz",
+                "dataTarget": "data-count-target=\"163\"",
+                "dataTargetDesc": "Zielwert (Pflicht bei nicht-numerischem Text)",
+                "dataSuffix": "data-count-suffix=\" PS\"",
+                "dataSuffixDesc": "Suffix nach der Zahl (optional)",
+                "dataPrefix": "data-count-prefix=\"€\"",
+                "dataPrefixDesc": "Prefix vor der Zahl (optional)",
+                "dataDuration": "data-count-duration=\"2000\"",
+                "dataDurationDesc": "Animationsdauer in ms (Standard: 2000)",
+                "dataDecimals": "data-count-decimals=\"2\"",
+                "dataDecimalsDesc": "Nachkommastellen (Standard: 0)"
+            },
+            "shortcodeGenerator": {
+                "title": "Count-Up Shortcode Generator",
+                "targetLabel": "Zielwert",
+                "targetHint": "Die Zahl, zu der hochgezählt wird",
+                "prefixLabel": "Prefix",
+                "suffixLabel": "Suffix",
+                "durationLabel": "Dauer",
+                "decimalsLabel": "Dezimalstellen",
+                "previewLabel": "Generierter Code",
+                "livePreviewLabel": "Vorschau",
+                "copy": "Kopieren",
+                "copied": "Kopiert!"
             }
+        },
+        "copy": {
+            "clickToCopy": "Klicken zum Kopieren",
+            "successTitle": "In Zwischenablage kopiert",
+            "successMessage": "'{text}' wurde kopiert",
+            "errorTitle": "Kopieren fehlgeschlagen",
+            "errorMessage": "Der Text konnte nicht kopiert werden. Bitte manuell kopieren."
         },
         "button": {
             "checkLicense": "Lizenz prüfen",
@@ -181,6 +213,19 @@
             "availableLanguages": "Verfügbare Sprachen",
             "hint": "Diese Sprachen werden im Language Switcher im Header angezeigt (Desktop).",
             "noLanguages": "Keine Sprachen gefunden. Bitte prüfen Sie die Sprach-Konfiguration."
+        },
+        "bookingForm": {
+            "testEmailSection": "Test E-Mail",
+            "sendTestEmail": "Test-E-Mail senden",
+            "sending": "Sende...",
+            "testEmailSuccess": "Test-E-Mail gesendet",
+            "testEmailSuccessMessage": "Die Test-E-Mail wurde erfolgreich an den Mailcatcher gesendet.",
+            "testEmailFailed": "E-Mail-Versand fehlgeschlagen",
+            "testEmailFailedMessage": "Die Test-E-Mail konnte nicht gesendet werden. Bitte prüfen Sie die E-Mail-Konfiguration.",
+            "comingSoonTitle": "Bald verfügbar",
+            "googleCalendarDesc": "Google Calendar Integration für automatische Termin-Synchronisation",
+            "webhookDesc": "Webhook für n8n und andere Automatisierungen",
+            "emailTemplateDesc": "Anpassbare E-Mail-Templates für Buchungsbestätigungen"
         },
         "renewal": {
             "title": "Lizenz reaktivieren & durchstarten",

@@ -412,10 +412,10 @@
                     "product": {
                         "label": "Produkt auswählen",
                         "placeholder": "Produkt suchen...",
-                        "helpText": "Wählen Sie das Produkt aus, dessen Daten auf der Landing Page angezeigt werden sollen. Sie können dann im Template auf alle Produktdaten zugreifen (Name, Beschreibung, Preis, Properties, etc.)"
+                        "helpText": "Wählen Sie das Produkt aus, dessen Daten auf der Landing Page angezeigt werden sollen. Sie können dann im Template auf alle Produktdaten zugreifen (Name, Beschreibung, Preis, Properties, Custom Fields, etc.)"
                     },
                     "displayOptions": {
-                        "title": "Anzeigeoptionen"
+                        "title": "Basis-Anzeigeoptionen"
                     },
                     "showName": {
                         "label": "Produktname anzeigen"
@@ -427,13 +427,42 @@
                         "label": "Preis anzeigen"
                     },
                     "showProperties": {
-                        "label": "Produkteigenschaften anzeigen"
+                        "label": "Technische Daten anzeigen",
+                        "helpText": "Zeigt die Produkteigenschaften (Properties) wie Leistung, Drehmoment, Zylinder etc."
                     },
                     "showManufacturer": {
                         "label": "Hersteller anzeigen"
                     },
                     "showBuyButton": {
                         "label": "Kaufen-Button anzeigen"
+                    },
+                    "customFieldsOptions": {
+                        "title": "Custom Fields & Erweiterte Daten",
+                        "hint": "Diese Optionen zeigen Daten aus den Produkt-Custom-Fields an. Konfigurieren Sie Custom Fields unter Einstellungen > System > Custom Fields."
+                    },
+                    "showCustomFields": {
+                        "label": "Custom Fields anzeigen",
+                        "helpText": "Zeigt alle verfügbaren Custom Fields des Produkts an (z.B. highlight_features)"
+                    },
+                    "showTagline": {
+                        "label": "Tagline anzeigen",
+                        "helpText": "Zeigt die Produkt-Tagline aus dem Custom Field 'custom_horex_tagline'"
+                    },
+                    "showBadge": {
+                        "label": "Badge anzeigen",
+                        "helpText": "Zeigt ein Badge aus dem Custom Field 'custom_horex_badge_text' (z.B. 'NEU', 'LIMITED')"
+                    },
+                    "showSpecs": {
+                        "label": "Specs-Highlight anzeigen",
+                        "helpText": "Zeigt das Specs-Highlight aus Custom Field oder auto-generiert aus Properties (z.B. '161 PS | 128 Nm | VR6')"
+                    },
+                    "showVariants": {
+                        "label": "Varianten anzeigen",
+                        "helpText": "Zeigt verfügbare Varianten-Optionen wie Farben"
+                    },
+                    "showGallery": {
+                        "label": "Bildergalerie anzeigen",
+                        "helpText": "Zeigt alle Produktbilder als kleine Galerie-Thumbnails"
                     },
                     "layoutOptions": {
                         "title": "Layout-Optionen"
@@ -443,8 +472,20 @@
                         "options": {
                             "default": "Standard",
                             "compact": "Kompakt",
-                            "full": "Vollständig"
+                            "full": "Vollständig",
+                            "hero": "Hero (Vollbild)"
                         }
+                    },
+                    "availableData": {
+                        "title": "Verfügbare Produkt-Custom-Fields",
+                        "description": "Erstellen Sie diese Custom Fields unter Einstellungen > System > Custom Fields für das Produkt-Entity:",
+                        "tagline": "Kurze Tagline über dem Produktnamen",
+                        "badge": "Badge-Text (z.B. 'NEU', 'LIMITED')",
+                        "specsHighlight": "Specs-Highlight (z.B. '161 PS | 128 Nm')",
+                        "specsShort": "Kurze Spezifikationen als Text",
+                        "videoUrl": "YouTube/Vimeo Video-URL",
+                        "ctaText": "Custom CTA Button Text",
+                        "ctaUrl": "Custom CTA Button URL"
                     }
                 }
             },
@@ -895,15 +936,77 @@
             "compileNotice": "Hinweis: Nach Änderung der CSS-Konfiguration muss das Theme neu kompiliert werden."
         }
     },
+    "hero-blocks": {
+        "config": {
+            "bookingFormSendConfirmation": "Bestätigungsmail an Kunde senden",
+            "bookingFormSendConfirmation.helpText": "Sendet eine Bestätigungs-E-Mail an den Kunden nach Absenden des Formulars",
+            "bookingFormGoogleCalendar": "Google Calendar Integration (Demnächst)",
+            "bookingFormGoogleCalendar.helpText": "Synchronisiert Buchungen mit Google Calendar. API-Token Konfiguration erfolgt in zukünftiger Version",
+            "bookingFormWebhookEnabled": "Webhook für Automationen (Demnächst)",
+            "bookingFormWebhookEnabled.helpText": "Sendet Buchungsdaten an einen Webhook-Endpoint für n8n oder andere Automatisierungen",
+            "bookingFormSubject": "E-Mail Betreff",
+            "bookingFormSubject.helpText": "Betreffzeile für Buchungs-E-Mails. Verfügbare Platzhalter: {{ model }}, {{ name }}, {{ date }}",
+            "bookingFormRecipient": "Empfänger-E-Mail",
+            "bookingFormRecipient.helpText": "E-Mail-Adresse(n) für Formularübermittlungen (kommagetrennt)",
+            "enableLanguageSwitcher": "Language Switcher aktivieren",
+            "enableHeroInstagramFeed": "Hero Instagram Feed aktivieren",
+            "enableCategorySlider": "Category Slider aktivieren",
+            "enableMegaMenu": "Mega Menu aktivieren",
+            "enableHeroTwoColumns": "Hero Two Columns aktivieren",
+            "enableHeroVideoExtended": "Hero Video Extended aktivieren",
+            "enableHeroBookingForm": "Hero Booking Form aktivieren",
+            "enableHeroImageOverlay": "Hero Image Overlay aktivieren",
+            "enableHeroFaq": "Hero FAQ aktivieren",
+            "enableHeroTimeline": "Hero Timeline aktivieren",
+            "enableHeroProductLanding": "Hero Product Landing aktivieren",
+            "productDetailPreloadImages": "Produktbilder vorladen (Skeleton Loader)",
+            "instagramAppId": "Instagram App ID",
+            "instagramAppSecret": "Instagram App Secret",
+            "instagramAccessToken": "Instagram Access Token",
+            "instagramUserId": "Instagram User ID",
+            "instagramPostsCache": "Cache-Dauer (Minuten)",
+            "licenseKey": "Lizenzschlüssel",
+            "licenseEmail": "Lizenz-E-Mail",
+            "licenseStatus": "Lizenzstatus",
+            "licenseExpiresAt": "Lizenz gültig bis"
+        }
+    },
     "sw-settings-license-check": {
         "description": "Professionelle CMS-Blöcke für Shopware Erlebniswelten. Hero Slider, Two Columns Layouts und weitere Custom Blocks nach Shopware Best Practices.",
+        "intro": {
+            "headline": "Hero Blocks für Shopware"
+        },
+        "featuresTitle": "Verfügbare Blöcke",
         "features": {
             "heroSlider": "Hero Slider - Multi-Slide Hero-Blöcke mit Headlines, Text, Buttons und Bildern",
+            "heroSliderShort": "Multi-Slide Hero mit Headlines, Text, Buttons und Bildern für starke Markenstories.",
             "heroTwoColumns": "Hero Two Columns Image & Text - Zwei-Spalten Layout mit flexiblen Hintergrundoptionen (Parallax-Scroll: demnächst)",
-            "heroVideoExtended": "Hero Video Extended - Video Hero-Blöcke mit Headlines, Text und Buttons (Demnächst)",
-            "heroInstagramFeed": "Hero Instagram Feed Widget - Instagram Feed Integration für Mega-Menü und Custom-Blöcke (Demnächst)",
-            "megaMenu": "Mega Menu Block - Erweiterte Navigations-Blöcke mit Produkten, Widgets und Instagram Feed Support (Demnächst)",
-            "shoppingExperience": "Shopping Experience Blöcke - Zusätzliche Custom-Blöcke für verbesserte Shopping-Erlebnisse (In Entwicklung)"
+            "heroTwoColumnsShort": "Zwei-Spalten Layout mit Bild & Text, Parallax-Effekten und flexiblen Hintergründen.",
+            "heroVideoExtended": "Hero Video Extended - Video Hero-Blöcke mit Headlines, Text und Buttons",
+            "heroVideoExtendedShort": "Video Hero-Block mit schrägem Text-Overlay, Headlines und CTAs.",
+            "heroInstagramFeed": "Hero Instagram Feed Widget - Instagram Feed Integration für Mega-Menü und Custom-Blöcke",
+            "heroInstagramFeedShort": "Instagram Feed Integration mit Grid/Slider-Modus und Auto-Refresh.",
+            "megaMenu": "Mega Menu Block - Erweiterte Navigations-Blöcke mit Produkten, Widgets und Instagram Feed Support",
+            "megaMenuShort": "Erweitertes Mega-Menü mit Kategorien, Produkten und Social Media Widgets.",
+            "shoppingExperience": "Shopping Experience Blöcke - Zusätzliche Custom-Blöcke für verbesserte Shopping-Erlebnisse",
+            "shoppingExperienceShort": "Erweiterte Produktdetail-Seite mit 360°-Galerie, Konfigurator und Varianten-Preisen.",
+            "categorySliderShort": "Kategorie-Slider mit Bildern, Titeln und Links zu ausgewählten Kategorien.",
+            "faqBlockShort": "FAQ-Block mit Accordion, Schema.org Rich Snippets und SEO-Optimierung.",
+            "imageOverlayShort": "Vollbild-Bild mit schrägem Text-Overlay-Panel und Scroll-Animation.",
+            "bookingFormShort": "Probefahrt- und Buchungsformular mit Modellauswahl und Standorten.",
+            "timelineShort": "Zeitleiste mit Jahresnavigation, Text und Bild-Slider für History-Seiten.",
+            "skeletonLoaderShort": "Animierte Lade-Platzhalter für schnellere wahrgenommene Performance.",
+            "smartMagnifier": "Smart Magnifier - Intelligente Zoom-Lupe mit automatischer Vergrößerung",
+            "smartMagnifierShort": "Kreisrunde Lupe mit Smart Zoom: Nach 1.5s Stillstand 50% größer und 3x mehr Zoom."
+        },
+        "blockToggle": {
+            "clickToToggle": "Klicken zum Aktivieren/Deaktivieren",
+            "hint": "Klicken Sie auf eine Karte um den Block zu aktivieren/deaktivieren. Das Zahnrad-Symbol öffnet die Block-Einstellungen."
+        },
+        "modal": {
+            "settingsTitle": "Einstellungen",
+            "openSettings": "Einstellungen öffnen",
+            "clickToOpenLicense": "Klicken um Lizenz-Informationen zu öffnen"
         },
         "general": {
             "mainMenuItemGeneral": "Hero Slider - Lizenzprüfung"

@@ -74,3 +74,15 @@
 // 10. Hero Timeline Block
 // ============================================================================
 @import "components/hero-timeline";
+
+// ============================================================================
+// 11. Smart Magnifier (Enhanced Circular Zoom Lens)
+// ============================================================================
+@import "components/smart-magnifier";
+
+// ============================================================================
+// 12. Unified Skeleton Loader (Logo-based Loading)
+// ============================================================================
+// Three types: 360, page, inbox
+// Admin-configurable logo, size, animations
+@import "components/skeleton-loader";

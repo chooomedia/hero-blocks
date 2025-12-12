@@ -1,8 +1,68 @@
-// Hero Blocks Extension Config Override - License Chip Styling
+// Hero Blocks Extension Config Override - License Chip + Icon Styling
 @import "~scss/variables";
 @import "~scss/mixins";
 
+// Matt Interfaces CI-Farben
+$mi-primary: #FF5432;
+$mi-primary-light: #FF7A5C;
+
 .sw-extension-config {
+  // ============================================================================
+  // Hero Blocks Custom SVG Icon - Matt Interfaces Branding
+  // ============================================================================
+  &__hero-blocks-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 4px;
+    background: linear-gradient(135deg, #fff 0%, #fafafa 100%);
+    border-radius: 10px;
+    box-shadow: 
+      0 2px 8px rgba(255, 84, 50, 0.12),
+      0 0 0 1px rgba(255, 84, 50, 0.08);
+    transition: all 0.25s ease;
+    
+    // SVG Icon innerhalb des Containers
+    .hero-blocks-logo-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      
+      // Scharfes Rendering
+      shape-rendering: geometricPrecision;
+      
+      path {
+        // CI-Farbe bereits im SVG definiert (#FF5432)
+        transition: fill 0.2s ease;
+      }
+    }
+    
+    // Hover-Effekt
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 
+        0 4px 16px rgba(255, 84, 50, 0.2),
+        0 0 0 1px rgba(255, 84, 50, 0.15);
+      
+      .hero-blocks-logo-svg path {
+        fill: $mi-primary-light;
+      }
+    }
+  }
+  
+  // ============================================================================
+  // Fallback: Standard Extension Icon Styling
+  // ============================================================================
+  &__extension-icon:not(.sw-extension-config__hero-blocks-icon) {
+    .sw-extension-icon__icon {
+      width: 40px !important;
+      height: 40px !important;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+  }
   // Custom License Button (ersetzt sw-status für volle Kontrolle)
   &__license-chip-btn {
     display: inline-flex;

@@ -10,7 +10,7 @@
 
 _More Conversion. Less Code._
 
-[Features](#-features) • [Installation](#-installation) • [Documentation](#-documentation) • [Support](#-support)
+[Features](#-features) • [Installation](#-installation) • [CLI Tool](#-cli-tool) • [Documentation](#-documentation) • [Support](#-support)
 
 </div>
 
@@ -30,6 +30,7 @@ _More Conversion. Less Code._
 | 📅 **Hero Timeline**            | Text-Image | Timeline block with year navigation                                       |
 | 🛒 **Hero Shopping Experience** | Commerce   | Enhanced product detail pages                                             |
 | 📋 **Hero Booking Form**        | Form       | Test ride & booking forms with model selection                            |
+| 🔍 **Smart Magnifier**          | Feature    | Intelligent zoom lens with auto-enhancement after 1.5s hover              |
 
 ### Additional Features
 
@@ -38,6 +39,8 @@ _More Conversion. Less Code._
 - 🎨 **Per-Slide Styling** - Individual colors for headlines, text, and buttons
 - 📱 **Fully Responsive** - Mobile-first design with Bootstrap 5
 - ⚡ **Performance Optimized** - Lazy loading, Intersection Observer, minimal JS
+- 🔍 **Smart Magnifier** - Circular lens with Smart Zoom (64px → 96px, 4x → 7x zoom)
+- 💀 **Skeleton Loaders** - Animated placeholders for perceived performance
 
 ---
 
@@ -108,23 +111,85 @@ docker exec horex-shopware php bin/console cache:clear
 ### Architecture
 
 ```
-src/Resources/
-├── app/administration/src/          # Admin UI (Vue.js 3)
-│   └── module/sw-cms/
-│       ├── blocks/                  # CMS Block Registration
-│       └── elements/                # CMS Element Configuration
-├── app/storefront/src/              # Storefront (JS + SCSS)
-│   ├── js/plugin/                   # JavaScript Plugins
-│   └── scss/components/             # SCSS Components
-├── views/storefront/                # Twig Templates
-│   ├── block/                       # Block Templates
-│   └── element/                     # Element Templates
-├── config/                          # Plugin Configuration
-│   ├── config.xml                   # System Config
-│   └── services.xml                 # Service Registration
-└── Controller/                      # API Controllers
-    └── Admin/                       # Admin API Endpoints
+HeroBlocks/
+├── src/
+│   ├── HeroBlocks.php                    # Main Plugin Class
+│   ├── Content/Cms/TypeDataResolver/     # CMS Data Resolvers
+│   ├── Controller/
+│   │   ├── Admin/                        # API Controllers (License, Update)
+│   │   └── Storefront/                   # Storefront Controllers
+│   ├── Service/                          # Business Logic Services
+│   ├── Storefront/Twig/                  # Twig Extensions
+│   └── Resources/
+│       ├── app/
+│       │   ├── administration/src/       # Admin UI (Vue.js 3)
+│       │   │   ├── module/sw-cms/
+│       │   │   │   ├── blocks/           # CMS Block Registration
+│       │   │   │   │   ├── commerce/     # hero-product-landing, hero-shopping-experience
+│       │   │   │   │   ├── form/         # hero-booking-form
+│       │   │   │   │   ├── image/        # hero-block-slider, hero-category-slider, hero-instagram-feed
+│       │   │   │   │   ├── sidebar/      # hero-mega-menu
+│       │   │   │   │   ├── text/         # hero-faq
+│       │   │   │   │   ├── text-image/   # hero-two-columns, hero-timeline
+│       │   │   │   │   └── video/        # hero-video-extended
+│       │   │   │   └── elements/         # CMS Element Configuration
+│       │   │   └── snippet/              # Translations (de-DE, en-GB)
+│       │   └── storefront/src/           # Storefront (JS + SCSS)
+│       │       ├── smart-magnifier/      # Smart Magnifier Plugin
+│       │       ├── hero-*/               # Block-specific JS Plugins
+│       │       └── scss/components/      # SCSS Components
+│       ├── config/                       # Plugin Configuration
+│       │   ├── config.xml                # System Config
+│       │   └── services.xml              # Service Registration
+│       └── views/storefront/             # Twig Templates
+│           ├── block/                    # Block Templates
+│           └── element/                  # Element Templates
+├── mi-cli.sh                             # Matt Interfaces CLI Tool
+├── create-release-zip.sh                 # Release ZIP Creator
+├── n8n-workflow-hero-blocks-OPTIMIZED.json  # n8n Automation Workflow
+└── composer.json                         # Plugin Configuration
 ```
+
+---
+
+## 🛠️ CLI Tool
+
+Hero Blocks includes a powerful CLI tool for development:
+
+```bash
+# Make executable (first time only)
+chmod +x mi-cli.sh
+
+# Show help
+./mi-cli.sh help
+```
+
+### Commands
+
+| Command            | Description                               |
+| ------------------ | ----------------------------------------- |
+| `build`            | Build all assets (Admin + Storefront)     |
+| `build admin`      | Build Admin assets only                   |
+| `build storefront` | Build Storefront assets only              |
+| `cache`            | Clear Shopware cache                      |
+| `create-block`     | Create new CMS block (interactive wizard) |
+| `release`          | Create release ZIP for GitHub             |
+| `test`             | Run PHPUnit tests                         |
+
+### Creating a New Block
+
+```bash
+./mi-cli.sh create-block
+```
+
+The wizard will:
+
+1. Ask for block category (text, image, text-image, commerce, video, form, sidebar, html)
+2. Ask for block name (e.g., `hero-testimonial`)
+3. Generate all required files:
+   - Admin: component, preview, config
+   - Storefront: Twig template
+4. Show next steps (import, snippets, config.xml)
 
 ---
 

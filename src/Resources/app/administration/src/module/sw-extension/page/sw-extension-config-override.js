@@ -1,5 +1,9 @@
 /**
  * Override für sw-extension-config - Fügt Active License Chip im Header hinzu
+ * + Custom Plugin Icon für HeroBlocks (Matt Interfaces CI)
+ *
+ * Das SVG-Logo wird direkt im Template gerendert (nicht als Import),
+ * um Vite/Webpack Import-Probleme zu vermeiden.
  */
 import overrideTemplate from "./sw-extension-config-override.html.twig";
 import "./sw-extension-config-override.scss";

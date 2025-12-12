@@ -107,8 +107,10 @@
             <tag name="kernel.event_subscriber"/>
         </service>
         
+        <!-- Navigation Extension: Lädt Navigation Tree + Produkte für Mega Menu -->
         <service id="HeroBlocks\Storefront\Twig\NavigationExtension">
             <argument type="service" id="Shopware\Core\Content\Category\Service\NavigationLoader"/>
+            <argument type="service" id="category.repository"/>
             <tag name="twig.extension"/>
         </service>
         

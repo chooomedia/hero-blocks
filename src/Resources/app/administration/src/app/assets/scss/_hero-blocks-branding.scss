@@ -3,15 +3,20 @@
  * 
  * Minimalistisches, elegantes Branding für alle Hero Blocks
  * Gemäß Shopware Admin UI Richtlinien
+ * 
+ * CI-Farben:
+ * - Primary: #FF5432 (Matt Interfaces Orange aus Logo)
+ * - Secondary: #FF7A5C (Helleres Orange für Hover)
  */
 
 @import "~scss/variables";
 
-// WICHTIG: Matt Interfaces Branding-Farbe - Dezentes Blau-Grau (professionell, nicht aufdringlich)
-$hero-blocks-brand-color: #4A90A4; // Dezentes Teal-Blau (Matt Interfaces Akzent)
-$hero-blocks-brand-color-light: rgba(74, 144, 164, 0.15); // Sehr dezentes Highlight
-$hero-blocks-brand-color-border: rgba(74, 144, 164, 0.35); // Dezenter Border (nicht zu auffällig)
-$hero-blocks-brand-color-border-active: rgba(74, 144, 164, 0.6); // Leicht stärker wenn aktiv
+// WICHTIG: Matt Interfaces CI-Farben (Orange aus Logo SVG)
+$hero-blocks-brand-color: #FF5432; // Matt Interfaces Primary Orange (aus Logo)
+$hero-blocks-brand-color-hover: #FF7A5C; // Helleres Orange für Hover-States
+$hero-blocks-brand-color-light: rgba(255, 84, 50, 0.12); // Sehr dezentes Highlight
+$hero-blocks-brand-color-border: rgba(255, 84, 50, 0.35); // Dezenter Border
+$hero-blocks-brand-color-border-active: rgba(255, 84, 50, 0.6); // Stärker wenn aktiv
 
 // WICHTIG: Hero Blocks im Editor Stage branden
 // Alle Hero Blocks bekommen einen dezenten Border in Matt Interfaces Farbe

@@ -1,0 +1,119 @@
+/**
+ * Smart Magnifier - Living Zoom Lens
+ *
+ * Komplett eigenständige Implementierung (keine Shopware-Overrides).
+ * Basiert auf: https://medium.com/@ignatovich.dm/creating-magnifying-glass-effects-in-html-css-and-javascript-7d42083bdf0e
+ *
+ * Technik: Dupliziertes Bild innerhalb der Lupe, positioniert basierend auf Cursor.
+ *
+ * States:
+ * - idle: Klein (5rem), subtil
+ * - approaching: In der Nähe (atmend, "aufgeregt")
+ * - zooming: Über Produktbild (zeigt Zoom)
+ * - smartZoom: Nach 1.5s Stillstand (+30%)
+ *
+ * @package HeroBlocks
+ * @author Matt Interfaces
+ */
+
+// =============================================================================
+// Variables
+// =============================================================================
+$hb-magnifier-primary: #ff5432;
+$hb-magnifier-primary-light: #ff7b5a;
+$hb-magnifier-glow: rgba(255, 84, 50, 0.3);
+
+// Größen
+$hb-magnifier-idle: 5rem;
+$hb-magnifier-approach: 6rem;
+$hb-magnifier-zoom: 7rem;
+$hb-magnifier-smart: 9.1rem;
+
+// =============================================================================
+// Zusätzliche SCSS Styles (JS injectet die Haupt-Styles)
+// Diese Datei dient als Backup/Override wenn nötig
+// =============================================================================
+
+// Produktbild-Container für bessere Zoom-Qualität
+.product-detail-media,
+.gallery-slider,
+.gallery-slider-item,
+.product-image-wrapper {
+    img {
+        // Hochwertige Bilddarstellung
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: high-quality;
+        
+        // Touch-Verhalten optimieren
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+}
+
+// =============================================================================
+// Fallback Styles (falls JS-Injection fehlschlägt)
+// =============================================================================
+.hb-magnifier {
+    // GPU-Optimierung
+    transform: translate3d(-50%, -50%, 0);
+    backface-visibility: hidden;
+    
+    // Smooth Rendering
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.hb-magnifier__image {
+    // Bildqualität
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: high-quality;
+}
+
+// =============================================================================
+// Mobile: Komplett ausblenden
+// =============================================================================
+@media (max-width: 991.98px) {
+    .hb-magnifier {
+        display: none !important;
+    }
+    
+    body.hb-magnifier-active,
+    body.hb-magnifier-active * {
+        cursor: auto !important;
+    }
+}
+
+// =============================================================================
+// Reduced Motion
+// =============================================================================
+@media (prefers-reduced-motion: reduce) {
+    .hb-magnifier {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+// =============================================================================
+// High Contrast
+// =============================================================================
+@media (prefers-contrast: high) {
+    .hb-magnifier {
+        border-width: 3px !important;
+        border-color: $hb-magnifier-primary !important;
+    }
+    
+    .hb-magnifier__zoom {
+        background: #000 !important;
+        font-weight: 700;
+    }
+}
+
+// =============================================================================
+// Print: Ausblenden
+// =============================================================================
+@media print {
+    .hb-magnifier {
+        display: none !important;
+    }
+}

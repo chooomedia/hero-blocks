@@ -1,0 +1,149 @@
+{# 
+HERO BLOCKS - Unified Skeleton Loader Component
+==============================================
+
+SHOPWARE 6.7 BEST PRACTICES:
+- Consistent loading experience across all blocks
+- Three loader types: 360, page, inbox
+- Admin-configurable logo, size, and animations
+- LCP optimization with skeleton loading
+
+USAGE:
+{% sw_include '@HeroBlocks/storefront/component/skeleton-loader.html.twig' with {
+    type: '360',                  # '360' | 'page' | 'inbox'
+    showProgress: true,           # Show progress bar
+    showText: true,               # Show loading text  
+    progressText: 'Loading',      # Custom loading text
+    additionalClasses: '',        # Extra CSS classes
+    dataAttributes: {}            # Extra data attributes
+} %}
+
+TYPES:
+- 360:   Logo + Progress Bar + Text (for 360° galleries)
+- page:  Logo + Progress Bar (for page sections)
+- inbox: Logo only with border-radius (for cards, product boxes)
+#}
+
+{% block hero_skeleton_loader %}
+    {# Read Admin Settings #}
+    {% set enableCustomLoader = config('HeroBlocks.config.enableCustomSkeletonLoader')|default(true) %}
+    {% set defaultType = config('HeroBlocks.config.skeletonLoaderType')|default('page') %}
+    {% set customLogoMediaId = config('HeroBlocks.config.skeletonLogoMediaId')|default(null) %}
+    {% set logoSize = config('HeroBlocks.config.skeletonLogoSize')|default('7rem') %}
+    {% set showShimmer = config('HeroBlocks.config.skeletonShowShimmer')|default(true) %}
+    
+    {# Use provided type or fall back to admin default #}
+    {% set loaderType = type|default(defaultType) %}
+    
+    {# Determine what to show based on type #}
+    {% set showProgressBar = showProgress|default(loaderType != 'inbox') %}
+    {% set showLoadingText = showText|default(loaderType == '360') %}
+    {% set loadingText = progressText|default('Loading') %}
+    
+    {# Determine logo URL #}
+    {% set logoUrl = null %}
+    
+    {# Priority 1: Custom logo from admin settings #}
+    {% if customLogoMediaId and customLogoMediaId is not empty %}
+        {% set logoMediaCollection = searchMedia([customLogoMediaId], context.context) %}
+        {% set logoMedia = logoMediaCollection.get(customLogoMediaId) %}
+        {% if logoMedia %}
+            {% set logoUrl = logoMedia.url %}
+        {% endif %}
+    {% endif %}
+    
+    {# Priority 2: Theme logo #}
+    {% if not logoUrl %}
+        {% set themeLogoValue = theme_config('sw-logo-desktop') %}
+        {% if themeLogoValue %}
+            {% if themeLogoValue is iterable and themeLogoValue.url is defined %}
+                {% set logoUrl = themeLogoValue.url %}
+            {% elseif themeLogoValue starts with 'http' or themeLogoValue starts with '/' %}
+                {% set logoUrl = themeLogoValue %}
+            {% elseif themeLogoValue matches '/^[0-9a-f]{32}$/i' %}
+                {% set themeLogoMediaCollection = searchMedia([themeLogoValue], context.context) %}
+                {% set themeLogoMedia = themeLogoMediaCollection.get(themeLogoValue) %}
+                {% if themeLogoMedia %}
+                    {% set logoUrl = themeLogoMedia.url %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+    
+    {# Build CSS classes #}
+    {% set skeletonClasses = [
+        'hero-skeleton-loader',
+        'hero-skeleton-loader--' ~ loaderType,
+        showShimmer ? 'hero-skeleton-loader--shimmer' : '',
+        additionalClasses|default('')
+    ]|join(' ')|trim %}
+    
+    <div class="{{ skeletonClasses }}"
+         data-skeleton="true"
+         data-skeleton-type="{{ loaderType }}"
+         {% if dataAttributes is defined %}
+             {% for key, value in dataAttributes %}
+                 data-{{ key }}="{{ value }}"
+             {% endfor %}
+         {% endif %}
+         aria-hidden="true"
+         style="--skeleton-logo-size: {{ logoSize }};">
+        
+        <div class="hero-skeleton-loader__content">
+            {# 
+            Logo - CRITICAL Performance Optimization
+            
+            MODERN WEB STANDARDS:
+            - fetchpriority="high": Priorität für LCP (Largest Contentful Paint)
+            - decoding="async": Non-blocking decode (Chrome 65+, Firefox 63+, Safari 14.1+)
+            - NO loading attribute: fetchpriority hat Vorrang (loading="eager" ist deprecated pattern)
+            
+            BROWSER SUPPORT:
+            - fetchpriority: Chrome 101+, Safari 17.2+, Firefox 125+
+            - Graceful degradation: Browser ohne Support verwenden Standard-Priorität
+            
+            WHY NO loading="eager"?
+            - "eager" ist default behavior, explizites setzen ist redundant
+            - fetchpriority ist modern, semantisch korrekt, und hat bessere Browser-Integration
+            - Kombinieren von beiden kann zu Konflikten führen (priority clash)
+            #}
+            <div class="hero-skeleton-loader__logo">
+                {% if logoUrl %}
+                    <img src="{{ logoUrl }}" 
+                         alt="" 
+                         class="hero-skeleton-loader__logo-img"
+                         fetchpriority="high"
+                         decoding="async"
+                         aria-hidden="true"
+                         data-skeleton-logo="true">
+                {% else %}
+                    <div class="hero-skeleton-loader__logo-placeholder" aria-hidden="true">HOREX</div>
+                {% endif %}
+            </div>
+            
+            {# Progress Section (for page and 360 types) #}
+            {% if showProgressBar or showLoadingText %}
+                <div class="hero-skeleton-loader__progress-container">
+                    {# Loading Text (360 type only by default) #}
+                    {% if showLoadingText %}
+                        <div class="hero-skeleton-loader__text">
+                            {{ loadingText }} <span data-skeleton-progress-text>0%</span>
+                        </div>
+                    {% endif %}
+                    
+                    {# Progress Bar (page and 360 types) #}
+                    {% if showProgressBar %}
+                        <div class="hero-skeleton-loader__progress">
+                            <div class="hero-skeleton-loader__progress-bar" 
+                                 role="progressbar" 
+                                 aria-valuenow="0" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100" 
+                                 data-skeleton-progress-bar></div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

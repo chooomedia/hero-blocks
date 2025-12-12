@@ -1,5 +1,5 @@
 {
-    "name": "Hero Blocks - License & Update Check (OPTIMIZED)",
+    "name": "Hero Blocks - License, Update & Release Automation",
     "nodes": [
         {
             "parameters": {
@@ -464,6 +464,119 @@
                     "name": "Slack account"
                 }
             }
+        },
+        {
+            "parameters": {
+                "events": [
+                    "release"
+                ],
+                "owner": "chooomedia",
+                "repository": "hero-blocks"
+            },
+            "id": "github-release-trigger",
+            "name": "GitHub Trigger (New Release)",
+            "type": "n8n-nodes-base.githubTrigger",
+            "typeVersion": 1,
+            "position": [
+                -528,
+                -650
+            ],
+            "webhookId": "hero-blocks-release-trigger",
+            "credentials": {
+                "githubApi": {
+                    "id": "lrNvOKmSqXVhTpHk",
+                    "name": "GitHub account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "// PROCESS NEW GITHUB RELEASE\n// This node processes the GitHub webhook when a new release is published\n\nconst release = $input.item.json.release || $input.item.json;\nconst repository = $input.item.json.repository || {};\nconst action = $input.item.json.action || 'published';\n\n// Only process if release was published\nif (action !== 'published') {\n  return {\n    json: {\n      skip: true,\n      reason: `Action was '${action}', not 'published'`\n    }\n  };\n}\n\nconst version = release.tag_name?.replace(/^v/, '') || '0.0.0';\nconst tagName = release.tag_name || 'v' + version;\nconst releaseName = release.name || `Release ${tagName}`;\nconst changelog = release.body || 'No changelog provided';\nconst isDraft = release.draft === true;\nconst isPrerelease = release.prerelease === true;\nconst publishedAt = release.published_at || new Date().toISOString();\nconst releaseUrl = release.html_url || `https://github.com/chooomedia/hero-blocks/releases/tag/${tagName}`;\n\n// Find ZIP asset\nlet downloadUrl = null;\nlet assetName = null;\nlet assetSize = 0;\n\nif (release.assets && Array.isArray(release.assets)) {\n  const zipAsset = release.assets.find(a => a.name?.endsWith('.zip') && a.name?.includes('hero-blocks'));\n  if (zipAsset) {\n    downloadUrl = zipAsset.browser_download_url;\n    assetName = zipAsset.name;\n    assetSize = zipAsset.size;\n  }\n}\n\n// Format file size\nconst formatSize = (bytes) => {\n  if (bytes === 0) return '0 B';\n  const k = 1024;\n  const sizes = ['B', 'KB', 'MB', 'GB'];\n  const i = Math.floor(Math.log(bytes) / Math.log(k));\n  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];\n};\n\nreturn {\n  json: {\n    skip: false,\n    version: version,\n    tagName: tagName,\n    releaseName: releaseName,\n    changelog: changelog,\n    isDraft: isDraft,\n    isPrerelease: isPrerelease,\n    publishedAt: publishedAt,\n    releaseUrl: releaseUrl,\n    downloadUrl: downloadUrl,\n    assetName: assetName,\n    assetSize: formatSize(assetSize),\n    repositoryName: repository.full_name || 'chooomedia/hero-blocks',\n    repositoryUrl: repository.html_url || 'https://github.com/chooomedia/hero-blocks'\n  }\n};"
+            },
+            "id": "process-release-webhook",
+            "name": "Code (Process Release Webhook)",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                -336,
+                -650
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "caseSensitive": true,
+                        "typeValidation": "strict"
+                    },
+                    "conditions": [
+                        {
+                            "id": "skip-check",
+                            "leftValue": "={{ $json.skip }}",
+                            "rightValue": "false",
+                            "operator": {
+                                "type": "boolean",
+                                "operation": "false",
+                                "singleValue": true
+                            }
+                        }
+                    ]
+                }
+            },
+            "id": "if-should-process",
+            "name": "IF Should Process?",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2,
+            "position": [
+                -144,
+                -650
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// FORMAT SLACK MESSAGE FOR NEW RELEASE\nconst SlackBlockBuilder = {\n  header: (text, emoji = true) => ({ type: 'header', text: { type: 'plain_text', text: text, emoji: emoji }}),\n  divider: () => ({ type: 'divider' }),\n  section: (config = {}) => {\n    const block = { type: 'section' };\n    if (config.text) block.text = { type: config.textType || 'mrkdwn', text: config.text, verbatim: false };\n    if (config.fields) block.fields = config.fields.map(f => ({ type: f.type || 'mrkdwn', text: f.text || f, verbatim: false }));\n    return block;\n  },\n  actions: (elements = []) => ({ type: 'actions', elements: elements }),\n  button: (config = {}) => {\n    const btn = { type: 'button', text: { type: 'plain_text', text: config.text || 'Button', emoji: config.emoji !== false }, action_id: config.actionId || 'button_click' };\n    if (config.style) btn.style = config.style;\n    if (config.url) btn.url = config.url;\n    if (config.value) btn.value = config.value;\n    return btn;\n  },\n  context: (elements = []) => ({ type: 'context', elements: Array.isArray(elements) ? elements.map(el => ({ type: el.type || 'mrkdwn', text: el.text || el })) : [{ type: 'mrkdwn', text: elements }] }),\n  field: (label, value) => ({ type: 'mrkdwn', text: `*${label}:*\\n${value}` })\n};\n\nconst data = $input.item.json;\nconst messageId = `hero-blocks-release-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;\n\n// Truncate changelog if too long\nlet changelog = data.changelog || '';\nif (changelog.length > 500) {\n  changelog = changelog.substring(0, 497) + '...';\n}\n\nconst releaseType = data.isPrerelease ? '🔶 Pre-Release' : '🎉 Stable Release';\nconst text = `🚀 Hero Blocks ${data.tagName} veröffentlicht!`;\n\nconst blocks = [\n  SlackBlockBuilder.header(`🚀 Hero Blocks ${data.tagName} veröffentlicht!`),\n  SlackBlockBuilder.divider(),\n  SlackBlockBuilder.section({ text: `*${data.releaseName}*\\n\\n${releaseType}` }),\n  SlackBlockBuilder.section({ fields: [\n    SlackBlockBuilder.field('📦 Version', `\\`${data.version}\\``),\n    SlackBlockBuilder.field('🏷️ Tag', data.tagName),\n    SlackBlockBuilder.field('📁 Asset', data.assetName || 'Kein ZIP'),\n    SlackBlockBuilder.field('📊 Größe', data.assetSize || 'N/A'),\n    SlackBlockBuilder.field('📅 Veröffentlicht', new Date(data.publishedAt).toLocaleDateString('de-DE')),\n    SlackBlockBuilder.field('🔖 Repository', `<${data.repositoryUrl}|${data.repositoryName}>`)\n  ]}),\n  SlackBlockBuilder.divider(),\n  SlackBlockBuilder.section({ text: `*📋 Changelog:*\\n\\`\\`\\`${changelog}\\`\\`\\`` }),\n  SlackBlockBuilder.divider(),\n  SlackBlockBuilder.actions([\n    data.downloadUrl ? SlackBlockBuilder.button({ text: '⬇️ Download ZIP', style: 'primary', url: data.downloadUrl, actionId: 'download_release' }) : null,\n    SlackBlockBuilder.button({ text: '🔗 Release ansehen', url: data.releaseUrl, actionId: 'view_release' }),\n    SlackBlockBuilder.button({ text: '📦 Alle Releases', url: 'https://github.com/chooomedia/hero-blocks/releases', actionId: 'all_releases' }),\n    SlackBlockBuilder.button({ text: '🗑️ Löschen', style: 'danger', actionId: 'delete_message', value: messageId })\n  ].filter(Boolean)),\n  SlackBlockBuilder.context([`⏰ ${new Date().toLocaleString('de-DE')} | 🔧 Hero Blocks Plugin | Automatische Benachrichtigung bei neuem Release`])\n];\n\nreturn {\n  json: {\n    ...data,\n    slackMessage: text,\n    slackBlocks: blocks,\n    messageId: messageId\n  }\n};"
+            },
+            "id": "format-release-slack",
+            "name": "Code (Format Release Slack Message)",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                48,
+                -650
+            ]
+        },
+        {
+            "parameters": {
+                "authentication": "oAuth2",
+                "select": "channel",
+                "channelId": {
+                    "__rl": true,
+                    "value": "C04347838EP",
+                    "mode": "list",
+                    "cachedResultName": "horex"
+                },
+                "messageType": "block",
+                "blocksUi": "={{ $json.slackBlocks }}",
+                "text": "={{ $json.slackMessage }}",
+                "otherOptions": {
+                    "includeLinkToWorkflow": true,
+                    "mrkdwn": true
+                }
+            },
+            "type": "n8n-nodes-base.slack",
+            "typeVersion": 2.3,
+            "position": [
+                240,
+                -650
+            ],
+            "id": "send-release-slack",
+            "name": "Send Slack Message (New Release)",
+            "credentials": {
+                "slackOAuth2Api": {
+                    "id": "BSSygESdYnPg0W2W",
+                    "name": "Slack account"
+                }
+            }
         }
     ],
     "connections": {
@@ -668,6 +781,50 @@
                     }
                 ]
             ]
+        },
+        "GitHub Trigger (New Release)": {
+            "main": [
+                [
+                    {
+                        "node": "Code (Process Release Webhook)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Code (Process Release Webhook)": {
+            "main": [
+                [
+                    {
+                        "node": "IF Should Process?",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "IF Should Process?": {
+            "main": [
+                [
+                    {
+                        "node": "Code (Format Release Slack Message)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Code (Format Release Slack Message)": {
+            "main": [
+                [
+                    {
+                        "node": "Send Slack Message (New Release)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
         }
     },
     "pinData": {},
@@ -677,6 +834,6 @@
     "staticData": null,
     "tags": [],
     "triggerCount": 0,
-    "updatedAt": "2025-11-26T21:00:00.000Z",
-    "versionId": "optimized-v1"
+    "updatedAt": "2025-12-11T12:00:00.000Z",
+    "versionId": "optimized-v2-with-release-automation"
 }

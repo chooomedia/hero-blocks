@@ -93,11 +93,13 @@ $timeline-gap-desktop: 3rem;
 
 // ============================================================================
 // TIMELINE ENTRY (Button + Content) - ZENTRIERT
+// WICHTIG: Aktiver Entry hat höheren z-index für korrekte Stapelung
 // ============================================================================
 .hero-timeline__entry {
     position: relative;
     display: flex;
-    z-index: 99;
+    // Default z-index für inaktive Entries (niedrig)
+    z-index: 1;
     flex-direction: column;
     align-items: center;
     width: 100%;
@@ -117,11 +119,17 @@ $timeline-gap-desktop: 3rem;
     &:last-child {
         padding-bottom: 0;
     }
+    
+    // WICHTIG: Aktiver Entry hat hohen z-index
+    // Damit der Content-Wrapper VOR den anderen Buttons liegt
+    &.is--active {
+        z-index: 100;
+    }
 }
 
 // ============================================================================
 // YEAR BUTTON - ZENTRIERT auf Timeline-Linie
-// WICHTIG: z-index niedrig - Buttons HINTER aktivem Content-Wrapper
+// WICHTIG: Aktiver Button steht VOR dem Content-Wrapper (z-index)
 // ============================================================================
 .hero-timeline__year-btn {
     display: flex;
@@ -148,8 +156,8 @@ $timeline-gap-desktop: 3rem;
     cursor: pointer;
     transition: all $timeline-transition-normal;
     position: relative;
-    // WICHTIG: z-index NIEDRIG - Buttons liegen HINTER dem aktiven Content
-    z-index: 1;
+    // z-index für normale Buttons (unter dem Content-Wrapper)
+    z-index: 2;
     
     @media (min-width: 768px) {
         width: $btn-size-tablet;
@@ -176,15 +184,15 @@ $timeline-gap-desktop: 3rem;
         box-shadow: 0 0 0 3px rgba(214, 171, 96, 0.4);
     }
     
-    // Aktiver Button Style - HÖHERER z-index als inaktive Buttons, aber NIEDRIGER als Content
+    // Aktiver Button Style - Steht VOR dem Content-Wrapper
     &.is--active {
         background-color: $timeline-accent-color;
         border-color: $timeline-accent-color;
         color: $timeline-white;
         transform: scale(1.1);
         box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
-        // WICHTIG: z-index höher als andere Buttons (1), aber niedriger als Content (100+)
-        z-index: 5;
+        // WICHTIG: z-index HÖHER als Content-Wrapper damit Button VOR Content sichtbar
+        z-index: 110;
     }
 }
 
@@ -194,7 +202,7 @@ $timeline-gap-desktop: 3rem;
 
 // ============================================================================
 // TIMELINE ITEM CONTENT - MIT BOOTSTRAP BOX-SHADOW
-// WICHTIG: HÖHERER z-index als Year-Buttons (liegt VOR den Buttons)
+// WICHTIG: Content liegt ZWISCHEN aktivem Button (vorne) und inaktiven Buttons (hinten)
 // ============================================================================
 .hero-timeline__item {
     position: absolute;
@@ -204,8 +212,8 @@ $timeline-gap-desktop: 3rem;
     width: 100%;
     max-width: 900px;
     margin-top: 2rem; // Abstand zum Button
-    // WICHTIG: HOHER z-index - Content liegt VOR allen Year-Buttons
-    z-index: 100;
+    // z-index: Zwischen aktivem Button (110) und inaktiven Buttons (2)
+    z-index: 50;
     
     max-height: 0;
     opacity: 0;
@@ -243,9 +251,9 @@ $timeline-gap-desktop: 3rem;
     background-color: $timeline-white;
     border-radius: 0.5rem;
     transform: translateY(-15%);
-    // WICHTIG: Content-Inner erbt hohen z-index vom Parent
     position: relative;
-    z-index: 101;
+    // z-index erbt vom Parent (50)
+    z-index: 1;
     
     // Bootstrap Box-Shadow (Standard .shadow)
     box-shadow: $timeline-box-shadow;
@@ -257,7 +265,6 @@ $timeline-gap-desktop: 3rem;
     }
     
     @media (min-width: 992px) {
-        z-index: 101;
         padding: 1rem 2rem;
         border-radius: 1rem;
         transform: translateY(-26.5%);

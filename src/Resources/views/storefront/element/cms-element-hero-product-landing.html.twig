@@ -6,56 +6,149 @@ This element allows displaying product data on Landing Pages.
 The product is selected in the CMS Admin and loaded via TypeDataResolver.
 
 AVAILABLE VARIABLES:
-- element.data.product - The full ProductEntity
-- element.data.product.translated.name - Product name (translated)
-- element.data.product.translated.description - Product description (translated)
-- element.data.product.translated.metaDescription - Meta description
-- element.data.product.calculatedPrice.totalPrice - Price
-- element.data.product.cover.media - Cover image MediaEntity
-- element.data.product.properties - Product properties (PropertyGroupOptionCollection)
-- element.data.product.manufacturer - Manufacturer entity
-- element.data.product.productNumber - Product number (SKU)
-- element.data.product.ean - EAN number
-- element.data.product.media - All product images
+====================
+
+Basic Product Info:
+- element.data.product                              - Full ProductEntity
+- element.data.product.id                           - Product UUID
+- element.data.product.productNumber                - SKU/Article Number
+- element.data.product.ean                          - EAN Number
+- element.data.product.translated.name              - Product Name (translated)
+- element.data.product.translated.description       - Full Description (HTML)
+- element.data.product.translated.metaTitle         - SEO Meta Title
+- element.data.product.translated.metaDescription   - SEO Meta Description
+
+Custom Fields (from Admin > Custom Fields):
+- element.data.product.translated.customFields                          - All Custom Fields
+- element.data.product.translated.customFields.custom_horex_tagline     - Custom tagline
+- element.data.product.translated.customFields.custom_horex_badge_text  - Badge text
+- element.data.product.translated.customFields.custom_horex_specs_short - Short specs
+
+Properties (Eigenschaften wie Leistung, Drehmoment, Zylinder):
+- element.data.product.properties                   - PropertyGroupOptionCollection
+- element.data.product.sortedProperties             - Sorted by position (Shopware 6.5+)
+  For each property:
+  - property.group.translated.name                  - Group Name (e.g. "Leistung")
+  - property.translated.name                        - Value (e.g. "161 PS")
+
+Options/Variants (Varianten wie Farben):
+- element.data.product.options                      - OptionCollection
+  For each option:
+  - option.group.translated.name                    - Group Name (e.g. "Farbe")
+  - option.translated.name                          - Value (e.g. "Schwarz")
+  - option.colorHexCode                             - Color Hex Code (if color option)
+
+Pricing:
+- element.data.product.calculatedPrice.totalPrice|currency - Formatted Price
+- element.data.product.calculatedTaxes.first.taxRate       - Tax Rate
+
+Media:
+- element.data.product.cover.media                  - Cover Image
+- element.data.product.media                        - All Product Images
+
+Manufacturer:
+- element.data.product.manufacturer.translated.name - Manufacturer Name
+- element.data.product.manufacturer.media           - Manufacturer Logo
 
 CONFIG OPTIONS (from element.config):
-- showName - Show product name
-- showDescription - Show product description
-- showPrice - Show product price
-- showProperties - Show product properties
-- showManufacturer - Show manufacturer
-- showBuyButton - Show add to cart button
-- layout - Layout variant (default, compact, full)
-
-EXAMPLE USAGE IN CUSTOM TEMPLATES:
-You can override this template or use the product variable in other templates:
-
-{% verbatim %}
-{{ element.data.product.translated.name }}
-{{ element.data.product.translated.description|raw }}
-{{ element.data.product.calculatedPrice.totalPrice|currency }}
-{% endverbatim %}
+- showName, showDescription, showPrice, showProperties
+- showManufacturer, showBuyButton, showCustomFields
+- showTagline, showBadge, showVariants, showSpecs
+- layout - Layout variant (default, compact, full, hero)
 #}
 
 {% block element_hero_product_landing %}
     {% set product = element.data.product %}
     {% set config = element.config %}
     
-    {# Config Options (with defaults) #}
+    {# ==================== CONFIG OPTIONS (with defaults) ==================== #}
     {% set showName = config.showName.value is defined ? config.showName.value : true %}
     {% set showDescription = config.showDescription.value is defined ? config.showDescription.value : true %}
     {% set showPrice = config.showPrice.value is defined ? config.showPrice.value : true %}
     {% set showProperties = config.showProperties.value is defined ? config.showProperties.value : true %}
     {% set showManufacturer = config.showManufacturer.value is defined ? config.showManufacturer.value : false %}
     {% set showBuyButton = config.showBuyButton.value is defined ? config.showBuyButton.value : true %}
+    {% set showCustomFields = config.showCustomFields.value is defined ? config.showCustomFields.value : true %}
+    {% set showTagline = config.showTagline.value is defined ? config.showTagline.value : true %}
+    {% set showBadge = config.showBadge.value is defined ? config.showBadge.value : true %}
+    {% set showVariants = config.showVariants.value is defined ? config.showVariants.value : true %}
+    {% set showSpecs = config.showSpecs.value is defined ? config.showSpecs.value : true %}
+    {% set showGallery = config.showGallery.value is defined ? config.showGallery.value : false %}
     {% set layout = config.layout.value is defined ? config.layout.value : 'default' %}
+    
+    {# ==================== EXTRACT CUSTOM FIELDS ==================== #}
+    {% set customFields = product.translated.customFields ?? product.customFields ?? {} %}
+    
+    {# Custom Field Keys (customize these based on your Shopware setup) #}
+    {% set tagline = customFields.custom_horex_tagline ?? customFields.horex_tagline ?? '' %}
+    {% set badgeText = customFields.custom_horex_badge_text ?? customFields.horex_badge ?? '' %}
+    {% set specsShort = customFields.custom_horex_specs_short ?? customFields.horex_specs_short ?? '' %}
+    {% set specsHighlight = customFields.custom_horex_specs_highlight ?? customFields.horex_specs_highlight ?? '' %}
+    {% set ctaText = customFields.custom_horex_cta_text ?? customFields.horex_cta_text ?? '' %}
+    {% set ctaUrl = customFields.custom_horex_cta_url ?? customFields.horex_cta_url ?? '' %}
+    {% set videoUrl = customFields.custom_horex_video_url ?? customFields.horex_video_url ?? '' %}
+    {% set highlightFeatures = customFields.custom_horex_highlight_features ?? customFields.horex_highlight_features ?? '' %}
+    
+    {# ==================== EXTRACT PROPERTIES BY GROUP ==================== #}
+    {# Use sortedProperties if available (Shopware 6.5+), fallback to properties #}
+    {% set allProperties = product.sortedProperties ?? product.properties %}
+    
+    {# Build property map by group name for easy access #}
+    {% set propertyMap = {} %}
+    {% if allProperties %}
+        {% for property in allProperties %}
+            {% set groupName = property.group.translated.name ?? property.group.name ?? 'Sonstige' %}
+            {% set optionName = property.translated.name ?? property.name %}
+            {% if groupName and optionName %}
+                {% set propertyMap = propertyMap|merge({ (groupName): optionName }) %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    
+    {# Common motorcycle properties #}
+    {% set leistung = propertyMap['Leistung'] ?? propertyMap['Power'] ?? propertyMap['PS'] ?? '' %}
+    {% set drehmoment = propertyMap['Drehmoment'] ?? propertyMap['Torque'] ?? propertyMap['Nm'] ?? '' %}
+    {% set zylinder = propertyMap['Zylinder'] ?? propertyMap['Cylinders'] ?? '' %}
+    {% set hubraum = propertyMap['Hubraum'] ?? propertyMap['Displacement'] ?? propertyMap['ccm'] ?? '' %}
+    {% set gewicht = propertyMap['Gewicht'] ?? propertyMap['Weight'] ?? propertyMap['kg'] ?? '' %}
+    {% set geschwindigkeit = propertyMap['Höchstgeschwindigkeit'] ?? propertyMap['Top Speed'] ?? propertyMap['km/h'] ?? '' %}
+    
+    {# ==================== EXTRACT VARIANT OPTIONS ==================== #}
+    {% set variantOptions = {} %}
+    {% if product.options %}
+        {% for option in product.options %}
+            {% set groupName = option.group.translated.name ?? option.group.name %}
+            {% set optionValue = option.translated.name ?? option.name %}
+            {% set colorCode = option.colorHexCode ?? '' %}
+            {% if groupName %}
+                {% set variantOptions = variantOptions|merge({ (groupName): {
+                    'value': optionValue,
+                    'colorCode': colorCode,
+                    'media': option.media ?? null
+                }}) %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    
+    {# Color variant (if exists) #}
+    {% set colorVariant = variantOptions['Farbe'] ?? variantOptions['Color'] ?? variantOptions['Colour'] ?? null %}
     
     {# Check if product exists #}
     {% if product %}
         <div class="cms-element-hero-product-landing cms-element-hero-product-landing--{{ layout }}"
              data-product-id="{{ product.id }}"
+             data-product-number="{{ product.productNumber }}"
              itemscope
              itemtype="https://schema.org/Product">
+            
+            {# ==================== BADGE (from Custom Field) ==================== #}
+            {% block element_hero_product_landing_badge %}
+                {% if showBadge and badgeText %}
+                    <div class="hero-product-landing__badge">
+                        <span class="badge bg-primary">{{ badgeText }}</span>
+                    </div>
+                {% endif %}
+            {% endblock %}
             
             {# ==================== PRODUCT CONTENT ==================== #}
             <div class="hero-product-landing__content">
@@ -64,29 +157,78 @@ You can override this template or use the product variable in other templates:
                 {% block element_hero_product_landing_image %}
                     {% if product.cover and product.cover.media %}
                         <div class="hero-product-landing__image">
+                            {# 
+                            SHOPWARE BEST PRACTICES: Hero Image Loading
+                            - Above-the-Fold: eager loading + fetchpriority=high
+                            - Optimal sizes für responsive Darstellung
+                            - decoding=async für nicht-blockierendes Rendering
+                            #}
                             {% set media = product.cover.media %}
                             {% sw_thumbnails 'hero-product-landing-image' with {
                                 media: media,
                                 sizes: {
                                     'xs': '100vw',
-                                    'sm': '50vw',
-                                    'md': '400px',
-                                    'lg': '500px'
+                                    'sm': '100vw',
+                                    'md': '50vw',
+                                    'lg': '600px',
+                                    'xl': '700px'
                                 },
                                 attributes: {
                                     'class': 'hero-product-landing__img',
                                     'alt': product.translated.name,
                                     'title': product.translated.name,
                                     'itemprop': 'image',
-                                    'loading': 'lazy'
+                                    'loading': 'eager',
+                                    'decoding': 'async',
+                                    'fetchpriority': 'high'
                                 }
                             } %}
+                            
+                            {# Color Variant Indicator #}
+                            {% if colorVariant and colorVariant.colorCode %}
+                                <div class="hero-product-landing__color-indicator" 
+                                     style="background-color: {{ colorVariant.colorCode }};"
+                                     title="{{ colorVariant.value }}">
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endblock %}
+                
+                {# ========== PRODUCT GALLERY (optional) ========== #}
+                {% block element_hero_product_landing_gallery %}
+                    {% if showGallery and product.media and product.media|length > 1 %}
+                        <div class="hero-product-landing__gallery">
+                            {% for mediaItem in product.media|slice(0, 4) %}
+                                {% if mediaItem.media %}
+                                    <div class="hero-product-landing__gallery-item">
+                                        {% sw_thumbnails 'hero-product-gallery-thumb' with {
+                                            media: mediaItem.media,
+                                            sizes: { 'default': '100px' },
+                                            attributes: {
+                                                'class': 'hero-product-landing__gallery-img',
+                                                'alt': product.translated.name,
+                                                'loading': 'lazy'
+                                            }
+                                        } %}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
                         </div>
                     {% endif %}
                 {% endblock %}
                 
                 {# ========== PRODUCT INFO ========== #}
                 <div class="hero-product-landing__info">
+                    
+                    {# Tagline (from Custom Field) #}
+                    {% block element_hero_product_landing_tagline %}
+                        {% if showTagline and tagline %}
+                            <p class="hero-product-landing__tagline text-uppercase text-muted small mb-2">
+                                {{ tagline }}
+                            </p>
+                        {% endif %}
+                    {% endblock %}
                     
                     {# Product Name #}
                     {% block element_hero_product_landing_name %}
@@ -101,7 +243,29 @@ You can override this template or use the product variable in other templates:
                     {% block element_hero_product_landing_manufacturer %}
                         {% if showManufacturer and product.manufacturer %}
                             <div class="hero-product-landing__manufacturer" itemprop="brand" itemscope itemtype="https://schema.org/Brand">
+                                {% if product.manufacturer.media %}
+                                    <img src="{{ product.manufacturer.media.url }}" 
+                                         alt="{{ product.manufacturer.translated.name }}"
+                                         class="hero-product-landing__manufacturer-logo"
+                                         loading="lazy">
+                                {% endif %}
                                 <span itemprop="name">{{ product.manufacturer.translated.name }}</span>
+                            </div>
+                        {% endif %}
+                    {% endblock %}
+                    
+                    {# Specs Highlight (from Custom Field) - e.g. "161 PS | 128 Nm | VR6" #}
+                    {% block element_hero_product_landing_specs_highlight %}
+                        {% if showSpecs and specsHighlight %}
+                            <div class="hero-product-landing__specs-highlight h5 text-primary mb-3">
+                                {{ specsHighlight }}
+                            </div>
+                        {% elseif showSpecs and (leistung or drehmoment or zylinder) %}
+                            {# Fallback: Build from properties #}
+                            <div class="hero-product-landing__specs-highlight h5 text-primary mb-3">
+                                {% if leistung %}{{ leistung }}{% endif %}
+                                {% if drehmoment %}{% if leistung %} | {% endif %}{{ drehmoment }}{% endif %}
+                                {% if zylinder %}{% if leistung or drehmoment %} | {% endif %}{{ zylinder }}{% endif %}
                             </div>
                         {% endif %}
                     {% endblock %}
@@ -115,25 +279,76 @@ You can override this template or use the product variable in other templates:
                         {% endif %}
                     {% endblock %}
                     
-                    {# Product Properties #}
+                    {# Short Specs (from Custom Field) #}
+                    {% block element_hero_product_landing_specs_short %}
+                        {% if showSpecs and specsShort %}
+                            <div class="hero-product-landing__specs-short small text-muted mb-3">
+                                {{ specsShort|raw }}
+                            </div>
+                        {% endif %}
+                    {% endblock %}
+                    
+                    {# Product Properties (Technical Specs) #}
                     {% block element_hero_product_landing_properties %}
-                        {% if showProperties and product.properties|length > 0 %}
+                        {% if showProperties and allProperties|length > 0 %}
                             <div class="hero-product-landing__properties">
-                                {% for property in product.properties %}
-                                    {% set groupName = property.group.translated.name ?? property.group.name %}
-                                    {% set optionName = property.translated.name ?? property.name %}
+                                <h4 class="hero-product-landing__properties-title h6 mb-3">
+                                    {{ 'detail.tabProperties'|trans|default('Technische Daten') }}
+                                </h4>
+                                
+                                <div class="hero-product-landing__properties-grid">
+                                    {% for property in allProperties %}
+                                        {% set groupName = property.group.translated.name ?? property.group.name %}
+                                        {% set optionName = property.translated.name ?? property.name %}
+                                        
+                                        {% if groupName and optionName %}
+                                            <div class="hero-product-landing__property">
+                                                <span class="hero-product-landing__property-label">
+                                                    {{ groupName }}
+                                                </span>
+                                                <span class="hero-product-landing__property-value">
+                                                    {{ optionName }}
+                                                </span>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endblock %}
+                    
+                    {# Variant Options (Colors, Sizes, etc.) #}
+                    {% block element_hero_product_landing_variants %}
+                        {% if showVariants and product.options|length > 0 %}
+                            <div class="hero-product-landing__variants mb-3">
+                                {% for option in product.options %}
+                                    {% set groupName = option.group.translated.name ?? option.group.name %}
+                                    {% set optionValue = option.translated.name ?? option.name %}
+                                    {% set colorCode = option.colorHexCode ?? '' %}
                                     
-                                    {% if groupName and optionName %}
-                                        <div class="hero-product-landing__property">
-                                            <span class="hero-product-landing__property-label">
-                                                {{ groupName }}:
+                                    <div class="hero-product-landing__variant-item d-flex align-items-center gap-2 mb-2">
+                                        {% if colorCode %}
+                                            <span class="hero-product-landing__color-swatch" 
+                                                  style="background-color: {{ colorCode }}; width: 20px; height: 20px; border-radius: 50%; border: 1px solid #ccc;">
                                             </span>
-                                            <span class="hero-product-landing__property-value">
-                                                {{ optionName }}
-                                            </span>
-                                        </div>
-                                    {% endif %}
+                                        {% endif %}
+                                        <span class="hero-product-landing__variant-label small text-muted">
+                                            {{ groupName }}:
+                                        </span>
+                                        <span class="hero-product-landing__variant-value">
+                                            {{ optionValue }}
+                                        </span>
+                                    </div>
                                 {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endblock %}
+                    
+                    {# Highlight Features (from Custom Field) #}
+                    {% block element_hero_product_landing_features %}
+                        {% if showCustomFields and highlightFeatures %}
+                            <div class="hero-product-landing__features mb-3">
+                                {{ highlightFeatures|raw }}
                             </div>
                         {% endif %}
                     {% endblock %}
@@ -144,32 +359,48 @@ You can override this template or use the product variable in other templates:
                             <div class="hero-product-landing__price" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
                                 <meta itemprop="priceCurrency" content="{{ context.currency.isoCode }}">
                                 <meta itemprop="price" content="{{ product.calculatedPrice.totalPrice }}">
-                                <span class="hero-product-landing__price-value">
+                                <meta itemprop="availability" content="https://schema.org/{% if product.availableStock > 0 %}InStock{% else %}OutOfStock{% endif %}">
+                                
+                                <span class="hero-product-landing__price-value h3 mb-0">
                                     {{ product.calculatedPrice.totalPrice|currency }}
                                 </span>
                                 
                                 {# Tax Info #}
                                 {% if product.calculatedTaxes|length > 0 %}
                                     {% set tax = product.calculatedTaxes.first %}
-                                    <span class="hero-product-landing__price-tax">
+                                    <span class="hero-product-landing__price-tax small text-muted d-block">
                                         {{ 'detail.priceIncludesTax'|trans({ '%tax%': tax.taxRate }) }}
+                                    </span>
+                                {% endif %}
+                                
+                                {# Unit Price (if applicable) #}
+                                {% if product.calculatedPrice.referencePrice %}
+                                    <span class="hero-product-landing__reference-price small text-muted d-block">
+                                        ({{ product.calculatedPrice.referencePrice.price|currency }} / {{ product.calculatedPrice.referencePrice.referenceUnit }} {{ product.calculatedPrice.referencePrice.unitName }})
                                     </span>
                                 {% endif %}
                             </div>
                         {% endif %}
                     {% endblock %}
                     
-                    {# Buy Button #}
+                    {# Custom CTA (from Custom Field) or Buy Button #}
                     {% block element_hero_product_landing_buy %}
-                        {% if showBuyButton %}
-                            <div class="hero-product-landing__buy">
+                        {% if ctaText and ctaUrl %}
+                            {# Custom CTA from Custom Field #}
+                            <div class="hero-product-landing__cta mt-3">
+                                <a href="{{ ctaUrl }}" class="btn btn-primary btn-lg hero-product-landing__cta-button">
+                                    {{ ctaText }}
+                                </a>
+                            </div>
+                        {% elseif showBuyButton %}
+                            {# Standard Buy Button #}
+                            <div class="hero-product-landing__buy mt-3">
                                 <form method="post" 
                                       action="{{ path('frontend.checkout.line-item.add') }}" 
                                       class="hero-product-landing__buy-form"
                                       data-add-to-cart="true">
                                     
-                                    {{ sw_csrf('frontend.checkout.line-item.add') }}
-                                    
+                                    {{ sw_include('frontend.checkout.line-item.add') }}
                                     <input type="hidden" name="redirectTo" value="frontend.cart.offcanvas">
                                     <input type="hidden" name="lineItems[{{ product.id }}][id]" value="{{ product.id }}">
                                     <input type="hidden" name="lineItems[{{ product.id }}][referencedId]" value="{{ product.id }}">
@@ -179,7 +410,7 @@ You can override this template or use the product variable in other templates:
                                     <input type="hidden" name="lineItems[{{ product.id }}][quantity]" value="1">
                                     
                                     <button type="submit" 
-                                            class="btn btn-primary hero-product-landing__buy-button"
+                                            class="btn btn-primary btn-lg hero-product-landing__buy-button"
                                             title="{{ 'listing.boxAddProduct'|trans }}">
                                         {% sw_icon 'bag' %}
                                         <span>{{ 'listing.boxAddProduct'|trans }}</span>
@@ -189,32 +420,131 @@ You can override this template or use the product variable in other templates:
                         {% endif %}
                     {% endblock %}
                     
-                    {# Product Number #}
+                    {# Link to Product Detail Page #}
+                    {% block element_hero_product_landing_detail_link %}
+                        <div class="hero-product-landing__detail-link mt-3">
+                            <a href="{{ seoUrl('frontend.detail.page', {'productId': product.id}) }}" 
+                               class="btn btn-outline-secondary"
+                               title="{{ 'listing.boxProductDetails'|trans|default('Details anzeigen') }}">
+                                {{ 'listing.boxProductDetails'|trans|default('Details anzeigen') }}
+                                {% sw_icon 'arrow-medium-right' %}
+                            </a>
+                        </div>
+                    {% endblock %}
+                    
+                    {# Product Number & EAN #}
                     {% block element_hero_product_landing_product_number %}
-                        {% if product.productNumber %}
-                            <div class="hero-product-landing__product-number">
-                                <span class="hero-product-landing__product-number-label">
-                                    {{ 'detail.productNumber'|trans }}:
-                                </span>
-                                <span class="hero-product-landing__product-number-value" itemprop="sku">
-                                    {{ product.productNumber }}
-                                </span>
-                            </div>
-                        {% endif %}
+                        <div class="hero-product-landing__meta mt-4 pt-3 border-top small text-muted">
+                            {% if product.productNumber %}
+                                <div class="hero-product-landing__product-number">
+                                    <span class="hero-product-landing__product-number-label">
+                                        {{ 'detail.productNumber'|trans }}:
+                                    </span>
+                                    <span class="hero-product-landing__product-number-value" itemprop="sku">
+                                        {{ product.productNumber }}
+                                    </span>
+                                </div>
+                            {% endif %}
+                            
+                            {% if product.ean %}
+                                <div class="hero-product-landing__ean">
+                                    <span class="hero-product-landing__ean-label">
+                                        {{ 'detail.dataSheetEan'|trans|default('EAN') }}:
+                                    </span>
+                                    <span class="hero-product-landing__ean-value" itemprop="gtin13">
+                                        {{ product.ean }}
+                                    </span>
+                                </div>
+                            {% endif %}
+                            
+                            {# Stock Info #}
+                            {% if product.availableStock is defined %}
+                                <div class="hero-product-landing__stock">
+                                    {% if product.availableStock > 0 %}
+                                        <span class="text-success">
+                                            {% sw_icon 'checkmark-circle' style { 'size': 'xs' } %}
+                                            {{ 'detail.deliveryAvailable'|trans|default('Verfügbar') }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-danger">
+                                            {% sw_icon 'times-circle' style { 'size': 'xs' } %}
+                                            {{ 'detail.deliveryNotAvailable'|trans|default('Nicht verfügbar') }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
                     {% endblock %}
                     
                 </div>
                 
             </div>
             
+            {# ==================== VIDEO (from Custom Field) ==================== #}
+            {% block element_hero_product_landing_video %}
+                {% if videoUrl %}
+                    <div class="hero-product-landing__video mt-4">
+                        {% if 'youtube.com' in videoUrl or 'youtu.be' in videoUrl %}
+                            {# Extract YouTube Video ID #}
+                            {% set videoId = videoUrl|split('v=')|last|split('&')|first %}
+                            {% if 'youtu.be' in videoUrl %}
+                                {% set videoId = videoUrl|split('/')|last|split('?')|first %}
+                            {% endif %}
+                            <div class="ratio ratio-16x9">
+                                <iframe src="https://www.youtube.com/embed/{{ videoId }}" 
+                                        title="{{ product.translated.name }} Video"
+                                        allowfullscreen
+                                        loading="lazy">
+                                </iframe>
+                            </div>
+                        {% elseif 'vimeo.com' in videoUrl %}
+                            {% set videoId = videoUrl|split('/')|last %}
+                            <div class="ratio ratio-16x9">
+                                <iframe src="https://player.vimeo.com/video/{{ videoId }}" 
+                                        title="{{ product.translated.name }} Video"
+                                        allowfullscreen
+                                        loading="lazy">
+                                </iframe>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endblock %}
+            
+            {# ==================== DEBUG: Show all available data (only in dev) ==================== #}
+            {% if app.environment == 'dev' and app.request.query.get('debug') %}
+                {% block element_hero_product_landing_debug %}
+                    <div class="hero-product-landing__debug mt-5 p-3 bg-light border rounded">
+                        <h5>Debug: Available Product Data</h5>
+                        
+                        <h6 class="mt-3">Custom Fields:</h6>
+                        <pre class="small">{{ customFields|json_encode(constant('JSON_PRETTY_PRINT'))|raw }}</pre>
+                        
+                        <h6 class="mt-3">Properties Map:</h6>
+                        <pre class="small">{{ propertyMap|json_encode(constant('JSON_PRETTY_PRINT'))|raw }}</pre>
+                        
+                        <h6 class="mt-3">Variant Options:</h6>
+                        <pre class="small">{{ variantOptions|json_encode(constant('JSON_PRETTY_PRINT'))|raw }}</pre>
+                        
+                        <h6 class="mt-3">All Properties:</h6>
+                        <ul class="small">
+                            {% for property in allProperties %}
+                                <li>{{ property.group.translated.name ?? property.group.name }}: {{ property.translated.name ?? property.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endblock %}
+            {% endif %}
+            
         </div>
     {% else %}
         {# No product assigned - Show message in storefront (only for debugging) #}
         {% if app.environment == 'dev' %}
             <div class="cms-element-hero-product-landing cms-element-hero-product-landing--empty">
-                <p class="text-muted">
-                    <em>Hero Product Landing: Kein Produkt zugewiesen.</em>
-                </p>
+                <div class="alert alert-info">
+                    <strong>Hero Product Landing:</strong> Kein Produkt zugewiesen.
+                    <br><small>Wählen Sie ein Produkt im CMS Admin aus.</small>
+                </div>
             </div>
         {% endif %}
     {% endif %}

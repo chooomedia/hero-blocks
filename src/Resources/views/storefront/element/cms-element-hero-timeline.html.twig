@@ -37,22 +37,24 @@
             <div class="hero-timeline__items">
                 {% for item in timelineItems %}
                     {# Timeline Entry: Button + Content (wenn aktiv) #}
-                    <div class="hero-timeline__entry" data-timeline-entry="{{ loop.index0 }}">
+                    {# WICHTIG: Erster Eintrag ist initial aktiv #}
+                    <div class="hero-timeline__entry{% if loop.first %} is--active{% endif %}" data-timeline-entry="{{ loop.index0 }}">
                         
-                        {# Jahr-Button #}
+                        {# Jahr-Button - erster ist initial aktiv #}
                         <button type="button" 
-                                class="hero-timeline__year-btn"
+                                class="hero-timeline__year-btn{% if loop.first %} is--active{% endif %}"
                                 data-timeline-index="{{ loop.index0 }}"
                                 data-year="{{ item.year|default('----') }}"
                                 aria-label="Jahr {{ item.year|default('----') }}"
-                                aria-expanded="false">
+                                aria-expanded="{% if loop.first %}true{% else %}false{% endif %}">
                             <span class="hero-timeline__year-text">{{ item.year|default('----') }}</span>
                         </button>
                         
-                        {# Timeline Item Content (initial versteckt) #}
-                        <div class="hero-timeline__item" 
+                        {# Timeline Item Content - erster ist initial sichtbar #}
+                        <div class="hero-timeline__item{% if loop.first %} is--active{% endif %}" 
                              data-timeline-item="{{ loop.index0 }}"
-                             aria-hidden="true">
+                             aria-hidden="{% if loop.first %}false{% else %}true{% endif %}"
+                             {% if loop.first %}style="max-height: none; opacity: 1;"{% endif %}>
                             
                             <div class="hero-timeline__item-inner">
                                 <div class="row g-4 g-lg-5 align-items-center">
@@ -188,7 +190,8 @@
         const yearBtns = Array.from(container.querySelectorAll('.hero-timeline__year-btn'));
         const items = Array.from(container.querySelectorAll('.hero-timeline__item'));
         
-        let activeIndex = -1;
+        // WICHTIG: Ersten Eintrag als initial aktiv setzen
+        let activeIndex = 0;
         let isAnimating = false;
         const sliders = new Map();
         
